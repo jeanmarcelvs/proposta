@@ -1,39 +1,41 @@
-// Arquivo: api/proposta.js
-import fetch from "node-fetch";
-// A token fixa da API SolarMarket é armazenada com segurança como uma variável de ambiente no Vercel.
-// Isso evita que ela seja exposta no código-fonte do seu site.
-const tokenFixa = process.env.SOLARMARKET_TOKEN;
-export default async function handler(request, response) {
-const projectId = request.query.projectId;
-if (!projectId) {
-return response.status(400).send('ID do projeto não fornecido.');
-}
-try {
-// Passo 1: Autenticação para obter o access_token temporário (JWT)
-// Este passo é executado ANTES de CADA requisição, garantindo uma token válida.
-const authRes = await fetch('https://business.solarmarket.com.br/api/v2/auth/signin', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ token: tokenFixa })
-});
-const authData = await authRes.json();
-const accessToken = authData.access_token;
-if (!accessToken) {
-return response.status(500).send('Erro de autenticação com a API SolarMarket.');
-}
-// Passo 2: Consulta a proposta ativa com a access_token segura
-// A token temporária recém-obtida é usada para esta requisição.
-const proposalsRes = await fetch(`https://business.solarmarket.com.br/api/v2/projects/${projectId}/proposals
-method: 'GET',
-headers: {
-'accept': 'application/json',
-'Authorization': `Bearer ${accessToken}`
-}
-});
-const proposalsData = await proposalsRes.json();
-return response.status(200).json(proposalsData);
-} catch (err) {
-console.error(err);
-return response.status(500).send('Erro ao consultar proposta.');
-}
-}
+// Use a sintaxe "require" para importar módulos, compatível com a configuração padrão do Node.js no Vercel.
+const fetch = require("node-fetch");
+
+// A função do handler, que será chamada quando a requisição chegar.
+module.exports = async (req, res) => {
+    // Extrai o 'projectId' dos parâmetros da URL.
+    const { projectId } = req.query;
+
+    // Obtém o token da variável de ambiente, garantindo que ele não seja exposto.
+    const token = process.env.SOLARMARKET_TOKEN;
+
+    // Define a URL da API da SolarMarket com o 'projectId'.
+    const apiUrl = `https://api.solarmarket.com.br/api/projetos/${projectId}/propostas/ativas`;
+
+    try {
+        // Faz a requisição para a API da SolarMarket, passando o token de autenticação no cabeçalho.
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        // Se a resposta não for bem-sucedida, lança um erro com o status HTTP.
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+        }
+
+        // Converte a resposta para JSON.
+        const data = await response.json();
+
+        // Retorna a resposta com um status de sucesso (200) e os dados da API.
+        res.status(200).json(data);
+    } catch (error) {
+        // Em caso de erro, retorna um status de erro interno (500) e a mensagem de erro.
+        console.error("Erro na função serverless:", error);
+        res.status(500).json({ error: "Erro interno do servidor", details: error.message });
+    }
+};
