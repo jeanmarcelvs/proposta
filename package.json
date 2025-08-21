@@ -1,0 +1,12 @@
+{
+  "name": "gdis-solar-proposta-app",
+  "version": "1.0.0",
+  "description": "Uma aplicação para consultar propostas da SolarMarket",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
