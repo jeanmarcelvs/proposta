@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
 
     // *** ALTERAÇÃO AQUI: A URL da API da SolarMarket foi corrigida. ***
     // Use a URL base correta fornecida pelo usuário.
-    const apiUrl = `https://business.solarmarket.com.br/api/projetos/${projectId}/propostas/ativas`;
+    const apiUrl = `https://business.solarmarket.com.br/api/v2/projects/${projectId}/proposals`;
 
     try {
         // Faz a requisição para a API da SolarMarket, passando o token de autenticação no cabeçalho.
