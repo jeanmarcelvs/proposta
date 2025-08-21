@@ -1,26 +1,37 @@
-// O código abaixo é a correção para a sua função serverless no Vercel.
-// Ele implementa a lógica de geração de tokens temporários, seguindo a documentação da API.
+// Este código atualiza a sua função serverless para buscar propostas
+// usando o CPF do cliente, em vez do ID do projeto.
 
 // Importa a biblioteca 'node-fetch' para fazer requisições HTTP
 const fetch = require('node-fetch');
 
 // Handler da função serverless, exportado para ser usado pelo Vercel
 module.exports = async (req, res) => {
-    // Extrai o 'projectId' dos parâmetros da query (ex: /api/proposta?projectId=123)
-    const { projectId } = req.query;
+    // Adiciona cabeçalhos CORS para permitir requisições de qualquer origem
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    // URL da API externa da SolarMarket para propostas.
-    const solarMarketApiUrl = `https://business.solarmarket.com.br/api/v2/projects/${projectId}/proposals`;
+    // Lida com requisições OPTIONS (pré-voo do CORS)
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
+    // Extrai o 'cpf' dos parâmetros da query (ex: /api/proposta?cpf=12345678900)
+    const { cpf } = req.query;
+
+    // URL base da API da SolarMarket
+    const apiUrlBase = 'https://business.solarmarket.com.br/api/v2';
     
     // URL CORRETA DA API DE AUTENTICAÇÃO da SolarMarket
-    const authApiUrl = `https://business.solarmarket.com.br/api/v2/auth/signin`;
+    const authApiUrl = `${apiUrlBase}/auth/signin`;
 
     // Pega o token de autenticação de longa duração da variável de ambiente do Vercel
     const longLivedToken = process.env.SOLARMARKET_TOKEN;
 
-    // Validação básica para garantir que o 'projectId' e o token existam
-    if (!projectId) {
-        return res.status(400).json({ message: 'Missing projectId parameter' });
+    // Validação básica para garantir que o 'cpf' e o token existam
+    if (!cpf) {
+        return res.status(400).json({ message: 'Missing cpf parameter' });
     }
     if (!longLivedToken) {
         return res.status(500).json({ message: 'Missing API token. Please configure SOLARMARKET_TOKEN environment variable.' });
@@ -39,35 +50,85 @@ module.exports = async (req, res) => {
             })
         });
 
-        // Verifica se a requisição de autenticação foi bem-sucedida
         if (!authRes.ok) {
             const errorText = await authRes.text();
             throw new Error(`Erro de Autenticação: ${authRes.status} - ${errorText}`);
         }
 
         const authData = await authRes.json();
-        // A documentação indica que a resposta de autenticação contém um novo token de acesso
         const accessToken = authData.token; 
 
-        // PASSO 2: Usar o novo token de acesso para a requisição de propostas
-        const apiRes = await fetch(solarMarketApiUrl, {
+        // PASSO 2: Usar o token de acesso para buscar o cliente pelo CPF
+        const clientUrl = `${apiUrlBase}/clients?cnpjCpf=${cpf}`;
+        const clientRes = await fetch(clientUrl, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${accessToken}`, // Usa o token de acesso temporário
+                'Authorization': `Bearer ${accessToken}`,
                 'accept': 'application/json'
             }
         });
 
-        // Verifica se a resposta da API de propostas foi bem-sucedida
-        if (!apiRes.ok) {
-            const errorText = await apiRes.text();
-            throw new Error(`Erro HTTP: ${apiRes.status} - ${errorText}`);
+        if (!clientRes.ok) {
+            const errorText = await clientRes.text();
+            throw new Error(`Erro ao buscar cliente: ${clientRes.status} - ${errorText}`);
         }
 
-        const data = await apiRes.json();
+        const clientData = await clientRes.json();
+        // A API retorna um array, pegamos o primeiro cliente encontrado
+        const client = clientData[0]; 
+
+        if (!client) {
+            return res.status(404).json({ message: 'Cliente não encontrado com o CPF informado.' });
+        }
+
+        // PASSO 3: Usar o ID do cliente para buscar um projeto
+        const projectsUrl = `${apiUrlBase}/projects?clientId=${client.id}`;
+        const projectsRes = await fetch(projectsUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'accept': 'application/json'
+            }
+        });
+
+        if (!projectsRes.ok) {
+            const errorText = await projectsRes.text();
+            throw new Error(`Erro ao buscar projetos: ${projectsRes.status} - ${errorText}`);
+        }
+
+        const projectsData = await projectsRes.json();
+        // A API retorna um array, pegamos o primeiro projeto encontrado
+        const project = projectsData[0];
+
+        if (!project) {
+            return res.status(404).json({ message: 'Nenhum projeto encontrado para este cliente.' });
+        }
+
+        // PASSO 4: Usar o ID do projeto para buscar a proposta ativa
+        const proposalsUrl = `${apiUrlBase}/projects/${project.id}/proposals`;
+        const proposalsRes = await fetch(proposalsUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'accept': 'application/json'
+            }
+        });
+
+        if (!proposalsRes.ok) {
+            const errorText = await proposalsRes.text();
+            throw new Error(`Erro ao buscar propostas: ${proposalsRes.status} - ${errorText}`);
+        }
+
+        const proposalsData = await proposalsRes.json();
+        // A API de propostas pode retornar um array. A sua lógica original pegava o primeiro.
+        const proposal = proposalsData[0];
         
-        // Retorna os dados da API para o cliente
-        return res.status(200).json(data);
+        if (!proposal) {
+            return res.status(404).json({ message: 'Nenhuma proposta ativa encontrada para este projeto.' });
+        }
+
+        // PASSO 5: Retornar a proposta encontrada
+        return res.status(200).json(proposal);
 
     } catch (err) {
         console.error("Erro na função serverless:", err);
