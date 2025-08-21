@@ -147,7 +147,6 @@
 
             try {
                 // O front-end agora chama o endpoint do seu backend, passando o ID do projeto
-                // Para o teste local, vamos usar uma função de mock
                 const propostas = await consultarPropostaAtiva(projectId);
                 
                 // Exibe o JSON bruto para depuração
@@ -178,31 +177,25 @@
         });
 
         /**
-         * Simula a consulta de uma proposta para testes locais.
+         * Consulta a proposta ativa de um projeto chamando o backend.
          * @param {string} projectId - O ID do projeto.
          * @returns {Promise<Array|null>} Um array de propostas ou null em caso de falha.
          */
         async function consultarPropostaAtiva(projectId) {
-            // Dados de exemplo para simular a resposta da API
-            const mockData = [
-                {
-                    "id": "PROPOSTA-TESTE-123",
-                    "status": "aprovada",
-                    "valor_total": 54321.00,
-                    "cliente": {
-                        "nome": "João da Silva",
-                        "documento": "123.456.789-00",
-                        "telefone": "(11) 98765-4321"
-                    }
-                }
-            ];
+            // A URL do seu backend no Vercel foi configurada aqui.
+            const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
 
-            // Retorna os dados simulados
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(mockData);
-                }, 500); // Simula um atraso de 0.5 segundos na resposta
-            });
+            try {
+                const res = await fetch(backendUrl);
+                if (!res.ok) {
+                    throw new Error(`Erro HTTP: ${res.status}`);
+                }
+                const dados = await res.json();
+                return dados;
+            } catch (err) {
+                console.error("Erro ao consultar proposta:", err);
+                throw err;
+            }
         }
     </script>
 
