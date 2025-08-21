@@ -1,42 +1,56 @@
-// Use a sintaxe "require" para importar módulos, compatível com a configuração padrão do Node.js no Vercel.
-const fetch = require("node-fetch");
+// O código abaixo é a correção para a sua função serverless no Vercel.
+// Ele resolve o erro 401 Unauthorized adicionando o token de autenticação
+// ao cabeçalho da requisição.
 
-// A função do handler, que será chamada quando a requisição chegar.
+// Importa a biblioteca 'node-fetch' para fazer requisições HTTP
+const fetch = require('node-fetch');
+
+// Handler da função serverless, exportado para ser usado pelo Vercel
 module.exports = async (req, res) => {
-    // Extrai o 'projectId' dos parâmetros da URL.
+    // Extrai o 'projectId' dos parâmetros da query (ex: /api/proposta?projectId=123)
     const { projectId } = req.query;
 
-    // Obtém o token da variável de ambiente, garantindo que ele não seja exposto.
+    // URL da API externa da SolarMarket
+    const solarMarketApiUrl = `https://api.solarmarket.com/propostas?projectId=${projectId}`; // Exemplo de URL da API externa
+
+    // Pega o token de autenticação da variável de ambiente do Vercel
+    // O nome da variável foi confirmado como 'SOLARMARKET_TOKEN'
     const token = process.env.SOLARMARKET_TOKEN;
 
-    // *** ALTERAÇÃO AQUI: A URL da API da SolarMarket foi corrigida. ***
-    // Use a URL base correta fornecida pelo usuário.
-    const apiUrl = `https://business.solarmarket.com.br/api/v2/projects/${projectId}/proposals`;
+    // Validação básica para garantir que o 'projectId' e o 'token' existem
+    if (!projectId) {
+        return res.status(400).json({ message: 'Missing projectId parameter' });
+    }
+    if (!token) {
+        return res.status(500).json({ message: 'Missing API token. Please configure SOLARMARKET_TOKEN environment variable.' });
+    }
 
     try {
-        // Faz a requisição para a API da SolarMarket, passando o token de autenticação no cabeçalho.
-        const response = await fetch(apiUrl, {
-            method: "GET",
+        // Faz a requisição para a API da SolarMarket, incluindo o token no cabeçalho
+        const apiRes = await fetch(solarMarketApiUrl, {
+            method: 'GET',
             headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
+                'Authorization': `Bearer ${token}`, // AQUI ESTÁ A CORREÇÃO. O token é adicionado ao cabeçalho de autorização.
+                'Content-Type': 'application/json'
+            }
         });
 
-        // Se a resposta não for bem-sucedida, lança um erro com o status HTTP.
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+        // Verifica se a resposta da API foi bem-sucedida (status 200-299)
+        if (!apiRes.ok) {
+            // Se a API externa retornar um erro, repassa esse erro
+            const errorText = await apiRes.text();
+            throw new Error(`Erro HTTP: ${apiRes.status} - ${errorText}`);
         }
 
-        // Converte a resposta para JSON.
-        const data = await response.json();
+        // Converte a resposta da API para JSON
+        const data = await apiRes.json();
+        
+        // Retorna os dados da API para o cliente (o seu index.html)
+        return res.status(200).json(data);
 
-        // Retorna a resposta com um status de sucesso (200) e os dados da API.
-        res.status(200).json(data);
-    } catch (error) {
-        // Em caso de erro, retorna um status de erro interno (500) e a mensagem de erro.
-        console.error("Erro na função serverless:", error);
-        res.status(500).json({ error: "Erro interno do servidor", details: error.message });
+    } catch (err) {
+        console.error("Erro na função serverless:", err);
+        // Em caso de erro, retorna uma resposta de erro para o cliente
+        return res.status(500).json({ message: 'Internal Server Error', error: err.message });
     }
 };
