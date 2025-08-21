@@ -103,8 +103,9 @@
         <h1>Consultar Proposta SolarMarket</h1>
         
         <div class="form-group">
-            <label for="projectId">ID do Projeto:</label>
-            <input type="text" id="projectId" placeholder="Ex: 12345">
+            <!-- O label e input agora pedem o CPF -->
+            <label for="cpf">CPF do Cliente:</label>
+            <input type="text" id="cpf" placeholder="Ex: 123.456.789-00">
         </div>
 
         <button id="btnConsultar">Consultar Proposta Ativa</button>
@@ -130,39 +131,39 @@
         
         // Adiciona um listener de evento para o botão de consulta
         document.getElementById("btnConsultar").addEventListener("click", async () => {
-            const projectId = document.getElementById("projectId").value.trim();
+            // O código agora pega o valor do campo de CPF
+            const cpf = document.getElementById("cpf").value.trim();
             const debugElement = document.getElementById("jsonDebug");
             const containerElement = document.getElementById("propostaContainer");
 
-            // Valida se o ID do projeto foi informado
-            if (!projectId) {
-                debugElement.textContent = "Por favor, informe o ID do projeto.";
+            // Valida se o CPF foi informado
+            if (!cpf) {
+                debugElement.textContent = "Por favor, informe o CPF do cliente.";
                 containerElement.style.display = "none";
                 return;
             }
 
             // Exibe mensagem de carregamento
-            debugElement.textContent = `Consultando projeto ${projectId}...`;
+            debugElement.textContent = `Consultando proposta para o CPF ${cpf}...`;
             containerElement.style.display = "none";
 
             try {
-                // O front-end agora chama o endpoint do seu backend, passando o ID do projeto
-                const propostas = await consultarPropostaAtiva(projectId);
+                // O front-end agora chama o endpoint do seu backend, passando o CPF
+                const proposta = await consultarPropostaAtiva(cpf);
                 
                 // Exibe o JSON bruto para depuração
-                debugElement.textContent = JSON.stringify(propostas, null, 2);
+                debugElement.textContent = JSON.stringify(proposta, null, 2);
 
                 // Verifica se a API retornou alguma proposta
-                if (!propostas || propostas.length === 0) {
-                    debugElement.textContent = "Nenhuma proposta ativa encontrada para este projeto.";
+                if (!proposta) {
+                    debugElement.textContent = "Nenhuma proposta ativa encontrada para este CPF.";
                     return;
                 }
-
-                // Pega a primeira proposta da lista (assumindo que há apenas uma ativa por projeto)
-                const proposta = propostas[0];
                 
                 // Atualiza os elementos HTML com os dados da proposta
                 document.getElementById("propNumero").textContent = proposta.id || "-";
+                // A nova resposta da API pode ter um formato diferente.
+                // Ajustamos para o formato esperado: proposta.cliente?.nome
                 document.getElementById("propCliente").textContent = proposta.cliente?.nome || "-";
                 document.getElementById("propValor").textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
                 document.getElementById("propStatus").textContent = proposta.status || "-";
@@ -177,13 +178,13 @@
         });
 
         /**
-         * Consulta a proposta ativa de um projeto chamando o backend.
-         * @param {string} projectId - O ID do projeto.
-         * @returns {Promise<Array|null>} Um array de propostas ou null em caso de falha.
+         * Consulta a proposta ativa de um cliente chamando o backend.
+         * @param {string} cpf - O CPF do cliente.
+         * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
          */
-        async function consultarPropostaAtiva(projectId) {
-            // A URL do seu backend no Vercel foi configurada aqui.
-            const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
+        async function consultarPropostaAtiva(cpf) {
+            // A URL do seu backend no Vercel agora passa o CPF
+            const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?cpf=${cpf}`;
 
             try {
                 const res = await fetch(backendUrl);
