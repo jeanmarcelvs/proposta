@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     const { projectId } = req.query;
 
     // URL da API externa da SolarMarket
-    const solarMarketApiUrl = `https://api.solarmarket.com/propostas?projectId=${projectId}`; // Exemplo de URL da API externa
+    const solarMarketApiUrl = `https://business.solarmarket.com.br/api/v2/projects/${projectId}/proposals`; // URL CORRETA
 
     // Pega o token de autenticação da variável de ambiente do Vercel
     // O nome da variável foi confirmado como 'SOLARMARKET_TOKEN'
