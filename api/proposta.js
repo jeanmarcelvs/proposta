@@ -9,8 +9,9 @@ module.exports = async (req, res) => {
     // Obtém o token da variável de ambiente, garantindo que ele não seja exposto.
     const token = process.env.SOLARMARKET_TOKEN;
 
-    // Define a URL da API da SolarMarket com o 'projectId'.
-    const apiUrl = `https://api.solarmarket.com.br/api/projetos/${projectId}/propostas/ativas`;
+    // *** ALTERAÇÃO AQUI: A URL da API da SolarMarket foi corrigida. ***
+    // Use a URL base correta fornecida pelo usuário.
+    const apiUrl = `https://business.solarmarket.com.br/api/projetos/${projectId}/propostas/ativas`;
 
     try {
         // Faz a requisição para a API da SolarMarket, passando o token de autenticação no cabeçalho.
