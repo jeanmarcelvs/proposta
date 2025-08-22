@@ -88,9 +88,10 @@ module.exports = async (req, res) => {
         console.log('Dados recebidos da API:', JSON.stringify(propostasData, null, 2));
         
         // CORREÇÃO:
-        // O log mostrou que a API retorna um objeto aninhado em 'data'.
-        // O código anterior esperava um array. Agora, ele pega o objeto diretamente.
-        const propostaAtiva = propostasData && propostasData.data ? propostasData.data : null;
+        // A API retorna um objeto com uma propriedade 'data' que contém o(s) item(s).
+        // Acessamos o array 'data' e pegamos o primeiro elemento, que deve ser a proposta ativa.
+        const propostas = propostasData && Array.isArray(propostasData.data) ? propostasData.data : [];
+        const propostaAtiva = propostas.length > 0 ? propostas[0] : null;
 
         if (!propostaAtiva) {
             console.log(`Proposta não encontrada para o Project ID: ${projectId}`);
