@@ -5,531 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GDIS Solar - Proposta</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
-  <style>
-    /* ---------------------- */
-    /* Cores e Variáveis      */
-    /* ---------------------- */
-    :root {
-      /* Tema padrão: Alta Performance */
-      --main-blue: #123d8c;
-      --dark-blue: #0a2a5c;
-      --highlight-color: #ff7a29;
-      --secondary-highlight: #ff7a29;
-      --white: #ffffff;
-      --light-gray: #f4f6fb;
-      --muted-text: #6f7d95;
-      --nav-bg: rgba(18, 61, 140, 0.9);
-      --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #174296 100%);
-      --radius: 22px;
-      --shadow: 0 8px 20px rgba(0, 0, 0, .15);
-    }
-
-    body.economic-theme {
-      /* NOVO TEMA: Econômico */
-      --main-blue: #598c76;
-      --dark-blue: #315e4a;
-      --highlight-color: #79c9a0;
-      --secondary-highlight: #598c76;
-      --white: #ffffff;
-      --light-gray: #f7faf7;
-      --muted-text: #6f7d95;
-      --nav-bg: rgba(89, 140, 118, 0.9);
-      --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #4c6f5d 100%);
-    }
-
-    /* ---------------------- */
-    /* Estilos Gerais         */
-    /* ---------------------- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      line-height: 1.6;
-      transition: background-color 0.5s ease;
-      color: var(--dark-blue);
-      background: var(--light-gray);
-    }
-
-    /* Utilitário para esconder elementos */
-    .hidden {
-      display: none !important;
-    }
-
-    /* Estilos para o container do formulário */
-    .form-container {
-      background: var(--gradient-bg);
-      color: var(--white);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      flex-direction: column;
-      transition: background 0.5s ease;
-    }
-
-    .form-box {
-      width: 100%;
-      max-width: 500px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 40px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-
-    .form-box .logo img {
-      height: 80px;
-      margin-bottom: 20px;
-    }
-
-    .form-box h1 {
-      font-size: clamp(28px, 5vw, 40px);
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .form-box p {
-      font-size: 16px;
-      margin-bottom: 30px;
-      opacity: 0.8;
-    }
-
-    .search-form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .search-form input[type="text"] {
-      width: 100%;
-      padding: 15px 20px;
-      border-radius: 50px;
-      border: none;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.2);
-      color: var(--white);
-      transition: background 0.3s ease;
-    }
-
-    .search-form input[type="text"]::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .search-form input[type="text"]:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .search-form button {
-      width: 100%;
-      padding: 15px 20px;
-      border-radius: 50px;
-      border: none;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      background: var(--highlight-color);
-      color: var(--white);
-      transition: background 0.3s ease, transform 0.1s;
-    }
-
-    .search-form button:hover {
-      background: var(--secondary-highlight);
-    }
-
-    .search-form button:active {
-      transform: translateY(1px);
-    }
-
-    .message-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255, 0, 0, 0.2);
-      border-radius: 8px;
-      display: none;
-      font-size: 14px;
-      font-weight: 500;
-      border: 1px solid rgba(255, 0, 0, 0.4);
-    }
-
-    /* ---------------------- */
-    /* Componentes da Proposta*/
-    /* ---------------------- */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .clean-section {
-      background: var(--white);
-      margin: 40px 0;
-      padding: 40px 20px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      transition: background-color 0.5s ease;
-    }
-
-    .clean-section h2 {
-      color: var(--main-blue);
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--highlight-color);
-      padding-bottom: 10px;
-    }
-    
-    .info-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
-
-    .info-card {
-        background: var(--light-gray);
-        padding: 25px;
-        border-radius: 18px;
-        border-left: 5px solid var(--highlight-color);
-    }
-
-    .info-card h3 {
-        color: var(--dark-blue);
-        font-size: 1rem;
-        margin-bottom: 5px;
-    }
-    
-    .info-card p {
-        color: var(--muted-text);
-        font-size: 0.9rem;
-    }
-
-    .equipment-item {
-        margin-bottom: 15px;
-        padding-left: 15px;
-        border-left: 2px solid var(--main-blue);
-    }
-
-    .equipment-item h3 {
-        color: var(--dark-blue);
-    }
-
-    .equipment-item p {
-        color: var(--muted-text);
-        font-size: 0.9rem;
-    }
-
-    .financing-card {
-        background: var(--light-gray);
-        padding: 25px;
-        border-radius: 18px;
-        border: 1px solid #e0e0e0;
-        text-align: center;
-    }
-
-    .financing-card h3 {
-        color: var(--main-blue);
-        margin-bottom: 10px;
-    }
-
-    .financing-card p {
-        color: var(--dark-blue);
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-
-    .total-value-card {
-        background: var(--main-blue);
-        color: var(--white);
-        padding: 40px;
-        border-radius: var(--radius);
-        text-align: center;
-        box-shadow: var(--shadow);
-    }
-
-    .total-value-card h2 {
-        color: var(--white);
-        border-bottom-color: var(--highlight-color);
-    }
-
-    .total-value-card .value {
-        font-size: clamp(30px, 6vw, 50px);
-        font-weight: 800;
-        margin: 20px 0;
-    }
-
-    .pdf-link {
-        text-align: center;
-        margin-top: 30px;
-    }
-
-    .pdf-link a {
-        display: inline-block;
-        padding: 15px 30px;
-        background-color: var(--highlight-color);
-        color: var(--white);
-        text-decoration: none;
-        border-radius: var(--radius);
-        font-weight: 600;
-        transition: background-color 0.3s ease;
-    }
-
-    .pdf-link a:hover {
-        background-color: var(--secondary-highlight);
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <!-- Container do Formulário de Busca -->
-  <div class="form-container" id="form-container">
-    <div class="form-box">
-      <div class="logo">
-        <img src="https://placehold.co/80x80/123d8c/ffffff?text=GDIS" alt="Logo GDIS Solar">
-      </div>
-      <h1>Bem-vindo ao Portal GDIS</h1>
-      <p>Consulte sua proposta técnica e comercial de energia solar com o ID do seu projeto.</p>
-      <form class="search-form" id="search-form">
-        <input type="text" id="project-id-input" placeholder="Digite o ID do Projeto" required>
-        <button type="submit">Consultar Proposta</button>
-      </form>
-      <div class="message-box" id="message-box"></div>
+  <div class="container">
+    <header>
+      <img src="https://gdis-solar.vercel.app/img/gdis-solar-logo.png" alt="GDIS Solar Logo" class="logo">
+      <h1>Detalhes da Proposta</h1>
+    </header>
+
+    <div class="theme-switcher">
+      <button id="high-performance-option" class="active">Alta Performance</button>
+      <button id="economic-option">Econômico</button>
     </div>
+
+    <form id="search-form">
+      <div class="form-group">
+        <label for="project-id">ID do Projeto:</label>
+        <input type="text" id="project-id" name="projectId" placeholder="Ex: 2390" required>
+      </div>
+      <button type="submit">Consultar Proposta</button>
+    </form>
+
+    <div id="message-box" class="message-box"></div>
+
+    <section id="proposal-details" class="proposal-details">
+        <div class="proposal-header">
+            <h2 id="cliente-nome">Nome do Cliente</h2>
+            <p id="cliente-cidade-uf">Cidade/UF</p>
+            <p><span class="label">Data de Geração:</span> <span id="data-geracao"></span></p>
+        </div>
+
+        <div class="system-details">
+            <div class="item">
+                <h4>Inversor</h4>
+                <p><span class="label">Descrição:</span> <span id="inversor-descricao"></span></p>
+                <p><span class="label">Quantidade:</span> <span id="inversor-quantidade"></span></p>
+            </div>
+            <div class="item">
+                <h4>Módulo Fotovoltaico</h4>
+                <p><span class="label">Descrição:</span> <span id="modulo-descricao"></span></p>
+                <p><span class="label">Quantidade:</span> <span id="modulo-quantidade"></span></p>
+            </div>
+        </div>
+
+        <div class="total-value-card">
+            <p>Valor Total da Proposta</p>
+            <span id="valor-total">R$ 0,00</span>
+        </div>
+        
+        <a href="#" id="link-pdf" class="link-pdf" target="_blank" style="display: none;">Ver PDF da Proposta</a>
+    </section>
+
   </div>
 
-  <!-- Container da Proposta (Inicialmente oculto) -->
-  <div class="proposal-container hidden" id="proposta-section">
-    <main class="container">
-      <header class="clean-section">
-        <h1 id="proposta-nome"></h1>
-        <p>Status: <span id="proposta-status"></span></p>
-        <p>Gerada em: <span id="proposta-geracao"></span></p>
-      </header>
-      
-      <!-- Seção: Informações Gerais do Sistema -->
-      <section class="clean-section">
-        <h2>Informações Gerais do Sistema</h2>
-        <div class="info-list">
-            <div class="info-card">
-                <h3>Potência do Sistema</h3>
-                <p id="system-power">Não disponível</p>
-            </div>
-            <div class="info-card">
-                <h3>Geração Média Mensal</h3>
-                <p id="monthly-generation">Não disponível</p>
-            </div>
-            <div class="info-card">
-                <h3>Economia Anual Estimada</h3>
-                <p id="annual-savings">Não disponível</p>
-            </div>
-        </div>
-      </section>
-
-      <!-- Seção: Equipamentos -->
-      <section class="clean-section">
-        <h2>Equipamentos</h2>
-        <div id="equipment-list">
-            <!-- Itens de equipamento serão inseridos aqui via JS -->
-            <p>Nenhum equipamento encontrado.</p>
-        </div>
-      </section>
-
-      <!-- Seção: Simulação de Financiamento -->
-      <section class="clean-section">
-        <h2>Simulação de Financiamento</h2>
-        <div id="financing-simulation">
-            <!-- Simulações de financiamento serão inseridas aqui via JS -->
-            <p>Nenhuma simulação de financiamento encontrada.</p>
-        </div>
-      </section>
-
-      <!-- Seção: Valor Total da Proposta e Formas de Pagamento -->
-      <section class="total-value-card">
-        <h2>Valor Total da Proposta</h2>
-        <p class="value" id="proposal-total-cost">Não disponível</p>
-        <p class="small-text">Formas de Pagamento: Boleto, Pix, Cartão de Crédito</p>
-      </section>
-
-      <section id="link-section" class="pdf-link hidden">
-          <a href="#" id="pdf-link" target="_blank">Abrir Proposta em PDF</a>
-      </section>
-
-    </main>
-  </div>
-
-  <script>
-    // Seletores de elementos
-    const searchForm = document.getElementById('search-form');
-    const projectIdInput = document.getElementById('project-id-input');
-    const messageBox = document.getElementById('message-box');
-    const formContainer = document.getElementById('form-container'); 
-    const propostaSection = document.getElementById('proposta-section');
-    const propostaNome = document.getElementById('proposta-nome');
-    const propostaStatus = document.getElementById('proposta-status');
-    const propostaGeracao = document.getElementById('proposta-geracao');
-    
-    // Novas seções
-    const systemPower = document.getElementById('system-power');
-    const monthlyGeneration = document.getElementById('monthly-generation');
-    const annualSavings = document.getElementById('annual-savings');
-    const equipmentList = document.getElementById('equipment-list');
-    const financingSimulation = document.getElementById('financing-simulation');
-    const proposalTotalCost = document.getElementById('proposal-total-cost');
-
-    const pdfLink = document.getElementById('pdf-link');
-    const linkSection = document.getElementById('link-section');
-
-    /**
-     * Função utilitária para buscar um valor em customFields com base na 'key'.
-     * @param {Array} customFields - O array de objetos customizados.
-     * @param {string} keyToFind - A chave a ser procurada.
-     * @returns {string|null} O valor formatado ('formattedValue') ou null se não encontrado.
-     */
-    function findCustomField(customFields, keyToFind) {
-        if (!customFields || !Array.isArray(customFields)) return null;
-        const field = customFields.find(field => field.key === keyToFind);
-        return field ? field.formattedValue : null;
-    }
-
-    /**
-     * Consulta a proposta ativa de um cliente chamando o backend.
-     * @param {string} projectId - O ID do projeto.
-     * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
-     */
-    async function consultarProposta(projectId) {
-        const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
-        
-        try {
-            const res = await fetch(backendUrl);
-            
-            if (!res.ok) {
-                let errorMessage = `Erro HTTP: ${res.status}`;
-                try {
-                    const errorBody = await res.json();
-                    if (errorBody && errorBody.error) {
-                        errorMessage = `Erro: ${errorBody.error}`;
-                    } else if (errorBody && errorBody.message) {
-                        errorMessage = `Erro: ${errorBody.message}`;
-                    }
-                } catch (e) {
-                    // Se não for um JSON válido, a mensagem genérica será mantida
-                }
-                throw new Error(errorMessage);
-            }
-            
-            const dados = await res.json();
-            return dados.data; // Acessa o objeto "data"
-        } catch (err) {
-            console.error("Erro ao consultar proposta:", err);
-            throw err;
-        }
-    }
-
-    /**
-     * Renderiza os dados da proposta na interface do usuário.
-     * @param {object} proposta - Objeto contendo os dados da proposta (já o objeto 'data').
-     */
-    function renderizarProposta(proposta) {
-        // Exibe a seção da proposta e esconde o formulário
-        formContainer.classList.add('hidden');
-        propostaSection.classList.remove('hidden');
-
-        // Renderiza as informações principais
-        propostaNome.textContent = proposta.name || 'Nome da Proposta Não Disponível';
-        propostaStatus.textContent = proposta.status || 'Status Não Disponível';
-        
-        // Formata a data de geração
-        if (proposta.generatedAt) {
-            const dataGeracao = new Date(proposta.generatedAt);
-            propostaGeracao.textContent = dataGeracao.toLocaleDateString('pt-BR');
-        } else {
-            propostaGeracao.textContent = 'Data não disponível';
-        }
-
-        const customFields = proposta.customFields || [];
-
-        // Seção de Informações Gerais do Sistema
-        const systemPowerValue = findCustomField(customFields, 'vc_pot_sist');
-        systemPower.textContent = systemPowerValue ? `${systemPowerValue} kWp` : 'Não disponível';
-
-        // Usa o campo 'vc_geracao_anual' do JSON, mas o rotula como Geração MENSAL
-        const monthlyGenerationValue = findCustomField(customFields, 'vc_geracao_anual');
-        monthlyGeneration.textContent = monthlyGenerationValue ? `${monthlyGenerationValue} kWh` : 'Não disponível';
-
-        // A 'economia' não está no JSON de exemplo, então usamos um fallback
-        const annualSavingsValue = findCustomField(customFields, 'vc_economia_anual');
-        annualSavings.textContent = annualSavingsValue ? `R$ ${annualSavingsValue}` : 'Não disponível';
-
-        // Seção de Equipamentos
-        equipmentList.innerHTML = '';
-        const pricingTable = proposta.pricingTable || [];
-        if (pricingTable.length > 0) {
-            pricingTable.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.classList.add('equipment-item');
-                // Use `item` e `qnt` da tabela de preços
-                itemDiv.innerHTML = `<h3>${item.item || 'Item não especificado'}</h3><p>Quantidade: ${item.qnt || 'N/A'}</p>`;
-                equipmentList.appendChild(itemDiv);
-            });
-        } else {
-            equipmentList.innerHTML = `<p>Nenhum equipamento encontrado.</p>`;
-        }
-        
-        // Seção de Simulação de Financiamento - Não existe no JSON de exemplo
-        financingSimulation.innerHTML = `<p>Nenhuma simulação de financiamento encontrada nesta proposta.</p>`;
-
-        // Seção de Valor Total da Proposta
-        const proposalTotalValue = findCustomField(customFields, 'vc_valor_proposta');
-        proposalTotalCost.textContent = proposalTotalValue ? `R$ ${proposalTotalValue}` : 'Não disponível';
-
-        // Lida com o link do PDF
-        if (proposta.linkPdf) {
-            pdfLink.href = proposta.linkPdf;
-            linkSection.classList.remove('hidden');
-        } else {
-            linkSection.classList.add('hidden');
-        }
-    }
-
-    // Lida com o envio do formulário
-    searchForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const projectId = projectIdInput.value.trim();
-        
-        // Limpa a caixa de mensagens
-        messageBox.style.display = 'none';
-        messageBox.textContent = '';
-        
-        if (!projectId) {
-            messageBox.textContent = 'Por favor, digite um ID de projeto.';
-            messageBox.style.display = 'block';
-            return;
-        }
-
-        // Simula um estado de carregamento
-        searchForm.querySelector('button').textContent = 'Consultando...';
-        searchForm.querySelector('button').disabled = true;
-
-        try {
-            const proposta = await consultarProposta(projectId);
-            if (proposta) {
-                renderizarProposta(proposta);
-            } else {
-                messageBox.textContent = 'Proposta não encontrada para o projeto especificado.';
-                messageBox.style.display = 'block';
-            }
-        } catch (err) {
-            messageBox.textContent = `Erro ao carregar proposta: ${err.message}`;
-            messageBox.style.display = 'block';
-        } finally {
-            searchForm.querySelector('button').textContent = 'Consultar Proposta';
-            searchForm.querySelector('button').disabled = false;
-        }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
