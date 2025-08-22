@@ -5,7 +5,7 @@
  */
 module.exports = async (req, res) => {
     // ######################################################################
-    // 1. OBTÉM A CREDENCIAL DE LONGA DURAÇÃO
+    // 1. OBTÉM A CREDENCIAL DE LONGA DURAÇÃO E CONFIGURA VARIÁVEIS
     // ######################################################################
     // O token de credencial está seguro na variável de ambiente do Vercel.
     const longLivedToken = process.env.SOLARMARKET_TOKEN;
@@ -16,13 +16,16 @@ module.exports = async (req, res) => {
     // Captura o ID do projeto enviado na requisição do front-end.
     const { projectId } = req.query;
 
-    // Verifica se o projectId foi fornecido
-    if (!projectId) {
-        res.status(400).json({ error: 'ID do projeto é obrigatório.' });
-        return;
-    }
-
+    // Inicia um bloco try-catch para garantir que qualquer erro na requisição
+    // seja capturado e retornado ao front-end como um JSON.
     try {
+        // Verifica se o projectId foi fornecido
+        if (!projectId) {
+            // Se o projectId estiver ausente, retorna um erro 400 (Bad Request).
+            res.status(400).json({ error: 'ID do projeto é obrigatório.' });
+            return; // Encerra a execução da função aqui.
+        }
+
         // ######################################################################
         // 2. GERA UM TOKEN DE ACESSO TEMPORÁRIO
         // ######################################################################
@@ -34,10 +37,11 @@ module.exports = async (req, res) => {
             body: JSON.stringify({ token: longLivedToken })
         });
 
-        // Se a autenticação falhar, retorna o erro
+        // Se a autenticação falhar, lê a resposta como texto para evitar
+        // o erro 'Unexpected token' e lança uma exceção com mais detalhes.
         if (!authResponse.ok) {
-            const authError = await authResponse.json();
-            throw new Error(`Erro de Autenticação: ${authResponse.status} - ${JSON.stringify(authError)}`);
+            const authErrorText = await authResponse.text();
+            throw new Error(`Erro de Autenticação: ${authResponse.status} - ${authErrorText}`);
         }
 
         const authData = await authResponse.json();
@@ -53,20 +57,25 @@ module.exports = async (req, res) => {
             }
         });
 
-        // Se a consulta falhar, retorna o erro
+        // Se a consulta falhar, lê a resposta como texto para evitar
+        // o erro 'Unexpected token' e lança uma exceção com mais detalhes.
         if (!propostaResponse.ok) {
-            const propostaError = await propostaResponse.json();
-            throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${JSON.stringify(propostaError)}`);
+            const propostaErrorText = await propostaResponse.text();
+            throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${propostaErrorText}`);
         }
 
         const propostaData = await propostaResponse.json();
-        
-        // Retorna os dados da proposta para o front-end
+
+        // ######################################################################
+        // 4. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
+        // ######################################################################
         res.status(200).json(propostaData);
 
     } catch (err) {
+        // Este bloco de captura garante que todos os erros (inclusive a falha de
+        // análise do JSON) sejam tratados e retornados ao cliente de forma segura.
         console.error('Erro na função serverless:', err.message);
-        res.status(500).json({ error: err.message });
+        // O status 500 é mantido para erros internos.
+        res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
 };
-
