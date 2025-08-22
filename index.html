@@ -446,7 +446,7 @@
     const pricingTableBody = document.getElementById('pricing-table-body');
     const totalCostCell = document.getElementById('total-cost');
     const geracaoInfo = document.getElementById('geracao-info');
-
+    
     // Funções de tema (mantidas do código original)
     const highPerformanceOption = document.getElementById('high-performance-option');
     const economicOption = document.getElementById('economic-option');
@@ -464,7 +464,6 @@
     if(economicOption) {
       economicOption.addEventListener('click', () => setTheme('economico'));
     }
-    
 
     /**
      * Consulta a proposta ativa de um cliente chamando o backend.
@@ -493,9 +492,10 @@
         }
         
         const dados = await res.json();
-        // CORREÇÃO: A API do backend já retorna o objeto da proposta diretamente.
-        // Acessar 'dados.data' foi a causa do erro.
-        return dados;
+        
+        // CORREÇÃO: Conforme o log do Vercel, a proposta está aninhada em `dados.data`.
+        // Precisamos retornar esse objeto aninhado.
+        return dados.data;
       } catch (err) {
         console.error("Erro ao consultar proposta:", err);
         throw err;
@@ -599,7 +599,6 @@
             searchForm.querySelector('button').disabled = false;
         }
     });
-
   </script>
 </body>
 </html>
