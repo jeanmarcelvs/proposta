@@ -90,7 +90,12 @@ module.exports = async (req, res) => {
         // CORREÇÃO:
         // A API retorna um objeto com uma propriedade 'data' que contém a proposta.
         // Acessamos o valor dessa propriedade de forma segura.
-        const propostaAtiva = propostasData && propostasData.data ? propostasData.data : null;
+        let propostaAtiva;
+        if (propostasData && propostasData.data) {
+            propostaAtiva = propostasData.data;
+        } else {
+            propostaAtiva = null;
+        }
 
         if (!propostaAtiva) {
             console.log(`Proposta não encontrada para o Project ID: ${projectId}`);
