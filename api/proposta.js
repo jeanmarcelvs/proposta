@@ -86,20 +86,25 @@ module.exports = async (req, res) => {
 
         const propostasData = await propostaResponse.json();
         console.log('Dados recebidos da API:', JSON.stringify(propostasData, null, 2));
+
+        // NOVOS LOGS PARA RASTREAMENTO:
+        console.log(`Debug: propostasData.data existe? ${!!propostasData.data}`);
+        if (propostasData.data) {
+            console.log(`Debug: propostasData.data é um array? ${Array.isArray(propostasData.data)}`);
+            console.log(`Debug: O que propostasData.data contém?`, propostasData.data);
+        }
         
-        // CORREÇÃO FINAL E ROBUSTA:
-        // A API pode retornar um objeto com a proposta em 'data' ou um array de propostas.
-        // Essa lógica verifica ambas as possibilidades para garantir que a proposta seja encontrada.
         let propostaAtiva = null;
         if (propostasData && propostasData.data) {
             if (Array.isArray(propostasData.data)) {
-                // Caso a API retorne um array, pegamos o primeiro item (proposta ativa).
                 propostaAtiva = propostasData.data.length > 0 ? propostasData.data[0] : null;
             } else {
-                // Caso a API retorne um objeto diretamente, o pegamos.
                 propostaAtiva = propostasData.data;
             }
         }
+        
+        // NOVO LOG PARA CONFERIR O RESULTADO FINAL:
+        console.log(`Debug: Valor final de propostaAtiva:`, propostaAtiva);
 
         if (!propostaAtiva) {
             console.log(`Proposta não encontrada para o Project ID: ${projectId}`);
