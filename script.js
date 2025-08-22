@@ -60,14 +60,16 @@ async function consultarProposta(projectId) {
     }
 
     const data = await res.json();
-    console.log('Debug: Resposta JSON completa:', data);
+    console.log('Debug: Resposta JSON completa recebida no frontend:', data);
 
-    if (data && data.data) {
-        console.log('Debug: Dados da proposta encontrados. Retornando data.data.');
-        return data.data;
+    // O código da função Vercel retorna a proposta sem o invólucro "data".
+    // Portanto, o objeto que chega aqui já é a proposta em si.
+    if (data) {
+        console.log('Debug: Dados da proposta encontrados. Retornando o objeto JSON.');
+        return data;
     } else {
-        // Lança um erro se a resposta JSON for bem-sucedida, mas a propriedade 'data' estiver faltando
-        const errorMessage = 'Resposta da API bem-sucedida, mas JSON malformado (propriedade "data" não encontrada).';
+        // Lança um erro se a resposta JSON for bem-sucedida, mas o conteúdo for vazio
+        const errorMessage = 'Resposta da API bem-sucedida, mas o conteúdo JSON está vazio.';
         console.error(`Erro: ${errorMessage}`);
         throw new Error(errorMessage);
     }
