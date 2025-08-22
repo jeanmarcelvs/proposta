@@ -27,7 +27,7 @@
     body.economic-theme {
       /* NOVO TEMA: Econômico */
       --main-blue: #598c76;
-      --dark-blue: #315243;
+      --dark-blue: #315e4a;
       --highlight-color: #79c9a0;
       --secondary-highlight: #598c76;
       --white: #ffffff;
@@ -36,7 +36,7 @@
       --nav-bg: rgba(89, 140, 118, 0.9);
       --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #4c6f5d 100%);
     }
-    
+
     /* ---------------------- */
     /* Estilos Gerais         */
     /* ---------------------- */
@@ -53,7 +53,7 @@
       color: var(--dark-blue);
       background: var(--light-gray);
     }
-    
+
     /* Esconde as seções de proposta por padrão */
     .proposal-container {
         display: none;
@@ -147,19 +147,22 @@
     .search-form button:active {
       transform: translateY(1px);
     }
-
+    
     .message-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255, 0, 0, 0.2);
-      border-radius: 8px;
-      display: none;
-      font-size: 14px;
-      font-weight: 500;
-      border: 1px solid rgba(255, 0, 0, 0.4);
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255, 0, 0, 0.2);
+        border-radius: 8px;
+        display: none;
+        font-size: 14px;
+        font-weight: 500;
+        border: 1px solid rgba(255, 0, 0, 0.4);
     }
 
-    /* Estilos da página de apresentação */
+    /* ---------------------- */
+    /* Componentes da Proposta*/
+    /* ---------------------- */
+    
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -173,10 +176,6 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       transition: background-color 0.5s ease;
-    }
-
-    .clean-section:first-of-type {
-      margin-top: 0;
     }
 
     section {
@@ -244,9 +243,6 @@
       text-align: center;
     }
 
-    /* ---------------------- */
-    /* Barra de Navegação Fixa*/
-    /* ---------------------- */
     .nav-bar {
       position: fixed;
       top: 0;
@@ -280,7 +276,6 @@
       gap: 20px;
     }
 
-    /* Estado inicial: Recolhido e Transparente */
     .header-prices-info {
       max-width: 0;
       opacity: 0;
@@ -292,9 +287,8 @@
       flex-shrink: 0;
     }
 
-    /* Estado visível: expandido e opaco */
     .nav-bar.show-prices .header-prices-info {
-      max-width: 500px; /* Valor arbitrário maior que o conteúdo */
+      max-width: 500px;
       opacity: 1;
     }
 
@@ -355,9 +349,6 @@
         }
     }
 
-    /* ---------------------- */
-    /* Cabeçalho Hero         */
-    /* ---------------------- */
     header.hero {
       background: var(--gradient-bg);
       color: var(--white);
@@ -382,9 +373,6 @@
       line-height: 1.1;
     }
 
-    /* ---------------------- */
-    /* Detalhes da Proposta   */
-    /* ---------------------- */
     .proposal-details {
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(5px);
@@ -418,7 +406,6 @@
       word-break: break-word;
     }
 
-    /* Estilos para os botões de escolha de proposta */
     .proposal-options {
       display: flex;
       gap: 10px;
@@ -426,30 +413,27 @@
       width: 100%;
     }
 
-    /* Botão não selecionado (inativo) - agora com 80% de transparência */
     .proposal-options .option {
-      background: rgba(233, 236, 239, 0.2); /* Fundo 80% transparente */
-      border: 2px solid transparent; /* Remove a borda no estado inativo */
+      background: rgba(233, 236, 239, 0.2);
+      border: 2px solid transparent;
       border-radius: 50px;
       padding: 12px 24px;
       cursor: pointer;
       transition: all .3s ease;
       font-weight: 600;
       font-size: 14px;
-      color: #d1d9e2; /* Cinza muito claro */
+      color: #d1d9e2;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    /* Botão selecionado (ativo) - com a borda branca discreta */
     .proposal-options .option.selected {
       color: var(--white);
-      border: 2px solid var(--white); /* Borda branca discreta */
+      border: 2px solid var(--white);
       box-shadow: 0 4px 10px rgba(0,0,0,.2);
     }
 
-    /* Regras de cores para o botão ATIVO, dependendo do tema */
     .option.selected.high-performance-active {
         background: var(--highlight-color);
     }
@@ -462,9 +446,6 @@
       display: none;
     }
 
-    /* ---------------------- */
-    /* Seção de Informações   */
-    /* ---------------------- */
     .info-card {
       text-align: center;
       padding: 40px 20px;
@@ -504,9 +485,6 @@
       transition: color 0.5s ease;
     }
 
-    /* ---------------------- */
-    /* Seção de Payback       */
-    /* ---------------------- */
     .payback-section-bg {
       background: var(--dark-blue);
       color: var(--white);
@@ -572,9 +550,6 @@
       transition: color 0.5s ease;
     }
 
-    /* ---------------------- */
-    /* Seção de Equipamentos */
-    /* ---------------------- */
     .prod-grid {
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 25px;
@@ -606,578 +581,406 @@
       border-left: 1px solid #ddd;
       font-weight: 600;
       color: var(--dark-blue);
-      transition: color 0.5s ease;
+    }
+    
+    .prod-table div:last-child,
+    .prod-table div:nth-last-child(2) {
+      border-bottom: none;
     }
 
-    /* ----------------------------- */
-    /* Seção de Instalação */
-    /* ----------------------------- */
-    .installation-content {
-      margin-top: 30px;
-      transition: opacity 0.5s ease;
-    }
-
-    .feature-card {
-      background: var(--light-gray);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-      text-align: center;
-      transition: all .3s ease, background-color 0.5s ease;
-    }
-
-    .feature-card svg {
-      width: 48px;
-      height: 48px;
-      color: var(--highlight-color);
+    .prod-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
       margin-bottom: 15px;
     }
-
-    .feature-card h3 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--dark-blue);
-    }
-
-    .feature-card p {
-      font-size: 16px;
-      color: var(--muted-text);
-      line-height: 1.4;
-      margin-top: 5px;
-    }
-
-    /* ---------------------- */
-    /* Seção de Pagamento */
-    /* ---------------------- */
-    .payment-value-section {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .payment-value-section h2 {
-      font-size: clamp(32px, 5vw, 44px);
-      font-weight: 800;
-      color: var(--dark-blue);
-      transition: color 0.5s ease;
-    }
-
-    .highlight-avista {
-      background: var(--highlight-color);
-      color: var(--white);
-      font-weight: 800;
-      font-size: 0.7em;
-      padding: 6px 16px;
-      border-radius: 50px;
-      position: relative;
-      top: -8px;
-      display: inline-block;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      transition: background-color 0.5s ease;
-    }
-
-    .payment-value-section .price-highlight {
-      font-size: clamp(48px, 8vw, 72px);
-      font-weight: 900;
-      color: var(--highlight-color);
-      margin: 0;
-      line-height: 1.2;
-      transition: color 0.5s ease;
-    }
-
-    .payment-value-section .min-parcel-label {
-      font-size: 14px;
-      color: var(--muted-text);
-      margin-top: 5px;
-      transition: color 0.5s ease;
-    }
-
+    
     /* ---------------------- */
     /* Rodapé                 */
     /* ---------------------- */
-    footer {
-      background: var(--dark-blue);
-      color: var(--white);
-      text-align: center;
-      padding: 40px 20px;
-      margin-top: 40px;
-      border-radius: var(--radius) var(--radius) 0 0;
-      transition: background-color 0.5s ease;
+    .contact-footer {
+        background: var(--dark-blue);
+        color: var(--muted-text);
+        padding: 40px 20px;
+        text-align: center;
+        transition: background-color 0.5s ease;
     }
-
-    footer .contact-info {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      font-size: 16px;
+    .contact-footer .contact-info {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
     }
-
-    footer .contact-info a {
-      color: var(--white);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: color 0.3s ease;
+    .contact-footer .contact-link {
+        color: var(--white);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        transition: color 0.3s ease;
     }
-
-    footer .contact-info a:hover {
-      color: var(--highlight-color);
+    .contact-footer .contact-link svg {
+        width: 20px;
+        height: 20px;
     }
-
-    footer .contact-info svg {
-      color: var(--white);
-      transition: color 0.5s ease;
+    .contact-footer .contact-link:hover {
+        color: var(--highlight-color);
     }
-
-    footer .contact-info a:hover svg {
-      color: var(--highlight-color);
+    .contact-footer small {
+        display: block;
+        margin-top: 20px;
+        font-size: 12px;
     }
+    
   </style>
 </head>
 <body>
 
-  <!-- Container do Formulário de Consulta (visível por padrão) -->
-  <div class="form-container" id="formContainer">
-    <div class="form-box">
-      <div class="logo">
-        <img src="logo.png" alt="Logo da GDIS Solar">
+  <!-- Container de Formulário de Consulta -->
+  <div id="formContainer" class="form-container">
+      <div class="form-box">
+          <div class="logo">
+              <!-- Usando a logo.png -->
+              <img src="logo.png" alt="GDIS Logo">
+          </div>
+          <h1>Proposta Comercial</h1>
+          <p>Digite o número do projeto para visualizar sua proposta.</p>
+          <form id="searchForm" class="search-form">
+              <input type="text" id="projectIdInput" placeholder="Número do Projeto" required>
+              <button type="submit">Consultar</button>
+          </form>
+          <div id="messageBox" class="message-box"></div>
       </div>
-      <h1>Consulte Sua Proposta</h1>
-      <p>Digite seu CPF para encontrar a proposta que a GDIS Solar preparou para você.</p>
-      <div class="search-form">
-          <input type="text" id="cpf" placeholder="CPF (apenas números)" maxlength="11">
-          <button id="btnConsultar">Consultar Proposta</button>
-      </div>
-      <div id="message-box" class="message-box"></div>
-    </div>
   </div>
 
-  <!-- Container da Proposta (escondido por padrão) -->
-  <div class="proposal-container" id="proposalContainer">
-
-    <!-- Barra de navegação fixa no topo -->
+  <!-- Container da Proposta (inicialmente invisível) -->
+  <div id="proposalContainer" class="proposal-container">
+    
+    <!-- Barra de Navegação Fixa -->
     <nav class="nav-bar">
       <div class="logo">
-        <img src="logo.png" alt="Logo da GDIS Solar">
+        <img src="logo.png" alt="GDIS Logo">
       </div>
-
-      <!-- Opções de proposta para os botões -->
+      
       <div class="nav-middle-content">
         <div class="header-prices-info">
           <div class="header-price-item">
-            <small>Preço a vista</small>
-            <p class="avista-price" id="navAvistaPrice">R$ 0,00</p>
+            <small>Valor à vista</small>
+            <p id="navBarAvistaPrice">R$ 0,00</p>
           </div>
           <div class="header-price-item">
-            <small>Parcelas a partir de</small>
-            <p class="min-parcel" id="navMinParcel">R$ 0,00</p>
-            <p class="max-installments" id="navMaxInstallments">em 48x</p>
+            <small class="min-parcel-label">Parcela mínima</small>
+            <p id="navBarMinParcel">R$ 0,00</p>
+            <span class="max-installments">60x sem juros</span>
           </div>
-        </div>
-        <div class="proposal-options">
-          <label class="option" id="optionHighPerformance">
-            <input type="radio" name="proposal_type" value="high-performance">
-            Alta Performance
-          </label>
-          <label class="option" id="optionEconomic">
-            <input type="radio" name="proposal_type" value="economic">
-            Econômica
-          </label>
         </div>
       </div>
     </nav>
 
-    <!-- Cabeçalho principal com o nome do cliente -->
+    <!-- Cabeçalho Principal -->
     <header class="hero">
       <div class="title-and-subtitle">
-        <h1>Olá, <span id="clientName">Cliente</span>.</h1>
-        <p class="lead">Sua proposta de energia solar está pronta.</p>
+        <h1>Proposta Personalizada</h1>
+        <p class="lead" id="clientName">Aguardando dados do cliente...</p>
       </div>
+
       <div class="proposal-details">
-          <div class="item">
-              <h3>Nº da Proposta</h3>
-              <p id="propNumero">#0000</p>
-          </div>
-          <div class="item">
-              <h3>Valor Total</h3>
-              <p id="propValor">R$ 0,00</p>
-          </div>
-          <div class="item">
-              <h3>Status</h3>
-              <p id="propStatus">Pendente</p>
-          </div>
+        <div class="item">
+          <h3>NÚMERO DA PROPOSTA</h3>
+          <p id="proposalNumber">#0000</p>
+        </div>
+        <div class="item">
+          <h3>POTÊNCIA DO SISTEMA</h3>
+          <p id="systemPower">0,00 kWp</p>
+        </div>
+        <div class="item">
+          <h3>GERAÇÃO MENSAL</h3>
+          <p id="monthlyGeneration">0,00 kWh</p>
+        </div>
+        <div class="item">
+          <h3>ECONOMIA MENSAL</h3>
+          <p id="monthlySavings">R$ 0,00</p>
+        </div>
       </div>
     </header>
 
-    <main>
-      <!-- Seção: Energia Solar para sua casa ou empresa -->
-      <section class="clean-section">
-        <div class="container">
-          <h2>Energia Solar Para Sua Casa ou Empresa</h2>
-          <p class="lead">Benefícios de investir em um sistema fotovoltaico.</p>
-          <div class="grid grid-3">
-            <div class="card info-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2v2" />
-                <path d="M12 18v4" />
-                <path d="M4.93 4.93l1.41 1.41" />
-                <path d="M17.66 17.66l1.41 1.41" />
-                <path d="M2 12h2" />
-                <path d="M18 12h4" />
-                <path d="M4.93 19.07l1.41-1.41" />
-                <path d="M17.66 6.34l1.41-1.41" />
-                <circle cx="12" cy="12" r="7" />
-              </svg>
-              <h3>Economia na Conta</h3>
-              <p>Reduza em até 95% o valor da sua fatura de energia.</p>
-            </div>
-            <div class="card info-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9" />
-              </svg>
-              <h3>Valorização do Imóvel</h3>
-              <p>Seu imóvel se torna mais atrativo e valorizado no mercado.</p>
-            </div>
-            <div class="card info-card">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 10.5V12a10 10 0 0 1-20 0v-1.5" />
-                <path d="M22 10.5A10 10 0 0 0 12 1h0A10 10 0 0 0 2 10.5" />
-                <path d="M12 12a10 10 0 0 0 8 9.5" />
-                <path d="M12 12a10 10 0 0 1-8 9.5" />
-                <line x1="12" y1="2" x2="12" y2="12" />
-              </svg>
-              <h3>Energia Limpa</h3>
-              <p>Contribua para um futuro mais verde e sustentável.</p>
-            </div>
+    <!-- Seção de Vantagens da Energia Solar -->
+    <section class="container clean-section">
+      <h2>Energia Solar é um excelente investimento.</h2>
+      <p class="lead">Entenda os principais benefícios que a energia solar traz para você.</p>
+      <div class="grid grid-3">
+        <div class="card info-card text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-card-icon">
+            <path d="M22 10.5V12a10 10 0 1 1-5.98-9.06"/>
+            <path d="M22 6L16.29 11.71A2 2 0 0 1 14.88 12.3L13 14"/>
+            <path d="M15 13.5L13.5 15"/>
+            <path d="M16 11L14 13"/>
+            <path d="M12.5 16.5L10.5 18"/>
+            <path d="M13 14L9 18"/>
+            <path d="M17 11L15 13"/>
+            <path d="M18 9L16 11"/>
+            <path d="M22 2L18 6"/>
+          </svg>
+          <h3>Valorização do Imóvel</h3>
+          <p class="value" id="propertyValueIncrease">Até 30%</p>
+          <p>O seu imóvel valoriza imediatamente após a instalação do sistema fotovoltaico.</p>
+        </div>
+        <div class="card info-card text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-card-icon">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <h3>Retorno do Investimento</h3>
+          <p class="value" id="paybackYears">0 anos</p>
+          <p>Você tem o seu investimento de volta em poucos anos com a economia na conta de luz.</p>
+        </div>
+        <div class="card info-card text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-card-icon">
+            <path d="M12 2a10 10 0 1 0 10 10c0-5.52-4.48-10-10-10zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/>
+            <path d="M12 12v-6m0 6v2m-2-4h4"/>
+            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+          </svg>
+          <h3>Economia Total</h3>
+          <p class="value" id="totalSavings">R$ 0,00</p>
+          <p>A economia total gerada pelo sistema ao longo de 25 anos de vida útil.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção de Payback - Destaque -->
+    <section class="payback-section-bg">
+      <div class="payback-content-container">
+        <h2>Payback</h2>
+        <p class="payback-details">
+          Com a sua economia mensal de conta de luz, seu investimento se paga em
+          <strong><span id="paybackYearsHighlight">0</span> anos</strong>.
+        </p>
+        <div class="payback-highlight-box">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <p>Retorno do Investimento em<br><strong><span id="paybackHighlightValue">0</span> anos</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção de Equipamentos -->
+    <section class="container clean-section">
+      <h2>Equipamentos</h2>
+      <p class="lead">O seu sistema fotovoltaico será composto pelos melhores equipamentos do mercado.</p>
+      <div class="grid prod-grid">
+        <div class="card prod-card">
+          <img src="https://placehold.co/400x200/f4f6fb/6f7d95?text=Painel+Solar" class="prod-image" alt="Painel Solar">
+          <h3>Painel Solar</h3>
+          <div class="prod-table">
+            <div>Potência Nominal</div><div id="panelPower">0 W</div>
+            <div>Quantidade</div><div id="panelQuantity">0</div>
           </div>
         </div>
-      </section>
-
-      <!-- Seção de Payback - Retorno sobre o investimento -->
-      <section class="payback-section-bg">
-        <div class="container text-center">
-          <h2>Retorno Sobre o Investimento</h2>
-          <p class="lead">Entenda em quanto tempo o seu sistema se paga.</p>
-          <div class="payback-content-container">
-            <p class="payback-details">O tempo médio de retorno do seu investimento é de apenas <strong>3 a 5 anos.</strong> Depois disso, a energia gerada é lucro puro, garantindo uma economia que pode durar por mais de 25 anos.</p>
-            <div class="payback-highlight-box">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                <line x1="1" y1="10" x2="22" y2="10" />
-              </svg>
-              <p>Payback estimado: <strong id="paybackYears">4 anos</strong></p>
-            </div>
+        <div class="card prod-card">
+          <img src="https://placehold.co/400x200/f4f6fb/6f7d95?text=Inversor" class="prod-image" alt="Inversor">
+          <h3>Inversor</h3>
+          <div class="prod-table">
+            <div>Potência Nominal</div><div id="inverterPower">0 W</div>
+            <div>Quantidade</div><div id="inverterQuantity">0</div>
           </div>
         </div>
-      </section>
-
-      <!-- Seção de Equipamentos -->
-      <section class="clean-section" id="sectionEquipamentos">
-          <div class="container">
-              <h2>Equipamentos</h2>
-              <p class="lead">Itens incluídos no seu kit GDIS Solar.</p>
-              <div class="grid prod-grid">
-                  <div class="card prod-card">
-                      <h3>Inversor <br> <span id="inversorModelo"></span></h3>
-                      <div class="prod-table">
-                          <div>Fabricante</div>
-                          <div id="inversorFabricante"></div>
-                          <div>Potência</div>
-                          <div id="inversorPotencia"></div>
-                          <div>Garantia</div>
-                          <div id="inversorGarantia"></div>
-                      </div>
-                  </div>
-                  <div class="card prod-card">
-                      <h3>Módulo Solar <br> <span id="moduloModelo"></span></h3>
-                      <div class="prod-table">
-                          <div>Fabricante</div>
-                          <div id="moduloFabricante"></div>
-                          <div>Potência</div>
-                          <div id="moduloPotencia"></div>
-                          <div>Quantidade</div>
-                          <div id="moduloQuantidade"></div>
-                          <div>Garantia</div>
-                          <div id="moduloGarantia"></div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </section>
-
-      <!-- Seção de Instalação -->
-      <section class="clean-section" id="sectionInstalacao">
-          <div class="container">
-              <h2>Instalação</h2>
-              <p class="lead" id="instalacaoTitulo"></p>
-              <div class="grid grid-3 installation-content">
-                  <div class="feature-card">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                          <path d="M12 12s0-2 2-2 2 2 0 2-2 2-2-2" />
-                      </svg>
-                      <h3>Segurança</h3>
-                      <p>Nossa equipe de instalação segue todos os padrões e normas técnicas para garantir a sua segurança e a longevidade do sistema.</p>
-                  </div>
-                  <div class="feature-card">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="16 18 22 12 16 6" />
-                          <polyline points="8 6 2 12 8 18" />
-                      </svg>
-                      <h3>Eficiência</h3>
-                      <p>Otimização máxima para captar a maior quantidade de energia solar possível, gerando o melhor desempenho para sua casa ou empresa.</p>
-                  </div>
-                  <div class="feature-card">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M22 17H2a2 2 0 0 1-2-2V9c0-1.1.9-2 2-2h14l4 4-4 4h-4"/>
-                      </svg>
-                      <h3>Tecnologia</h3>
-                      <p>Sistemas de ponta com monitoramento online, permitindo acompanhar em tempo real a produção de energia, a economia e a redução de CO2.</p>
-                  </div>
-              </div>
-          </div>
-      </section>
-
-      <!-- Seção de Pagamento -->
-      <section class="clean-section" id="sectionPagamento">
-          <div class="container">
-              <div class="payment-value-section">
-                  <h2>O melhor investimento</h2>
-                  <span class="highlight-avista">À VISTA</span>
-                  <h2 class="price-highlight" id="pagamentoValorAvista">R$ 0,00</h2>
-                  <p class="min-parcel-label">ou a partir de <strong id="pagamentoParcelaMinima">R$ 0,00</strong></p>
-              </div>
-          </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="container">
-        <img src="logo.png" alt="Logo GDIS Solar" style="height: 50px;">
-        <p style="margin-top: 10px;">Transformando a luz do sol em economia para você.</p>
-        <div class="contact-info">
-          <p class="contact-info">
-            <a href="https://wa.me/5511999999999" target="_blank" class="contact-link">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              (11) 99999-9999
-            </a>
-          </p>
-          <p class="contact-info">
-            <a href="mailto:gdis.solar@gmail.com" class="contact-link">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-              gdis.solar@gmail.com
-            </a>
-          </p>
-          <p class="contact-info">
-            <a href="https://www.instagram.com/gdis.solar" target="_blank" class="contact-link">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1 1 12.63 8a4 4 0 0 1 3.37 3.37z" />
-                <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
-              </svg>
-              gdis.solar
-            </a>
+      </div>
+    </section>
+    
+    <!-- Seção de Preços e Pagamento -->
+    <section class="container clean-section">
+      <h2>Formas de Pagamento</h2>
+      <p class="lead">Escolha a melhor opção para você.</p>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Pagamento à Vista</h3>
+          <p class="value" id="avistaPrice">R$ 0,00</p>
+          <p>O valor total do projeto para pagamento à vista com desconto.</p>
+        </div>
+        <div class="card">
+          <h3>Pagamento Parcelado</h3>
+          <p class="value" id="pagamentoParcelaMinima">R$ 0,00</p>
+          <p>
+            Entrada de 30% e 60 parcelas fixas de
+            <strong id="pagamentoParcelaMensal">R$ 0,00</strong>.
           </p>
         </div>
       </div>
-    </footer>
+    </section>
 
+    <!-- Rodapé de Contato -->
+    <footer class="contact-footer">
+      <div class="contact-info">
+        <p class="contact-info">
+          <a href="tel:+5531999999999" class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            (31) 99999-9999
+          </a>
+        </p>
+        <p class="contact-info">
+          <a href="mailto:gdis.solar@gmail.com" class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            gdis.solar@gmail.com
+          </a>
+        </p>
+        <p class="contact-info">
+          <a href="https://www.instagram.com/gdis.solar" target="_blank" class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8a4 4 0 0 1 3.37 3.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+            </svg>
+            gdis.solar
+          </a>
+        </p>
+      </div>
+      <small>&copy; 2024 GDIS Solar. Todos os direitos reservados.</small>
+    </footer>
+    
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Obtenção de elementos para manipular o DOM
-      const formContainer = document.getElementById("formContainer");
-      const proposalContainer = document.getElementById("proposalContainer");
+      // Obtém os elementos principais
+      const formContainer = document.getElementById('formContainer');
+      const proposalContainer = document.getElementById('proposalContainer');
       const navBar = document.querySelector('.nav-bar');
-      const navBarAvistaPrice = document.getElementById("navAvistaPrice");
-      const navBarMinParcel = document.getElementById("navMinParcel");
-      const navBarMaxInstallments = document.getElementById("navMaxInstallments");
-      const optionHighPerformance = document.getElementById("optionHighPerformance");
-      const optionEconomic = document.getElementById("optionEconomic");
-      const clientName = document.getElementById("clientName");
-      const propNumero = document.getElementById("propNumero");
-      const propValor = document.getElementById("propValor");
-      const propStatus = document.getElementById("propStatus");
-      const inversorModelo = document.getElementById("inversorModelo");
-      const inversorFabricante = document.getElementById("inversorFabricante");
-      const inversorPotencia = document.getElementById("inversorPotencia");
-      const inversorGarantia = document.getElementById("inversorGarantia");
-      const moduloModelo = document.getElementById("moduloModelo");
-      const moduloFabricante = document.getElementById("moduloFabricante");
-      const moduloPotencia = document.getElementById("moduloPotencia");
-      const moduloQuantidade = document.getElementById("moduloQuantidade");
-      const moduloGarantia = document.getElementById("moduloGarantia");
-      const instalacaoTitulo = document.getElementById("instalacaoTitulo");
-      const pagamentoValorAvista = document.getElementById("pagamentoValorAvista");
-      const pagamentoParcelaMinima = document.getElementById("pagamentoParcelaMinima");
-      const paybackYears = document.getElementById("paybackYears");
-      const body = document.body;
+      const messageBox = document.getElementById('messageBox');
+      const projectIdInput = document.getElementById('projectIdInput');
 
-      // Elementos do formulário
-      const btnConsultar = document.getElementById("btnConsultar");
-      const cpfInput = document.getElementById("cpf");
-      const messageBox = document.getElementById("message-box");
-
-      // Event listener para o botão de consulta do formulário
-      btnConsultar.addEventListener("click", async () => {
-        const cpf = cpfInput.value.trim();
-        if (!cpf || cpf.length !== 11 || !/^\d+$/.test(cpf)) {
-            showMessage("Por favor, informe um CPF válido (11 dígitos, apenas números).", "error");
-            return;
-        }
-        showMessage("Consultando sua proposta...", "info");
-        btnConsultar.disabled = true;
-
-        try {
-            const proposta = await consultarProposta(cpf);
-            if (!proposta || !proposta.id) {
-                showMessage("Nenhuma proposta ativa encontrada para este CPF. Por favor, verifique o número e tente novamente.", "error");
-                btnConsultar.disabled = false;
-                return;
-            }
-            // Preenche a página e exibe o conteúdo da proposta
-            populateProposalPage(proposta);
-            showProposalPage();
-        } catch (err) {
-            console.error(err);
-            showMessage("Erro na consulta. Por favor, verifique sua conexão ou tente novamente.", "error");
-            btnConsultar.disabled = false;
-        }
-      });
-
-      // Event listeners para os botões de escolha de proposta (Alta Performance/Econômica)
-      optionHighPerformance.addEventListener("click", () => handleProposalTypeChange('high-performance'));
-      optionEconomic.addEventListener("click", () => handleProposalTypeChange('economic'));
-
-      /**
-       * Funções de manipulação do DOM e lógica
-       */
-
-      /**
-       * Exibe mensagens na tela com estilo e cor apropriados.
-       * @param {string} message - A mensagem a ser exibida.
-       * @param {string} type - Tipo de mensagem ('info' ou 'error').
-       */
-      function showMessage(message, type) {
-        messageBox.textContent = message;
-        messageBox.style.display = "block";
-        messageBox.style.backgroundColor = type === "error" ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 255, 0, 0.2)";
-        messageBox.style.borderColor = type === "error" ? "rgba(255, 0, 0, 0.4)" : "rgba(0, 255, 0, 0.4)";
-      }
-
-      /**
-       * Alterna a visibilidade do formulário e da página de proposta.
-       */
-      function showProposalPage() {
-        formContainer.style.display = 'none';
-        proposalContainer.style.display = 'block';
-      }
-
-      /**
-       * Atualiza o DOM com os dados da proposta.
-       * @param {Object} proposta - O objeto da proposta recebido do backend.
-       */
-      function populateProposalPage(proposta) {
-        // Preenche os dados do cliente e da proposta
-        clientName.textContent = proposta.cliente?.nome || "Cliente";
-        propNumero.textContent = proposta.id || "#0000";
-        propValor.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-        propStatus.textContent = proposta.status || "Pendente";
-
-        // Preenche os dados da navegação
-        navBarAvistaPrice.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-        navBarMinParcel.textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-        navBarMaxInstallments.textContent = `em ${proposta.parcelas || 48}x`;
-
-        // Manipula o tema e os dados com base no tipo de proposta
-        if (proposta.instalacao_tipo) {
-            handleProposalTypeChange(proposta.instalacao_tipo, proposta);
-        }
-      }
-
-      /**
-       * Lida com a mudança de tipo de proposta (Alta Performance/Econômica).
-       * Atualiza o tema e os dados da página.
-       * @param {string} type - 'high-performance' ou 'economic'.
-       * @param {Object} [proposta] - O objeto da proposta.
-       */
-      function handleProposalTypeChange(type, proposta = null) {
-          // Remove a classe de seleção de todos os botões
-          optionHighPerformance.classList.remove('selected', 'high-performance-active', 'economic-active');
-          optionEconomic.classList.remove('selected', 'high-performance-active', 'economic-active');
-          body.classList.remove('economic-theme');
-
-          // Adiciona a classe de seleção ao botão correto e atualiza o tema
-          if (type === 'high-performance') {
-              optionHighPerformance.classList.add('selected', 'high-performance-active');
-              body.classList.remove('economic-theme');
-          } else if (type === 'economic') {
-              optionEconomic.classList.add('selected', 'economic-active');
-              body.classList.add('economic-theme');
-          }
+      // Adiciona um listener para o envio do formulário
+      document.getElementById("searchForm").addEventListener("submit", async (event) => {
+          event.preventDefault(); // Evita o recarregamento da página
           
-          // Se a proposta foi passada (na carga inicial), preenche todos os dados
-          if (proposta) {
-            populateProposalData(proposta);
+          const projectId = projectIdInput.value.trim();
+          
+          // Validação básica do campo
+          if (!projectId) {
+              showMessage('Por favor, digite o número do projeto.', 'error');
+              return;
           }
+
+          // Exibe a mensagem de consulta e esconde a mensagem de erro
+          showMessage('Consultando projeto...', 'info');
+
+          try {
+              // Chama a função para consultar a proposta
+              const propostas = await consultarPropostaAtiva(projectId);
+              
+              if (!propostas || propostas.length === 0) {
+                  showMessage('Nenhuma proposta ativa encontrada para este projeto.', 'error');
+                  return;
+              }
+
+              // Pega a primeira proposta da lista (assumindo que há apenas uma ativa)
+              const proposta = propostas[0];
+              
+              // Preenche os dados na página da proposta
+              updateProposalPage(proposta);
+
+              // Faz a transição de tela
+              formContainer.style.display = 'none';
+              proposalContainer.style.display = 'block';
+              
+              // Adiciona a classe para mostrar os preços na navbar
+              navBar.classList.add('show-prices');
+
+          } catch (err) {
+              console.error(err);
+              showMessage(`Erro na consulta: ${err.message}`, 'error');
+              proposalContainer.style.display = 'none';
+              navBar.classList.remove('show-prices');
+          }
+      });
+      
+      /**
+       * Exibe uma mensagem na caixa de mensagem.
+       * @param {string} text - O texto da mensagem.
+       * @param {string} type - O tipo da mensagem ('info' ou 'error').
+       */
+      function showMessage(text, type) {
+          messageBox.textContent = text;
+          messageBox.style.display = 'block';
+          if (type === 'error') {
+              messageBox.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+              messageBox.style.borderColor = 'rgba(255, 0, 0, 0.4)';
+              messageBox.style.color = '#fff';
+          } else {
+              messageBox.style.backgroundColor = 'rgba(0, 128, 0, 0.2)';
+              messageBox.style.borderColor = 'rgba(0, 128, 0, 0.4)';
+              messageBox.style.color = '#fff';
+          }
+      }
+
+      /**
+       * Preenche os elementos HTML com os dados da proposta.
+       * @param {object} proposta - O objeto da proposta retornado pela API.
+       */
+      function updateProposalPage(proposta) {
+          // Preenche os dados da seção principal
+          document.getElementById('clientName').textContent = proposta.cliente.nome || 'Cliente não informado';
+          document.getElementById('proposalNumber').textContent = `#${proposta.id}`;
+          document.getElementById('systemPower').textContent = `${(proposta.potencia_sistema / 1000).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} kWp`;
+          document.getElementById('monthlyGeneration').textContent = `${(proposta.geracao_mensal).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} kWh`;
+          document.getElementById('monthlySavings').textContent = (proposta.economia_mensal).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+
+          // Preenche os dados das seções de destaque e payback
+          document.getElementById('paybackYears').textContent = `${proposta.payback_anos || 4} anos`;
+          document.getElementById('paybackYearsHighlight').textContent = `${proposta.payback_anos || 4}`;
+          document.getElementById('paybackHighlightValue').textContent = `${proposta.payback_anos || 4}`;
+          document.getElementById('totalSavings').textContent = (proposta.economia_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+
+          // Preenche os dados dos equipamentos
+          document.getElementById('panelPower').textContent = `${proposta.equipamentos.painel_solar.potencia_nominal} W`;
+          document.getElementById('panelQuantity').textContent = `${proposta.equipamentos.painel_solar.quantidade}`;
+          document.getElementById('inverterPower').textContent = `${proposta.equipamentos.inversor.potencia_nominal} W`;
+          document.getElementById('inverterQuantity').textContent = `${proposta.equipamentos.inversor.quantidade}`;
+
+          // Preenche os dados de pagamento
+          document.getElementById('avistaPrice').textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+          document.getElementById('pagamentoParcelaMinima').textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+          document.getElementById('pagamentoParcelaMensal').textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+
+          // Preenche os dados da barra de navegação
+          document.getElementById('navBarAvistaPrice').textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+          document.getElementById('navBarMinParcel').textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
       }
       
       /**
-       * Preenche os dados de acordo com o tipo de proposta e o objeto de dados.
-       * @param {Object} proposta - O objeto da proposta.
+       * Consulta a proposta ativa de um projeto chamando o backend.
+       * @param {string} projectId - O ID do projeto.
+       * @returns {Promise<Array|null>} Um array de propostas ou null em caso de falha.
        */
-      function populateProposalData(proposta) {
-          // Preenche os dados dos equipamentos
-          if (proposta.kit) {
-              const inversor = proposta.kit.inversor || {};
-              const modulo = proposta.kit.modulo_solar || {};
-              
-              inversorModelo.textContent = inversor.modelo || "";
-              inversorFabricante.textContent = inversor.fabricante || "-";
-              inversorPotencia.textContent = (inversor.potencia || 0) + "kW";
-              inversorGarantia.textContent = (inversor.garantia || 0) + " anos";
-
-              moduloModelo.textContent = modulo.modelo || "";
-              moduloFabricante.textContent = modulo.fabricante || "-";
-              moduloPotencia.textContent = (modulo.potencia || 0) + "W";
-              moduloQuantidade.textContent = (modulo.quantidade || 0) + " und";
-              moduloGarantia.textContent = (modulo.garantia || 0) + " anos";
-          }
+      async function consultarPropostaAtiva(projectId) {
+          const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
           
-          // Preenche os dados de instalação e pagamento
-          instalacaoTitulo.textContent = `Instalação ${proposta.instalacao_tipo === 'premium' ? 'Premium' : 'Simples'}`;
-          pagamentoValorAvista.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-          pagamentoParcelaMinima.textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-          paybackYears.textContent = `${proposta.payback_anos || 4} anos`;
-          navBarAvistaPrice.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-          navBarMinParcel.textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-      }
-
-      /**
-       * Consulta a proposta ativa de um cliente chamando o backend.
-       * @param {string} cpf - O CPF do cliente.
-       * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
-       */
-      async function consultarProposta(cpf) {
-          const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?cpf=${cpf}`;
           try {
               const res = await fetch(backendUrl);
+              
               if (!res.ok) {
-                  const errorData = await res.json();
-                  throw new Error(`Erro HTTP: ${res.status} - ${errorData.message || 'Erro desconhecido'}`);
+                  let errorMessage = `Erro HTTP: ${res.status}`;
+                  try {
+                      const errorBody = await res.json();
+                      if (errorBody && errorBody.error) {
+                          errorMessage += ` - ${errorBody.error}`;
+                      } else if (errorBody && errorBody.message) {
+                          errorMessage += ` - ${errorBody.message}`;
+                      }
+                  } catch (e) {
+                      // Se não for um JSON válido, a mensagem genérica será mantida
+                  }
+                  throw new Error(errorMessage);
               }
+              
               const dados = await res.json();
               return dados;
           } catch (err) {
@@ -1185,7 +988,7 @@
               throw err;
           }
       }
-    });
   </script>
+
 </body>
 </html>
