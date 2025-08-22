@@ -89,24 +89,18 @@ module.exports = async (req, res) => {
         
         // CORREÇÃO:
         // A API retorna um objeto com uma propriedade 'data' que contém a proposta.
-        // Acessamos o valor dessa propriedade de forma segura.
-        let propostaAtiva;
+        // Acessamos o valor dessa propriedade de forma segura e o enviamos diretamente.
         if (propostasData && propostasData.data) {
-            propostaAtiva = propostasData.data;
+            // ######################################################################
+            // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
+            // ######################################################################
+            console.log('Debug: Enviando dados da proposta para o frontend...');
+            res.status(200).json(propostasData.data);
         } else {
-            propostaAtiva = null;
-        }
-
-        if (!propostaAtiva) {
             console.log(`Proposta não encontrada para o Project ID: ${projectId}`);
             res.status(404).json({ error: 'Proposta não encontrada para o projeto especificado.' });
             return;
         }
-
-        // ######################################################################
-        // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
-        // ######################################################################
-        res.status(200).json(propostaAtiva);
 
     } catch (err) {
         // Este bloco de captura garante que todos os erros sejam tratados.
