@@ -2,7 +2,8 @@
 const searchForm = document.getElementById('search-form');
 const projectIdInput = document.getElementById('project-id');
 const messageBox = document.getElementById('message-box');
-const proposalDetailsSection = document.getElementById('proposal-details');
+const formSection = document.getElementById('form-section');
+const proposalSection = document.getElementById('proposal-section');
 const highPerformanceOption = document.getElementById('high-performance-option');
 const economicOption = document.getElementById('economic-option');
 
@@ -16,6 +17,8 @@ const moduloDescricao = document.getElementById('modulo-descricao');
 const moduloQuantidade = document.getElementById('modulo-quantidade');
 const valorTotal = document.getElementById('valor-total');
 const linkPDF = document.getElementById('link-pdf');
+const economiaMensal = document.getElementById('economia-mensal');
+const paybackTempo = document.getElementById('payback-tempo');
 
 // Mapeamento de temas
 function setTheme(themeName) {
@@ -35,10 +38,8 @@ setTheme('alta_performance'); // Define o tema inicial
  */
 async function consultarProposta(projectId) {
     const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
-
     try {
         const res = await fetch(backendUrl);
-
         if (!res.ok) {
             let errorMessage = `Erro HTTP: ${res.status}`;
             try {
@@ -48,54 +49,58 @@ async function consultarProposta(projectId) {
                 } else if (errorBody && errorBody.message) {
                     errorMessage = `Erro: ${errorBody.message}`;
                 }
-            } catch (e) {
-                // Se não for um JSON válido, a mensagem genérica será mantida
+            } catch (jsonError) {
+                // A resposta não era JSON, usa a mensagem padrão
             }
             throw new Error(errorMessage);
         }
 
-        const dados = await res.json();
-        return dados;
+        const data = await res.json();
+        return data;
     } catch (err) {
-        console.error("Erro ao consultar proposta:", err);
-        throw err;
+        console.error('Erro ao consultar a API do backend:', err);
+        return null;
     }
 }
 
 /**
- * Renderiza os detalhes da proposta na página, preenchendo os campos específicos.
- * @param {Object} proposta - O objeto da proposta recebido do backend.
+ * Renderiza os dados da proposta na interface.
+ * @param {Object} proposta - O objeto da proposta.
  */
 function renderizarProposta(proposta) {
-    // Limpa conteúdo anterior e mostra a seção de detalhes
-    proposalDetailsSection.style.display = 'block';
+    // Campos do cliente
+    clienteNome.textContent = proposta.cliente?.nome || 'N/A';
+    clienteCidadeUf.textContent = `${proposta.cliente?.cidade || ''}/${proposta.cliente?.uf || ''}`;
 
-    // Preenche os campos de informações gerais do cliente e da proposta
-    // Acesso seguro a valores aninhados, já que o JSON não tem 'cliente' direto.
-    // Assumindo que a API da SolarMarket fornece os dados do cliente em 'project' e que 'name' inclui o nome do cliente.
-    // Se a cidade/UF não estiverem disponíveis, exibe um valor padrão.
-    clienteNome.textContent = proposta.project?.name || 'Não disponível';
-    clienteCidadeUf.textContent = 'Não disponível'; // Não há campo de cidade/UF no JSON de exemplo
-    dataGeracao.textContent = proposta.generatedAt ? new Date(proposta.generatedAt).toLocaleString() : 'Não disponível';
+    // Campo de data de geração
+    if (proposta.geracaoInfo?.dataGeracao) {
+        const data = new Date(proposta.geracaoInfo.dataGeracao);
+        dataGeracao.textContent = data.toLocaleDateString('pt-BR');
+    } else {
+        dataGeracao.textContent = 'N/A';
+    }
 
-    // Preenche os detalhes do inversor e do módulo fotovoltaico
-    const inversor = proposta.pricingTable?.find(item => item.category === 'Inversor');
-    const modulo = proposta.pricingTable?.find(item => item.category === 'Módulo');
+    // Campos do inversor
+    inversorDescricao.textContent = proposta.inversor?.descricao || 'N/A';
+    inversorQuantidade.textContent = proposta.inversor?.quantidade || 'N/A';
 
-    inversorDescricao.textContent = inversor?.item || 'Não disponível';
-    inversorQuantidade.textContent = inversor?.qnt || '0';
+    // Campos do módulo
+    moduloDescricao.textContent = proposta.modulo?.descricao || 'N/A';
+    moduloQuantidade.textContent = proposta.modulo?.quantidade || 'N/A';
     
-    moduloDescricao.textContent = modulo?.item || 'Não disponível';
-    moduloQuantidade.textContent = modulo?.qnt || '0';
+    // Calcula a economia mensal e o payback
+    const valorProjeto = proposta.payback?.valorProjeto || 0;
+    const economia = proposta.payback?.economia || 0;
+    const payback = proposta.payback?.payback || 0;
 
-    // Calcula e preenche o valor total da proposta
-    const totalValue = proposta.pricingTable?.reduce((sum, item) => sum + item.totalCost, 0) || 0;
-    valorTotal.textContent = `R$ ${totalValue.toFixed(2).replace('.', ',')}`;
+    valorTotal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorProjeto);
+    economiaMensal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(economia);
+    paybackTempo.textContent = `${payback} meses`;
 
-    // Preenche o link para o PDF
+    // Atualiza o link do PDF
     if (proposta.linkPdf) {
         linkPDF.href = proposta.linkPdf;
-        linkPDF.style.display = 'inline-block';
+        linkPDF.style.display = 'inline-flex'; // Use inline-flex para exibir
     } else {
         linkPDF.style.display = 'none';
     }
@@ -117,6 +122,7 @@ searchForm.addEventListener('submit', async (e) => {
     }
 
     // Simula um estado de carregamento
+    const originalButtonText = searchForm.querySelector('button').textContent;
     searchForm.querySelector('button').textContent = 'Consultando...';
     searchForm.querySelector('button').disabled = true;
 
@@ -124,17 +130,34 @@ searchForm.addEventListener('submit', async (e) => {
         const proposta = await consultarProposta(projectId);
         if (proposta) {
             renderizarProposta(proposta);
+            // Transiciona da seção do formulário para a seção da proposta
+            formSection.style.display = 'none';
+            proposalSection.style.display = 'flex';
         } else {
             messageBox.textContent = 'Proposta não encontrada para o projeto especificado.';
             messageBox.style.display = 'block';
-            proposalDetailsSection.style.display = 'none';
+            proposalSection.style.display = 'none';
+            formSection.style.display = 'flex'; // Garante que a seção do formulário esteja visível em caso de erro
         }
     } catch (err) {
         messageBox.textContent = `Erro ao carregar proposta: ${err.message}`;
         messageBox.style.display = 'block';
-        proposalDetailsSection.style.display = 'none';
+        proposalSection.style.display = 'none';
+        formSection.style.display = 'flex'; // Garante que a seção do formulário esteja visível em caso de erro
     } finally {
-        searchForm.querySelector('button').textContent = 'Consultar Proposta';
+        searchForm.querySelector('button').textContent = originalButtonText;
         searchForm.querySelector('button').disabled = false;
     }
+});
+
+// Adiciona um ouvinte para o evento de redimensionamento da janela
+window.addEventListener('resize', () => {
+  // Se a largura da janela for menor que 768px e a seção de proposta estiver visível,
+  // ajusta o layout se necessário (neste caso, o CSS lida com a maior parte)
+});
+
+// Exibe a seção de formulário por padrão
+document.addEventListener('DOMContentLoaded', () => {
+    formSection.style.display = 'flex';
+    proposalSection.style.display = 'none';
 });

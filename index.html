@@ -9,56 +9,111 @@
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <img src="https://gdis-solar.vercel.app/img/gdis-solar-logo.png" alt="GDIS Solar Logo" class="logo">
-      <h1>Detalhes da Proposta</h1>
-    </header>
-
-    <div class="theme-switcher">
-      <button id="high-performance-option" class="active">Alta Performance</button>
-      <button id="economic-option">Econômico</button>
+  <!-- O container principal que contém todo o conteúdo -->
+  <main id="main-container">
+    <!-- Seção de formulário com tema degradê -->
+    <div id="form-section" class="form-container">
+      <div class="form-box">
+        <div class="logo">
+          <img src="https://gdis-solar.vercel.app/img/gdis-solar-logo.png" alt="GDIS Solar Logo">
+        </div>
+        <h1>Detalhes da Proposta</h1>
+        <p>
+          Digite o ID do projeto para visualizar os detalhes da proposta e o payback do investimento.
+        </p>
+        <form id="search-form" class="search-form">
+          <div class="form-group">
+            <label for="project-id" style="display:none;">ID do Projeto:</label>
+            <input type="text" id="project-id" name="projectId" placeholder="ID do Projeto (Ex: 2390)" required>
+          </div>
+          <button type="submit">Consultar Proposta</button>
+        </form>
+        <div id="message-box" class="message-box"></div>
+      </div>
     </div>
 
-    <form id="search-form">
-      <div class="form-group">
-        <label for="project-id">ID do Projeto:</label>
-        <input type="text" id="project-id" name="projectId" placeholder="Ex: 2390" required>
-      </div>
-      <button type="submit">Consultar Proposta</button>
-    </form>
-
-    <div id="message-box" class="message-box"></div>
-
-    <section id="proposal-details" class="proposal-details">
-        <div class="proposal-header">
-            <h2 id="cliente-nome">Nome do Cliente</h2>
-            <p id="cliente-cidade-uf">Cidade/UF</p>
-            <p><span class="label">Data de Geração:</span> <span id="data-geracao"></span></p>
+    <!-- Seção de detalhes da proposta, inicialmente oculta -->
+    <div id="proposal-section" class="proposal-container">
+      <header>
+        <div class="theme-switcher">
+          <button id="high-performance-option" class="active">Alta Performance</button>
+          <button id="economic-option">Econômico</button>
         </div>
+      </header>
 
-        <div class="system-details">
-            <div class="item">
-                <h4>Inversor</h4>
-                <p><span class="label">Descrição:</span> <span id="inversor-descricao"></span></p>
-                <p><span class="label">Quantidade:</span> <span id="inversor-quantidade"></span></p>
-            </div>
-            <div class="item">
-                <h4>Módulo Fotovoltaico</h4>
-                <p><span class="label">Descrição:</span> <span id="modulo-descricao"></span></p>
-                <p><span class="label">Quantidade:</span> <span id="modulo-quantidade"></span></p>
-            </div>
+      <!-- Detalhes do cliente -->
+      <section class="clean-section">
+        <h2>Informações do Cliente</h2>
+        <div class="details-grid">
+          <div class="detail-card">
+            <h4>Cliente</h4>
+            <p><span id="cliente-nome"></span></p>
+          </div>
+          <div class="detail-card">
+            <h4>Endereço</h4>
+            <p><span id="cliente-cidade-uf"></span></p>
+          </div>
+          <div class="detail-card">
+            <h4>Data de Geração</h4>
+            <p><span id="data-geracao"></span></p>
+          </div>
         </div>
+      </section>
 
-        <div class="total-value-card">
-            <p>Valor Total da Proposta</p>
-            <span id="valor-total">R$ 0,00</span>
+      <!-- Detalhes do sistema -->
+      <section class="clean-section">
+        <h2>Componentes do Sistema</h2>
+        <div class="details-grid">
+          <div class="detail-card">
+            <h4>Inversor</h4>
+            <p><span id="inversor-descricao"></span></p>
+            <p class="small-text">Quantidade: <span id="inversor-quantidade"></span></p>
+          </div>
+          <div class="detail-card">
+            <h4>Módulo Fotovoltaico</h4>
+            <p><span id="modulo-descricao"></span></p>
+            <p class="small-text">Quantidade: <span id="modulo-quantidade"></span></p>
+          </div>
         </div>
-        
-        <a href="#" id="link-pdf" class="link-pdf" target="_blank" style="display: none;">Ver PDF da Proposta</a>
-    </section>
+      </section>
+      
+      <!-- Seção de Payback (Retorno do Investimento) -->
+      <section id="payback-section" class="payback-section-bg">
+        <h2>Payback do Investimento</h2>
+        <div class="details-grid">
+          <div class="payback-card">
+            <h4>Valor Total da Proposta</h4>
+            <p class="large-value" id="valor-total">R$ 0,00</p>
+          </div>
+          <div class="payback-card">
+            <h4>Economia Mensal Estimada</h4>
+            <p class="large-value" id="economia-mensal">R$ 0,00</p>
+          </div>
+          <div class="payback-card">
+            <h4>Payback do Investimento</h4>
+            <p class="large-value" id="payback-tempo">0 meses</p>
+          </div>
+        </div>
+      </section>
 
-  </div>
+      <!-- Botão para PDF -->
+      <section class="clean-section">
+        <div class="pdf-container">
+          <a href="#" id="link-pdf" class="link-pdf" target="_blank" style="display:none;">
+            Gerar PDF
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- Rodapé -->
+      <footer>
+        <p>&copy; 2024 GDIS Solar. Todos os direitos reservados.</p>
+      </footer>
+    </div>
+  </main>
 
   <script src="script.js"></script>
 </body>
