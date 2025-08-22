@@ -56,25 +56,25 @@
 
     /* Esconde as seções de proposta por padrão */
     .proposal-container {
-        display: none;
-        background: var(--light-gray);
-        color: var(--dark-blue);
+      display: none;
+      background: var(--light-gray);
+      color: var(--dark-blue);
     }
     
     .proposal-section {
-        display: none;
+      display: none;
     }
 
     /* Estilos para o container do formulário */
     .form-container {
-        background: var(--gradient-bg);
-        color: var(--white);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        flex-direction: column;
-        transition: background 0.5s ease;
+      background: var(--gradient-bg);
+      color: var(--white);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+      transition: background 0.5s ease;
     }
 
     .form-box {
@@ -153,20 +153,19 @@
     }
     
     .message-box {
-        margin-top: 20px;
-        padding: 15px;
-        background: rgba(255, 0, 0, 0.2);
-        border-radius: 8px;
-        display: none;
-        font-size: 14px;
-        font-weight: 500;
-        border: 1px solid rgba(255, 0, 0, 0.4);
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 0, 0, 0.2);
+      border-radius: 8px;
+      display: none;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 0, 0, 0.4);
     }
 
     /* ---------------------- */
     /* Componentes da Proposta*/
     /* ---------------------- */
-    
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -201,564 +200,232 @@
       color: var(--white);
     }
 
-    section h2 {
-      text-align: center;
-      font-size: clamp(28px, 4vw, 40px);
-      margin-bottom: 12px;
-      color: var(--dark-blue);
-      font-weight: 700;
-      transition: color 0.5s ease;
+    .payback-section-bg p {
+      color: rgba(255, 255, 255, 0.8);
     }
 
-    section p.lead {
-      text-align: center;
-      color: var(--muted-text);
-      margin-bottom: 40px;
-      font-size: 18px;
-      transition: color 0.5s ease;
-    }
-
-    .grid {
+    .details-grid {
       display: grid;
-      gap: 30px;
-    }
-
-    .grid-2 {
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+      text-align: left;
     }
 
-    .grid-3 {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
-
-    .card {
-      background: var(--white);
+    .detail-card {
+      background: var(--light-gray);
+      padding: 25px;
       border-radius: var(--radius);
-      padding: 30px;
-      box-shadow: var(--shadow);
-      transition: all .3s ease, background-color 0.5s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .nav-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: var(--nav-bg);
-      padding: 20px 30px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      transition: background 0.5s ease;
-      display: none; /* Esconde o cabeçalho por padrão */
-    }
-
-    .nav-bar .logo {
-      display: flex;
-      align-items: center;
-    }
-
-    .nav-bar img {
-      height: 60px;
-    }
-
-    .nav-middle-content {
-      display: flex;
-      flex: 1;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .header-prices-info {
-      max-width: 0;
-      opacity: 0;
+      border: 1px solid #e0e0e0;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      transition: max-width 0.6s ease, opacity 0.6s ease;
-      flex-shrink: 0;
     }
 
-    .nav-bar.show-prices .header-prices-info {
-      max-width: 500px;
-      opacity: 1;
+    .detail-card::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 30px;
+      height: 30px;
+      background: var(--highlight-color);
+      border-radius: 50%;
+      filter: blur(15px);
+      transition: transform 0.3s ease;
     }
 
-    .price-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+    .detail-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
 
-    .price-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      color: var(--white);
-      opacity: 0.7;
-    }
-
-    .price-value {
+    .detail-card h3 {
       font-size: 18px;
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    .options-row {
-      display: flex;
-      gap: 15px;
-    }
-
-    .option {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50px;
-      color: var(--white);
-      padding: 10px 25px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .option.selected {
-      background: var(--white);
+      margin-bottom: 5px;
       color: var(--main-blue);
-      border-color: var(--white);
-    }
-    
-    .nav-buttons-mobile {
-        display: none;
     }
 
-    @media (max-width: 768px) {
-      .nav-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 15px;
-      }
-      
-      .nav-middle-content {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 10px;
-      }
-
-      .options-row {
-          flex-wrap: wrap;
-          justify-content: center;
-      }
-      
-      .header-prices-info {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 10px;
-      }
-      
-      .price-group {
-          align-items: flex-start;
-      }
-      
-      .nav-buttons-mobile {
-        display: flex;
-        width: 100%;
-        justify-content: center;
-        gap: 10px;
-      }
-      
-      .options-row {
-          display: none;
-      }
-      
-      .nav-bar.show-prices .header-prices-info {
-          max-width: 100%;
-      }
-    }
-    
-    .table-responsive {
-        overflow-x: auto;
-    }
-    
-    table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 15px; /* Espaço entre as linhas */
-    }
-    
-    table thead th {
-        text-align: left;
-        padding: 10px 15px;
-        font-size: 14px;
-        text-transform: uppercase;
-        color: var(--muted-text);
-        font-weight: 600;
-    }
-    
-    table tbody tr {
-        background: var(--light-gray);
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.3s ease;
+    .detail-card p {
+      font-size: 14px;
+      color: var(--muted-text);
+      text-align: left;
     }
 
-    table tbody tr:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-    
-    table tbody td {
-        padding: 15px;
-        color: var(--dark-blue);
-        font-weight: 500;
-        vertical-align: middle;
-    }
-    
-    table tbody tr:first-child {
-        border-top-left-radius: var(--radius);
-        border-top-right-radius: var(--radius);
-    }
-    
-    table tbody tr:last-child {
-        border-bottom-left-radius: var(--radius);
-        border-bottom-right-radius: var(--radius);
-    }
-    
-    .table-header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    
-    .pricing-table-section {
-        margin: 40px 0;
-        padding: 20px;
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 40px;
     }
 
-    .pricing-table-section h2 {
-        text-align: left;
-        font-size: clamp(24px, 3vw, 36px);
-        margin-bottom: 12px;
-        color: var(--dark-blue);
-    }
-    
-    .pricing-table-section p {
-        text-align: left;
-        color: var(--muted-text);
-        margin-bottom: 30px;
+    .proposal-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 600px;
     }
 
-    /* Rodapé */
-    footer {
-        text-align: center;
-        padding: 20px;
-        color: var(--muted-text);
-        font-size: 14px;
-        background: var(--white);
-        margin-top: 40px;
+    .proposal-table th, .proposal-table td {
+      padding: 15px;
+      border-bottom: 1px solid #e0e0e0;
     }
 
+    .proposal-table th {
+      background: var(--main-blue);
+      color: var(--white);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .proposal-table td {
+      background: var(--white);
+      transition: background-color 0.3s ease;
+    }
+
+    .proposal-table tr:hover td {
+      background-color: var(--light-gray);
+    }
+
+    .proposal-table tfoot td {
+      font-weight: 700;
+      background: var(--main-blue);
+      color: var(--white);
+      border-bottom: none;
+    }
+
+    .contact-card {
+      background: var(--gradient-bg);
+      color: var(--white);
+      text-align: center;
+      padding: 40px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
   </style>
+
 </head>
 
 <body>
-  <!-- Seção de Consulta (Padrão) -->
-  <div id="form-section" class="form-container">
+  
+  <!-- Container do Formulário de Busca -->
+  <div class="form-container" id="form-container">
     <div class="form-box">
-      <div class="logo">
-        <img src="logo.png" onerror="this.onerror=null;this.src='https://placehold.co/150x80/123d8c/ffffff?text=Logo';" alt="Logo GDIS Solar">
-      </div>
-      <h1>Sua Proposta GDIS Solar</h1>
-      <p>Digite o ID do projeto para visualizar a proposta.</p>
-      <form id="search-form" class="search-form">
-        <input type="text" id="project-id" name="project-id" placeholder="Ex: 123456" required>
-        <button type="submit">Consultar</button>
-      </form>
-      <div id="message-box" class="message-box"></div>
+        <div class="logo">
+            <img src="https://placehold.co/80x80/123d8c/ffffff?text=GDIS" alt="Logo GDIS Solar">
+        </div>
+        <h1>Bem-vindo ao Portal GDIS</h1>
+        <p>Consulte sua proposta técnica e comercial de energia solar com o ID do seu projeto.</p>
+        <form class="search-form" id="search-form">
+            <input type="text" id="project-id-input" placeholder="Digite o ID do Projeto" required>
+            <button type="submit">Consultar Proposta</button>
+        </form>
+        <div class="message-box" id="message-box"></div>
     </div>
   </div>
-  
-  <!-- Seção da Proposta (Escondida por padrão) -->
-  <div id="proposal-section" class="proposal-container">
-    <!-- Cabeçalho Fixo -->
-    <header class="nav-bar">
-      <div class="nav-bar-left">
-        <div class="logo">
-          <img src="logo.png" onerror="this.onerror=null;this.src='https://placehold.co/150x80/123d8c/ffffff?text=Logo';" alt="Logo GDIS Solar">
-        </div>
-      </div>
-      <div class="nav-middle-content">
-          <div class="header-prices-info">
-              <div class="price-group">
-                  <span class="price-label">À vista</span>
-                  <span id="nav-bar-avista-price" class="price-value">R$ 0,00</span>
-              </div>
-              <div class="price-group">
-                  <span class="price-label">Mensal</span>
-                  <span id="nav-bar-min-parcel" class="price-value">R$ 0,00</span>
-              </div>
-          </div>
-          <div class="options-row">
-              <div class="option high-performance-option selected">
-                  <span>Alta Performance</span>
-              </div>
-              <div class="option economic-option">
-                  <span>Econômico</span>
-              </div>
-          </div>
+
+  <!-- Container da Proposta (Inicialmente oculto) -->
+  <div class="proposal-container" id="proposal-container">
+    <header>
+      <div class="nav">
+        <ul class="nav-links">
+          <li><a href="#proposta">Proposta</a></li>
+          <li><a href="#detalhes">Detalhes</a></li>
+          <li><a href="#tabela-precos">Tabela de Preços</a></li>
+          <li><a href="#geracao">Geração</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
       </div>
     </header>
 
-    <!-- Seção de Cabeçalho da Proposta -->
-    <section class="clean-section header-section proposal-section">
-      <div class="container">
-        <h2 id="project-name"></h2>
-        <p class="lead" id="project-description"></p>
-        <div class="grid grid-3">
-          <!-- Card de Pagamento à Vista -->
-          <div class="card text-center">
-            <span style="font-size: 14px; color: var(--muted-text);">Pagamento à vista</span>
-            <h3 id="pagamento-vista" style="font-size: 32px; font-weight: 800; color: var(--highlight-color); margin-top: 10px;">R$ 0,00</h3>
-          </div>
-          <!-- Card de Parcela Mínima -->
-          <div class="card text-center">
-            <span style="font-size: 14px; color: var(--muted-text);">Pagamento com parcela mínima</span>
-            <h3 id="pagamento-parcela-minima" style="font-size: 32px; font-weight: 800; color: var(--highlight-color); margin-top: 10px;">R$ 0,00</h3>
-          </div>
-          <!-- Card de Payback -->
-          <div class="card text-center">
-            <span style="font-size: 14px; color: var(--muted-text);">Payback estimado</span>
-            <h3 id="payback-years" style="font-size: 32px; font-weight: 800; color: var(--highlight-color); margin-top: 10px;">0 anos</h3>
-          </div>
-        </div>
-      </div>
-    </section>
+    <main class="container">
+      <section id="proposta" class="clean-section">
+        <h2>Proposta Técnica e Comercial</h2>
+        <p id="proposal-name"></p>
+        <p id="proposal-description"></p>
+        <p id="proposal-status"></p>
+        <p id="proposal-link"></p>
+      </section>
 
-    <!-- Seção de Tabela de Preços -->
-    <section class="pricing-table-section proposal-section">
-      <div class="container">
+      <section id="detalhes" class="clean-section">
         <h2>Detalhes da Proposta</h2>
-        <p>A tabela de preços detalhada para cada componente do seu projeto.</p>
-        <div class="table-responsive">
-          <table id="pricing-table">
+        <div class="details-grid" id="details-grid">
+          <!-- Detalhes serão injetados aqui via JS -->
+        </div>
+      </section>
+
+      <section id="tabela-precos" class="clean-section">
+        <h2>Tabela de Preços</h2>
+        <div class="table-container">
+          <table class="proposal-table">
             <thead>
               <tr>
                 <th>Categoria</th>
                 <th>Item</th>
-                <th>Quantidade</th>
+                <th>Qtd</th>
                 <th>Custo Unitário</th>
                 <th>Custo Total</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Os itens da tabela serão inseridos aqui via JavaScript -->
+            <tbody id="pricing-table-body">
+              <!-- Linhas da tabela serão injetadas aqui via JS -->
             </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">Total</td>
+                <td id="total-cost"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Rodapé -->
-    <footer>
-      <p>Desenvolvido por GDIS Solar. © 2024</p>
-    </footer>
+      <section id="geracao" class="payback-section-bg">
+        <h2>Simulação de Geração</h2>
+        <p id="geracao-info"></p>
+      </section>
 
+      <section id="contato" class="clean-section">
+        <div class="contact-card">
+          <h2>Fale Conosco</h2>
+          <p>Entre em contato para tirar suas dúvidas e fechar negócio.</p>
+          <button class="btn btn-primary">Entrar em Contato</button>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
-    // Seletor de elementos HTML para fácil acesso
-    const formSection = document.getElementById('form-section');
-    const proposalSection = document.getElementById('proposal-section');
-    const navBar = document.querySelector('.nav-bar');
+    // Seleção de elementos do DOM
     const searchForm = document.getElementById('search-form');
+    const projectIdInput = document.getElementById('project-id-input');
     const messageBox = document.getElementById('message-box');
-    const projectIdInput = document.getElementById('project-id');
-    const navBarAvistaPrice = document.getElementById('nav-bar-avista-price');
-    const navBarMinParcel = document.getElementById('nav-bar-min-parcel');
-    const projectNameEl = document.getElementById('project-name');
-    const projectDescriptionEl = document.getElementById('project-description');
-    const pagamentoVistaEl = document.getElementById('pagamento-vista');
-    const pagamentoParcelaMinima = document.getElementById('pagamento-parcela-minima');
-    const paybackYears = document.getElementById('payback-years');
-    const pricingTableBody = document.querySelector('#pricing-table tbody');
-    const highPerformanceOption = document.querySelector('.high-performance-option');
-    const economicOption = document.querySelector('.economic-option');
-    const proposalSections = document.querySelectorAll('.proposal-section');
+    const formContainer = document.getElementById('form-container');
+    const proposalContainer = document.getElementById('proposal-container');
 
-    // Mapeia os temas e suas classes
-    const themes = {
-      alta_performance: {
-        bodyClass: '',
-        activeOptionClass: 'selected'
-      },
-      economico: {
-        bodyClass: 'economic-theme',
-        activeOptionClass: 'selected'
-      }
-    };
+    const proposalName = document.getElementById('proposal-name');
+    const proposalDescription = document.getElementById('proposal-description');
+    const proposalStatus = document.getElementById('proposal-status');
+    const proposalLink = document.getElementById('proposal-link');
+    const detailsGrid = document.getElementById('details-grid');
+    const pricingTableBody = document.getElementById('pricing-table-body');
+    const totalCostCell = document.getElementById('total-cost');
+    const geracaoInfo = document.getElementById('geracao-info');
 
-    /**
-     * Lida com o evento de envio do formulário.
-     * @param {Event} event - O evento de envio.
-     */
-    searchForm.addEventListener('submit', async function(event) {
-      event.preventDefault();
-      const projectId = projectIdInput.value.trim();
-      
-      messageBox.style.display = 'none';
-
-      if (!projectId) {
-        showMessage('Por favor, digite o ID do projeto.', 'error');
-        return;
-      }
-      
-      showLoading(true);
-
-      try {
-        const proposta = await consultarProposta(projectId);
-        if (proposta) {
-          preencherProposta(proposta);
-          showProposal(true);
-        } else {
-          showMessage('Nenhuma proposta encontrada para este projeto.', 'error');
-          showProposal(false);
-        }
-      } catch (err) {
-        showMessage(`Erro: ${err.message}`, 'error');
-        showProposal(false);
-      } finally {
-        showLoading(false);
-      }
-    });
-
-    /**
-     * Alterna a visibilidade das seções.
-     * @param {boolean} show - Se true, mostra a proposta; se false, mostra o formulário.
-     */
-    function showProposal(show) {
-      if (show) {
-        formSection.style.display = 'none';
-        proposalSection.style.display = 'block';
-        navBar.style.display = 'flex';
-        proposalSections.forEach(section => section.style.display = 'block');
-      } else {
-        formSection.style.display = 'flex';
-        proposalSection.style.display = 'none';
-        navBar.style.display = 'none';
-      }
-    }
+    const highPerformanceOption = document.getElementById('high-performance-option');
+    const economicOption = document.getElementById('economic-option');
     
-    /**
-     * Alterna a visibilidade do botão de loading.
-     * @param {boolean} show - Se true, mostra o loading; se false, mostra o botão original.
-     */
-    function showLoading(show) {
-        const button = searchForm.querySelector('button');
-        if (show) {
-            button.disabled = true;
-            button.textContent = 'Carregando...';
-            button.style.cursor = 'wait';
-        } else {
-            button.disabled = false;
-            button.textContent = 'Consultar';
-            button.style.cursor = 'pointer';
-        }
-    }
-    
-    /**
-     * Exibe uma mensagem de erro ou sucesso na caixa de mensagem.
-     * @param {string} message - A mensagem a ser exibida.
-     * @param {string} type - 'success' ou 'error'.
-     */
-    function showMessage(message, type) {
-      messageBox.textContent = message;
-      messageBox.style.display = 'block';
-      if (type === 'error') {
-        messageBox.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
-        messageBox.style.borderColor = 'rgba(255, 0, 0, 0.4)';
-        messageBox.style.color = '#fff';
-      } else {
-        messageBox.style.backgroundColor = 'rgba(0, 128, 0, 0.2)';
-        messageBox.style.borderColor = 'rgba(0, 128, 0, 0.4)';
-        messageBox.style.color = '#fff';
-      }
-    }
-
-    /**
-     * Preenche a página com os dados da proposta.
-     * @param {Object} proposta - O objeto da proposta retornado pela API.
-     */
-    function preencherProposta(proposta) {
-      const { data } = proposta;
-      
-      // Preenche os dados principais da proposta
-      projectNameEl.textContent = data.project.name || 'Nome do Projeto Não Encontrado';
-      projectDescriptionEl.textContent = data.description || '';
-      pagamentoVistaEl.textContent = (data.pricingTable[0].totalCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-      
-      const propostaVars = data.variables;
-      const valorParcela = propostaVars.find(v => v.key === 'vc_valor_parcela')?.value;
-      const paybackAnos = propostaVars.find(v => v.key === 'vc_payback_anos')?.value;
-
-      pagamentoParcelaMinima.textContent = `R$ ${parseFloat(valorParcela).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-      paybackYears.textContent = `${paybackAnos || 4} anos`;
-
-      // Preenche o cabeçalho
-      navBarAvistaPrice.textContent = (data.pricingTable[0].totalCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-      navBarMinParcel.textContent = `R$ ${parseFloat(valorParcela).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-
-      // Preenche a tabela de preços
-      pricingTableBody.innerHTML = '';
-      data.pricingTable.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${item.category}</td>
-          <td>${item.item}</td>
-          <td>${item.qnt}</td>
-          <td>${(item.unitCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' })}</td>
-          <td>${(item.totalCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' })}</td>
-        `;
-        pricingTableBody.appendChild(row);
-      });
-      
-      // Define o tema inicial como "alta performance"
-      setTheme('alta_performance');
-    }
-
-    /**
-     * Altera o tema da página.
-     * @param {string} themeName - O nome do tema ('alta_performance' ou 'economico').
-     */
+    // Altera o tema
     function setTheme(themeName) {
-      document.body.classList.remove(themes.economico.bodyClass);
-      document.body.classList.add(themes[themeName].bodyClass);
-      
-      highPerformanceOption.closest('.option').classList.remove('selected');
-      economicOption.closest('.option').classList.remove('selected');
-
-      if (themeName === 'alta_performance') {
-        highPerformanceOption.closest('.option').classList.add('selected');
-      } else if (themeName === 'economico') {
-        economicOption.closest('.option').classList.add('selected');
+      document.body.className = '';
+      if (themeName === 'economico') {
+        document.body.classList.add('economic-theme');
       }
     }
-    
-    // Adiciona event listeners para os botões de tema
+
     highPerformanceOption.addEventListener('click', () => setTheme('alta_performance'));
     economicOption.addEventListener('click', () => setTheme('economico'));
-
+    
 
     /**
      * Consulta a proposta ativa de um cliente chamando o backend.
@@ -766,33 +433,133 @@
      * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
      */
     async function consultarProposta(projectId) {
-        const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
+      const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
+      
+      try {
+        const res = await fetch(backendUrl);
         
-        try {
-            const res = await fetch(backendUrl);
-            
-            if (!res.ok) {
-                let errorMessage = `Erro HTTP: ${res.status}`;
-                try {
-                    const errorBody = await res.json();
-                    if (errorBody && errorBody.error) {
-                        errorMessage = `Erro: ${errorBody.error}`;
-                    } else if (errorBody && errorBody.message) {
-                        errorMessage = `Erro: ${errorBody.message}`;
-                    }
-                } catch (e) {
-                    // Se não for um JSON válido, a mensagem genérica será mantida
-                }
-                throw new Error(errorMessage);
+        if (!res.ok) {
+          let errorMessage = `Erro HTTP: ${res.status}`;
+          try {
+            const errorBody = await res.json();
+            if (errorBody && errorBody.error) {
+              errorMessage = `Erro: ${errorBody.error}`;
+            } else if (errorBody && errorBody.message) {
+              errorMessage = `Erro: ${errorBody.message}`;
             }
-            
-            const dados = await res.json();
-            return dados;
-        } catch (err) {
-            console.error("Erro ao consultar proposta:", err);
-            throw err;
+          } catch (e) {
+            // Se não for um JSON válido, a mensagem genérica será mantida
+          }
+          throw new Error(errorMessage);
+        }
+        
+        const dados = await res.json();
+        // A CORREÇÃO ESTÁ AQUI: a resposta tem a propriedade 'data'
+        return dados.data;
+      } catch (err) {
+        console.error("Erro ao consultar proposta:", err);
+        throw err;
+      }
+    }
+
+    /**
+     * Renderiza os detalhes da proposta na página.
+     * @param {Object} proposta - O objeto da proposta retornado pela API.
+     */
+    function renderizarProposta(proposta) {
+        // Mostra o container da proposta e esconde o formulário
+        formContainer.style.display = 'none';
+        proposalContainer.style.display = 'block';
+
+        // Atualiza as informações básicas
+        proposalName.textContent = proposta.name || "N/A";
+        proposalDescription.textContent = proposta.description || "Sem descrição.";
+        proposalStatus.textContent = `Status: ${proposta.status}`;
+        proposalLink.innerHTML = proposta.linkPdf ? `<a href="${proposta.linkPdf}" target="_blank">Ver PDF</a>` : '';
+
+        // Renderiza os detalhes da grade
+        detailsGrid.innerHTML = '';
+        if (proposta.customFields && proposta.customFields.length > 0) {
+            proposta.customFields.forEach(field => {
+                const card = document.createElement('div');
+                card.classList.add('detail-card');
+                card.innerHTML = `<h3>${field.key}</h3><p>${field.formattedValue}</p>`;
+                detailsGrid.appendChild(card);
+            });
+        } else {
+            detailsGrid.innerHTML = '<p style="text-align: center; width: 100%;">Não há detalhes adicionais.</p>';
+        }
+
+        // Renderiza a tabela de preços
+        pricingTableBody.innerHTML = '';
+        let totalCost = 0;
+        if (proposta.pricingTable && proposta.pricingTable.length > 0) {
+            proposta.pricingTable.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.category || "N/A"}</td>
+                    <td>${item.item || "N/A"}</td>
+                    <td>${item.qnt || "N/A"}</td>
+                    <td>R$ ${parseFloat(item.unitCost).toFixed(2) || "N/A"}</td>
+                    <td>R$ ${parseFloat(item.totalCost).toFixed(2) || "N/A"}</td>
+                `;
+                pricingTableBody.appendChild(row);
+                totalCost += parseFloat(item.totalCost);
+            });
+        } else {
+            pricingTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Tabela de preços não disponível.</td></tr>';
+        }
+        totalCostCell.textContent = `R$ ${totalCost.toFixed(2)}`;
+        
+        // Renderiza a simulação de geração
+        if (proposta.generation && proposta.generation.length > 0) {
+            const geracaoMedia = proposta.generation.find(g => g.key === 'anual_media');
+            if (geracaoMedia) {
+                 geracaoInfo.textContent = `Geração média anual: ${geracaoMedia.formattedValue} kWh.`;
+            } else {
+                 geracaoInfo.textContent = 'Dados de geração não disponíveis.';
+            }
+        } else {
+            geracaoInfo.textContent = 'Dados de geração não disponíveis.';
         }
     }
+
+    // Lida com o envio do formulário
+    searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const projectId = projectIdInput.value.trim();
+        
+        // Limpa a caixa de mensagens
+        messageBox.style.display = 'none';
+        messageBox.textContent = '';
+        
+        if (!projectId) {
+            messageBox.textContent = 'Por favor, digite um ID de projeto.';
+            messageBox.style.display = 'block';
+            return;
+        }
+
+        // Simula um estado de carregamento
+        searchForm.querySelector('button').textContent = 'Consultando...';
+        searchForm.querySelector('button').disabled = true;
+
+        try {
+            const proposta = await consultarProposta(projectId);
+            if (proposta) {
+                renderizarProposta(proposta);
+            } else {
+                messageBox.textContent = 'Proposta não encontrada para o projeto especificado.';
+                messageBox.style.display = 'block';
+            }
+        } catch (err) {
+            messageBox.textContent = `Erro ao carregar proposta: ${err.message}`;
+            messageBox.style.display = 'block';
+        } finally {
+            searchForm.querySelector('button').textContent = 'Consultar Proposta';
+            searchForm.querySelector('button').disabled = false;
+        }
+    });
+
   </script>
 
 </body>
