@@ -10,8 +10,8 @@ module.exports = async (req, res) => {
     // O token de credencial está seguro na variável de ambiente do Vercel.
     const longLivedToken = process.env.SOLARMARKET_TOKEN;
 
-    // A URL da API SolarMarket.
-    const SOLARMARKET_API_URL = 'https://gdissolarproposta.vercel.app/api';
+    // A URL CORRETA DA API SOLARMARKET. Foi corrigida com base na informação fornecida.
+    const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
 
     // Captura o ID do projeto enviado na requisição do front-end.
     const { projectId } = req.query;
