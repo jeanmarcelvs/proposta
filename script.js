@@ -56,7 +56,9 @@ async function consultarProposta(projectId) {
         }
 
         const data = await res.json();
-        return data;
+        // A API retorna um objeto com a propriedade 'data' que contém a proposta.
+        // Acessamos o valor dessa propriedade para usar no frontend.
+        return data.data;
     } catch (err) {
         console.error('Erro ao consultar a API do backend:', err);
         return null;
@@ -68,39 +70,55 @@ async function consultarProposta(projectId) {
  * @param {Object} proposta - O objeto da proposta.
  */
 function renderizarProposta(proposta) {
-    // Campos do cliente
-    clienteNome.textContent = proposta.cliente?.nome || 'N/A';
-    clienteCidadeUf.textContent = `${proposta.cliente?.cidade || ''}/${proposta.cliente?.uf || ''}`;
+    // Acessa o nome do cliente a partir de proposta.project
+    clienteNome.textContent = proposta.project?.name || 'N/A';
+    
+    // Acessa a cidade e UF do array 'variables'
+    const cidadeItem = proposta.variables?.find(item => item.key === 'cidade');
+    const estadoItem = proposta.variables?.find(item => item.key === 'estado');
+    const cidade = cidadeItem ? cidadeItem.value : 'N/A';
+    const estado = estadoItem ? estadoItem.value : 'N/A';
+    clienteCidadeUf.textContent = `${cidade}/${estado}`;
 
-    // Campo de data de geração
-    if (proposta.geracaoInfo?.dataGeracao) {
-        const data = new Date(proposta.geracaoInfo.dataGeracao);
+    // Acessa a data de geração a partir de proposta.generatedAt
+    if (proposta.generatedAt) {
+        const data = new Date(proposta.generatedAt);
         dataGeracao.textContent = data.toLocaleDateString('pt-BR');
     } else {
         dataGeracao.textContent = 'N/A';
     }
 
-    // Campos do inversor
-    inversorDescricao.textContent = proposta.inversor?.descricao || 'N/A';
-    inversorQuantidade.textContent = proposta.inversor?.quantidade || 'N/A';
-
-    // Campos do módulo
-    moduloDescricao.textContent = proposta.modulo?.descricao || 'N/A';
-    moduloQuantidade.textContent = proposta.modulo?.quantidade || 'N/A';
+    // Busca o inversor e o módulo no array pricingTable
+    const inversorItem = proposta.pricingTable?.find(item => item.category === 'Inversor');
+    const moduloItem = proposta.pricingTable?.find(item => item.category === 'Módulo');
     
-    // Calcula a economia mensal e o payback
-    const valorProjeto = proposta.payback?.valorProjeto || 0;
-    const economia = proposta.payback?.economia || 0;
-    const payback = proposta.payback?.payback || 0;
+    // Acessa os dados do inversor
+    inversorDescricao.textContent = inversorItem?.item || 'N/A';
+    inversorQuantidade.textContent = inversorItem?.qnt || 'N/A';
 
-    valorTotal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorProjeto);
-    economiaMensal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(economia);
-    paybackTempo.textContent = `${payback} meses`;
+    // Acessa os dados do módulo
+    moduloDescricao.textContent = moduloItem?.item || 'N/A';
+    moduloQuantidade.textContent = moduloItem?.qnt || 'N/A';
+    
+    // Acessa o valor total e o formata
+    const valorTotalItem = proposta.variables?.find(item => item.key === 'vc_total_bruto');
+    const valorTotalValue = valorTotalItem ? parseFloat(valorTotalItem.value) : 0;
+    valorTotal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotalValue);
+
+    // Acessa o valor da economia mensal e o formata
+    const economiaItem = proposta.variables?.find(item => item.key === 'vc_economia_total');
+    const economiaValue = economiaItem ? parseFloat(economiaItem.value) : 0;
+    economiaMensal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(economiaValue);
+
+    // Acessa o tempo de payback
+    const paybackItem = proposta.variables?.find(item => item.key === 'payback_meses');
+    const paybackValue = paybackItem ? parseFloat(paybackItem.value) : 0;
+    paybackTempo.textContent = `${paybackValue} meses`;
 
     // Atualiza o link do PDF
     if (proposta.linkPdf) {
         linkPDF.href = proposta.linkPdf;
-        linkPDF.style.display = 'inline-flex'; // Use inline-flex para exibir
+        linkPDF.style.display = 'inline-flex';
     } else {
         linkPDF.style.display = 'none';
     }
