@@ -94,14 +94,11 @@ module.exports = async (req, res) => {
             console.log(`Debug: O que propostasData.data contém?`, propostasData.data);
         }
         
-        let propostaAtiva = null;
-        if (propostasData && propostasData.data) {
-            if (Array.isArray(propostasData.data)) {
-                propostaAtiva = propostasData.data.length > 0 ? propostasData.data[0] : null;
-            } else {
-                propostaAtiva = propostasData.data;
-            }
-        }
+        // CORREÇÃO FINAL E ROBUSTA:
+        // A API retorna um objeto com uma propriedade 'data' que contém a proposta.
+        // Pegamos o valor dessa propriedade diretamente, que é a proposta em si,
+        // e não um array. Esta linha corrige a lógica para pegar o objeto diretamente.
+        const propostaAtiva = propostasData.data;
         
         // NOVO LOG PARA CONFERIR O RESULTADO FINAL:
         console.log(`Debug: Valor final de propostaAtiva:`, propostaAtiva);
