@@ -10,10 +10,11 @@ module.exports = async (req, res) => {
     // O token de credencial está seguro na variável de ambiente do Vercel.
     const longLivedToken = process.env.SOLARMARKET_TOKEN;
 
-    // A URL CORRETA DA API SOLARMARKET. Foi corrigida com base na informação fornecida.
+    // A URL CORRETA DA API SOLARMARKET.
     const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
 
     // Captura o ID do projeto enviado na requisição do front-end.
+    // O front-end envia como 'projectId', que será usado como 'id' na API.
     const { projectId } = req.query;
 
     // Inicia um bloco try-catch para garantir que qualquer erro na requisição
@@ -50,7 +51,8 @@ module.exports = async (req, res) => {
         // ######################################################################
         // 3. USA O TOKEN TEMPORÁRIO PARA FAZER A CONSULTA DA PROPOSTA
         // ######################################################################
-        const propostaResponse = await fetch(`${SOLARMARKET_API_URL}/proposta?projectId=${projectId}`, {
+        // O caminho da API foi corrigido para '/proposals/get-proposta' com base na sua coleção do Postman.
+        const propostaResponse = await fetch(`${SOLARMARKET_API_URL}/proposals/get-proposta?id=${projectId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${accessToken}`
