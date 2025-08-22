@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Adicionado Authorization aqui
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     // Lida com as requisições OPTIONS de preflight
     if (req.method === 'OPTIONS') {
@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
             method: 'GET',
             headers: {
                 'accept': 'application/json',
-                'Authorization': `Bearer ${accessToken}` // Usa o token temporário
+                'Authorization': `Bearer ${accessToken}`
             }
         });
         
@@ -85,14 +85,12 @@ module.exports = async (req, res) => {
         }
 
         const propostasData = await propostaResponse.json();
-        // NOVO LOG: Imprime a resposta completa da API para debug.
         console.log('Dados recebidos da API:', JSON.stringify(propostasData, null, 2));
         
-        // AQUI ESTÁ A CORREÇÃO:
-        // A API da SolarMarket retorna um objeto { "data": [...] }.
-        // O código anterior estava tentando acessar ".length" na raiz, o que resultava em um erro.
-        // Agora, acessamos corretamente o array dentro da propriedade 'data'.
-        const propostaAtiva = propostasData && propostasData.data && propostasData.data.length > 0 ? propostasData.data[0] : null;
+        // CORREÇÃO:
+        // O log mostrou que a API retorna um objeto aninhado em 'data'.
+        // O código anterior esperava um array. Agora, ele pega o objeto diretamente.
+        const propostaAtiva = propostasData && propostasData.data ? propostasData.data : null;
 
         if (!propostaAtiva) {
             console.log(`Proposta não encontrada para o Project ID: ${projectId}`);
