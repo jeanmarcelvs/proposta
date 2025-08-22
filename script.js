@@ -12,7 +12,7 @@ const clienteNome = document.getElementById('cliente-nome');
 const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
 const dataGeracao = document.getElementById('data-geracao');
 const inversorDescricao = document.getElementById('inversor-descricao');
-const inversorQuantidade = document = document.getElementById('inversor-quantidade');
+const inversorQuantidade = document.getElementById('inversor-quantidade');
 const moduloDescricao = document.getElementById('modulo-descricao');
 const moduloQuantidade = document.getElementById('modulo-quantidade');
 const valorTotal = document.getElementById('valor-total');
