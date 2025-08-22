@@ -117,7 +117,7 @@ module.exports = async (req, res) => {
         }
 
         // ######################################################################
-        // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
+        // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END -
         // ######################################################################
         res.status(200).json(propostaAtiva);
 
