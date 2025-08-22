@@ -1,30 +1,39 @@
 /**
- * Função Serverless para consultar a proposta ativa de um projeto na API da SolarMarket.
+ * Função Serverless para consultar as propostas de um projeto na API da SolarMarket.
  * Esta função lida com o ciclo de vida do token de acesso, obtendo um novo token temporário
  * a cada requisição para evitar erros de expiração.
  */
 module.exports = async (req, res) => {
+    // Define os cabeçalhos para resposta JSON e CORS
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Lida com as requisições OPTIONS de preflight
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     // ######################################################################
     // 1. OBTÉM A CREDENCIAL DE LONGA DURAÇÃO E CONFIGURA VARIÁVEIS
     // ######################################################################
-    // O token de credencial está seguro na variável de ambiente do Vercel.
+    // O token de credencial está armazenado de forma segura na variável de ambiente do Vercel.
     const longLivedToken = process.env.SOLARMARKET_TOKEN;
 
     // A URL CORRETA DA API SOLARMARKET.
     const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
 
     // Captura o ID do projeto enviado na requisição do front-end.
-    // O front-end envia como 'projectId', que será usado como 'id' na API.
     const { projectId } = req.query;
 
-    // Inicia um bloco try-catch para garantir que qualquer erro na requisição
-    // seja capturado e retornado ao front-end como um JSON.
     try {
         // Verifica se o projectId foi fornecido
         if (!projectId) {
             // Se o projectId estiver ausente, retorna um erro 400 (Bad Request).
             res.status(400).json({ error: 'ID do projeto é obrigatório.' });
-            return; // Encerra a execução da função aqui.
+            return;
         }
 
         // ######################################################################
@@ -38,8 +47,7 @@ module.exports = async (req, res) => {
             body: JSON.stringify({ token: longLivedToken })
         });
 
-        // Se a autenticação falhar, lê a resposta como texto para evitar
-        // o erro 'Unexpected token' e lança uma exceção com mais detalhes.
+        // Se a autenticação falhar, lança uma exceção com mais detalhes.
         if (!authResponse.ok) {
             const authErrorText = await authResponse.text();
             throw new Error(`Erro de Autenticação: ${authResponse.status} - ${authErrorText}`);
@@ -51,33 +59,39 @@ module.exports = async (req, res) => {
         // ######################################################################
         // 3. USA O TOKEN TEMPORÁRIO PARA FAZER A CONSULTA DA PROPOSTA
         // ######################################################################
-        // O caminho da API foi corrigido para '/proposals/get-proposta' com base na sua coleção do Postman.
-        const propostaResponse = await fetch(`${SOLARMARKET_API_URL}/proposals/get-proposta?id=${projectId}`, {
+        // A URL foi ajustada para usar a nova estrutura de endpoint da documentação.
+        const propostaResponse = await fetch(`${SOLARMARKET_API_URL}/projects/${projectId}/proposals`, {
             method: 'GET',
             headers: {
+                'accept': 'application/json',
                 'Authorization': `Bearer ${accessToken}`
             }
         });
 
-        // Se a consulta falhar, lê a resposta como texto para evitar
-        // o erro 'Unexpected token' e lança uma exceção com mais detalhes.
+        // Se a consulta falhar, lança uma exceção com mais detalhes.
         if (!propostaResponse.ok) {
             const propostaErrorText = await propostaResponse.text();
             throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${propostaErrorText}`);
         }
 
-        const propostaData = await propostaResponse.json();
+        const propostasData = await propostaResponse.json();
+
+        // O endpoint pode retornar um array, então vamos pegar a primeira proposta encontrada.
+        const propostaAtiva = propostasData && propostasData.length > 0 ? propostasData[0] : null;
+
+        if (!propostaAtiva) {
+            res.status(404).json({ error: 'Proposta não encontrada para o projeto especificado.' });
+            return;
+        }
 
         // ######################################################################
         // 4. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
         // ######################################################################
-        res.status(200).json(propostaData);
+        res.status(200).json(propostaAtiva);
 
     } catch (err) {
-        // Este bloco de captura garante que todos os erros (inclusive a falha de
-        // análise do JSON) sejam tratados e retornados ao cliente de forma segura.
+        // Este bloco de captura garante que todos os erros sejam tratados.
         console.error('Erro na função serverless:', err.message);
-        // O status 500 é mantido para erros internos.
         res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
 };
