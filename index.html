@@ -493,8 +493,9 @@
         }
         
         const dados = await res.json();
-        // A CORREÇÃO ESTÁ AQUI: Acessa a propriedade 'data' da resposta.
-        return dados.data;
+        // CORREÇÃO: A API do backend já retorna o objeto da proposta diretamente.
+        // Acessar 'dados.data' foi a causa do erro.
+        return dados;
       } catch (err) {
         console.error("Erro ao consultar proposta:", err);
         throw err;
