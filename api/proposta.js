@@ -5,6 +5,28 @@
  */
 const fetch = require('node-fetch');
 
+// ######################################################################
+// 1. FUNÇÃO PARA OBTER O TOKEN DE ACESSO
+// ######################################################################
+async function getAccessToken(longLivedToken, apiUrl) {
+    const authUrl = `${apiUrl}/auth/token`;
+    const authResponse = await fetch(authUrl, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': `Bearer ${longLivedToken}`
+        }
+    });
+
+    if (!authResponse.ok) {
+        const errorText = await authResponse.text();
+        throw new Error(`Erro ao obter token de acesso: ${authResponse.status} - ${errorText}`);
+    }
+
+    const authData = await authResponse.json();
+    return authData.token;
+}
+
 module.exports = async (req, res) => {
     // Define os cabeçalhos para resposta JSON e CORS
     res.setHeader('Content-Type', 'application/json');
@@ -19,7 +41,7 @@ module.exports = async (req, res) => {
     }
 
     // ######################################################################
-    // 1. OBTÉM AS CREDENCIAIS E VALIDAÇÃO INICIAL
+    // 2. OBTÉM AS CREDENCIAIS E VALIDAÇÃO INICIAL
     // ######################################################################
     const longLivedToken = process.env.SOLARMARKET_TOKEN;
     const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
@@ -42,27 +64,34 @@ module.exports = async (req, res) => {
             return;
         }
         
-        // NOVO: Remove espaços em branco antes e depois do token para evitar erros de autenticação.
+        // Remove espaços em branco antes e depois do token para evitar erros de autenticação.
         const trimmedToken = longLivedToken.trim();
 
         // ======================================================================
         // CÓDIGO DE DEBUG ADICIONADO PARA O SUPORTE
         // Imprime o comprimento do token para verificação.
-        console.log(`Debug: Comprimento do Token: ${trimmedToken.length}`);
+        console.log(`Debug: Comprimento do Long-Lived Token: ${trimmedToken.length}`);
         // Imprime a URL completa da API para verificação.
         const apiUrl = `${SOLARMARKET_API_URL}/projects/${projectId}/proposals`;
         console.log(`Debug: Chamando a URL da API: ${apiUrl}`);
         // ======================================================================
-
+        
         // ######################################################################
-        // 2. CHAMA A API DA SOLARMARKET COM O 'projectId'
+        // 3. OBTÉM O TOKEN TEMPORÁRIO ANTES DE CHAMAR A API DE PROPOSTA
+        // ######################################################################
+        console.log('Debug: Tentando obter o token de acesso temporário...');
+        const accessToken = await getAccessToken(trimmedToken, SOLARMARKET_API_URL);
+        console.log('Debug: Token temporário obtido com sucesso.');
+        
+        // ######################################################################
+        // 4. CHAMA A API DA SOLARMARKET COM O 'projectId'
         // ######################################################################
         // Usa o token "limpo" (sem espaços) no cabeçalho de autorização.
         const propostaResponse = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'accept': 'application/json',
-                'Authorization': `Bearer ${trimmedToken}`
+                'Authorization': `Bearer ${accessToken}` // Usa o token temporário
             }
         });
         
@@ -81,7 +110,7 @@ module.exports = async (req, res) => {
         }
 
         // ######################################################################
-        // 4. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
+        // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
         // ######################################################################
         res.status(200).json(propostaAtiva);
 
