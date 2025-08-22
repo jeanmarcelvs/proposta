@@ -60,6 +60,10 @@
         background: var(--light-gray);
         color: var(--dark-blue);
     }
+    
+    .proposal-section {
+        display: none;
+    }
 
     /* Estilos para o container do formulário */
     .form-container {
@@ -257,6 +261,7 @@
       justify-content: space-between;
       align-items: center;
       transition: background 0.5s ease;
+      display: none; /* Esconde o cabeçalho por padrão */
     }
 
     .nav-bar .logo {
@@ -292,691 +297,475 @@
       opacity: 1;
     }
 
-    .header-price-item {
+    .price-group {
       display: flex;
       flex-direction: column;
       align-items: center;
+      text-align: center;
     }
 
-    .header-price-item small {
-      color: #d1d9e2;
-      font-size: 11px;
-      font-weight: 500;
+    .price-label {
+      font-size: 12px;
       text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    .header-price-item p {
       color: var(--white);
-      font-size: 16px;
-      font-weight: 700;
-      line-height: 1;
-      margin: 0;
+      opacity: 0.7;
     }
 
-    .header-price-item .min-parcel-label {
-      text-align: center;
-    }
-
-    .header-price-item .max-installments {
-      color: var(--highlight-color);
-      font-size: 11px;
-      font-weight: 600;
-      margin-top: 2px;
-      transition: color 0.5s ease;
-    }
-
-    @media (min-width: 1024px) {
-        .nav-bar .logo {
-            flex-shrink: 0;
-        }
-        .nav-bar .proposal-options {
-            flex-grow: 1;
-            justify-content: flex-end;
-        }
-        .nav-middle-content {
-          flex: 1 1 auto;
-          gap: 40px;
-        }
-        .nav-bar .header-prices-info {
-          justify-content: flex-start;
-        }
-    }
-
-    @media (max-width: 1023px) {
-        .header-prices-info {
-          display: none;
-        }
-    }
-
-    header.hero {
-      background: var(--gradient-bg);
-      color: var(--white);
-      padding: 120px 20px 100px;
-      position: relative;
-      overflow: hidden;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: background 0.5s ease;
-    }
-
-    header.hero .title-and-subtitle {
-      margin-top: 100px;
-    }
-
-    header.hero h1 {
-      font-size: clamp(38px, 6vw, 68px);
-      font-weight: 800;
-      margin-bottom: 10px;
-      line-height: 1.1;
-    }
-
-    .proposal-details {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(5px);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .proposal-details .item {
-      text-align: center;
-      flex: 1 1 150px;
-    }
-
-    .proposal-details .item h3 {
-      font-size: 14px;
-      color: #b3c2e1;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .proposal-details .item p {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--white);
-      margin: 0;
-      word-break: break-word;
-    }
-
-    .proposal-options {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      width: 100%;
-    }
-
-    .proposal-options .option {
-      background: rgba(233, 236, 239, 0.2);
-      border: 2px solid transparent;
-      border-radius: 50px;
-      padding: 12px 24px;
-      cursor: pointer;
-      transition: all .3s ease;
-      font-weight: 600;
-      font-size: 14px;
-      color: #d1d9e2;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .proposal-options .option.selected {
-      color: var(--white);
-      border: 2px solid var(--white);
-      box-shadow: 0 4px 10px rgba(0,0,0,.2);
-    }
-
-    .option.selected.high-performance-active {
-        background: var(--highlight-color);
-    }
-
-    .option.selected.economic-active {
-        background: var(--highlight-color);
-    }
-
-    .proposal-options .option input {
-      display: none;
-    }
-
-    .info-card {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .info-card svg {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 12px;
-      color: var(--highlight-color);
-      transition: color 0.5s ease;
-    }
-
-    .info-card h3 {
+    .price-value {
       font-size: 18px;
       font-weight: 600;
-      color: var(--dark-blue);
-      margin-bottom: 5px;
-      transition: color 0.5s ease;
-    }
-
-    .info-card .value {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--highlight-color);
-      margin: 0;
-      line-height: 1.2;
-      transition: color 0.5s ease;
-    }
-
-    .info-card-icon {
-      display: block;
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 12px;
-      color: var(--highlight-color);
-      transition: color 0.5s ease;
-    }
-
-    .payback-section-bg {
-      background: var(--dark-blue);
       color: var(--white);
-      margin: 40px 0;
-      padding: 60px 20px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      transition: background-color 0.5s ease;
     }
 
-    .payback-content-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 40px;
-      border-radius: var(--radius);
-      background: var(--white);
-      box-shadow: var(--shadow);
-      text-align: center;
-      transition: background-color 0.5s ease;
-    }
-
-    .payback-details {
-      font-size: 16px;
-      color: var(--muted-text);
-      max-width: 600px;
-      margin: 0 auto;
-      transition: color 0.5s ease;
-    }
-
-    .payback-details strong {
-      color: var(--highlight-color);
-      transition: color 0.5s ease;
-    }
-
-    .payback-highlight-box {
-      margin-top: 20px;
+    .options-row {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
 
-    .payback-highlight-box svg {
-      width: 50px;
-      height: 50px;
-      color: var(--highlight-color);
-      transition: color 0.5s ease;
+    .option {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      color: var(--white);
+      padding: 10px 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
     }
 
-    .payback-highlight-box p {
-      font-size: clamp(20px, 4vw, 28px);
-      font-weight: 600;
-      color: var(--dark-blue);
-      transition: color 0.5s ease;
-    }
-
-    .payback-highlight-box p strong {
-      font-size: clamp(24px, 5vw, 36px);
-      font-weight: 900;
-      color: var(--highlight-color);
-      display: block;
-      margin-top: 5px;
-      transition: color 0.5s ease;
-    }
-
-    .prod-grid {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
-    }
-
-    .prod-card h3 {
-      font-size: 22px;
-      margin-bottom: 8px;
-    }
-
-    .prod-table {
-      margin-top: 15px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--light-gray);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: inset 0 0 5px rgba(0, 0, 0, .05);
-      transition: background-color 0.5s ease;
-    }
-
-    .prod-table div {
-      padding: 15px;
-      border-bottom: 1px solid #ddd;
-      font-size: 15px;
-    }
-
-    .prod-table div:nth-child(2n) {
-      border-left: 1px solid #ddd;
-      font-weight: 600;
-      color: var(--dark-blue);
+    .option.selected {
+      background: var(--white);
+      color: var(--main-blue);
+      border-color: var(--white);
     }
     
-    .prod-table div:last-child,
-    .prod-table div:nth-last-child(2) {
-      border-bottom: none;
+    .nav-buttons-mobile {
+        display: none;
     }
 
-    .prod-image {
-      max-width: 100%;
-      height: auto;
-      border-radius: 12px;
-      margin-bottom: 15px;
-    }
-    
-    /* ---------------------- */
-    /* Rodapé                 */
-    /* ---------------------- */
-    .contact-footer {
-        background: var(--dark-blue);
-        color: var(--muted-text);
-        padding: 40px 20px;
-        text-align: center;
-        transition: background-color 0.5s ease;
-    }
-    .contact-footer .contact-info {
+    @media (max-width: 768px) {
+      .nav-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+      }
+      
+      .nav-middle-content {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+      }
+
+      .options-row {
+          flex-wrap: wrap;
+          justify-content: center;
+      }
+      
+      .header-prices-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+      }
+      
+      .price-group {
+          align-items: flex-start;
+      }
+      
+      .nav-buttons-mobile {
         display: flex;
+        width: 100%;
         justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
+        gap: 10px;
+      }
+      
+      .options-row {
+          display: none;
+      }
+      
+      .nav-bar.show-prices .header-prices-info {
+          max-width: 100%;
+      }
     }
-    .contact-footer .contact-link {
-        color: var(--white);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 15px; /* Espaço entre as linhas */
+    }
+    
+    table thead th {
+        text-align: left;
+        padding: 10px 15px;
+        font-size: 14px;
+        text-transform: uppercase;
+        color: var(--muted-text);
+        font-weight: 600;
+    }
+    
+    table tbody tr {
+        background: var(--light-gray);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    table tbody tr:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    table tbody td {
+        padding: 15px;
+        color: var(--dark-blue);
         font-weight: 500;
-        transition: color 0.3s ease;
+        vertical-align: middle;
     }
-    .contact-footer .contact-link svg {
-        width: 20px;
-        height: 20px;
+    
+    table tbody tr:first-child {
+        border-top-left-radius: var(--radius);
+        border-top-right-radius: var(--radius);
     }
-    .contact-footer .contact-link:hover {
-        color: var(--highlight-color);
+    
+    table tbody tr:last-child {
+        border-bottom-left-radius: var(--radius);
+        border-bottom-right-radius: var(--radius);
     }
-    .contact-footer small {
-        display: block;
-        margin-top: 20px;
-        font-size: 12px;
+    
+    .table-header {
+        text-align: center;
+        margin-bottom: 20px;
     }
+    
+    .pricing-table-section {
+        margin: 40px 0;
+        padding: 20px;
+    }
+
+    .pricing-table-section h2 {
+        text-align: left;
+        font-size: clamp(24px, 3vw, 36px);
+        margin-bottom: 12px;
+        color: var(--dark-blue);
+    }
+    
+    .pricing-table-section p {
+        text-align: left;
+        color: var(--muted-text);
+        margin-bottom: 30px;
+    }
+
+    /* Rodapé */
+    footer {
+        text-align: center;
+        padding: 20px;
+        color: var(--muted-text);
+        font-size: 14px;
+        background: var(--white);
+        margin-top: 40px;
+    }
+
   </style>
-
 </head>
-<body>
 
-  <!-- Container de Formulário de Consulta -->
-  <div id="formContainer" class="form-container">
+<body>
+  <!-- Seção de Consulta (Padrão) -->
+  <div id="form-section" class="form-container">
     <div class="form-box">
       <div class="logo">
-        <!-- Usando a logo.png -->
-        <img src="logo.png" alt="GDIS Logo">
+        <img src="logo.png" onerror="this.onerror=null;this.src='https://placehold.co/150x80/123d8c/ffffff?text=Logo';" alt="Logo GDIS Solar">
       </div>
-      <h1>Proposta Comercial</h1>
-      <p>Digite o número do projeto para visualizar sua proposta.</p>
-      <form id="searchForm" class="search-form">
-        <input type="text" id="projectIdInput" placeholder="Número do Projeto" required>
+      <h1>Sua Proposta GDIS Solar</h1>
+      <p>Digite o ID do projeto para visualizar a proposta.</p>
+      <form id="search-form" class="search-form">
+        <input type="text" id="project-id" name="project-id" placeholder="Ex: 123456" required>
         <button type="submit">Consultar</button>
       </form>
-      <div id="messageBox" class="message-box"></div>
+      <div id="message-box" class="message-box"></div>
     </div>
   </div>
-
-  <!-- Container da Proposta (inicialmente invisível) -->
-  <div id="proposalContainer" class="proposal-container">
-    <!-- Barra de Navegação Fixa -->
-    <nav class="nav-bar">
-      <div class="logo">
-        <img src="logo.png" alt="GDIS Logo">
+  
+  <!-- Seção da Proposta (Escondida por padrão) -->
+  <div id="proposal-section" class="proposal-container">
+    <!-- Cabeçalho Fixo -->
+    <header class="nav-bar">
+      <div class="nav-bar-left">
+        <div class="logo">
+          <img src="logo.png" onerror="this.onerror=null;this.src='https://placehold.co/150x80/123d8c/ffffff?text=Logo';" alt="Logo GDIS Solar">
+        </div>
       </div>
       <div class="nav-middle-content">
-        <div class="header-prices-info">
-          <div class="header-price-item">
-            <small>Valor à vista</small>
-            <p id="navBarAvistaPrice">R$ 0,00</p>
+          <div class="header-prices-info">
+              <div class="price-group">
+                  <span class="price-label">À vista</span>
+                  <span id="nav-bar-avista-price" class="price-value">R$ 0,00</span>
+              </div>
+              <div class="price-group">
+                  <span class="price-label">Mensal</span>
+                  <span id="nav-bar-min-parcel" class="price-value">R$ 0,00</span>
+              </div>
           </div>
-          <div class="header-price-item">
-            <small class="min-parcel-label">Parcela mínima</small>
-            <p id="navBarMinParcel">R$ 0,00</p>
-            <span class="max-installments">60x sem juros</span>
+          <div class="options-row">
+              <div class="option high-performance-option selected">
+                  <span>Alta Performance</span>
+              </div>
+              <div class="option economic-option">
+                  <span>Econômico</span>
+              </div>
           </div>
-        </div>
-      </div>
-    </nav>
-  
-    <!-- Cabeçalho Principal -->
-    <header class="hero">
-      <div class="title-and-subtitle">
-        <h1>Proposta Personalizada</h1>
-        <p class="lead" id="clientName">Aguardando dados do cliente...</p>
-      </div>
-      <div class="proposal-details">
-        <div class="item">
-          <h3>NÚMERO DA PROPOSTA</h3>
-          <p id="proposalNumber">#0000</p>
-        </div>
-        <div class="item">
-          <h3>POTÊNCIA DO SISTEMA</h3>
-          <p id="systemPower">0,00 kWp</p>
-        </div>
-        <div class="item">
-          <h3>GERAÇÃO MENSAL</h3>
-          <p id="monthlyGeneration">0,00 kWh</p>
-        </div>
-        <div class="item">
-          <h3>ECONOMIA MENSAL</h3>
-          <p id="monthlySavings">R$ 0,00</p>
-        </div>
       </div>
     </header>
-  
-    <!-- Seção de Vantagens da Energia Solar -->
-    <section class="container clean-section">
-      <h2>Energia Solar é um excelente investimento.</h2>
-      <p class="lead">Entenda os principais benefícios que a energia solar traz para você.</p>
-      <div class="grid grid-3">
-        <div class="card info-card text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-card-icon">
-            <path d="M22 10.5V12a10 10 0 1 1-5.98-9.06"/>
-            <path d="M22 6L16.29 11.71A2 2 0 0 1 14.88 12.3L13 14"/>
-            <path d="M15 13.5L13.5 15"/>
-            <path d="M16 11L14 13"/>
-            <path d="M12.5 16.5L10.5 18"/>
-            <path d="M13 14L9 18"/>
-            <path d="M17 11L15 13"/>
-            <path d="M18 9L16 11"/>
-            <path d="M22 2L18 6"/>
-          </svg>
-          <h3>Valorização do Imóvel</h3>
-          <p class="value" id="propertyValueIncrease">Até 30%</p>
-          <p>O seu imóvel valoriza imediatamente após a instalação do sistema fotovoltaico.</p>
-        </div>
-        <div class="card info-card text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-card-icon">
-            <path d="M12 2L8.2 8.2l-6.2 1.4L6.9 14l-.9 6.1 6-2.5 6 2.5-.9-6.1 4.9-4.4-6.2-1.4L12 2z"/>
-          </svg>
-          <h3>Proteção Financeira</h3>
-          <p class="value" id="financialProtection">99%</p>
-          <p>Se proteja contra os aumentos na conta de luz e economize dinheiro.</p>
-        </div>
-        <div class="card info-card text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-card-icon">
-            <path d="M4 14.89a2.54 2.54 0 0 1-1.39-4.24l.15-.17a3 3 0 0 1 3.51-3.61l.55.15a.5.5 0 0 0 .58-.33l.48-1.5a3 3 0 0 1 3.56-2.18l.82.16a.5.5 0 0 0 .5-.29l.39-1.39a3 3 0 0 1 3.12-1.89l.34.1a.5.5 0 0 0 .42-.23l.23-.39a3 3 0 0 1 2.89-1.53l.63.15a.5.5 0 0 0 .51-.26l.48-1.5a3 3 0 0 1 3.56-2.18l.82.16a.5.5 0 0 0 .5-.29l.39-1.39a3 3 0 0 1 3.12-1.89l.34.1a.5.5 0 0 0 .42-.23l.23-.39a3 3 0 0 1 2.89-1.53"/>
-            <path d="M4 14.89a2.54 2.54 0 0 1-1.39-4.24l.15-.17a3 3 0 0 1 3.51-3.61l.55.15a.5.5 0 0 0 .58-.33l.48-1.5a3 3 0 0 1 3.56-2.18l.82.16a.5.5 0 0 0 .5-.29l.39-1.39a3 3 0 0 1 3.12-1.89l.34.1a.5.5 0 0 0 .42-.23l.23-.39a3 3 0 0 1 2.89-1.53"/>
-            <path d="M4 14.89a2.54 2.54 0 0 1-1.39-4.24l.15-.17a3 3 0 0 1 3.51-3.61l.55.15a.5.5 0 0 0 .58-.33l.48-1.5a3 3 0 0 1 3.56-2.18l.82.16a.5.5 0 0 0 .5-.29l.39-1.39a3 3 0 0 1 3.12-1.89l.34.1a.5.5 0 0 0 .42-.23l.23-.39a3 3 0 0 1 2.89-1.53"/>
-            <path d="M12 21a9.5 9.5 0 1 1-9.5-9.5A9.5 9.5 0 0 1 12 21Z" />
-            <path d="M14.5 12.5a2.5 2.5 0 0 1-2.5 2.5V10"/>
-            <path d="M12 10a2.5 2.5 0 0 1 2.5 2.5" />
-            <path d="M12 20.5a8.5 8.5 0 1 1-8.5-8.5A8.5 8.5 0 0 1 12 20.5Z" />
-            <path d="M12 12V6" />
-          </svg>
-          <h3>Sustentabilidade Ambiental</h3>
-          <p class="value" id="environmentalSustainability">100%</p>
-          <p>Reduza a sua pegada de carbono e contribua para um futuro mais sustentável.</p>
-        </div>
-      </div>
-    </section>
-  
-    <!-- Seção de Payback -->
-    <section class="container payback-section-bg">
-      <h2>O seu investimento se paga em poucos anos.</h2>
-      <p class="lead" style="color: #d1d9e2;">Veja em quanto tempo você terá o retorno do seu capital.</p>
-      <div class="payback-content-container">
-        <p class="payback-details">Com o sistema GDIS Solar, o retorno sobre o seu investimento está garantido. A economia gerada na sua conta de luz irá cobrir o custo total do projeto em apenas cerca de <strong id="paybackYears">0 anos</strong>.</p>
-        <div class="payback-highlight-box">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="payback-icon">
-            <path d="M22 10.5V12a10 10 0 1 1-5.98-9.06"/>
-            <path d="M10 21.5a1.5 1.5 0 0 0 3 0v-5a1.5 1.5 0 0 0-3 0v5Z"/>
-          </svg>
-          <p>O seu retorno financeiro é de <strong id="roiValue">R$ 0,00</strong></p>
+
+    <!-- Seção de Cabeçalho da Proposta -->
+    <section class="clean-section header-section proposal-section">
+      <div class="container">
+        <h2 id="project-name"></h2>
+        <p class="lead" id="project-description"></p>
+        <div class="grid grid-3">
+          <!-- Card de Pagamento à Vista -->
+          <div class="card text-center">
+            <span style="font-size: 14px; color: var(--muted-text);">Pagamento à vista</span>
+            <h3 id="pagamento-vista" style="font-size: 32px; font-weight: 800; color: var(--highlight-color); margin-top: 10px;">R$ 0,00</h3>
+          </div>
+          <!-- Card de Parcela Mínima -->
+          <div class="card text-center">
+            <span style="font-size: 14px; color: var(--muted-text);">Pagamento com parcela mínima</span>
+            <h3 id="pagamento-parcela-minima" style="font-size: 32px; font-weight: 800; color: var(--highlight-color); margin-top: 10px;">R$ 0,00</h3>
+          </div>
+          <!-- Card de Payback -->
+          <div class="card text-center">
+            <span style="font-size: 14px; color: var(--muted-text);">Payback estimado</span>
+            <h3 id="payback-years" style="font-size: 32px; font-weight: 800; color: var(--highlight-color); margin-top: 10px;">0 anos</h3>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Seção de Produtos -->
-    <section class="container clean-section">
-        <h2>Produtos de Alta Qualidade</h2>
-        <p class="lead">Trabalhamos apenas com os melhores produtos do mercado para garantir a máxima performance e durabilidade do seu sistema.</p>
-        <div class="grid prod-grid">
-            <!-- Cards de Produtos (serão preenchidos por JS) -->
+    <!-- Seção de Tabela de Preços -->
+    <section class="pricing-table-section proposal-section">
+      <div class="container">
+        <h2>Detalhes da Proposta</h2>
+        <p>A tabela de preços detalhada para cada componente do seu projeto.</p>
+        <div class="table-responsive">
+          <table id="pricing-table">
+            <thead>
+              <tr>
+                <th>Categoria</th>
+                <th>Item</th>
+                <th>Quantidade</th>
+                <th>Custo Unitário</th>
+                <th>Custo Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Os itens da tabela serão inseridos aqui via JavaScript -->
+            </tbody>
+          </table>
         </div>
+      </div>
     </section>
-  
+
     <!-- Rodapé -->
-    <footer class="contact-footer">
-        <div class="contact-info">
-            <a href="tel:+5581999999999" class="contact-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2h-1.63a1.5 1.5 0 0 1-1.5-1.5A10.87 10.87 0 0 1 7.15 7.15A1.5 1.5 0 0 1 5.65 5.65H4a2 2 0 0 1-2-2.18a1.5 1.5 0 0 1-1.5-1.5A10.87 10.87 0 0 1 7.15 7.15A1.5 1.5 0 0 1 5.65 5.65H4a2 2 0 0 1-2-2.18L.7 2.18a2 2 0 0 1 2-2.18z"></path></svg>
-                (81) 9999-9999
-            </a>
-            <a href="mailto:contato@gdis.com.br" class="contact-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                contato@gdis.com.br
-            </a>
-            <a href="https://www.gdis.com.br" target="_blank" class="contact-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"></path></svg>
-                www.gdis.com.br
-            </a>
-        </div>
-        <small>© 2024 GDIS Solar. Todos os direitos reservados.</small>
+    <footer>
+      <p>Desenvolvido por GDIS Solar. © 2024</p>
     </footer>
 
+  </div>
+
   <script>
-    /**
-     * Objeto de mapeamento para traduzir tipos de produtos da API para nomes amigáveis.
-     */
-    const productTypeMapping = {
-      'inverter': 'Inversor',
-      'inversor': 'Inversor',
-      'modulo': 'Módulo',
-      'structure': 'Estrutura'
-    };
-  
-    /**
-     * Mapeamento de temas para cores e outras variáveis.
-     */
+    // Seletor de elementos HTML para fácil acesso
+    const formSection = document.getElementById('form-section');
+    const proposalSection = document.getElementById('proposal-section');
+    const navBar = document.querySelector('.nav-bar');
+    const searchForm = document.getElementById('search-form');
+    const messageBox = document.getElementById('message-box');
+    const projectIdInput = document.getElementById('project-id');
+    const navBarAvistaPrice = document.getElementById('nav-bar-avista-price');
+    const navBarMinParcel = document.getElementById('nav-bar-min-parcel');
+    const projectNameEl = document.getElementById('project-name');
+    const projectDescriptionEl = document.getElementById('project-description');
+    const pagamentoVistaEl = document.getElementById('pagamento-vista');
+    const pagamentoParcelaMinima = document.getElementById('pagamento-parcela-minima');
+    const paybackYears = document.getElementById('payback-years');
+    const pricingTableBody = document.querySelector('#pricing-table tbody');
+    const highPerformanceOption = document.querySelector('.high-performance-option');
+    const economicOption = document.querySelector('.economic-option');
+    const proposalSections = document.querySelectorAll('.proposal-section');
+
+    // Mapeia os temas e suas classes
     const themes = {
-      'alta_performance': {
-        navBarClass: '',
-        activeOptionClass: 'high-performance-active',
-        bodyClass: ''
+      alta_performance: {
+        bodyClass: '',
+        activeOptionClass: 'selected'
       },
-      'economico': {
-        navBarClass: '', // Adicione a classe específica se necessário
-        activeOptionClass: 'economic-active',
-        bodyClass: 'economic-theme'
+      economico: {
+        bodyClass: 'economic-theme',
+        activeOptionClass: 'selected'
       }
     };
-  
+
     /**
-     * Manipuladores de Elementos DOM
+     * Lida com o evento de envio do formulário.
+     * @param {Event} event - O evento de envio.
      */
-    const formContainer = document.getElementById('formContainer');
-    const proposalContainer = document.getElementById('proposalContainer');
-    const searchForm = document.getElementById('searchForm');
-    const projectIdInput = document.getElementById('projectIdInput');
-    const messageBox = document.getElementById('messageBox');
-    const navBar = document.querySelector('.nav-bar');
-    const navBarOptions = document.querySelectorAll('.proposal-options .option');
-  
-    /**
-     * Event Listener para o formulário de busca
-     */
-    searchForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    searchForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
       const projectId = projectIdInput.value.trim();
       
-      // Exibe uma mensagem de carregamento e esconde a mensagem de erro anterior
-      showMessage('Carregando...', false);
-      
-      // Validação básica do projectId
-      if (projectId.length < 1) {
-          showMessage('Por favor, digite um ID de projeto válido.', true, 'error');
-          return;
+      messageBox.style.display = 'none';
+
+      if (!projectId) {
+        showMessage('Por favor, digite o ID do projeto.', 'error');
+        return;
       }
-  
+      
+      showLoading(true);
+
       try {
-        const proposta = await consultarPropostaPorId(projectId);
+        const proposta = await consultarProposta(projectId);
         if (proposta) {
-          renderProposta(proposta);
+          preencherProposta(proposta);
+          showProposal(true);
         } else {
-          showMessage('Proposta não encontrada. Verifique o ID do projeto.', true, 'error');
+          showMessage('Nenhuma proposta encontrada para este projeto.', 'error');
+          showProposal(false);
         }
       } catch (err) {
-        console.error("Erro no fluxo da proposta:", err);
-        showMessage(err.message, true, 'error');
+        showMessage(`Erro: ${err.message}`, 'error');
+        showProposal(false);
+      } finally {
+        showLoading(false);
       }
     });
-  
+
     /**
-     * Event Listener para os botões de opção na barra de navegação
+     * Alterna a visibilidade das seções.
+     * @param {boolean} show - Se true, mostra a proposta; se false, mostra o formulário.
      */
-    navBarOptions.forEach(option => {
-      option.addEventListener('click', (e) => {
-        // Remove a classe 'selected' e a classe de tema de todas as opções
-        navBarOptions.forEach(opt => {
-          opt.classList.remove('selected', themes['alta_performance'].activeOptionClass, themes['economico'].activeOptionClass);
-        });
-  
-        // Adiciona a classe 'selected' e a classe de tema à opção clicada
-        const theme = e.currentTarget.dataset.theme;
-        e.currentTarget.classList.add('selected', themes[theme].activeOptionClass);
-  
-        // Alterna a classe no body para mudar o tema
-        document.body.className = themes[theme].bodyClass;
-      });
-    });
-  
+    function showProposal(show) {
+      if (show) {
+        formSection.style.display = 'none';
+        proposalSection.style.display = 'block';
+        navBar.style.display = 'flex';
+        proposalSections.forEach(section => section.style.display = 'block');
+      } else {
+        formSection.style.display = 'flex';
+        proposalSection.style.display = 'none';
+        navBar.style.display = 'none';
+      }
+    }
+    
     /**
-     * Exibe uma mensagem na caixa de mensagem.
-     * @param {string} text - O texto da mensagem.
-     * @param {boolean} isError - Se a mensagem é de erro (muda a cor).
-     * @param {string} type - Tipo de mensagem: 'error' ou 'success'
+     * Alterna a visibilidade do botão de loading.
+     * @param {boolean} show - Se true, mostra o loading; se false, mostra o botão original.
      */
-    function showMessage(text, isError, type = 'default') {
-      messageBox.textContent = text;
+    function showLoading(show) {
+        const button = searchForm.querySelector('button');
+        if (show) {
+            button.disabled = true;
+            button.textContent = 'Carregando...';
+            button.style.cursor = 'wait';
+        } else {
+            button.disabled = false;
+            button.textContent = 'Consultar';
+            button.style.cursor = 'pointer';
+        }
+    }
+    
+    /**
+     * Exibe uma mensagem de erro ou sucesso na caixa de mensagem.
+     * @param {string} message - A mensagem a ser exibida.
+     * @param {string} type - 'success' ou 'error'.
+     */
+    function showMessage(message, type) {
+      messageBox.textContent = message;
       messageBox.style.display = 'block';
       if (type === 'error') {
-          messageBox.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
-          messageBox.style.borderColor = 'rgba(255, 0, 0, 0.4)';
-      } else if (type === 'success') {
-          messageBox.style.backgroundColor = 'rgba(0, 128, 0, 0.2)';
-          messageBox.style.borderColor = 'rgba(0, 128, 0, 0.4)';
+        messageBox.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+        messageBox.style.borderColor = 'rgba(255, 0, 0, 0.4)';
+        messageBox.style.color = '#fff';
       } else {
-          messageBox.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-          messageBox.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+        messageBox.style.backgroundColor = 'rgba(0, 128, 0, 0.2)';
+        messageBox.style.borderColor = 'rgba(0, 128, 0, 0.4)';
+        messageBox.style.color = '#fff';
       }
     }
-  
+
     /**
-     * Renderiza a proposta na página, preenchendo todos os campos dinâmicos.
+     * Preenche a página com os dados da proposta.
      * @param {Object} proposta - O objeto da proposta retornado pela API.
      */
-    function renderProposta(proposta) {
-      // Oculta o formulário e exibe a proposta
-      formContainer.style.display = 'none';
-      proposalContainer.style.display = 'block';
-  
-      // Atualiza os elementos com os dados da proposta
-      const clientName = document.getElementById('clientName');
-      const proposalNumber = document.getElementById('proposalNumber');
-      const systemPower = document.getElementById('systemPower');
-      const monthlyGeneration = document.getElementById('monthlyGeneration');
-      const monthlySavings = document.getElementById('monthlySavings');
-      const propertyValueIncrease = document.getElementById('propertyValueIncrease');
-      const paybackYears = document.getElementById('paybackYears');
-      const roiValue = document.getElementById('roiValue');
-      const navBarAvistaPrice = document.getElementById('navBarAvistaPrice');
-      const navBarMinParcel = document.getElementById('navBarMinParcel');
+    function preencherProposta(proposta) {
+      const { data } = proposta;
       
-      const prodGrid = document.querySelector('.prod-grid');
-      prodGrid.innerHTML = ''; // Limpa os cards de produtos existentes
-  
-      // Preenche os dados principais
-      clientName.textContent = proposta.nome_cliente || 'Cliente não identificado';
-      proposalNumber.textContent = `#${proposta.id_proposta || '0000'}`;
-      systemPower.textContent = `${(proposta.potencia_sistema || 0).toFixed(2)} kWp`;
-      monthlyGeneration.textContent = `${(proposta.geracao_mensal || 0).toFixed(2)} kWh`;
-      monthlySavings.textContent = (proposta.economia_mensal || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-      propertyValueIncrease.textContent = `${(proposta.valor_imovel_aumento || 0).toFixed(0)}%`;
-      paybackYears.textContent = `${proposta.payback_anos || 4} anos`;
-      roiValue.textContent = (proposta.retorno_investimento || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-      navBarAvistaPrice.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-      navBarMinParcel.textContent = (proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+      // Preenche os dados principais da proposta
+      projectNameEl.textContent = data.project.name || 'Nome do Projeto Não Encontrado';
+      projectDescriptionEl.textContent = data.description || '';
+      pagamentoVistaEl.textContent = (data.pricingTable[0].totalCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
       
-      // Renderiza os produtos
-      if (proposta.produtos && proposta.produtos.length > 0) {
-        proposta.produtos.forEach(prod => {
-          const prodCard = document.createElement('div');
-          prodCard.classList.add('card', 'prod-card');
-          prodCard.innerHTML = `
-            <h3>${prod.nome || 'Produto'}</h3>
-            <img src="${prod.imagem_url || 'https://placehold.co/300x200'}" alt="Imagem do produto ${prod.nome || ''}" class="prod-image">
-            <div class="prod-table">
-              <div>Tipo</div>
-              <div>${productTypeMapping[prod.tipo] || prod.tipo || 'N/A'}</div>
-              <div>Marca</div>
-              <div>${prod.marca || 'N/A'}</div>
-              <div>Modelo</div>
-              <div>${prod.modelo || 'N/A'}</div>
-              <div>Quantidade</div>
-              <div>${prod.quantidade || 'N/A'}</div>
-            </div>
-          `;
-          prodGrid.appendChild(prodCard);
-        });
-      }
-  
-      // Exibe a nav bar fixa quando a proposta é carregada
-      navBar.classList.add('show-prices');
-  
-      // Adiciona uma classe ao body para o tema 'alta_performance' por padrão
-      document.body.className = themes['alta_performance'].bodyClass;
+      const propostaVars = data.variables;
+      const valorParcela = propostaVars.find(v => v.key === 'vc_valor_parcela')?.value;
+      const paybackAnos = propostaVars.find(v => v.key === 'vc_payback_anos')?.value;
+
+      pagamentoParcelaMinima.textContent = `R$ ${parseFloat(valorParcela).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+      paybackYears.textContent = `${paybackAnos || 4} anos`;
+
+      // Preenche o cabeçalho
+      navBarAvistaPrice.textContent = (data.pricingTable[0].totalCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+      navBarMinParcel.textContent = `R$ ${parseFloat(valorParcela).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+
+      // Preenche a tabela de preços
+      pricingTableBody.innerHTML = '';
+      data.pricingTable.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.category}</td>
+          <td>${item.item}</td>
+          <td>${item.qnt}</td>
+          <td>${(item.unitCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' })}</td>
+          <td>${(item.totalCost || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' })}</td>
+        `;
+        pricingTableBody.appendChild(row);
+      });
       
-      // Seleciona a opção de alta performance
-      document.querySelector('.high-performance-option').classList.add('selected');
+      // Define o tema inicial como "alta performance"
+      setTheme('alta_performance');
     }
+
+    /**
+     * Altera o tema da página.
+     * @param {string} themeName - O nome do tema ('alta_performance' ou 'economico').
+     */
+    function setTheme(themeName) {
+      document.body.classList.remove(themes.economico.bodyClass);
+      document.body.classList.add(themes[themeName].bodyClass);
+      
+      highPerformanceOption.closest('.option').classList.remove('selected');
+      economicOption.closest('.option').classList.remove('selected');
+
+      if (themeName === 'alta_performance') {
+        highPerformanceOption.closest('.option').classList.add('selected');
+      } else if (themeName === 'economico') {
+        economicOption.closest('.option').classList.add('selected');
+      }
+    }
+    
+    // Adiciona event listeners para os botões de tema
+    highPerformanceOption.addEventListener('click', () => setTheme('alta_performance'));
+    economicOption.addEventListener('click', () => setTheme('economico'));
+
 
     /**
      * Consulta a proposta ativa de um cliente chamando o backend.
      * @param {string} projectId - O ID do projeto.
      * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
      */
-    async function consultarPropostaPorId(projectId) {
-        // A URL agora usa o ID do projeto, conforme a documentação
+    async function consultarProposta(projectId) {
         const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
         
         try {
