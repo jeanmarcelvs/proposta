@@ -54,6 +54,17 @@
       background: var(--light-gray);
     }
 
+    /* Esconde as seções de proposta por padrão */
+    .proposal-container {
+      display: none;
+      background: var(--light-gray);
+      color: var(--dark-blue);
+    }
+
+    .proposal-section {
+      display: none;
+    }
+
     /* Estilos para o container do formulário */
     .form-container {
       background: var(--gradient-bg);
@@ -140,7 +151,7 @@
     .search-form button:active {
       transform: translateY(1px);
     }
-    
+
     .message-box {
       margin-top: 20px;
       padding: 15px;
@@ -254,7 +265,8 @@
       min-width: 600px;
     }
 
-    .proposal-table th, .proposal-table td {
+    .proposal-table th,
+    .proposal-table td {
       padding: 15px;
       border-bottom: 1px solid #e0e0e0;
     }
@@ -326,34 +338,29 @@
     .nav-links li a:hover {
       background-color: rgba(255, 255, 255, 0.2);
     }
-
-    .proposal-section {
-      display: none;
-    }
-    
   </style>
 </head>
 
 <body>
-  
+
   <!-- Container do Formulário de Busca -->
   <div class="form-container" id="form-container">
     <div class="form-box">
-        <div class="logo">
-            <img src="https://placehold.co/80x80/123d8c/ffffff?text=GDIS" alt="Logo GDIS Solar">
-        </div>
-        <h1>Bem-vindo ao Portal GDIS</h1>
-        <p>Consulte sua proposta técnica e comercial de energia solar com o ID do seu projeto.</p>
-        <form class="search-form" id="search-form">
-            <input type="text" id="project-id-input" placeholder="Digite o ID do Projeto" required>
-            <button type="submit">Consultar Proposta</button>
-        </form>
-        <div class="message-box" id="message-box"></div>
+      <div class="logo">
+        <img src="https://placehold.co/80x80/123d8c/ffffff?text=GDIS" alt="Logo GDIS Solar">
+      </div>
+      <h1>Bem-vindo ao Portal GDIS</h1>
+      <p>Consulte sua proposta técnica e comercial de energia solar com o ID do seu projeto.</p>
+      <form class="search-form" id="search-form">
+        <input type="text" id="project-id-input" placeholder="Digite o ID do Projeto" required>
+        <button type="submit">Consultar Proposta</button>
+      </form>
+      <div class="message-box" id="message-box"></div>
     </div>
   </div>
 
   <!-- Container da Proposta (Inicialmente oculto) -->
-  <div class="proposal-container" id="proposal-container" style="display:none;">
+  <div class="proposal-container" id="proposal-container">
     <header>
       <div class="nav">
         <ul class="nav-links">
@@ -440,10 +447,10 @@
     const totalCostCell = document.getElementById('total-cost');
     const geracaoInfo = document.getElementById('geracao-info');
 
+    // Funções de tema (mantidas do código original)
     const highPerformanceOption = document.getElementById('high-performance-option');
     const economicOption = document.getElementById('economic-option');
     
-    // Altera o tema
     function setTheme(themeName) {
       document.body.className = '';
       if (themeName === 'economico') {
@@ -451,8 +458,12 @@
       }
     }
 
-    highPerformanceOption.addEventListener('click', () => setTheme('alta_performance'));
-    economicOption.addEventListener('click', () => setTheme('economico'));
+    if(highPerformanceOption) {
+      highPerformanceOption.addEventListener('click', () => setTheme('alta_performance'));
+    }
+    if(economicOption) {
+      economicOption.addEventListener('click', () => setTheme('economico'));
+    }
     
 
     /**
@@ -482,7 +493,7 @@
         }
         
         const dados = await res.json();
-        // A CORREÇÃO ESTÁ AQUI: a resposta tem a propriedade 'data'
+        // A CORREÇÃO ESTÁ AQUI: Acessa a propriedade 'data' da resposta.
         return dados.data;
       } catch (err) {
         console.error("Erro ao consultar proposta:", err);
@@ -505,9 +516,9 @@
         proposalStatus.textContent = `Status: ${proposta.status}`;
         proposalLink.innerHTML = proposta.linkPdf ? `<a href="${proposta.linkPdf}" target="_blank">Ver PDF</a>` : '';
 
-        // Renderiza os detalhes da grade
+        // Renderiza os detalhes da grade (customFields)
         detailsGrid.innerHTML = '';
-        if (proposta.customFields && proposta.customFields.length > 0) {
+        if (proposta.customFields && Array.isArray(proposta.customFields) && proposta.customFields.length > 0) {
             proposta.customFields.forEach(field => {
                 const card = document.createElement('div');
                 card.classList.add('detail-card');
@@ -521,7 +532,7 @@
         // Renderiza a tabela de preços
         pricingTableBody.innerHTML = '';
         let totalCost = 0;
-        if (proposta.pricingTable && proposta.pricingTable.length > 0) {
+        if (proposta.pricingTable && Array.isArray(proposta.pricingTable) && proposta.pricingTable.length > 0) {
             proposta.pricingTable.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -540,7 +551,7 @@
         totalCostCell.textContent = `R$ ${totalCost.toFixed(2)}`;
         
         // Renderiza a simulação de geração
-        if (proposta.generation && proposta.generation.length > 0) {
+        if (proposta.generation && Array.isArray(proposta.generation) && proposta.generation.length > 0) {
             const geracaoMedia = proposta.generation.find(g => g.key === 'anual_media');
             if (geracaoMedia) {
                  geracaoInfo.textContent = `Geração média anual: ${geracaoMedia.formattedValue} kWh.`;
@@ -589,6 +600,5 @@
     });
 
   </script>
-
 </body>
 </html>
