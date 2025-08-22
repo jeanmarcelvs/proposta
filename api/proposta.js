@@ -9,13 +9,16 @@ const fetch = require('node-fetch');
 // 1. FUNÇÃO PARA OBTER O TOKEN DE ACESSO
 // ######################################################################
 async function getAccessToken(longLivedToken, apiUrl) {
-    const authUrl = `${apiUrl}/auth/token`;
+    const authUrl = `${apiUrl}/auth/signin`;
+    
+    // A coleção do Postman mostra que a autenticação usa POST com um corpo JSON.
     const authResponse = await fetch(authUrl, {
-        method: 'GET',
+        method: 'POST',
         headers: {
-            'accept': 'application/json',
-            'Authorization': `Bearer ${longLivedToken}`
-        }
+            'Content-Type': 'application/json',
+            'accept': 'application/json'
+        },
+        body: JSON.stringify({ token: longLivedToken })
     });
 
     if (!authResponse.ok) {
@@ -24,7 +27,8 @@ async function getAccessToken(longLivedToken, apiUrl) {
     }
 
     const authData = await authResponse.json();
-    return authData.token;
+    // A resposta contém o token de acesso.
+    return authData.access_token;
 }
 
 module.exports = async (req, res) => {
