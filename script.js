@@ -40,6 +40,8 @@ async function consultarProposta(projectId) {
     const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
     try {
         const res = await fetch(backendUrl);
+
+        // Verifica se a resposta HTTP é bem-sucedida
         if (!res.ok) {
             let errorMessage = `Erro HTTP: ${res.status}`;
             try {
@@ -57,8 +59,13 @@ async function consultarProposta(projectId) {
 
         const data = await res.json();
         // A API retorna um objeto com a propriedade 'data' que contém a proposta.
-        // Acessamos o valor dessa propriedade para usar no frontend.
-        return data.data;
+        // Verificamos se 'data' existe para garantir que a resposta é válida.
+        if (data && data.data) {
+            return data.data;
+        } else {
+            console.error('Resposta da API não contém a propriedade "data":', data);
+            return null;
+        }
     } catch (err) {
         console.error('Erro ao consultar a API do backend:', err);
         return null;
