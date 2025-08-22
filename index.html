@@ -34,9 +34,7 @@
       --light-gray: #f7faf7;
       --muted-text: #6f7d95;
       --nav-bg: rgba(89, 140, 118, 0.9);
-      --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #487360 100%);
-      --radius: 22px;
-      --shadow: 0 8px 20px rgba(0, 0, 0, .15);
+      --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #4c6f5d 100%);
     }
 
     /* ---------------------- */
@@ -51,347 +49,351 @@
     body {
       font-family: 'Inter', sans-serif;
       line-height: 1.6;
-      color: #333;
-      background-color: var(--light-gray);
-      transition: background-color 0.3s ease-in-out;
+      transition: background-color 0.5s ease;
+      color: var(--dark-blue);
+      background: var(--light-gray);
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
+    /* Utilitário para esconder elementos */
+    .hidden {
+      display: none !important;
     }
 
-    .header {
-      background: var(--nav-bg);
+    /* Estilos para o container do formulário */
+    .form-container {
+      background: var(--gradient-bg);
       color: var(--white);
-      padding: 1.5rem 2rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      margin-bottom: 2rem;
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 1.5rem;
-      z-index: 1000;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      transition: background-color 0.3s ease-in-out;
+      min-height: 100vh;
+      flex-direction: column;
+      transition: background 0.5s ease;
     }
 
-    .header .logo {
-      font-weight: 800;
-      font-size: 1.5rem;
-      letter-spacing: -1px;
-    }
-
-    .theme-switcher {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .theme-switcher button {
-      background-color: var(--dark-blue);
-      color: var(--white);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s ease, transform 0.1s ease;
-      font-size: 0.875rem;
-    }
-
-    .theme-switcher button:hover {
-      background-color: var(--highlight-color);
-      transform: translateY(-2px);
-    }
-
-    .theme-switcher button.active {
-      background-color: var(--highlight-color);
-    }
-
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .card {
-      background-color: var(--white);
-      padding: 2rem;
+    .form-box {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 40px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, .2);
+    .form-box .logo img {
+      height: 80px;
+      margin-bottom: 20px;
+    }
+
+    .form-box h1 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .form-box p {
+      font-size: 16px;
+      margin-bottom: 30px;
+      opacity: 0.8;
     }
 
     .search-form {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .search-form input[type="text"] {
-      flex-grow: 1;
-      padding: 0.75rem 1.25rem;
-      border: 2px solid var(--light-gray);
-      border-radius: 12px;
-      transition: border-color 0.3s ease;
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 50px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      transition: background 0.3s ease;
+    }
+
+    .search-form input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.7);
     }
 
     .search-form input[type="text"]:focus {
       outline: none;
-      border-color: var(--highlight-color);
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .search-form button {
-      padding: 0.75rem 1.5rem;
-      background-color: var(--main-blue);
-      color: var(--white);
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 50px;
       border: none;
-      border-radius: 12px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 700;
       cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.1s ease;
+      background: var(--highlight-color);
+      color: var(--white);
+      transition: background 0.3s ease, transform 0.1s;
     }
 
     .search-form button:hover {
-      background-color: var(--dark-blue);
-      transform: translateY(-2px);
+      background: var(--secondary-highlight);
     }
 
-    .search-form button:disabled {
-        background-color: var(--muted-text);
-        cursor: not-allowed;
+    .search-form button:active {
+      transform: translateY(1px);
     }
 
     .message-box {
-      background-color: #fce8e6;
-      color: #9d2e1b;
-      padding: 1rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 0, 0, 0.2);
+      border-radius: 8px;
       display: none;
+      font-size: 14px;
       font-weight: 500;
-      border: 1px solid #f9c2bd;
+      border: 1px solid rgba(255, 0, 0, 0.4);
     }
 
-    h1, h2, h3 {
-      font-weight: 700;
-      color: var(--dark-blue);
-      margin-bottom: 1rem;
-      letter-spacing: -0.5px;
+    /* ---------------------- */
+    /* Componentes da Proposta*/
+    /* ---------------------- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    .proposta-info p {
-      margin-bottom: 0.75rem;
+    .clean-section {
+      background: var(--white);
+      margin: 40px 0;
+      padding: 40px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: background-color 0.5s ease;
     }
 
-    .proposta-info p strong {
+    .clean-section h2 {
       color: var(--main-blue);
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--highlight-color);
+      padding-bottom: 10px;
+    }
+    
+    .info-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
     }
 
-    .tabela-precos {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1.5rem;
+    .info-card {
+        background: var(--light-gray);
+        padding: 25px;
+        border-radius: 18px;
+        border-left: 5px solid var(--highlight-color);
     }
 
-    .tabela-precos th, .tabela-precos td {
-      text-align: left;
-      padding: 1rem;
-      border-bottom: 1px solid var(--light-gray);
+    .info-card h3 {
+        color: var(--dark-blue);
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+    
+    .info-card p {
+        color: var(--muted-text);
+        font-size: 0.9rem;
     }
 
-    .tabela-precos th {
-      background-color: var(--light-gray);
-      color: var(--muted-text);
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.85rem;
+    .equipment-item {
+        margin-bottom: 15px;
+        padding-left: 15px;
+        border-left: 2px solid var(--main-blue);
     }
 
-    .tabela-precos tbody tr:hover {
-      background-color: #f7f9fc;
+    .equipment-item h3 {
+        color: var(--dark-blue);
     }
 
-    .tabela-precos .total {
-      font-weight: 700;
-      color: var(--dark-blue);
+    .equipment-item p {
+        color: var(--muted-text);
+        font-size: 0.9rem;
     }
 
-    .resumo {
-      margin-top: 2rem;
-      padding-top: 2rem;
-      border-top: 2px dashed var(--light-gray);
+    .financing-card {
+        background: var(--light-gray);
+        padding: 25px;
+        border-radius: 18px;
+        border: 1px solid #e0e0e0;
+        text-align: center;
     }
 
-    .resumo-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--light-gray);
+    .financing-card h3 {
+        color: var(--main-blue);
+        margin-bottom: 10px;
     }
 
-    .resumo-item:last-child {
-      border-bottom: none;
+    .financing-card p {
+        color: var(--dark-blue);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 5px;
     }
 
-    .resumo-item h4 {
-      margin: 0;
-      color: var(--main-blue);
+    .total-value-card {
+        background: var(--main-blue);
+        color: var(--white);
+        padding: 40px;
+        border-radius: var(--radius);
+        text-align: center;
+        box-shadow: var(--shadow);
     }
 
-    .resumo-item span {
-      font-weight: 600;
-      color: var(--dark-blue);
-      font-size: 1.1rem;
+    .total-value-card h2 {
+        color: var(--white);
+        border-bottom-color: var(--highlight-color);
     }
 
-    .link-pdf {
-      display: inline-block;
-      margin-top: 2rem;
-      padding: 1rem 2rem;
-      background-color: var(--highlight-color);
-      color: var(--white);
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 700;
-      text-align: center;
-      transition: background-color 0.3s ease, transform 0.1s ease;
+    .total-value-card .value {
+        font-size: clamp(30px, 6vw, 50px);
+        font-weight: 800;
+        margin: 20px 0;
     }
 
-    .link-pdf:hover {
-      background-color: #e56d20;
-      transform: translateY(-2px);
+    .pdf-link {
+        text-align: center;
+        margin-top: 30px;
     }
 
-    .hidden {
-      display: none;
+    .pdf-link a {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: var(--highlight-color);
+        color: var(--white);
+        text-decoration: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        transition: background-color 0.3s ease;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 1rem;
-      }
-
-      .header {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .search-form {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
+    .pdf-link a:hover {
+        background-color: var(--secondary-highlight);
     }
   </style>
 </head>
+
 <body>
 
-  <div class="container">
-    <header class="header">
-      <div class="logo">GDIS Solar</div>
-      <div class="theme-switcher">
-        <button id="high-performance-option" class="active">Alta Performance</button>
-        <button id="economic-option">Econômico</button>
+  <!-- Container do Formulário de Busca -->
+  <div class="form-container" id="form-container">
+    <div class="form-box">
+      <div class="logo">
+        <img src="https://placehold.co/80x80/123d8c/ffffff?text=GDIS" alt="Logo GDIS Solar">
       </div>
-    </header>
+      <h1>Bem-vindo ao Portal GDIS</h1>
+      <p>Consulte sua proposta técnica e comercial de energia solar com o ID do seu projeto.</p>
+      <form class="search-form" id="search-form">
+        <input type="text" id="project-id-input" placeholder="Digite o ID do Projeto" required>
+        <button type="submit">Consultar Proposta</button>
+      </form>
+      <div class="message-box" id="message-box"></div>
+    </div>
+  </div>
 
-    <main class="main-content">
-      <div class="card">
-        <h2>Consulta de Proposta</h2>
-        <form id="search-form" class="search-form">
-          <input type="text" id="project-id-input" placeholder="Digite o ID do Projeto..." required>
-          <button type="submit">Consultar Proposta</button>
-        </form>
-        <div id="message-box" class="message-box" style="display: none;"></div>
-      </div>
+  <!-- Container da Proposta (Inicialmente oculto) -->
+  <div class="proposal-container hidden" id="proposta-section">
+    <main class="container">
+      <header class="clean-section">
+        <h1 id="proposta-nome"></h1>
+        <p>Status: <span id="proposta-status"></span></p>
+        <p>Gerada em: <span id="proposta-geracao"></span></p>
+      </header>
+      
+      <!-- Seção: Informações Gerais do Sistema -->
+      <section class="clean-section">
+        <h2>Informações Gerais do Sistema</h2>
+        <div class="info-list">
+            <div class="info-card">
+                <h3>Potência do Sistema</h3>
+                <p id="system-power">Não disponível</p>
+            </div>
+            <div class="info-card">
+                <h3>Geração Média Mensal</h3>
+                <p id="monthly-generation">Não disponível</p>
+            </div>
+            <div class="info-card">
+                <h3>Economia Anual Estimada</h3>
+                <p id="annual-savings">Não disponível</p>
+            </div>
+        </div>
+      </section>
 
-      <!-- Seção da Proposta (Inicialmente oculta) -->
-      <div id="proposta-section" class="card hidden">
-        <div class="proposta-info">
-          <h3 id="proposta-nome"></h3>
-          <p><strong>Status:</strong> <span id="proposta-status"></span></p>
-          <p><strong>Data de Geração:</strong> <span id="proposta-geracao"></span></p>
+      <!-- Seção: Equipamentos -->
+      <section class="clean-section">
+        <h2>Equipamentos</h2>
+        <div id="equipment-list">
+            <!-- Itens de equipamento serão inseridos aqui via JS -->
+            <p>Nenhum equipamento encontrado.</p>
         </div>
+      </section>
 
-        <div class="proposta-detalhes">
-          <h3>Tabela de Preços</h3>
-          <table class="tabela-precos">
-            <thead>
-              <tr>
-                <th>Categoria</th>
-                <th>Item</th>
-                <th>Qnt</th>
-                <th>Custo Unitário</th>
-                <th>Custo Total</th>
-              </tr>
-            </thead>
-            <tbody id="pricing-table-body">
-            </tbody>
-          </table>
+      <!-- Seção: Simulação de Financiamento -->
+      <section class="clean-section">
+        <h2>Simulação de Financiamento</h2>
+        <div id="financing-simulation">
+            <!-- Simulações de financiamento serão inseridas aqui via JS -->
+            <p>Nenhuma simulação de financiamento encontrada.</p>
         </div>
+      </section>
 
-        <div class="resumo">
-          <h3>Resumo Financeiro</h3>
-          <div class="resumo-item">
-            <h4>Valor Total da Proposta</h4>
-            <span id="valor-total-proposta"></span>
-          </div>
-          <div class="resumo-item">
-            <h4>Geração Mensal Média</h4>
-            <span id="geracao-media-mensal"></span>
-          </div>
-          <div class="resumo-item">
-            <h4>Economia Anual Estimada</h4>
-            <span id="economia-anual"></span>
-          </div>
-        </div>
-        
-        <div id="link-section" class="hidden">
-            <a href="#" id="pdf-link" class="link-pdf" target="_blank">Ver Proposta em PDF</a>
-        </div>
-      </div>
+      <!-- Seção: Valor Total da Proposta e Formas de Pagamento -->
+      <section class="total-value-card">
+        <h2>Valor Total da Proposta</h2>
+        <p class="value" id="proposal-total-cost">Não disponível</p>
+        <p class="small-text">Formas de Pagamento: Boleto, Pix, Cartão de Crédito</p>
+      </section>
+
+      <section id="link-section" class="pdf-link hidden">
+          <a href="#" id="pdf-link" target="_blank">Abrir Proposta em PDF</a>
+      </section>
+
     </main>
   </div>
 
   <script>
     // Seletores de elementos
-    const highPerformanceOption = document.getElementById('high-performance-option');
-    const economicOption = document.getElementById('economic-option');
     const searchForm = document.getElementById('search-form');
     const projectIdInput = document.getElementById('project-id-input');
     const messageBox = document.getElementById('message-box');
+    const formContainer = document.getElementById('form-container'); 
     const propostaSection = document.getElementById('proposta-section');
     const propostaNome = document.getElementById('proposta-nome');
     const propostaStatus = document.getElementById('proposta-status');
     const propostaGeracao = document.getElementById('proposta-geracao');
-    const pricingTableBody = document.getElementById('pricing-table-body');
-    const valorTotalProposta = document.getElementById('valor-total-proposta');
-    const geracaoMediaMensal = document.getElementById('geracao-media-mensal');
-    const economiaAnual = document.getElementById('economia-anual');
+    
+    // Novas seções
+    const systemPower = document.getElementById('system-power');
+    const monthlyGeneration = document.getElementById('monthly-generation');
+    const annualSavings = document.getElementById('annual-savings');
+    const equipmentList = document.getElementById('equipment-list');
+    const financingSimulation = document.getElementById('financing-simulation');
+    const proposalTotalCost = document.getElementById('proposal-total-cost');
+
     const pdfLink = document.getElementById('pdf-link');
     const linkSection = document.getElementById('link-section');
 
-    // Funções utilitárias
-    function setTheme(theme) {
-      document.body.className = theme === 'economico' ? 'economic-theme' : '';
-      highPerformanceOption.classList.toggle('active', theme === 'alta_performance');
-      economicOption.classList.toggle('active', theme === 'economico');
+    /**
+     * Função utilitária para buscar um valor em customFields com base na 'key'.
+     * @param {Array} customFields - O array de objetos customizados.
+     * @param {string} keyToFind - A chave a ser procurada.
+     * @returns {string|null} O valor formatado ('formattedValue') ou null se não encontrado.
+     */
+    function findCustomField(customFields, keyToFind) {
+        if (!customFields || !Array.isArray(customFields)) return null;
+        const field = customFields.find(field => field.key === keyToFind);
+        return field ? field.formattedValue : null;
     }
-
-    // Configuração do tema inicial
-    setTheme('alta_performance');
-    highPerformanceOption.addEventListener('click', () => setTheme('alta_performance'));
-    economicOption.addEventListener('click', () => setTheme('economico'));
-
 
     /**
      * Consulta a proposta ativa de um cliente chamando o backend.
@@ -420,9 +422,7 @@
             }
             
             const dados = await res.json();
-            // CORREÇÃO: A API de backend já retorna a proposta diretamente,
-            // então não precisamos mais acessar a propriedade 'data'.
-            return dados;
+            return dados.data; // Acessa o objeto "data"
         } catch (err) {
             console.error("Erro ao consultar proposta:", err);
             throw err;
@@ -431,10 +431,11 @@
 
     /**
      * Renderiza os dados da proposta na interface do usuário.
-     * @param {object} proposta - Objeto contendo os dados da proposta.
+     * @param {object} proposta - Objeto contendo os dados da proposta (já o objeto 'data').
      */
     function renderizarProposta(proposta) {
-        // Exibe a seção da proposta
+        // Exibe a seção da proposta e esconde o formulário
+        formContainer.classList.add('hidden');
         propostaSection.classList.remove('hidden');
 
         // Renderiza as informações principais
@@ -449,40 +450,41 @@
             propostaGeracao.textContent = 'Data não disponível';
         }
 
-        // Limpa a tabela de preços antes de preencher
-        pricingTableBody.innerHTML = '';
-        
-        // Renderiza a tabela de preços
+        const customFields = proposta.customFields || [];
+
+        // Seção de Informações Gerais do Sistema
+        const systemPowerValue = findCustomField(customFields, 'vc_pot_sist');
+        systemPower.textContent = systemPowerValue ? `${systemPowerValue} kWp` : 'Não disponível';
+
+        // Usa o campo 'vc_geracao_anual' do JSON, mas o rotula como Geração MENSAL
+        const monthlyGenerationValue = findCustomField(customFields, 'vc_geracao_anual');
+        monthlyGeneration.textContent = monthlyGenerationValue ? `${monthlyGenerationValue} kWh` : 'Não disponível';
+
+        // A 'economia' não está no JSON de exemplo, então usamos um fallback
+        const annualSavingsValue = findCustomField(customFields, 'vc_economia_anual');
+        annualSavings.textContent = annualSavingsValue ? `R$ ${annualSavingsValue}` : 'Não disponível';
+
+        // Seção de Equipamentos
+        equipmentList.innerHTML = '';
         const pricingTable = proposta.pricingTable || [];
         if (pricingTable.length > 0) {
             pricingTable.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.category || ''}</td>
-                    <td>${item.item || ''}</td>
-                    <td>${item.qnt || ''}</td>
-                    <td>R$ ${typeof item.unitCost === 'number' ? item.unitCost.toFixed(2).replace('.', ',') : ''}</td>
-                    <td>R$ ${typeof item.totalCost === 'number' ? item.totalCost.toFixed(2).replace('.', ',') : ''}</td>
-                `;
-                pricingTableBody.appendChild(row);
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('equipment-item');
+                // Use `item` e `qnt` da tabela de preços
+                itemDiv.innerHTML = `<h3>${item.item || 'Item não especificado'}</h3><p>Quantidade: ${item.qnt || 'N/A'}</p>`;
+                equipmentList.appendChild(itemDiv);
             });
         } else {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="5">Nenhum item de preço encontrado.</td>`;
-            pricingTableBody.appendChild(row);
+            equipmentList.innerHTML = `<p>Nenhum equipamento encontrado.</p>`;
         }
+        
+        // Seção de Simulação de Financiamento - Não existe no JSON de exemplo
+        financingSimulation.innerHTML = `<p>Nenhuma simulação de financiamento encontrada nesta proposta.</p>`;
 
-        // Renderiza o resumo financeiro
-        const summary = proposta.summary || {};
-        if (Object.keys(summary).length > 0) {
-            valorTotalProposta.textContent = `R$ ${typeof summary.proposalTotalCost === 'number' ? summary.proposalTotalCost.toFixed(2).replace('.', ',') : ''}`;
-            geracaoMediaMensal.textContent = `${typeof summary.avgGeneration === 'number' ? summary.avgGeneration.toFixed(2).replace('.', ',') : ''} kWh`;
-            economiaAnual.textContent = `R$ ${typeof summary.annualSavings === 'number' ? summary.annualSavings.toFixed(2).replace('.', ',') : ''}`;
-        } else {
-            valorTotalProposta.textContent = 'Não disponível';
-            geracaoMediaMensal.textContent = 'Não disponível';
-            economiaAnual.textContent = 'Não disponível';
-        }
+        // Seção de Valor Total da Proposta
+        const proposalTotalValue = findCustomField(customFields, 'vc_valor_proposta');
+        proposalTotalCost.textContent = proposalTotalValue ? `R$ ${proposalTotalValue}` : 'Não disponível';
 
         // Lida com o link do PDF
         if (proposta.linkPdf) {
@@ -529,6 +531,5 @@
         }
     });
   </script>
-
 </body>
 </html>
