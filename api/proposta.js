@@ -105,6 +105,9 @@ module.exports = async (req, res) => {
         }
 
         const propostasData = await propostaResponse.json();
+        // NOVO LOG: Imprime a resposta completa da API para debug.
+        console.log('Dados recebidos da API:', JSON.stringify(propostasData, null, 2));
+
         const propostaAtiva = propostasData && propostasData.length > 0 ? propostasData[0] : null;
 
         if (!propostaAtiva) {
