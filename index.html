@@ -420,9 +420,9 @@
             }
             
             const dados = await res.json();
-            // CORREÇÃO: A API agora retorna a proposta aninhada em `data`.
-            // Retornamos apenas a parte relevante.
-            return dados.data;
+            // CORREÇÃO: A API de backend já retorna a proposta diretamente,
+            // então não precisamos mais acessar a propriedade 'data'.
+            return dados;
         } catch (err) {
             console.error("Erro ao consultar proposta:", err);
             throw err;
