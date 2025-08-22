@@ -38,37 +38,29 @@ setTheme('alta_performance'); // Define o tema inicial
  */
 async function consultarProposta(projectId) {
     const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
-    try {
-        const res = await fetch(backendUrl);
+    const res = await fetch(backendUrl);
 
-        // Verifica se a resposta HTTP é bem-sucedida
-        if (!res.ok) {
-            let errorMessage = `Erro HTTP: ${res.status}`;
-            try {
-                const errorBody = await res.json();
-                if (errorBody && errorBody.error) {
-                    errorMessage = `Erro: ${errorBody.error}`;
-                } else if (errorBody && errorBody.message) {
-                    errorMessage = `Erro: ${errorBody.message}`;
-                }
-            } catch (jsonError) {
-                // A resposta não era JSON, usa a mensagem padrão
+    if (!res.ok) {
+        let errorMessage = `Erro HTTP: ${res.status}`;
+        try {
+            const errorBody = await res.json();
+            if (errorBody && errorBody.error) {
+                errorMessage = `Erro: ${errorBody.error}`;
+            } else if (errorBody && errorBody.message) {
+                errorMessage = `Erro: ${errorBody.message}`;
             }
-            throw new Error(errorMessage);
+        } catch (jsonError) {
+            // A resposta não era JSON, usa a mensagem padrão
         }
+        throw new Error(errorMessage);
+    }
 
-        const data = await res.json();
-        // A API retorna um objeto com a propriedade 'data' que contém a proposta.
-        // Verificamos se 'data' existe para garantir que a resposta é válida.
-        if (data && data.data) {
-            return data.data;
-        } else {
-            console.error('Resposta da API não contém a propriedade "data":', data);
-            return null;
-        }
-    } catch (err) {
-        console.error('Erro ao consultar a API do backend:', err);
-        return null;
+    const data = await res.json();
+    if (data && data.data) {
+        return data.data;
+    } else {
+        // Lança um erro se a resposta JSON for bem-sucedida, mas a propriedade 'data' estiver faltando
+        throw new Error('Resposta da API bem-sucedida, mas JSON malformado (propriedade "data" não encontrada).');
     }
 }
 
@@ -153,17 +145,10 @@ searchForm.addEventListener('submit', async (e) => {
 
     try {
         const proposta = await consultarProposta(projectId);
-        if (proposta) {
-            renderizarProposta(proposta);
-            // Transiciona da seção do formulário para a seção da proposta
-            formSection.style.display = 'none';
-            proposalSection.style.display = 'flex';
-        } else {
-            messageBox.textContent = 'Proposta não encontrada para o projeto especificado.';
-            messageBox.style.display = 'block';
-            proposalSection.style.display = 'none';
-            formSection.style.display = 'flex'; // Garante que a seção do formulário esteja visível em caso de erro
-        }
+        renderizarProposta(proposta);
+        // Transiciona da seção do formulário para a seção da proposta
+        formSection.style.display = 'none';
+        proposalSection.style.display = 'flex';
     } catch (err) {
         messageBox.textContent = `Erro ao carregar proposta: ${err.message}`;
         messageBox.style.display = 'block';
