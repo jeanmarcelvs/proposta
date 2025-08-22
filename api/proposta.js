@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Adicionado Authorization aqui
 
     // Lida com as requisições OPTIONS de preflight
     if (req.method === 'OPTIONS') {
@@ -56,41 +56,21 @@ module.exports = async (req, res) => {
     try {
         // Verifica se o projectId foi fornecido
         if (!projectId) {
-            console.error('Erro 400: projectId é obrigatório e não foi encontrado na requisição.');
-            res.status(400).json({ error: 'ID do projeto é obrigatório.' });
+            console.error('Erro 400: projectId é obrigatório.');
+            res.status(400).json({ error: 'projectId é obrigatório.' });
             return;
         }
 
-        // Verifica se o token de acesso está definido
-        if (!longLivedToken) {
-            console.error('Erro 401: Variável de ambiente SOLARMARKET_TOKEN não foi configurada.');
-            res.status(401).json({ error: 'Erro de autenticação: token da API não encontrado.' });
-            return;
-        }
-        
-        // Remove espaços em branco antes e depois do token para evitar erros de autenticação.
-        const trimmedToken = longLivedToken.trim();
+        // 3. Obtém o token de acesso temporário
+        const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
+        console.log('Debug: Token temporário obtido com sucesso.');
 
-        // ======================================================================
-        // CÓDIGO DE DEBUG ADICIONADO PARA O SUPORTE
-        // Imprime o comprimento do token para verificação.
-        console.log(`Debug: Comprimento do Long-Lived Token: ${trimmedToken.length}`);
-        // Imprime a URL completa da API para verificação.
+        // ######################################################################
+        // 4. CONSULTA A API DA SOLARMARKET PARA A PROPOSTA
+        // ######################################################################
         const apiUrl = `${SOLARMARKET_API_URL}/projects/${projectId}/proposals`;
         console.log(`Debug: Chamando a URL da API: ${apiUrl}`);
-        // ======================================================================
-        
-        // ######################################################################
-        // 3. OBTÉM O TOKEN TEMPORÁRIO ANTES DE CHAMAR A API DE PROPOSTA
-        // ######################################################################
-        console.log('Debug: Tentando obter o token de acesso temporário...');
-        const accessToken = await getAccessToken(trimmedToken, SOLARMARKET_API_URL);
-        console.log('Debug: Token temporário obtido com sucesso.');
-        
-        // ######################################################################
-        // 4. CHAMA A API DA SOLARMARKET COM O 'projectId'
-        // ######################################################################
-        // Usa o token "limpo" (sem espaços) no cabeçalho de autorização.
+
         const propostaResponse = await fetch(apiUrl, {
             method: 'GET',
             headers: {
@@ -107,8 +87,12 @@ module.exports = async (req, res) => {
         const propostasData = await propostaResponse.json();
         // NOVO LOG: Imprime a resposta completa da API para debug.
         console.log('Dados recebidos da API:', JSON.stringify(propostasData, null, 2));
-
-        const propostaAtiva = propostasData && propostasData.length > 0 ? propostasData[0] : null;
+        
+        // AQUI ESTÁ A CORREÇÃO:
+        // A API da SolarMarket retorna um objeto { "data": [...] }.
+        // O código anterior estava tentando acessar ".length" na raiz, o que resultava em um erro.
+        // Agora, acessamos corretamente o array dentro da propriedade 'data'.
+        const propostaAtiva = propostasData && propostasData.data && propostasData.data.length > 0 ? propostasData.data[0] : null;
 
         if (!propostaAtiva) {
             console.log(`Proposta não encontrada para o Project ID: ${projectId}`);
@@ -117,7 +101,7 @@ module.exports = async (req, res) => {
         }
 
         // ######################################################################
-        // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END -
+        // 5. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
         // ######################################################################
         res.status(200).json(propostaAtiva);
 
