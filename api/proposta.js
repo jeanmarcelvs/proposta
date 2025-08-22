@@ -35,10 +35,20 @@ module.exports = async (req, res) => {
             return;
         }
 
+        // Verifica se o token de acesso está definido
+        if (!longLivedToken) {
+            console.error('Erro 401: Variável de ambiente SOLARMARKET_TOKEN não foi configurada.');
+            res.status(401).json({ error: 'Erro de autenticação: token da API não encontrado.' });
+            return;
+        }
+        
+        // NOVO: Remove espaços em branco antes e depois do token para evitar erros de autenticação.
+        const trimmedToken = longLivedToken.trim();
+
         // ======================================================================
         // CÓDIGO DE DEBUG ADICIONADO PARA O SUPORTE
-        // Imprime o token de acesso para verificação.
-        console.log(`Debug: Usando o Token de Acesso: ${longLivedToken ? 'Token recebido com sucesso.' : 'Token ausente!'}`);
+        // Imprime o comprimento do token para verificação.
+        console.log(`Debug: Comprimento do Token: ${trimmedToken.length}`);
         // Imprime a URL completa da API para verificação.
         const apiUrl = `${SOLARMARKET_API_URL}/projects/${projectId}/proposals`;
         console.log(`Debug: Chamando a URL da API: ${apiUrl}`);
@@ -47,11 +57,12 @@ module.exports = async (req, res) => {
         // ######################################################################
         // 2. CHAMA A API DA SOLARMARKET COM O 'projectId'
         // ######################################################################
+        // Usa o token "limpo" (sem espaços) no cabeçalho de autorização.
         const propostaResponse = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'accept': 'application/json',
-                'Authorization': `Bearer ${longLivedToken}`
+                'Authorization': `Bearer ${trimmedToken}`
             }
         });
         
