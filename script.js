@@ -12,7 +12,7 @@ const clienteNome = document.getElementById('cliente-nome');
 const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
 const dataGeracao = document.getElementById('data-geracao');
 const inversorDescricao = document.getElementById('inversor-descricao');
-const inversorQuantidade = document.getElementById('inversor-quantidade');
+const inversorQuantidade = document = document.getElementById('inversor-quantidade');
 const moduloDescricao = document.getElementById('modulo-descricao');
 const moduloQuantidade = document.getElementById('modulo-quantidade');
 const valorTotal = document.getElementById('valor-total');
@@ -34,11 +34,15 @@ setTheme('alta_performance'); // Define o tema inicial
 /**
  * Consulta a proposta ativa de um cliente chamando o backend.
  * @param {string} projectId - O ID do projeto.
- * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
+ * @returns {Promise<Object>} Um objeto com a proposta.
+ * @throws {Error} Se a requisição falhar ou a proposta não for encontrada.
  */
 async function consultarProposta(projectId) {
     const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?projectId=${projectId}`;
+    console.log(`Debug: Consultando a API em ${backendUrl}`);
+
     const res = await fetch(backendUrl);
+    console.log(`Debug: Status da resposta da API: ${res.status} ${res.statusText}`);
 
     if (!res.ok) {
         let errorMessage = `Erro HTTP: ${res.status}`;
@@ -56,11 +60,16 @@ async function consultarProposta(projectId) {
     }
 
     const data = await res.json();
+    console.log('Debug: Resposta JSON completa:', data);
+
     if (data && data.data) {
+        console.log('Debug: Dados da proposta encontrados. Retornando data.data.');
         return data.data;
     } else {
         // Lança um erro se a resposta JSON for bem-sucedida, mas a propriedade 'data' estiver faltando
-        throw new Error('Resposta da API bem-sucedida, mas JSON malformado (propriedade "data" não encontrada).');
+        const errorMessage = 'Resposta da API bem-sucedida, mas JSON malformado (propriedade "data" não encontrada).';
+        console.error(`Erro: ${errorMessage}`);
+        throw new Error(errorMessage);
     }
 }
 
