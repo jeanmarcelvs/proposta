@@ -1,7 +1,10 @@
 /**
  * Função Serverless para consultar as propostas de um projeto na API da SolarMarket.
- * Esta função lida com o ciclo de vida do token de acesso, obtendo um novo token temporário
- * a cada requisição para evitar erros de expiração.
+ * Esta função usa o token de longa duração diretamente para fazer a consulta,
+ * seguindo o padrão de uso da documentação da API.
+ * ATENÇÃO: PARA EVITAR O ERRO 401, CERTIFIQUE-SE QUE A VARIÁVEL DE AMBIENTE
+ * 'SOLARMARKET_TOKEN' ESTÁ CORRETAMENTE CONFIGURADA NO SEU PROJETO VERCEL.
+ * O valor deve ser o token de longa duração fornecido pela SolarMarket.
  */
 module.exports = async (req, res) => {
     // Define os cabeçalhos para resposta JSON e CORS
@@ -31,40 +34,25 @@ module.exports = async (req, res) => {
     try {
         // Verifica se o projectId foi fornecido
         if (!projectId) {
-            // Se o projectId estiver ausente, retorna um erro 400 (Bad Request).
             res.status(400).json({ error: 'ID do projeto é obrigatório.' });
             return;
         }
 
-        // ######################################################################
-        // 2. GERA UM TOKEN DE ACESSO TEMPORÁRIO
-        // ######################################################################
-        const authResponse = await fetch(`${SOLARMARKET_API_URL}/auth/signin`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: longLivedToken })
-        });
-
-        // Se a autenticação falhar, lança uma exceção com mais detalhes.
-        if (!authResponse.ok) {
-            const authErrorText = await authResponse.text();
-            throw new Error(`Erro de Autenticação: ${authResponse.status} - ${authErrorText}`);
+        // Adicionamos uma verificação extra para garantir que o token de longa duração está presente.
+        if (!longLivedToken) {
+            res.status(500).json({ error: 'Erro de configuração: A variável de ambiente SOLARMARKET_TOKEN não está definida.' });
+            return;
         }
 
-        const authData = await authResponse.json();
-        const accessToken = authData.token;
-
         // ######################################################################
-        // 3. USA O TOKEN TEMPORÁRIO PARA FAZER A CONSULTA DA PROPOSTA
+        // 2. USA O TOKEN DE LONGA DURAÇÃO PARA CONSULTAR A PROPOSTA DIRETAMENTE
         // ######################################################################
-        // A URL foi ajustada para usar a nova estrutura de endpoint da documentação.
         const propostaResponse = await fetch(`${SOLARMARKET_API_URL}/projects/${projectId}/proposals`, {
             method: 'GET',
             headers: {
                 'accept': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
+                // Usamos o token de longa duração diretamente aqui.
+                'Authorization': `Bearer ${longLivedToken}`
             }
         });
 
@@ -85,7 +73,7 @@ module.exports = async (req, res) => {
         }
 
         // ######################################################################
-        // 4. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
+        // 3. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
         // ######################################################################
         res.status(200).json(propostaAtiva);
 
