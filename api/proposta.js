@@ -1,162 +1,122 @@
 /**
- * Arquivo: proposta.js
- * * Este script é responsável por gerenciar a lógica de consulta de propostas
- * de clientes e a manipulação do DOM para exibir os dados da proposta.
- * Ele utiliza uma API externa para buscar os dados.
+ * Arquivo: api/proposta.js
+ * * Esta é uma Vercel Serverless Function que roda no backend.
+ * Ela é responsável por consultar a API da SolarMarket para obter propostas
+ * de projetos, utilizando um token de acesso temporário gerado a partir de
+ * uma variável de ambiente segura (SOLARMARKET_TOKEN).
  */
+module.exports = async (req, res) => {
+    // Define os cabeçalhos para resposta JSON e CORS
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Adiciona event listener ao botão de busca quando o DOM estiver carregado.
-    const searchButton = document.querySelector('.search-button');
-    if (searchButton) {
-        searchButton.addEventListener('click', async () => {
-            // Obtém o CPF do input
-            const cpfInput = document.getElementById('cpf');
-            const cpf = cpfInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-
-            // Verifica se o CPF tem 11 dígitos
-            if (cpf.length === 11) {
-                // Exibe o spinner de carregamento e esconde o conteúdo
-                const spinner = document.querySelector('.spinner');
-                const content = document.querySelector('.main-content');
-                if (spinner && content) {
-                    spinner.style.display = 'block';
-                    content.style.display = 'none';
-                }
-
-                // Inicia o processo de busca
-                await buscarEExibirProposta(cpf);
-            } else {
-                // Exibe uma mensagem de erro se o CPF for inválido
-                alert("Por favor, digite um CPF válido com 11 dígitos.");
-            }
-        });
+    // Lida com as requisições OPTIONS de preflight
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
     }
 
-    /**
-     * Busca a proposta e atualiza a interface do usuário.
-     * @param {string} cpf - O CPF do cliente.
-     */
-    async function buscarEExibirProposta(cpf) {
-        try {
-            // Primeiro, gera o token de acesso temporário
-            const accessToken = await gerarAccessToken();
-            if (!accessToken) {
-                throw new Error("Não foi possível gerar o token de acesso.");
-            }
+    // ######################################################################
+    // 1. OBTÉM AS CREDENCIAIS E VALIDAÇÃO INICIAL
+    // ######################################################################
+    // O token de credencial de longa duração está armazenado de forma segura na variável de ambiente do Vercel.
+    const longLivedToken = process.env.SOLARMARKET_TOKEN;
 
-            // Em seguida, consulta a proposta usando o token de acesso
-            const proposta = await consultarProposta(cpf, accessToken);
-            if (proposta && proposta.status === 'ok') {
-                // Se a proposta for encontrada, atualiza a UI
-                atualizarUIComProposta(proposta);
-            } else {
-                // Se não for encontrada, exibe mensagem de erro
-                throw new Error(proposta.message || "Proposta não encontrada para o CPF informado.");
-            }
-        } catch (error) {
-            console.error("Erro no fluxo principal:", error);
-            alert(`Erro: ${error.message}`);
-        } finally {
-            // Esconde o spinner e mostra o conteúdo no final
-            const spinner = document.querySelector('.spinner');
-            const content = document.querySelector('.main-content');
-            if (spinner && content) {
-                spinner.style.display = 'none';
-                content.style.display = 'block';
-            }
+    // A URL CORRETA DA API SOLARMARKET.
+    const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
+
+    // Captura o CPF do cliente enviado na requisição do front-end.
+    // **Corrigido:** A variável 'cpf' é usada em vez de 'projectId'.
+    const { cpf } = req.query;
+
+    try {
+        // Verifica se o CPF foi fornecido
+        if (!cpf) {
+            res.status(400).json({ error: 'CPF é obrigatório.' });
+            return;
         }
-    }
-    
-    /**
-     * Gera um token de acesso temporário usando o Token de Credencial (variável de ambiente do Vercel).
-     * @returns {Promise<string>} O token de acesso.
-     */
-    async function gerarAccessToken() {
-        // A API_TOKEN deve ser configurada como uma variável de ambiente no Vercel
-        const apiToken = process.env.API_TOKEN;
-        const url = 'https://business.solarmarket.com.br/api/v2/auth/signin';
-    
-        const options = {
+
+        // Verifica se a variável de ambiente do token de longa duração foi configurada.
+        if (!longLivedToken) {
+            res.status(500).json({ error: 'Erro de configuração: A variável de ambiente SOLARMARKET_TOKEN não está definida.' });
+            return;
+        }
+
+        // ######################################################################
+        // 2. GERA UM NOVO TOKEN DE ACESSO TEMPORÁRIO A CADA REQUISIÇÃO
+        // ######################################################################
+        console.log("Iniciando a etapa 1: Gerando um novo token temporário...");
+        const authResponse = await fetch(`${SOLARMARKET_API_URL}/auth/signin`, {
             method: 'POST',
             headers: {
-                accept: 'application/json',
-                'content-type': 'application/json'
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ token: apiToken })
-        };
-    
-        try {
-            const res = await fetch(url, options);
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(`Erro HTTP ao gerar token: ${res.status} - ${errorData.message || 'Erro desconhecido'}`);
+            body: JSON.stringify({ token: longLivedToken })
+        });
+        
+        // Log para ajudar a depuração
+        console.log("Status da resposta de autenticação:", authResponse.status);
+
+        // Se a autenticação falhar, lança uma exceção com mais detalhes.
+        if (!authResponse.ok) {
+            const authErrorText = await authResponse.text();
+            throw new Error(`Erro de Autenticação: ${authResponse.status} - ${authErrorText}`);
+        }
+
+        const authData = await authResponse.json();
+        const accessToken = authData.access_token; // Corrigido: a API oficial retorna 'access_token', não 'token'
+
+        // Log para inspecionar os dados retornados pela autenticação
+        console.log("Dados de autenticação recebidos:", authData);
+        if (!accessToken) {
+             throw new Error("Erro de Autenticação: O token de acesso não foi encontrado na resposta.");
+        }
+        console.log("Token de acesso temporário gerado com sucesso.");
+
+        // ######################################################################
+        // 3. USA O TOKEN TEMPORÁRIO PARA FAZER A CONSULTA DA PROPOSTA
+        // ######################################################################
+        console.log("Iniciando a etapa 2: Consultando as propostas com o novo token...");
+        // **Ajuste:** A URL da sua API interna é usada aqui.
+        const propostaResponse = await fetch(`https://gdissolarproposta.vercel.app/api/proposta?cpf=${cpf}`, {
+            method: 'GET',
+            headers: {
+                'accept': 'application/json',
+                // Usa o token temporário com o prefixo 'Bearer'
+                'Authorization': `Bearer ${accessToken}`
             }
-            const data = await res.json();
-            return data.access_token;
-        } catch (err) {
-            console.error("Erro ao gerar token de acesso:", err);
-            return null;
+        });
+        
+        // Log para ajudar a depuração
+        console.log("Status da resposta da consulta de propostas:", propostaResponse.status);
+
+        // Se a consulta falhar, lança uma exceção com mais detalhes.
+        if (!propostaResponse.ok) {
+            const propostaErrorText = await propostaResponse.text();
+            throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${propostaErrorText}`);
         }
+
+        const propostasData = await propostaResponse.json();
+
+        // O endpoint pode retornar um array, então vamos pegar a primeira proposta encontrada.
+        const propostaAtiva = propostasData && propostasData.proposta_ativa; // Ajuste: assumindo a estrutura de dados
+
+        if (!propostaAtiva) {
+            res.status(404).json({ error: 'Proposta não encontrada para o projeto especificado.' });
+            return;
+        }
+
+        // ######################################################################
+        // 4. RETORNA OS DADOS DA PROPOSTA PARA O FRONT-END
+        // ######################################################################
+        console.log("Proposta encontrada e retornada com sucesso.");
+        res.status(200).json(propostaAtiva);
+
+    } catch (err) {
+        // Este bloco de captura garante que todos os erros sejam tratados.
+        console.error('Erro na função serverless:', err.message);
+        res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
-
-
-    /**
-     * Consulta a proposta de um cliente chamando o backend.
-     * @param {string} cpf - O CPF do cliente.
-     * @param {string} accessToken - O token de acesso para a consulta.
-     * @returns {Promise<Object|null>} Um objeto com a proposta ou null em caso de falha.
-     */
-    async function consultarProposta(cpf, accessToken) {
-        const backendUrl = `https://gdissolarproposta.vercel.app/api/proposta?cpf=${cpf}`;
-        try {
-            // Adiciona o token de acesso ao cabeçalho da requisição
-            const res = await fetch(backendUrl, {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(`Erro HTTP: ${res.status} - ${errorData.message || 'Erro desconhecido'}`);
-            }
-            const dados = await res.json();
-            return dados;
-        } catch (err) {
-            console.error("Erro ao consultar proposta:", err);
-            return null;
-        }
-    }
-
-    /**
-     * Atualiza o DOM com os dados da proposta.
-     * @param {Object} proposta - O objeto da proposta recebido da API.
-     */
-    function atualizarUIComProposta(proposta) {
-        // Obtém elementos do DOM
-        const paybackYears = document.getElementById('paybackYears');
-        const propostaId = document.getElementById('proposta-id');
-        const propostaAvistaPrice = document.getElementById('proposta-avista-price');
-        const pagamentoParcelaMinima = document.getElementById('pagamento-parcela-minima');
-        const navBarAvistaPrice = document.getElementById('nav-bar-avista-price');
-        const navBarMinParcel = document.getElementById('nav-bar-min-parcel');
-        const propostaAjuste = document.getElementById('proposta-ajuste');
-
-        // Adiciona um listener para o botão de ajuste
-        if (propostaAjuste) {
-            propostaAjuste.addEventListener('click', () => {
-                alert('Ajuste de proposta ainda não implementado.');
-            });
-        }
-
-        // Verifica se todos os elementos existem para evitar erros
-        if (propostaId && propostaAvistaPrice && pagamentoParcelaMinima && paybackYears && navBarAvistaPrice && navBarMinParcel) {
-            propostaId.textContent = proposta.id || 'N/A';
-            propostaAvistaPrice.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-            pagamentoParcelaMinima.textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-            paybackYears.textContent = `${proposta.payback_anos || 4} anos`;
-            navBarAvistaPrice.textContent = (proposta.valor_total || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
-            navBarMinParcel.textContent = `R$ ${(proposta.valor_parcela || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-        }
-    }
-});
+};
