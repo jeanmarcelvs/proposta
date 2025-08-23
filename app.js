@@ -159,6 +159,7 @@ function renderizarProposta(dados) {
 }
 
 // ---- Eventos ----
+// ---- Eventos ----
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     if (!/^[0-9]{1,6}$/.test(projectId)) {
@@ -184,16 +185,25 @@ searchButton.addEventListener('click', async () => {
         }
         propostaOriginal = proposta;
         propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Placeholder
+
+        // --- LÓGICA DE TRANSIÇÃO CORRIGIDA ---
+        // 1. Oculta a tela de busca imediatamente
+        ocultarTodasAsTelas();
         
-        // Transição de tela
-        searchForm.style.opacity = '0';
-        setTimeout(() => {
-            ocultarTodasAsTelas();
-            proposalHeader.style.display = 'block';
-            proposalDetailsSection.style.display = 'flex';
-            renderizarProposta(propostaOriginal);
-            resetarBotao();
-        }, 500);
+        // 2. Exibe a nova tela (ainda invisível por causa do CSS)
+        proposalHeader.style.display = 'block';
+        proposalDetailsSection.style.display = 'flex';
+        
+        // 3. Renderiza os dados na nova tela
+        renderizarProposta(propostaOriginal);
+        
+        // 4. Força o navegador a aplicar as mudanças antes de adicionar a classe de animação
+        // Isso garante que a animação de entrada funcione corretamente.
+        requestAnimationFrame(() => {
+            proposalDetailsSection.classList.add('is-visible');
+        });
+
+        resetarBotao();
 
     } catch (err) {
         console.error("Erro na busca da proposta:", err);

@@ -332,16 +332,15 @@ body {
 }
 
 /* --- ANIMAÇÕES --- */
-.animate-on-scroll {
+.screen.animate-on-scroll {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
-.animate-on-scroll.is-visible {
+.screen.animate-on-scroll.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
-
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
     .header__container {
