@@ -219,6 +219,15 @@ async function handleSearch() {
 
 // --- Inicialização da Página ---
 function init() {
+    // 1. Garante que o botão de busca principal sempre funcione
+    const searchButton = document.getElementById('search-button');
+    if (searchButton) {
+        searchButton.addEventListener('click', handleSearch);
+    } else {
+        console.error("Botão de busca principal não encontrado!");
+    }
+
+    // 2. Cria o cabeçalho dinamicamente
     proposalHeader.innerHTML = `
         <div class="header__container">
             <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
@@ -228,11 +237,10 @@ function init() {
             </div>
         </div>`;
     
+    // 3. Atribui e adiciona eventos aos botões do cabeçalho
     btnAltaPerformance = document.getElementById('btn-alta-performance');
     btnEconomica = document.getElementById('btn-economica');
 
-    searchButton.addEventListener('click', handleSearch);
-    
     btnAltaPerformance.addEventListener('click', () => {
         if (btnAltaPerformance.classList.contains('active')) return;
         document.body.classList.remove('theme-economic');
@@ -248,11 +256,13 @@ function init() {
         if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
     });
 
+    // 4. Configura a visibilidade inicial das seções
     searchForm.style.display = 'flex';
     proposalDetailsSection.style.display = 'none';
     expiredProposalSection.style.display = 'none';
     proposalHeader.style.display = 'none';
     mainFooter.style.display = 'block';
 }
+
 
 init();
