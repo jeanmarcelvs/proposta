@@ -20,7 +20,7 @@ const dataGeracao = document.getElementById('data-geracao');
 const inversorDescricao = document.getElementById('inversor-descricao');
 const moduloDescricao = document.getElementById('modulo-descricao');
 const potenciaSistema = document.getElementById('potencia-sistema');
-const geracaoMensal = document.getElementById('geracao-mensal');
+const geracaoMensal = document = document.getElementById('geracao-mensal');
 const tarifaDistribuidora = document.getElementById('tarifa-distribuidora');
 const tipoInstalacao = document.getElementById('tipo-instalacao');
 const valorTotal = document.getElementById('valor-total');
@@ -121,6 +121,9 @@ function calcularPropostaEconomica(proposta) {
 
 // NOVO: Função para alternar entre as propostas e os temas
 function toggleProposalView(proposta, tema) {
+    // CORREÇÃO: Exibe a seção de detalhes da proposta
+    proposalDetailsSection.style.display = 'block';
+
     // Renderiza a proposta na tela
     renderizarProposta(proposta);
 

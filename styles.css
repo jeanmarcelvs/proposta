@@ -12,6 +12,10 @@
     --economic-green-dark: #556b2f;
     --economic-text: #f0fff0;
     --economic-bg: #e0eee0;
+    
+    /* Novo: Cores para o cabeçalho fixo */
+    --header-bg: #22303e; /* Um azul escuro ligeiramente diferente */
+    --header-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 
     /* Variáveis padrão que serão alteradas pelo JS */
     --bg-color: var(--gdis-blue-dark);
@@ -235,14 +239,14 @@ body {
     box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
 }
 
-/* Cabeçalho Flutuante */
+/* --- NOVO ESTILO: Cabeçalho Flutuante --- */
 #proposal-header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: var(--card-bg);
-    box-shadow: var(--shadow);
+    background-color: var(--header-bg); /* Usa a nova cor de fundo do cabeçalho */
+    box-shadow: var(--header-shadow);    /* Usa a nova sombra para destacar */
     z-index: 1000;
     transition: transform 0.3s ease;
     display: none;
@@ -252,11 +256,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 1.5rem 2rem; /* Aumenta o padding para espaçamento do topo e laterais */
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .logo img {
     height: 40px;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
 }
 
 .proposal-options {
@@ -266,12 +273,12 @@ body {
 
 .option-button {
     background: none;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Borda mais suave */
     border-radius: 20px;
     padding: 0.5rem 1rem;
     font-weight: 500;
     cursor: pointer;
-    color: var(--primary-color);
+    color: var(--gdis-white);
     transition: all 0.3s ease;
 }
 
@@ -282,7 +289,7 @@ body {
 }
 
 .option-button:hover:not(.active) {
-    background-color: #f0f0f0;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Estilos para o tema Econômica */
@@ -292,6 +299,7 @@ body.economic-theme {
 
 body.economic-theme #proposal-header {
     background-color: var(--economic-green-dark);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 body.economic-theme #proposal-header .logo img {
@@ -378,5 +386,8 @@ body.economic-theme .option-button:hover:not(.active) {
         flex-direction: column;
         gap: 0.5rem;
         text-align: center;
+    }
+    #proposal-details {
+        padding-top: 10rem; /* Aumenta o padding para compensar a altura do cabeçalho em telas menores */
     }
 }
