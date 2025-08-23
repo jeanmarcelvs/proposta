@@ -136,14 +136,17 @@ function renderFinancingOptions(pricingTable) {
   // Cria um mapa para agrupar valor e prazo pela numeração
   const financingMap = new Map();
   pricingTable.forEach(item => {
-    const match = item.key.match(/f_(valor|prazo)_(\d+)/);
-    if (match) {
-      const type = match[1];
-      const index = match[2];
-      if (!financingMap.has(index)) {
-        financingMap.set(index, {});
-      }
-      financingMap.get(index)[type] = item.formattedValue;
+    // Adiciona uma verificação para garantir que 'item' e 'item.key' existam
+    if (item && typeof item.key === 'string') {
+        const match = item.key.match(/f_(valor|prazo)_(\d+)/);
+        if (match) {
+            const type = match[1];
+            const index = match[2];
+            if (!financingMap.has(index)) {
+                financingMap.set(index, {});
+            }
+            financingMap.get(index)[type] = item.formattedValue;
+        }
     }
   });
 
