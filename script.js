@@ -75,35 +75,51 @@ async function consultarProposta(projectId) {
  * @param {Object} proposta - O objeto da proposta recebido do backend.
  */
 function renderizarProposta(proposta) {
+    const dados = proposta.data;
+    if (!dados) {
+        console.error('Dados da proposta não encontrados.');
+        return;
+    }
+
     // Preenche os campos da proposta
-    clienteNome.textContent = proposta.name || 'Nome do Cliente';
-    clienteCidadeUf.textContent = `${proposta.project.city || ''}/${proposta.project.uf || ''}`;
+    clienteNome.textContent = dados.name || 'Nome do Cliente';
+    clienteCidadeUf.textContent = `${dados.project?.city || ''}/${dados.project?.uf || ''}`;
     
-    // Converte e formata os valores numéricos
-    const valorTotal = proposta.pricingTable.find(item => item.category === 'total_valor')?.value || 0;
-    const economia = proposta.pricingTable.find(item => item.category === 'economia_mensal')?.value || 0;
-    const payback = proposta.payback_anos || 0;
+    // CORREÇÃO: Busca os valores corretos do pricingTable
+    let valorTotal = 0;
+    if (dados.pricingTable) {
+        valorTotal = dados.pricingTable.reduce((acc, item) => acc + (item.salesValue || 0), 0);
+    }
+    
+    // CORREÇÃO: Busca o valor do payback nos project_variables
+    const paybackObj = dados.variables?.find(v => v.key === 'vc_payback_anos');
+    const payback = paybackObj ? paybackObj.value : 0;
+    
+    // CORREÇÃO: Busca o valor da parcela nos project_variables
+    const valorParcelaObj = dados.variables?.find(v => v.key === 'vc_valor_parcela');
+    const valorParcela = valorParcelaObj ? valorParcela.value : 0;
 
     valorTotalAvista.textContent = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    economiaMensal.textContent = economia.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    // A economia mensal não está no JSON fornecido, definindo como 0
+    economiaMensal.textContent = (0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     paybackTempo.textContent = `${payback} Meses`;
 
-    // Dados de inversor e módulo
-    const inversor = proposta.inversor || {};
-    const modulo = proposta.modulo || {};
+    // CORREÇÃO: Acessa as propriedades corretas do inversor e módulo no pricingTable
+    const inversor = dados.pricingTable.find(item => item.category === 'Inversor');
+    const modulo = dados.pricingTable.find(item => item.category === 'Módulo');
 
-    inversorDescricao.textContent = inversor.descricao || 'N/A';
-    inversorQuantidade.textContent = inversor.quantidade || 'N/A';
-    moduloDescricao.textContent = modulo.descricao || 'N/A';
-    moduloQuantidade.textContent = modulo.quantidade || 'N/A';
+    inversorDescricao.textContent = inversor?.item || 'N/A';
+    inversorQuantidade.textContent = inversor?.qnt || 'N/A';
+    moduloDescricao.textContent = modulo?.item || 'N/A';
+    moduloQuantidade.textContent = modulo?.qnt || 'N/A';
     
     // Atualiza a barra de navegação superior
     navBarAvistaPrice.textContent = valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    navBarMinParcel.textContent = (proposta.valor_parcela || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
+    navBarMinParcel.textContent = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' });
 
     // Link para o PDF
-    linkPDFNav.href = proposta.linkPdf || '#';
-    linkPDFNav.style.display = proposta.linkPdf ? 'inline-block' : 'none';
+    linkPDFNav.href = dados.linkPdf || '#';
+    linkPDFNav.style.display = dados.linkPdf ? 'inline-block' : 'none';
 
     // Mostra a seção de detalhes e esconde o formulário
     formContainer.style.display = 'none';
@@ -132,7 +148,7 @@ searchForm.addEventListener('submit', async (e) => {
 
     try {
         const proposta = await consultarProposta(projectId);
-        if (proposta) {
+        if (proposta && proposta.data) {
             renderizarProposta(proposta);
         } else {
             messageBox.textContent = 'Proposta não encontrada para o projeto especificado.';
