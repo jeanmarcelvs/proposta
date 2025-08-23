@@ -79,7 +79,15 @@ body.theme-economic .metric-value { color: var(--color-primary); }
 .highlight-footnote { text-align: center; font-size: 1.1rem; font-weight: 500; color: var(--color-text); }
 .highlight-footnote strong { color: var(--color-secondary); font-weight: 600; }
 
-.equipment-showcase { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; align-items: center; }
+.equipment-showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    /* REMOVIDO: align-items: center; */
+    /* ADICIONADO: A propriedade 'align-items' com o valor padrão 'stretch' 
+       forçará todos os itens a terem a mesma altura. */
+}
+
 .equipment-logo-wrapper { display: flex; justify-content: center; align-items: center; padding: 1rem; background-color: var(--color-background); border-radius: var(--border-radius); }
 .equipment-logo-wrapper img { max-height: 60px; max-width: 100%; object-fit: contain; }
 .spec-card { background-color: var(--color-background); padding: 1rem; border-radius: var(--border-radius); text-align: center; height: 100%; }
