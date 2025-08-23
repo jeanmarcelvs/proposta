@@ -1,7 +1,6 @@
 // Seleciona os elementos do DOM
-const formContainer = document.getElementById('form-container');
-const proposalContainer = document.getElementById('proposal-container');
 const searchForm = document.getElementById('search-form');
+const proposalDetailsSection = document.getElementById('proposal-details');
 const projectIdInput = document.getElementById('project-id');
 const messageBox = document.getElementById('message-box');
 
@@ -33,6 +32,9 @@ const highPerformanceOptionForm = document.getElementById('high-performance-opti
 const economicOptionForm = document.getElementById('economic-option-form');
 const highPerformanceOptionNav = document.getElementById('high-performance-option-nav');
 const economicOptionNav = document.getElementById('economic-option-nav');
+
+// Oculta a seção de detalhes da proposta por padrão ao carregar a página
+proposalDetailsSection.style.display = 'none';
 
 /**
  * Define o tema do site.
@@ -124,8 +126,8 @@ function renderizarProposta(proposta) {
     linkPDF.style.display = proposta.linkPdf ? 'inline-block' : 'none';
 
     // Mostra a seção de detalhes e esconde o formulário
-    formContainer.style.display = 'none';
-    proposalContainer.style.display = 'block';
+    searchForm.style.display = 'none';
+    proposalDetailsSection.style.display = 'block';
 }
 
 /**
@@ -191,7 +193,8 @@ searchForm.addEventListener('submit', async (e) => {
         if (!proposta || !proposta.pricingTable) {
             messageBox.textContent = 'Proposta não encontrada ou dados incompletos. Verifique o ID do projeto.';
             messageBox.style.display = 'block';
-            proposalContainer.style.display = 'none';
+            proposalDetailsSection.style.display = 'none';
+            searchForm.style.display = 'block';
             return;
         }
 
@@ -199,7 +202,8 @@ searchForm.addEventListener('submit', async (e) => {
     } catch (err) {
         messageBox.textContent = `Erro ao carregar proposta: ${err.message}`;
         messageBox.style.display = 'block';
-        proposalContainer.style.display = 'none';
+        proposalDetailsSection.style.display = 'none';
+        searchForm.style.display = 'block';
     } finally {
         searchButton.textContent = 'Consultar Proposta';
         searchButton.disabled = false;
