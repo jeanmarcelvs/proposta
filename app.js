@@ -174,7 +174,7 @@ searchButton.addEventListener('click', async () => {
     try {
         const respostaDaApi = await consultarProposta(projectId);
         
-        // CORREÇÃO FINAL: Acessa o objeto diretamente na chave 'data'.
+        // CORREÇÃO FINAL: Extração do objeto 'data' aqui, no ponto de uso.
         const proposta = respostaDaApi?.data;
 
         if (!proposta || !proposta.id) {
