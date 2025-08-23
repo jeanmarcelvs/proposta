@@ -28,15 +28,88 @@ const findVar = (proposta, key, useFormatted = false) => {
     return useFormatted && variable.formattedValue ? variable.formattedValue : variable.value;
 };
 
-// --- Funções de Renderização (simplificadas para clareza) ---
+// --- Funções de Renderização ---
+
+function renderizarFinanciamento(dados) {
+    const financingOptionsContainer = document.getElementById('financing-options');
+    const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
+    let opcoes = todasAsParcelas.map(pVar => {
+        const prazoVar = dados.variables.find(v => v.key === pVar.key.replace('parcela', 'prazo'));
+        return prazoVar ? { prazo: parseInt(prazoVar.value, 10), valorParcela: parseFloat(pVar.value) } : null;
+    }).filter(Boolean).sort((a, b) => a.prazo - b.prazo);
+
+    if (opcoes.length === 0) {
+        financingOptionsContainer.innerHTML = "<p>Nenhuma opção de financiamento disponível.</p>";
+        return;
+    }
+
+    const economiaMensal = parseFloat(findVar(dados, 'economia_mensal')) || 0;
+    const custoDisponibilidade = parseFloat(findVar(dados, 'custo_disponibilidade_valor')) || 0;
+    const melhorOpcao = opcoes.reduce((best, current) => {
+        const diff = Math.abs(economiaMensal - (current.valorParcela + custoDisponibilidade));
+        return diff < best.diff ? { ...current, diff } : best;
+    }, { diff: Infinity });
+
+    financingOptionsContainer.innerHTML = opcoes.map(opt => `
+        <div class="financing-option ${opt.prazo === melhorOpcao.prazo ? 'highlight' : ''}">
+            ${opt.prazo === melhorOpcao.prazo ? '<div class="highlight-tag">Equilibrado</div>' : ''}
+            <div class="prazo">${opt.prazo}<span>x</span></div>
+            <div class="valor">${formatarMoeda(opt.valorParcela)}</div>
+        </div>
+    `).join('');
+}
+
+// ESTA É A FUNÇÃO COMPLETA E CORRIGIDA
 function renderizarProposta(dados, tipoProposta = 'performance') {
-    // Seletores dos campos de dados (só são necessários aqui)
+    // Seletores dos campos de dados
     const clienteNome = document.getElementById('cliente-nome');
     const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-    // ... (adicione todos os outros seletores de campos de dados aqui)
+    const dataGeracao = document.getElementById('data-geracao');
+    const geracaoMensal = document.getElementById('geracao-mensal');
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const tipoInstalacao = document.getElementById('tipo-instalacao');
+    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+    const equipmentTitle = document.getElementById('equipment-title');
+    const equipmentLogoContainer = document.getElementById('equipment-logo-container');
+    const inversorPotencia = document.getElementById('inversor-potencia');
+    const moduloPotencia = document.getElementById('modulo-potencia');
+    const inversorQnt = document.getElementById('inversor-qnt');
+    const moduloQnt = document.getElementById('modulo-qnt');
+    const valorTotal = document.getElementById('valor-total');
+    const proposalValidity = document.getElementById('proposal-validity');
+    const logoMap = { 'huawei': 'logo1.png' };
+
+    // Lógica de renderização
+    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+
+    equipmentTitle.innerHTML = tipoProposta === 'economica' 
+        ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
+        : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
+
+    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+    
+    if (logoFileName) {
+        equipmentLogoContainer.innerHTML = `<img src="${logoFileName}" alt="Logo do equipamento">`;
+    } else {
+        equipmentLogoContainer.innerHTML = `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+    }
 
     clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-    // ... (resto da lógica de renderização)
+    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+    geracaoMensal.textContent = `${findVar(dados, 'geracao_mensal', true)} kWh`;
+    potenciaSistema.textContent = `${findVar(dados, 'potencia_sistema', true)} kWp`;
+    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+    inversorPotencia.textContent = `${findVar(dados, 'inversor_potencia_nominal', true)} W`;
+    moduloPotencia.textContent = `${findVar(dados, 'modulo_potencia', true)} W`;
+    inversorQnt.textContent = `${findVar(dados, 'inversor_quantidade', true)} Unidade(s)`;
+    moduloQnt.textContent = `${findVar(dados, 'modulo_quantidade', true)} Unidades`;
+    valorTotal.textContent = formatarMoeda(findVar(dados, 'preco'));
+    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+
+    renderizarFinanciamento(dados);
 }
 
 // --- Lógica Principal e Eventos ---
@@ -60,7 +133,6 @@ async function handleSearch() {
         renderizarProposta(propostaOriginal, 'performance');
         blockFeatures();
 
-        // LÓGICA DO BOTÃO DE VOLTAR - SEGURA E NO LUGAR CERTO
         const backToSearchBtn = document.getElementById('back-to-search-btn');
         backToSearchBtn.addEventListener('click', () => {
             proposalDetailsSection.style.display = 'none';
@@ -80,14 +152,41 @@ async function handleSearch() {
 
 // --- Inicialização da Página ---
 function init() {
-    // A função init agora só precisa configurar os eventos da tela inicial
-    searchButton.addEventListener('click', handleSearch);
+    let btnAltaPerformance, btnEconomica;
 
-    // Configuração inicial da visibilidade
+    proposalHeader.innerHTML = `
+        <div class="header__container">
+            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+            <div class="header__options">
+                <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+                <button id="btn-economica" class="option-button">Econômica</button>
+            </div>
+        </div>`;
+    
+    btnAltaPerformance = document.getElementById('btn-alta-performance');
+    btnEconomica = document.getElementById('btn-economica');
+
+    searchButton.addEventListener('click', handleSearch);
+    
+    btnAltaPerformance.addEventListener('click', () => {
+        if (btnAltaPerformance.classList.contains('active')) return;
+        document.body.classList.remove('theme-economic');
+        btnEconomica.classList.remove('active');
+        btnAltaPerformance.classList.add('active');
+        if (propostaOriginal) renderizarProposta(propostaOriginal, 'performance');
+    });
+    btnEconomica.addEventListener('click', () => {
+        if (btnEconomica.classList.contains('active')) return;
+        document.body.classList.add('theme-economic');
+        btnAltaPerformance.classList.remove('active');
+        btnEconomica.classList.add('active');
+        if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
+    });
+
     searchForm.style.display = 'flex';
     proposalDetailsSection.style.display = 'none';
     proposalHeader.style.display = 'none';
-    mainFooter.style.display = 'block'; // Rodapé sempre visível
+    mainFooter.style.display = 'block';
 }
 
 init();
