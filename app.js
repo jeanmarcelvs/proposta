@@ -164,7 +164,7 @@ searchButton.addEventListener('click', async () => {
 
     try {
         const respostaDaApi = await consultarProposta(projectId);
-        const proposta = respostaDaApi?.data;
+        const proposta = respostaDaApi;
 
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
