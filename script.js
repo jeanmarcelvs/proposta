@@ -85,24 +85,32 @@ function renderizarProposta(proposta) {
         console.error('Dados da proposta ou pricingTable não encontrados.');
         return;
     }
+    
+    console.log('Dados da proposta recebidos:', proposta);
 
     // Limpa as opções de financiamento existentes
     financingOptionsContainer.innerHTML = '';
 
     // Encontra os objetos na pricingTable usando as chaves e categorias corretas
-    const valorTotalObj = proposta.pricingTable.find(item => item.key === "preco");
-    const paybackObj = proposta.pricingTable.find(item => item.key === "payback");
-    const geracaoMensalObj = proposta.pricingTable.find(item => item.key === "geracao_mensal");
-    const potenciaSistemaObj = proposta.pricingTable.find(item => item.key === "potencia_sistema");
+    const valorTotalObj = proposta.pricingTable.find(item => item.key === "vc_valor_total_sugerido");
+    const paybackObj = proposta.pricingTable.find(item => item.key === "vc_payback_sugerido");
+    const geracaoMensalObj = proposta.pricingTable.find(item => item.key === "vc_geracao_mensal_sugerido");
+    const potenciaSistemaObj = proposta.pricingTable.find(item => item.key === "vc_potencia_sistema_sugerido");
     const inversorObj = proposta.pricingTable.find(item => item.category === "Inversor");
     const moduloObj = proposta.pricingTable.find(item => item.category === "Módulo");
-    
+    const clienteCidadeUfObj = proposta.pricingTable.find(item => item.key === "cidade"); // Adiciona este item se ele existir
+
     // Atualiza o HTML com os valores encontrados
+    clienteNome.textContent = proposta.project?.name || 'Nome do Cliente';
+    clienteCidadeUf.textContent = clienteCidadeUfObj?.formattedValue || 'Cidade/UF';
+    
+    // Atualiza os cards de valor
     valorTotalAvista.textContent = valorTotalObj?.formattedValue || 'N/A';
     paybackTempo.textContent = paybackObj?.formattedValue || 'N/A';
     geracaoMensal.textContent = `${geracaoMensalObj?.formattedValue || 'N/A'} kWh`;
     potenciaSistema.textContent = `${potenciaSistemaObj?.formattedValue || 'N/A'} kWp`;
     
+    // Atualiza os detalhes do sistema
     inversorDescricao.textContent = inversorObj?.item || 'N/A';
     inversorQuantidade.textContent = inversorObj?.qnt || 'N/A';
     moduloDescricao.textContent = moduloObj?.item || 'N/A';
