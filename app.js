@@ -20,11 +20,7 @@ const dataGeracao = document.getElementById('data-geracao');
 const inversorDescricao = document.getElementById('inversor-descricao');
 const moduloDescricao = document.getElementById('modulo-descricao');
 const potenciaSistema = document.getElementById('potencia-sistema');
-
-// AQUI ESTÁ A ÚLTIMA CORREÇÃO:
 const geracaoMensal = document.getElementById('geracao-mensal');
-// A linha acima estava com um erro de sintaxe.
-
 const tarifaDistribuidora = document.getElementById('tarifa-distribuidora');
 const tipoInstalacao = document.getElementById('tipo-instalacao');
 const valorTotal = document.getElementById('valor-total');
@@ -91,21 +87,43 @@ function renderizarParcelaEquilibrada(parcela) {
     parcelaEquilibradaContainer.innerHTML = '';
 }
 
+// Função para buscar um valor no array 'variables' da API
+function findVariable(proposta, key) {
+    const variable = proposta.variables.find(v => v.key === key);
+    return variable ? variable.value : 'N/A';
+}
+
+// Função para buscar um item no array 'pricingTable' da API
+function findItem(proposta, category) {
+    const item = proposta.pricingTable.find(i => i.category === category);
+    return item ? item.item : 'N/A';
+}
+
 // Função para calcular a proposta econômica com base na proposta original
 function calcularPropostaEconomica(proposta) {
-    const propostaEconomica = JSON.parse(JSON.stringify(proposta)); 
+    const propostaEconomica = JSON.parse(JSON.stringify(proposta));
     
     const DESCONTO_ECONOMICA = 0.85;
 
+    // Atualiza o pricingTable para a versão econômica
     propostaEconomica.pricingTable = proposta.pricingTable.map(item => ({
         ...item,
         totalCost: item.totalCost * DESCONTO_ECONOMICA,
         unitCost: item.unitCost * DESCONTO_ECONOMICA
     }));
 
-    propostaEconomica.financial.totalValue = proposta.financial.totalValue ? proposta.financial.totalValue * DESCONTO_ECONOMICA : 'N/A';
-    propostaEconomica.financial.payback = proposta.financial.payback ? proposta.financial.payback * 1.2 : 'N/A';
+    // Localiza e atualiza os valores na array `variables`
+    const totalValueVar = propostaEconomica.variables.find(v => v.key === 'f_valor_1'); // Supondo que 'f_valor_1' é o valor total financiado
+    if (totalValueVar) {
+        totalValueVar.value = totalValueVar.value * DESCONTO_ECONOMICA;
+    }
     
+    const paybackVar = propostaEconomica.variables.find(v => v.key === 'payback'); // Supondo que 'payback' é a chave
+    if (paybackVar) {
+        paybackVar.value = paybackVar.value * 1.2;
+    }
+    
+    // Altera a descrição dos itens na proposta econômica
     const inversor = propostaEconomica.pricingTable.find(item => item.category === 'Inversor');
     if (inversor) {
         inversor.item = "Inversor Econômico ABC";
@@ -118,37 +136,25 @@ function calcularPropostaEconomica(proposta) {
     return propostaEconomica;
 }
 
-// Função para alternar entre as propostas e os temas
-function toggleProposalView(proposta, tema) {
-    proposalDetailsSection.style.display = 'block';
-    renderizarProposta(proposta);
-    document.body.className = `${tema}-theme`;
-
-    if (tema === 'alta-performance') {
-        btnAltaPerformance.classList.add('active');
-        btnEconomica.classList.remove('active');
-    } else if (tema === 'economic') {
-        btnEconomica.classList.add('active');
-        btnAltaPerformance.classList.remove('active');
-    }
-}
-
 // Função de renderização principal
 function renderizarProposta(dados) {
     clienteNome.textContent = dados.project?.name || 'N/A';
-    clienteCidadeUf.textContent = `${dados.project?.city || 'N/A'} - ${dados.project?.uf || 'N/A'}`;
+    
+    const cidade = findVariable(dados, 'cidade');
+    const uf = findVariable(dados, 'estado');
+    clienteCidadeUf.textContent = `${cidade} - ${uf}`;
+    
     dataGeracao.textContent = formatarData(dados.generatedAt);
     
-    const inversorItem = dados.pricingTable?.find(item => item.category === 'Inversor');
-    const moduloItem = dados.pricingTable?.find(item => item.category === 'Módulo');
+    inversorDescricao.textContent = findItem(dados, 'Inversor');
+    moduloDescricao.textContent = findItem(dados, 'Módulo');
     
-    inversorDescricao.textContent = inversorItem?.item || 'N/A';
-    moduloDescricao.textContent = moduloItem?.item || 'N/A';
+    potenciaSistema.textContent = findVariable(dados, 'potencia_sistema');
+    geracaoMensal.textContent = findVariable(dados, 'geracao_mensal');
+    tarifaDistribuidora.textContent = findVariable(dados, 'tarifa_distribuidora');
+    tipoInstalacao.textContent = findVariable(dados, 'topologia');
     
-    potenciaSistema.textContent = dados.system?.power || 'N/A';
-    geracaoMensal.textContent = dados.system?.generation || 'N/A';
-    tarifaDistribuidora.textContent = dados.financial?.distributorTariff || 'N/A';
-    tipoInstalacao.textContent = dados.installationType || 'N/A';
+    // Assumindo que a API completa tem 'financial' e 'estimatedEnergyBill'
     valorTotal.textContent = formatarMoeda(dados.financial?.totalValue);
     payback.textContent = `${formatarNumero(dados.financial?.payback)} anos`;
     contaEnergiaEstimada.textContent = formatarMoeda(dados.financial?.estimatedEnergyBill);
@@ -172,8 +178,10 @@ searchButton.addEventListener('click', async () => {
     searchButton.disabled = true;
 
     try {
-        const proposta = await consultarProposta(projectId);
+        const respostaDaApi = await consultarProposta(projectId);
         
+        const proposta = respostaDaApi.data; // Acessa o objeto aninhado
+
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
             resetarBotao();
@@ -197,6 +205,7 @@ searchButton.addEventListener('click', async () => {
         resetarBotao();
 
     } catch (err) {
+        console.error("Erro na busca da proposta:", err);
         exibirMensagemDeErro('Ocorreu um erro de comunicação. Por favor, tente novamente mais tarde ou entre em contato conosco.');
         resetarBotao();
     }
