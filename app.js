@@ -129,7 +129,7 @@ function renderizarProposta(dados) {
     moduloDescricao.textContent = findItem(dados, 'Módulo');
 
     const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
-    const tarifaValor = parseFloat(findVariable(dados, 'tarifa')) || 0;
+    const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0;
 
     potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
     geracaoMensal.textContent = `${findVariable(dados, 'geracao_mensal', true)} kWh`;
