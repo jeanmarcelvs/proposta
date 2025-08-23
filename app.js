@@ -122,44 +122,43 @@ function renderizarParcelaEquilibrada(parcela) {
 const equipmentLogoContainer = document.getElementById('equipment-logo-container');
 
 // Substitua a função renderizarProposta inteira por esta:
-function renderizarProposta(dados, tipoProposta = 'performance') { // Adiciona o parâmetro
-    // --- Lógica de formatação de dados (sem alterações) ---
+// Adicione estes novos seletores no início do seu app.js
+const inversorPotencia = document.getElementById('inversor-potencia');
+const moduloPotencia = document.getElementById('modulo-potencia');
+
+// Substitua a função renderizarProposta inteira por esta:
+function renderizarProposta(dados, tipoProposta = 'performance') {
+    // --- Lógica de formatação de dados ---
     const dataCompleta = findVariable(dados, 'data_geracao', true);
     const dataFormatada = dataCompleta.split(' ')[0];
 
     const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
     const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0;
     const contaAtual = geracaoMensalValor * tarifaValor;
-    const textoContaEnergia = `Ideal para contas de energia de até ${formatarMoeda(contaAtual)}`;
+    // NOVO TEXTO: Usa HTML para mais destaque
+    const textoContaEnergia = `Ideal para contas de energia de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
-    // --- Lógica da Logo Dinâmica (ATUALIZADA) ---
+    // --- Lógica da Logo Dinâmica ---
     let logoFileName;
     let logoAltText;
-
     if (tipoProposta === 'economica') {
-        // Força a logo2.png para a proposta econômica
         logoFileName = 'logo2.png';
         logoAltText = 'Logo da Proposta Econômica';
     } else {
-        // Lógica padrão para a proposta de alta performance
         const fabricanteInversor = findVariable(dados, 'inversor_fabricante', false).toLowerCase();
-        logoFileName = `${fabricanteInversor.split(' ')[0]}.png`; // Ex: huawei.png
+        logoFileName = `${fabricanteInversor.split(' ')[0]}.png`;
         logoAltText = `Logo ${fabricanteInversor}`;
     }
-
-    // Limpa o container da logo e insere a nova imagem
     equipmentLogoContainer.innerHTML = '';
     const logoImg = document.createElement('img');
     logoImg.src = logoFileName;
     logoImg.alt = logoAltText;
     logoImg.onerror = () => { 
-        // Fallback caso a imagem não seja encontrada
         equipmentLogoContainer.innerHTML = `<p><strong>Equipamento:</strong> ${findItem(dados, 'Inversor')}</p>`;
     };
     equipmentLogoContainer.appendChild(logoImg);
 
-
-    // --- Renderização dos dados nos elementos HTML (sem alterações) ---
+    // --- Renderização dos dados nos elementos HTML ---
     clienteNome.textContent = findVariable(dados, 'cliente_nome', true) || 'Cliente GDIS';
     const cidade = findVariable(dados, 'cidade');
     const uf = findVariable(dados, 'estado');
@@ -167,9 +166,13 @@ function renderizarProposta(dados, tipoProposta = 'performance') { // Adiciona o
     dataGeracao.textContent = dataFormatada;
     
     geracaoMensal.textContent = `${findVariable(dados, 'geracao_mensal', true)} kWh`;
-    contaEnergiaEstimada.textContent = textoContaEnergia;
+    contaEnergiaEstimada.innerHTML = textoContaEnergia; // Usa .innerHTML para renderizar o <strong>
     potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
     tipoInstalacao.textContent = findVariable(dados, 'vc_tipo_de_estrutura', true);
+    
+    // NOVO: Renderiza as potências dos equipamentos
+    inversorPotencia.textContent = `${findVariable(dados, 'inversor_potencia_nominal', true)} W`;
+    moduloPotencia.textContent = `${findVariable(dados, 'modulo_potencia', true)} Wp`;
     
     valorTotal.textContent = formatarMoeda(findVariable(dados, 'preco'));
     payback.textContent = findVariable(dados, 'payback', true);
@@ -179,6 +182,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') { // Adiciona o
     renderizarOpcoesFinanciamento(dados);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
+
 
 
 

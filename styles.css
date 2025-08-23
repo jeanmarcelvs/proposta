@@ -556,3 +556,56 @@ body {
         opacity: 1;
     }
 }
+
+/* ======================================================== */
+/* --- ESTILOS PARA SEÇÃO DE ECONOMIA E EQUIPAMENTOS --- */
+/* ======================================================== */
+
+/* Nova seção de destaque para a economia */
+.economy-highlight-section {
+    background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 20%));
+    color: #ffffff;
+    text-align: center;
+}
+
+.economy-highlight-section .section-title,
+.economy-highlight-section .section-title i {
+    color: #ffffff;
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.economy-box p {
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.economy-box strong {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    display: block;
+    margin-top: 0.5rem;
+}
+
+/* Aumenta o destaque da logo */
+.equipment-logo-wrapper img {
+    max-height: 80px; /* Logo maior */
+    margin-bottom: 1rem; /* Espaçamento abaixo da logo */
+}
+
+/* Estilo para as especificações dos equipamentos */
+.equipment-specs {
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.equipment-specs p {
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+.equipment-specs p strong {
+    color: var(--color-text-light);
+}

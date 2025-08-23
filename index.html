@@ -42,34 +42,26 @@
     </main>
 
     <!-- TELA DE DETALHES DA PROPOSTA -->
-<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO COM LOGO DINÂMICA -->
+<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO COM SEÇÃO DE ECONOMIA DEDICADA -->
 <main id="proposal-details" class="screen proposal-details" style="display: none;">
     <div class="proposal-container">
 
         <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE -->
         <section class="proposal-section">
-            <h2 class="section-title">
-                <i class="fas fa-user"></i>
-                Proposta para <span id="cliente-nome"></span>
-            </h2>
+            <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
             <div class="section-content">
                 <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
                 <p><strong>Data da Proposta:</strong> <span id="data-geracao"></span></p>
             </div>
         </section>
 
-        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR (Com destaque combinado) -->
+        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR -->
         <section class="proposal-section">
-            <h2 class="section-title">
-                <i class="fas fa-solar-panel"></i>
-                Detalhes do Sistema Solar
-            </h2>
+            <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema Solar</h2>
             <div class="section-content-grid">
-                <!-- NOVO: Bloco de destaque para Geração e Conta -->
-                <div class="metric-box highlight-box">
+                <div class="metric-box">
                     <span class="metric-label">Geração Média Mensal</span>
                     <span class="metric-value" id="geracao-mensal"></span>
-                    <p class="metric-subvalue" id="conta-energia-estimada"></p>
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Potência do Sistema</span>
@@ -82,24 +74,29 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 3: EQUIPAMENTOS DE PONTA (Com container para a logo) -->
-        <section class="proposal-section">
-            <h2 class="section-title">
-                <i class="fas fa-cogs"></i>
-                Equipamentos de Ponta
-            </h2>
-            <!-- NOVO: Container para a logo dinâmica -->
-            <div id="equipment-logo-container" class="equipment-logo-wrapper">
-                <!-- A imagem da logo será inserida aqui pelo JS -->
+        <!-- NOVA SEÇÃO 3: DESTAQUE PARA ECONOMIA -->
+        <section class="proposal-section economy-highlight-section">
+            <h2 class="section-title"><i class="fas fa-piggy-bank"></i> Sua Economia na Prática</h2>
+            <div class="economy-box">
+                <p id="conta-energia-estimada"></p>
             </div>
         </section>
 
-        <!-- SEÇÃO 4: RESUMO FINANCEIRO E INVESTIMENTO -->
+        <!-- SEÇÃO 4: EQUIPAMENTOS DE PONTA (Com dados de potência) -->
         <section class="proposal-section">
-            <h2 class="section-title">
-                <i class="fas fa-dollar-sign"></i>
-                Investimento e Retorno
-            </h2>
+            <h2 class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
+            <div id="equipment-logo-container" class="equipment-logo-wrapper">
+                <!-- A imagem da logo será inserida aqui pelo JS -->
+            </div>
+            <div class="equipment-specs">
+                <p><strong>Potência do Inversor:</strong> <span id="inversor-potencia"></span></p>
+                <p><strong>Potência dos Módulos:</strong> <span id="modulo-potencia"></span></p>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: RESUMO FINANCEIRO E INVESTIMENTO -->
+        <section class="proposal-section">
+            <h2 class="section-title"><i class="fas fa-dollar-sign"></i> Investimento e Retorno</h2>
             <div class="section-content-grid">
                 <div class="metric-box">
                     <span class="metric-label">Valor Total do Projeto</span>
@@ -112,17 +109,14 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 5: OPÇÕES DE FINANCIAMENTO -->
+        <!-- SEÇÃO 6: OPÇÕES DE FINANCIAMENTO -->
         <section class="proposal-section">
-            <h2 class="section-title">
-                <i class="fas fa-hand-holding-dollar"></i>
-                Opções de Financiamento
-            </h2>
+            <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
             <div id="financing-options" class="financing-grid"></div>
             <div id="parcela-equilibrada"></div>
         </section>
 
-        <!-- SEÇÃO 6: AÇÕES -->
+        <!-- SEÇÃO 7: AÇÕES -->
         <section class="proposal-actions">
             <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
                 <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
