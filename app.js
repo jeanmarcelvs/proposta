@@ -163,9 +163,10 @@ searchButton.addEventListener('click', async () => {
     searchButton.disabled = true;
 
     try {
-        const respostaDaApi = await consultarProposta(projectId);
-        const proposta = respostaDaApi;
+        // A resposta da API já é o objeto da proposta
+        const proposta = await consultarProposta(projectId);
 
+        // A verificação agora funciona corretamente
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
             resetarBotao();
@@ -180,12 +181,15 @@ searchButton.addEventListener('click', async () => {
             return;
         }
 
+        // Armazena a proposta diretamente
         propostaOriginal = proposta;
-        propostaEconomica = JSON.parse(JSON.stringify(proposta)); // placeholder para cálculo futuro
+        propostaEconomica = JSON.parse(JSON.stringify(proposta)); // placeholder
 
         ocultarTodasAsTelas();
         proposalHeader.style.display = 'flex';
+        // A renderização usará o objeto correto
         renderizarProposta(propostaOriginal);
+        proposalDetailsSection.style.display = 'block'; // 🔥 ADICIONEI ESTA LINHA
         resetarBotao();
 
     } catch (err) {
