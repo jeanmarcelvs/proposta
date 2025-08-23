@@ -1,6 +1,6 @@
 import { consultarProposta } from "./api.js";
 
-// Seletores dos elementos do DOM
+// Seletores dos elementos do DOM comentário
 const searchForm = document.getElementById('search-form');
 const proposalDetailsSection = document.getElementById('proposal-details');
 const expiredProposalSection = document.getElementById('expired-proposal-section');
