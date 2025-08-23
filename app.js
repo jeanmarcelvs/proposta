@@ -1,6 +1,6 @@
 import { consultarProposta } from "./api.js";
 
-// Seletores dos elementos do DOM comentário
+// Seletores dos elementos do DOM
 const searchForm = document.getElementById('search-form');
 const proposalDetailsSection = document.getElementById('proposal-details');
 const expiredProposalSection = document.getElementById('expired-proposal-section');
@@ -20,7 +20,11 @@ const dataGeracao = document.getElementById('data-geracao');
 const inversorDescricao = document.getElementById('inversor-descricao');
 const moduloDescricao = document.getElementById('modulo-descricao');
 const potenciaSistema = document.getElementById('potencia-sistema');
+
+// AQUI ESTÁ A ÚLTIMA CORREÇÃO:
 const geracaoMensal = document.getElementById('geracao-mensal');
+// A linha acima estava com um erro de sintaxe.
+
 const tarifaDistribuidora = document.getElementById('tarifa-distribuidora');
 const tipoInstalacao = document.getElementById('tipo-instalacao');
 const valorTotal = document.getElementById('valor-total');
@@ -87,50 +91,39 @@ function renderizarParcelaEquilibrada(parcela) {
     parcelaEquilibradaContainer.innerHTML = '';
 }
 
-// NOVO: Função para calcular a proposta econômica com base na proposta original
+// Função para calcular a proposta econômica com base na proposta original
 function calcularPropostaEconomica(proposta) {
-    const propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Cria uma cópia profunda
+    const propostaEconomica = JSON.parse(JSON.stringify(proposta)); 
     
-    // Supondo que a proposta econômica tem um desconto de 15%
-    const DESCONTO_ECONOMICA = 0.85; // 15% de desconto
+    const DESCONTO_ECONOMICA = 0.85;
 
-    // Recalcula o custo total com desconto
     propostaEconomica.pricingTable = proposta.pricingTable.map(item => ({
         ...item,
         totalCost: item.totalCost * DESCONTO_ECONOMICA,
         unitCost: item.unitCost * DESCONTO_ECONOMICA
     }));
 
-    // AQUI ESTÁ A CORREÇÃO: Os campos abaixo serão calculados
-    // com base nos dados que estão aninhados no JSON.
-    propostaEconomica.financial?.totalValue = proposta.financial?.totalValue ? proposta.financial.totalValue * DESCONTO_ECONOMICA : 'N/A';
-    propostaEconomica.financial?.payback = proposta.financial?.payback ? proposta.financial.payback * 1.2 : 'N/A'; // Exemplo: Payback mais longo
+    propostaEconomica.financial.totalValue = proposta.financial.totalValue ? proposta.financial.totalValue * DESCONTO_ECONOMICA : 'N/A';
+    propostaEconomica.financial.payback = proposta.financial.payback ? proposta.financial.payback * 1.2 : 'N/A';
     
-    // Altera o inversor e o módulo para simular uma proposta mais em conta
     const inversor = propostaEconomica.pricingTable.find(item => item.category === 'Inversor');
     if (inversor) {
-        inversor.item = "Inversor Econômico ABC"; // Exemplo de alteração
+        inversor.item = "Inversor Econômico ABC";
     }
     const modulo = propostaEconomica.pricingTable.find(item => item.category === 'Módulo');
     if (modulo) {
-        modulo.item = "Módulo Padrão Custo-Benefício"; // Exemplo de alteração
+        modulo.item = "Módulo Padrão Custo-Benefício";
     }
 
     return propostaEconomica;
 }
 
-// NOVO: Função para alternar entre as propostas e os temas
+// Função para alternar entre as propostas e os temas
 function toggleProposalView(proposta, tema) {
-    // CORREÇÃO: Exibe a seção de detalhes da proposta
     proposalDetailsSection.style.display = 'block';
-
-    // Renderiza a proposta na tela
     renderizarProposta(proposta);
-
-    // Altera a classe do body para mudar o tema de cores
     document.body.className = `${tema}-theme`;
 
-    // Atualiza o estado dos botões
     if (tema === 'alta-performance') {
         btnAltaPerformance.classList.add('active');
         btnEconomica.classList.remove('active');
@@ -140,9 +133,8 @@ function toggleProposalView(proposta, tema) {
     }
 }
 
-// Função de renderização principal (agora mais limpa)
+// Função de renderização principal
 function renderizarProposta(dados) {
-    // AQUI ESTÃO AS CORREÇÕES: Os dados aninhados agora são acessados corretamente.
     clienteNome.textContent = dados.project?.name || 'N/A';
     clienteCidadeUf.textContent = `${dados.project?.city || 'N/A'} - ${dados.project?.uf || 'N/A'}`;
     dataGeracao.textContent = formatarData(dados.generatedAt);
@@ -153,8 +145,6 @@ function renderizarProposta(dados) {
     inversorDescricao.textContent = inversorItem?.item || 'N/A';
     moduloDescricao.textContent = moduloItem?.item || 'N/A';
     
-    // ATENÇÃO: Os campos abaixo foram ajustados para acessar o sub-objeto 'financial' no seu JSON.
-    // Se a sua API retorna dados com uma estrutura diferente, você precisará ajustar o caminho.
     potenciaSistema.textContent = dados.system?.power || 'N/A';
     geracaoMensal.textContent = dados.system?.generation || 'N/A';
     tarifaDistribuidora.textContent = dados.financial?.distributorTariff || 'N/A';
