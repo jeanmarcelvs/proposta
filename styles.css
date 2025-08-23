@@ -1,0 +1,382 @@
+/* Importação de fonte do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+:root {
+    /* Cores GDIS - Alta Performance */
+    --gdis-blue-dark: #2c3e50; /* Azul escuro */
+    --gdis-orange: #ff8c00;   /* Laranja forte */
+    --gdis-white: #ffffff;    /* Branco */
+
+    /* Cores Proposta Econômica - Tom Esverdeado */
+    --economic-green-light: #8fbc8f;
+    --economic-green-dark: #556b2f;
+    --economic-text: #f0fff0;
+    --economic-bg: #e0eee0;
+
+    /* Variáveis padrão que serão alteradas pelo JS */
+    --bg-color: var(--gdis-blue-dark);
+    --card-bg: var(--gdis-white);
+    --text-color: var(--gdis-blue-dark);
+    --text-light: #777;
+    --border-color: #d0d0d0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    --primary-color: var(--gdis-blue-dark);
+    --secondary-color: var(--gdis-orange);
+    --accent-color: var(--gdis-orange);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--gdis-white);
+    line-height: 1.6;
+    transition: background-color 0.5s ease;
+}
+
+/* Telas da Aplicação */
+.screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* --- Tela Inicial: Estilo Arrojado --- */
+.initial-logo {
+    margin-bottom: 2rem;
+}
+
+.initial-logo img {
+    height: 80px;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    transition: all 0.5s ease;
+    color: var(--text-color);
+}
+
+.card-title {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+    color: var(--text-light);
+    margin-bottom: 2rem;
+}
+
+/* NOVO ESTILO: Centraliza o campo de busca e o botão */
+#project-search-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#project-id {
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    outline: none;
+    width: 100%; /* Garante que o input ocupe a largura total */
+}
+
+#project-id:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 8px rgba(255, 140, 0, 0.3);
+}
+
+.message-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f39c12;
+    color: var(--gdis-white);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Estilo do Botão */
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: var(--gdis-orange);
+    color: var(--gdis-white);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+}
+
+.btn-primary:hover {
+    background-color: #e67d00;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Seções da Proposta --- */
+#proposal-details {
+    padding-top: 5rem;
+}
+
+.info-section {
+    text-align: left;
+    margin-top: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.info-section:last-of-type {
+    border-bottom: none;
+}
+
+.info-section h3 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-grid strong {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+/* Estilo para opções de financiamento */
+.financing-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.financing-option {
+    background-color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    flex: 1 1 150px;
+    transition: all 0.3s ease;
+}
+
+.financing-option.recommended {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.financing-option h3 {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.financing-option p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+.balanced-text {
+    margin-top: 1rem;
+    font-style: italic;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.proposal-validity {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* Estilo para a tela de expiração */
+.expired-card {
+    border: 2px solid #e74c3c;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+}
+
+/* Cabeçalho Flutuante */
+#proposal-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    display: none;
+}
+
+#proposal-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.proposal-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.option-button {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.option-button.active {
+    background-color: var(--secondary-color);
+    color: var(--gdis-white);
+    border-color: var(--secondary-color);
+}
+
+.option-button:hover:not(.active) {
+    background-color: #f0f0f0;
+}
+
+/* Estilos para o tema Econômica */
+body.economic-theme {
+    background-color: var(--economic-green-dark);
+}
+
+body.economic-theme #proposal-header {
+    background-color: var(--economic-green-dark);
+}
+
+body.economic-theme #proposal-header .logo img {
+    filter: brightness(200%);
+}
+
+body.economic-theme .card {
+    background-color: var(--economic-bg);
+    color: var(--economic-green-dark);
+    border: 1px solid var(--economic-green-light);
+}
+
+body.economic-theme .card-title,
+body.economic-theme .info-section h3,
+body.economic-theme .info-grid strong {
+    color: var(--economic-green-dark);
+}
+
+body.economic-theme .btn-primary {
+    background-color: var(--economic-green-light);
+    color: var(--economic-green-dark);
+    border-color: var(--economic-green-dark);
+}
+
+body.economic-theme .option-button.active {
+    background-color: var(--economic-green-light);
+    color: var(--economic-green-dark);
+    border-color: var(--economic-green-light);
+}
+
+body.economic-theme .option-button:hover:not(.active) {
+    background-color: var(--economic-bg);
+}
+
+/* Estilos do Popup de Erro Personalizado */
+.popup-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.popup-content {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.popup-content h2 {
+    color: #e74c3c; /* Vermelho de erro */
+    margin-bottom: 1rem;
+}
+
+.popup-content p {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    #proposal-header .container {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+}
