@@ -14,7 +14,6 @@
 
     <main id="search-form" class="screen">
         <div class="search-card">
-            <!-- O wrapper da logo foi removido para garantir o fundo escuro -->
             <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
             <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
             <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
@@ -25,7 +24,6 @@
         </div>
     </main>
 
-    <!-- O restante do HTML (proposal-details, footer, etc. ) permanece o mesmo da versão anterior -->
     <main id="proposal-details" class="screen proposal-details" style="display: none;">
         <div class="proposal-container">
             <section class="proposal-section">
@@ -52,8 +50,8 @@
                         <span class="metric-value" id="tipo-instalacao"></span>
                     </div>
                 </div>
-                <div class="economy-highlight-card">
-                    <p id="conta-energia-estimada"></p>
+                <div class="highlight-footnote-wrapper">
+                    <p id="conta-energia-estimada" class="highlight-footnote"></p>
                 </div>
             </section>
 
@@ -71,7 +69,7 @@
                     </div>
                 </div>
             </section>
-
+            
             <section class="proposal-section">
                 <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
                 <div id="financing-options" class="financing-carousel"></div>
@@ -107,7 +105,7 @@
             <div class="footer-contact">
                 <div class="contact-item">
                     <i class="fas fa-phone"></i>
-                    <span>(82) 9.9425-5946</span>
+                    <span>(82 ) 9.9425-5946</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
@@ -122,7 +120,7 @@
             <p>&copy; 2025 GDIS Solar. Todos os direitos reservados.</p>
         </div>
     </footer>
-    
+
     <script type="module" src="api.js" defer></script>
     <script type="module" src="app.js" defer></script>
 </body>
