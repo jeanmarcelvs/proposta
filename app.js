@@ -1,26 +1,60 @@
 import { consultarProposta } from "./api.js";
 
-// --- APLICAÇÃO PRINCIPAL ---
-
-// O evento DOMContentLoaded garante que todo o HTML foi carregado antes de executar o script.
-// Isso resolve definitivamente qualquer problema de "botão sem ação".
-document.addEventListener('DOMContentLoaded', () => {
-
-    // --- Seletores do DOM ---
-    const searchForm = document.getElementById('search-form');
-    const proposalDetailsSection = document.getElementById('proposal-details');
-    const expiredProposalSection = document.getElementById('expired-proposal-section');
-    const proposalHeader = document.getElementById('proposal-header');
+// --- Deixamos a função principal acessível globalmente para o onclick ---
+window.handleSearchClick = async function() {
     const projectIdInput = document.getElementById('project-id');
     const searchButton = document.getElementById('search-button');
-    const mainFooter = document.getElementById('main-footer');
 
-    // --- Variáveis de Estado ---
-    let propostaOriginal, propostaEconomica;
-    let btnAltaPerformance, btnEconomica;
+    if (!/^[0-9]{1,6}$/.test(projectIdInput.value.trim())) return;
+    searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    searchButton.disabled = true;
 
-    // --- Mapa de Logos ---
-    const logoMap = { 'huawei': 'logo1.png' };
+    try {
+        const proposta = await consultarProposta(projectIdInput.value.trim());
+        if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
+
+        const expirationDate = new Date(proposta.expirationDate);
+        if (expirationDate < new Date()) {
+            document.getElementById('search-form').style.display = 'none';
+            const expiredSection = document.getElementById('expired-proposal-section');
+            expiredSection.style.display = 'flex';
+            expiredSection.innerHTML = `<div class="search-card"><h1 class="search-card__title">Proposta Expirada</h1><p class="search-card__subtitle">Por favor, solicite uma nova proposta.</p><button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button></div>`;
+            return;
+        }
+
+        // Armazena as propostas globalmente para os outros botões usarem
+        window.propostaOriginal = proposta;
+        window.propostaEconomica = JSON.parse(JSON.stringify(proposta));
+
+        document.getElementById('search-form').style.display = 'none';
+        document.getElementById('proposal-header').style.display = 'block';
+        document.getElementById('proposal-details').style.display = 'flex';
+        document.getElementById('main-footer').style.display = 'block';
+        
+        renderizarProposta(proposta, 'performance');
+        blockFeatures();
+
+        const backToSearchBtn = document.getElementById('back-to-search-btn');
+        backToSearchBtn.addEventListener('click', () => {
+            document.getElementById('proposal-details').style.display = 'none';
+            document.getElementById('proposal-header').style.display = 'none';
+            document.getElementById('expired-proposal-section').style.display = 'none';
+            document.getElementById('search-form').style.display = 'flex';
+            projectIdInput.value = '';
+            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+            searchButton.disabled = false;
+        });
+
+    } catch (err) {
+        console.error("Erro na busca:", err);
+        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+        searchButton.disabled = false;
+    }
+}
+
+// --- O restante do código permanece o mesmo, mas dentro do DOMContentLoaded para segurança ---
+
+document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções de Segurança ---
     function blockFeatures() {
@@ -44,6 +78,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Funções de Renderização ---
+    window.renderizarProposta = function(dados, tipoProposta = 'performance') {
+        const clienteNome = document.getElementById('cliente-nome');
+        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+        const dataGeracao = document.getElementById('data-geracao');
+        const geracaoMensal = document.getElementById('geracao-mensal');
+        const potenciaSistema = document.getElementById('potencia-sistema');
+        const tipoInstalacao = document.getElementById('tipo-instalacao');
+        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+        const valorTotal = document.getElementById('valor-total');
+        const proposalValidity = document.getElementById('proposal-validity');
+
+        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+
+        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+        geracaoMensal.textContent = `${findVar(dados, 'geracao_mensal', true)} kWh`;
+        potenciaSistema.textContent = `${findVar(dados, 'potencia_sistema', true)} kWp`;
+        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+
+        renderizarEquipamentos(dados, tipoProposta);
+        renderizarPadraoInstalacao(tipoProposta);
+        renderizarFinanciamento(dados);
+    }
+
     function renderizarFinanciamento(dados) {
         const financingOptionsContainer = document.getElementById('financing-options');
         const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
@@ -76,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarEquipamentos(dados, tipoProposta) {
         const equipmentContainer = document.getElementById('equipment-container');
         const equipmentTitle = document.getElementById('equipment-title');
+        const logoMap = { 'huawei': 'logo1.png' };
         
         equipmentTitle.innerHTML = tipoProposta === 'economica' 
             ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
@@ -148,87 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    function renderizarProposta(dados, tipoProposta = 'performance') {
-        const clienteNome = document.getElementById('cliente-nome');
-        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-        const dataGeracao = document.getElementById('data-geracao');
-        const geracaoMensal = document.getElementById('geracao-mensal');
-        const potenciaSistema = document.getElementById('potencia-sistema');
-        const tipoInstalacao = document.getElementById('tipo-instalacao');
-        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-        const valorTotal = document.getElementById('valor-total');
-        const proposalValidity = document.getElementById('proposal-validity');
-
-        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
-
-        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-        geracaoMensal.textContent = `${findVar(dados, 'geracao_mensal', true)} kWh`;
-        potenciaSistema.textContent = `${findVar(dados, 'potencia_sistema', true)} kWp`;
-        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
-
-        renderizarEquipamentos(dados, tipoProposta);
-        renderizarPadraoInstalacao(tipoProposta);
-        renderizarFinanciamento(dados);
-    }
-
-    // --- Lógica Principal e Eventos ---
-    async function handleSearch() {
-        if (!/^[0-9]{1,6}$/.test(projectIdInput.value.trim())) return;
-        searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        searchButton.disabled = true;
-
-        try {
-            const proposta = await consultarProposta(projectIdInput.value.trim());
-            if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
-
-            const expirationDate = new Date(proposta.expirationDate);
-            if (expirationDate < new Date()) {
-                searchForm.style.display = 'none';
-                expiredProposalSection.style.display = 'flex';
-                expiredProposalSection.innerHTML = `<div class="search-card"><h1 class="search-card__title">Proposta Expirada</h1><p class="search-card__subtitle">Por favor, solicite uma nova proposta.</p><button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button></div>`;
-                return;
-            }
-
-            propostaOriginal = proposta;
-            propostaEconomica = JSON.parse(JSON.stringify(proposta));
-
-            searchForm.style.display = 'none';
-            proposalHeader.style.display = 'block';
-            proposalDetailsSection.style.display = 'flex';
-            mainFooter.style.display = 'block';
-            
-            renderizarProposta(propostaOriginal, 'performance');
-            blockFeatures();
-
-            const backToSearchBtn = document.getElementById('back-to-search-btn');
-            backToSearchBtn.addEventListener('click', () => {
-                proposalDetailsSection.style.display = 'none';
-                proposalHeader.style.display = 'none';
-                expiredProposalSection.style.display = 'none';
-                searchForm.style.display = 'flex';
-                projectIdInput.value = '';
-                searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-                searchButton.disabled = false;
-            });
-
-        } catch (err) {
-            console.error("Erro na busca:", err);
-            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-            searchButton.disabled = false;
-        }
-    }
-
     // --- Inicialização da Página ---
     function init() {
-        // Adiciona o listener ao botão de busca principal
-        searchButton.addEventListener('click', handleSearch);
-
-        // Cria o cabeçalho dinamicamente
+        const proposalHeader = document.getElementById('proposal-header');
+        
         proposalHeader.innerHTML = `
             <div class="header__container">
                 <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
@@ -238,33 +224,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>`;
         
-        // Atribui e adiciona eventos aos botões do cabeçalho
-        btnAltaPerformance = document.getElementById('btn-alta-performance');
-        btnEconomica = document.getElementById('btn-economica');
+        const btnAltaPerformance = document.getElementById('btn-alta-performance');
+        const btnEconomica = document.getElementById('btn-economica');
     
         btnAltaPerformance.addEventListener('click', () => {
             if (btnAltaPerformance.classList.contains('active')) return;
             document.body.classList.remove('theme-economic');
             btnEconomica.classList.remove('active');
             btnAltaPerformance.classList.add('active');
-            if (propostaOriginal) renderizarProposta(propostaOriginal, 'performance');
+            if (window.propostaOriginal) renderizarProposta(window.propostaOriginal, 'performance');
         });
         btnEconomica.addEventListener('click', () => {
             if (btnEconomica.classList.contains('active')) return;
             document.body.classList.add('theme-economic');
             btnAltaPerformance.classList.remove('active');
             btnEconomica.classList.add('active');
-            if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
+            if (window.propostaEconomica) renderizarProposta(window.propostaEconomica, 'economica');
         });
     
-        // Configura a visibilidade inicial das seções
-        searchForm.style.display = 'flex';
-        proposalDetailsSection.style.display = 'none';
-        expiredProposalSection.style.display = 'none';
+        document.getElementById('search-form').style.display = 'flex';
+        document.getElementById('proposal-details').style.display = 'none';
+        document.getElementById('expired-proposal-section').style.display = 'none';
         proposalHeader.style.display = 'none';
-        mainFooter.style.display = 'block';
+        document.getElementById('main-footer').style.display = 'block';
     }
 
-    // Chama a inicialização
     init();
 });
