@@ -8,12 +8,12 @@ const projectIdInput = document.getElementById('project-id');
 const searchButton = document.getElementById('search-button');
 const proposalHeader = document.getElementById('proposal-header');
 
-// Seletores do NOVO POPUP
+// Popup de erro
 const errorPopup = document.getElementById('error-popup');
 const popupMessage = document.getElementById('popup-message');
 const popupCloseBtn = document.getElementById('popup-close-btn');
 
-// Seletores para os elementos da proposta
+// Campos da proposta
 const clienteNome = document.getElementById('cliente-nome');
 const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
 const dataGeracao = document.getElementById('data-geracao');
@@ -30,13 +30,14 @@ const linkPDF = document.getElementById('link-pdf');
 const financingOptionsContainer = document.getElementById('financing-options');
 const parcelaEquilibradaContainer = document.getElementById('parcela-equilibrada');
 
+// Botões de escolha de proposta
 const btnAltaPerformance = document.getElementById('btn-alta-performance');
 const btnEconomica = document.getElementById('btn-economica');
 
-let propostaOriginal; // Armazena a proposta original da API
-let propostaEconomica; // Armazena a proposta econômica calculada
+let propostaOriginal;
+let propostaEconomica;
 
-// Oculta todas as telas, exceto a de busca
+// ---- Utilidades ----
 function ocultarTodasAsTelas() {
     searchForm.style.display = 'none';
     proposalDetailsSection.style.display = 'none';
@@ -44,19 +45,16 @@ function ocultarTodasAsTelas() {
     proposalHeader.style.display = 'none';
 }
 
-// Reseta o estado do botão
 function resetarBotao() {
     searchButton.textContent = 'Visualizar Proposta';
     searchButton.disabled = false;
 }
 
-// Exibe o popup de erro com a mensagem fornecida
 function exibirMensagemDeErro(mensagem) {
     popupMessage.textContent = mensagem;
     errorPopup.style.display = 'flex';
 }
 
-// Funções de formatação
 function formatarMoeda(valor) {
     const num = parseFloat(valor);
     if (isNaN(num)) return valor || 'N/A';
@@ -69,104 +67,93 @@ function formatarNumero(valor) {
     return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function formatarData(dataISO) {
-    if (!dataISO) return 'N/A';
-    const data = new Date(dataISO);
-    return `${data.toLocaleDateString('pt-BR')} às ${data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-}
-
-// Renderiza as opções de financiamento
-function renderizarOpcoesFinanciamento(opcoes) {
-    financingOptionsContainer.innerHTML = '';
-}
-
-// Renderiza a parcela equilibrada
-function renderizarParcelaEquilibrada(parcela) {
-    parcelaEquilibradaContainer.innerHTML = '';
-}
-
-// Função para buscar um valor no array 'variables' da API
+// ---- Acesso ao JSON ----
 function findVariable(proposta, key, usarFormatado = false) {
     const variable = proposta.variables?.find(v => v.key === key);
     if (!variable) return 'N/A';
     return usarFormatado && variable.formattedValue ? variable.formattedValue : variable.value;
 }
 
-// Função para buscar um item no array 'pricingTable' da API
 function findItem(proposta, category) {
     const item = proposta.pricingTable?.find(i => i.category === category);
     return item ? item.item : 'N/A';
 }
 
-// Função para calcular a proposta econômica com base na proposta original
-function calcularPropostaEconomica(proposta) {
-    const propostaEconomica = JSON.parse(JSON.stringify(proposta));
-    
-    const DESCONTO_ECONOMICA = 0.85;
+// ---- Renderização ----
+function renderizarOpcoesFinanciamento(dados) {
+    financingOptionsContainer.innerHTML = '';
 
-    propostaEconomica.pricingTable = propostaEconomica.pricingTable?.map(item => ({
-        ...item,
-        totalCost: item.totalCost * DESCONTO_ECONOMICA,
-        unitCost: item.unitCost * DESCONTO_ECONOMICA
-    }));
+    // pega todas as variáveis com prefixo f_valor_
+    const parcelas = dados.variables?.filter(v => v.key.startsWith('f_valor_')) || [];
 
-    const totalValueVar = propostaEconomica.variables?.find(v => v.key === 'f_valor_1');
-    if (totalValueVar && !isNaN(parseFloat(totalValueVar.value))) {
-        totalValueVar.value = parseFloat(totalValueVar.value) * DESCONTO_ECONOMICA;
-    }
-    
-    const paybackVar = propostaEconomica.variables?.find(v => v.key === 'payback');
-    if (paybackVar && !isNaN(parseFloat(paybackVar.value))) {
-        paybackVar.value = parseFloat(paybackVar.value) * 1.2;
-    }
-    
-    const inversor = propostaEconomica.pricingTable?.find(item => item.category === 'Inversor');
-    if (inversor) {
-        inversor.item = "Inversor Econômico ABC";
-    }
-    const modulo = propostaEconomica.pricingTable?.find(item => item.category === 'Módulo');
-    if (modulo) {
-        modulo.item = "Módulo Padrão Custo-Benefício";
+    if (parcelas.length === 0) {
+        financingOptionsContainer.textContent = "Nenhuma opção de financiamento disponível.";
+        return;
     }
 
-    return propostaEconomica;
+    // ordenar pelo número de parcelas (12, 24, 36, ...)
+    parcelas.sort((a, b) => {
+        const nA = parseInt(a.key.replace('f_valor_', ''));
+        const nB = parseInt(b.key.replace('f_valor_', ''));
+        return nA - nB;
+    });
+
+    parcelas.forEach(parcela => {
+        const numeroParcelas = parseInt(parcela.key.replace('f_valor_', ''));
+        const valor = formatarMoeda(parcela.value);
+
+        const div = document.createElement('div');
+        div.textContent = `${numeroParcelas}x de ${valor}`;
+        financingOptionsContainer.appendChild(div);
+    });
 }
 
-// Função de renderização principal
+function renderizarParcelaEquilibrada(parcela) {
+    parcelaEquilibradaContainer.innerHTML = '';
+    if (!parcela) return;
+
+    parcelaEquilibradaContainer.textContent =
+        `Parcela Equilibrada: ${formatarMoeda(parcela.value)} em ${parcela.installments}x`;
+}
+
 function renderizarProposta(dados) {
-    clienteNome.textContent = dados.project?.name || 'N/A';
-    
+    clienteNome.textContent = findVariable(dados, 'cliente_nome', true);
+
     const cidade = findVariable(dados, 'cidade');
     const uf = findVariable(dados, 'estado');
     clienteCidadeUf.textContent = `${cidade} - ${uf}`;
-    
-    dataGeracao.textContent = formatarData(dados.generatedAt);
-    
+
+    dataGeracao.textContent = findVariable(dados, 'data_geracao', true);
+
     inversorDescricao.textContent = findItem(dados, 'Inversor');
     moduloDescricao.textContent = findItem(dados, 'Módulo');
-    
-    potenciaSistema.textContent = formatarNumero(findVariable(dados, 'potencia_sistema'));
-    geracaoMensal.textContent = formatarNumero(findVariable(dados, 'geracao_mensal'));
-    tarifaDistribuidora.textContent = formatarNumero(findVariable(dados, 'tarifa_distribuidora'));
-    tipoInstalacao.textContent = findVariable(dados, 'topologia');
-    
-    valorTotal.textContent = formatarMoeda(findVariable(dados, 'f_valor_1'));
-    
-    // Payback é texto no JSON, então não usar parseFloat
+
+    const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
+    const tarifaValor = parseFloat(findVariable(dados, 'tarifa')) || 0;
+
+    potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
+    geracaoMensal.textContent = `${findVariable(dados, 'geracao_mensal', true)} kWh`;
+    tarifaDistribuidora.textContent = formatarNumero(tarifaValor);
+    tipoInstalacao.textContent = findVariable(dados, 'vc_tipo_de_estrutura', true);
+
+    valorTotal.textContent = formatarMoeda(findVariable(dados, 'preco'));
+
     payback.textContent = findVariable(dados, 'payback', true);
 
-    contaEnergiaEstimada.textContent = formatarMoeda(findVariable(dados, 'gasto_energia_mensal_atual'));
+    // 🔥 Cálculo da Conta Atual = geração mensal × tarifa
+    const contaAtual = geracaoMensalValor * tarifaValor;
+    contaEnergiaEstimada.textContent = `Para contas de energia de ${formatarMoeda(contaAtual)}`;
 
     linkPDF.href = dados.linkPdf;
 
-    renderizarOpcoesFinanciamento(dados.financingOptions);
+    renderizarOpcoesFinanciamento(dados);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
 
-// Lógica de manipulação de eventos do botão
+// ---- Eventos ----
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
-    
+
     if (!/^[0-9]{1,6}$/.test(projectId)) {
         exibirMensagemDeErro('Por favor, digite um ID de projeto válido (até 6 dígitos numéricos).');
         return;
@@ -177,7 +164,6 @@ searchButton.addEventListener('click', async () => {
 
     try {
         const respostaDaApi = await consultarProposta(projectId);
-        
         const proposta = respostaDaApi?.data;
 
         if (!proposta || !proposta.id) {
@@ -195,8 +181,8 @@ searchButton.addEventListener('click', async () => {
         }
 
         propostaOriginal = proposta;
-        propostaEconomica = calcularPropostaEconomica(proposta);
-        
+        propostaEconomica = JSON.parse(JSON.stringify(proposta)); // placeholder para cálculo futuro
+
         ocultarTodasAsTelas();
         proposalHeader.style.display = 'flex';
         renderizarProposta(propostaOriginal);
@@ -204,29 +190,25 @@ searchButton.addEventListener('click', async () => {
 
     } catch (err) {
         console.error("Erro na busca da proposta:", err);
-        exibirMensagemDeErro('Ocorreu um erro de comunicação. Por favor, tente novamente mais tarde ou entre em contato conosco.');
+        exibirMensagemDeErro('Erro de comunicação. Tente novamente mais tarde.');
         resetarBotao();
     }
 });
 
-// Evento para fechar o popup de erro
+// Fechar popup
 popupCloseBtn.addEventListener('click', () => {
     errorPopup.style.display = 'none';
 });
 
-// Eventos para os botões de opção de proposta
+// Alternar propostas
 btnAltaPerformance.addEventListener('click', () => {
-    if (propostaOriginal) {
-        renderizarProposta(propostaOriginal);
-    }
+    if (propostaOriginal) renderizarProposta(propostaOriginal);
 });
 
 btnEconomica.addEventListener('click', () => {
-    if (propostaEconomica) {
-        renderizarProposta(propostaEconomica);
-    }
+    if (propostaEconomica) renderizarProposta(propostaEconomica);
 });
 
-// Ações iniciais ao carregar a página
+// Inicialização
 ocultarTodasAsTelas();
 searchForm.style.display = 'flex';
