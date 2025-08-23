@@ -121,9 +121,9 @@ function renderizarParcelaEquilibrada(parcela) {
 // Adicione este novo seletor no início do seu app.js, junto com os outros
 const equipmentLogoContainer = document.getElementById('equipment-logo-container');
 
-// Agora, substitua a função renderizarProposta inteira por esta:
-function renderizarProposta(dados) {
-    // --- Lógica de formatação de dados ---
+// Substitua a função renderizarProposta inteira por esta:
+function renderizarProposta(dados, tipoProposta = 'performance') { // Adiciona o parâmetro
+    // --- Lógica de formatação de dados (sem alterações) ---
     const dataCompleta = findVariable(dados, 'data_geracao', true);
     const dataFormatada = dataCompleta.split(' ')[0];
 
@@ -132,25 +132,34 @@ function renderizarProposta(dados) {
     const contaAtual = geracaoMensalValor * tarifaValor;
     const textoContaEnergia = `Ideal para contas de energia de até ${formatarMoeda(contaAtual)}`;
 
-    // --- Lógica da Logo Dinâmica ---
-    const fabricanteInversor = findVariable(dados, 'inversor_fabricante', false).toLowerCase();
-    // Cria um nome de arquivo de imagem simples a partir do nome do fabricante.
-    // Ex: "HUAWEI" -> "huawei.png", "FRONIUS" -> "fronius.png"
-    const logoFileName = `${fabricanteInversor.split(' ')[0]}.png`; // Pega só o primeiro nome
+    // --- Lógica da Logo Dinâmica (ATUALIZADA) ---
+    let logoFileName;
+    let logoAltText;
+
+    if (tipoProposta === 'economica') {
+        // Força a logo2.png para a proposta econômica
+        logoFileName = 'logo2.png';
+        logoAltText = 'Logo da Proposta Econômica';
+    } else {
+        // Lógica padrão para a proposta de alta performance
+        const fabricanteInversor = findVariable(dados, 'inversor_fabricante', false).toLowerCase();
+        logoFileName = `${fabricanteInversor.split(' ')[0]}.png`; // Ex: huawei.png
+        logoAltText = `Logo ${fabricanteInversor}`;
+    }
 
     // Limpa o container da logo e insere a nova imagem
-    equipmentLogoContainer.innerHTML = ''; // Limpa qualquer logo anterior
+    equipmentLogoContainer.innerHTML = '';
     const logoImg = document.createElement('img');
     logoImg.src = logoFileName;
-    logoImg.alt = `Logo ${fabricanteInversor}`;
-    // Adiciona um tratamento de erro caso a imagem não seja encontrada
+    logoImg.alt = logoAltText;
     logoImg.onerror = () => { 
-        equipmentLogoContainer.innerHTML = `<p><strong>Inversor:</strong> ${findItem(dados, 'Inversor')}</p>`;
+        // Fallback caso a imagem não seja encontrada
+        equipmentLogoContainer.innerHTML = `<p><strong>Equipamento:</strong> ${findItem(dados, 'Inversor')}</p>`;
     };
     equipmentLogoContainer.appendChild(logoImg);
 
 
-    // --- Renderização dos dados nos elementos HTML ---
+    // --- Renderização dos dados nos elementos HTML (sem alterações) ---
     clienteNome.textContent = findVariable(dados, 'cliente_nome', true) || 'Cliente GDIS';
     const cidade = findVariable(dados, 'cidade');
     const uf = findVariable(dados, 'estado');
@@ -170,6 +179,7 @@ function renderizarProposta(dados) {
     renderizarOpcoesFinanciamento(dados);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
+
 
 
 
@@ -234,7 +244,8 @@ btnAltaPerformance.addEventListener('click', () => {
     document.body.classList.remove('theme-economic');
     btnEconomica.classList.remove('active');
     btnAltaPerformance.classList.add('active');
-    if (propostaOriginal) renderizarProposta(propostaOriginal);
+    // Chama a renderização com o tipo 'performance'
+    if (propostaOriginal) renderizarProposta(propostaOriginal, 'performance');
 });
 
 btnEconomica.addEventListener('click', () => {
@@ -242,7 +253,8 @@ btnEconomica.addEventListener('click', () => {
     document.body.classList.add('theme-economic');
     btnAltaPerformance.classList.remove('active');
     btnEconomica.classList.add('active');
-    if (propostaEconomica) renderizarProposta(propostaEconomica);
+    // Chama a renderização com o tipo 'economica'
+    if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
 });
 
 // ---- Inicialização ----
