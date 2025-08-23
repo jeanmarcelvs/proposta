@@ -87,13 +87,13 @@ function renderizarParcelaEquilibrada(parcela) {
 
 // Função para buscar um valor no array 'variables' da API
 function findVariable(proposta, key) {
-    const variable = proposta.variables.find(v => v.key === key);
+    const variable = proposta.variables?.find(v => v.key === key);
     return variable ? variable.value : 'N/A';
 }
 
 // Função para buscar um item no array 'pricingTable' da API
 function findItem(proposta, category) {
-    const item = proposta.pricingTable.find(i => i.category === category);
+    const item = proposta.pricingTable?.find(i => i.category === category);
     return item ? item.item : 'N/A';
 }
 
@@ -103,27 +103,30 @@ function calcularPropostaEconomica(proposta) {
     
     const DESCONTO_ECONOMICA = 0.85;
 
-    propostaEconomica.pricingTable = propostaEconomica.pricingTable.map(item => ({
+    // Atualiza o pricingTable para a versão econômica
+    propostaEconomica.pricingTable = propostaEconomica.pricingTable?.map(item => ({
         ...item,
         totalCost: item.totalCost * DESCONTO_ECONOMICA,
         unitCost: item.unitCost * DESCONTO_ECONOMICA
     }));
 
-    const totalValueVar = propostaEconomica.variables.find(v => v.key === 'f_valor_1');
+    // Localiza e atualiza os valores na array `variables`
+    const totalValueVar = propostaEconomica.variables?.find(v => v.key === 'f_valor_1');
     if (totalValueVar) {
         totalValueVar.value = totalValueVar.value * DESCONTO_ECONOMICA;
     }
     
-    const paybackVar = propostaEconomica.variables.find(v => v.key === 'payback');
+    const paybackVar = propostaEconomica.variables?.find(v => v.key === 'payback');
     if (paybackVar) {
         paybackVar.value = paybackVar.value * 1.2;
     }
     
-    const inversor = propostaEconomica.pricingTable.find(item => item.category === 'Inversor');
+    // Altera a descrição dos itens na proposta econômica
+    const inversor = propostaEconomica.pricingTable?.find(item => item.category === 'Inversor');
     if (inversor) {
         inversor.item = "Inversor Econômico ABC";
     }
-    const modulo = propostaEconomica.pricingTable.find(item => item.category === 'Módulo');
+    const modulo = propostaEconomica.pricingTable?.find(item => item.category === 'Módulo');
     if (modulo) {
         modulo.item = "Módulo Padrão Custo-Benefício";
     }
@@ -175,7 +178,8 @@ searchButton.addEventListener('click', async () => {
         const respostaDaApi = await consultarProposta(projectId);
         
         // CORREÇÃO: Acessa o primeiro item do array 'data', como você explicou.
-        const proposta = respostaDaApi?.data[0];
+        // O uso de optional chaining garante que não haverá erros se o array estiver vazio.
+        const proposta = respostaDaApi?.data?.[0];
 
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
