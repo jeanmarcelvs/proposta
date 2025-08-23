@@ -355,33 +355,42 @@ body {
     }
 }
 
-/* --- CORREÇÃO DE COR DE TEXTO --- */
+/* =============================================== */
+/* --- CORREÇÃO FINAL DE VISIBILIDADE DE TEXTO --- */
+/* =============================================== */
 
-/* Garante que o texto dentro dos cards padrão seja da cor principal do tema */
-.info-card .info-card__body,
-.info-card .highlight-metric {
-    color: var(--color-text);
+/* 1. Força a cor do texto em todos os parágrafos dentro do corpo de um card */
+.info-card__body p {
+    color: var(--color-text-light); /* Cor cinza claro para o texto descritivo */
 }
 
-/* Define a cor para os dados específicos (os spans) */
-.info-card__body span,
-.highlight-metric strong {
-    color: var(--color-primary); /* Usa a cor primária mais escura para destaque */
-    font-weight: 500; /* Dá um leve destaque */
+/* 2. Força a cor nos SPANS que recebem os dados do JavaScript. */
+/*    Esta é a regra mais importante. !important é usado como último recurso */
+/*    para garantir que nenhuma outra regra se sobreponha. */
+#cliente-cidade-uf,
+#data-geracao,
+#inversor-descricao,
+#modulo-descricao,
+#potencia-sistema,
+#geracao-mensal,
+#tarifa-distribuidora,
+#tipo-instalacao {
+    color: var(--color-text) !important; /* Cor de texto principal (escura) */
+    font-weight: 500; /* Adiciona um leve negrito para destaque */
 }
 
-/* Garante que o texto do card de boas-vindas permaneça branco */
-.info-card--welcome,
-.info-card--welcome h2,
-.info-card--welcome p,
-.info-card--welcome span,
-.info-card--welcome strong {
-    color: #ffffff;
+/* 3. Força a cor nos campos de destaque (Valor Total e Payback) */
+#valor-total,
+#payback {
+    color: var(--color-secondary) !important; /* Cor de destaque (laranja/verde) */
 }
 
-/* Ajuste fino para o texto "Ideal para contas de energia..." */
-.info-card__subtext {
-    color: var(--color-text-light); /* Usa a cor de texto mais clara */
-    font-weight: 400;
+/* 4. Garante que o texto descritivo desses campos de destaque seja visível */
+.highlight-metric span {
+    color: var(--color-text-light);
 }
 
+/* 5. Garante que o texto no card de boas-vindas continue branco */
+.info-card--welcome, .info-card--welcome * {
+    color: #ffffff !important;
+}
