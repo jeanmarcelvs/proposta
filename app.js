@@ -78,12 +78,10 @@ function formatarData(dataISO) {
 // Renderiza as opções de financiamento
 function renderizarOpcoesFinanciamento(opcoes) {
     financingOptionsContainer.innerHTML = '';
-    // A sua API não retorna opções de financiamento, esta parte permanece como placeholder
 }
 
 // Renderiza a parcela equilibrada
 function renderizarParcelaEquilibrada(parcela) {
-    // A sua API não retorna a parcela equilibrada, esta parte permanece como placeholder
     parcelaEquilibradaContainer.innerHTML = '';
 }
 
@@ -105,25 +103,22 @@ function calcularPropostaEconomica(proposta) {
     
     const DESCONTO_ECONOMICA = 0.85;
 
-    // Atualiza o pricingTable para a versão econômica
-    propostaEconomica.pricingTable = proposta.pricingTable.map(item => ({
+    propostaEconomica.pricingTable = propostaEconomica.pricingTable.map(item => ({
         ...item,
         totalCost: item.totalCost * DESCONTO_ECONOMICA,
         unitCost: item.unitCost * DESCONTO_ECONOMICA
     }));
 
-    // Localiza e atualiza os valores na array `variables`
-    const totalValueVar = propostaEconomica.variables.find(v => v.key === 'f_valor_1'); // Supondo que 'f_valor_1' é o valor total financiado
+    const totalValueVar = propostaEconomica.variables.find(v => v.key === 'f_valor_1');
     if (totalValueVar) {
         totalValueVar.value = totalValueVar.value * DESCONTO_ECONOMICA;
     }
     
-    const paybackVar = propostaEconomica.variables.find(v => v.key === 'payback'); // Supondo que 'payback' é a chave
+    const paybackVar = propostaEconomica.variables.find(v => v.key === 'payback');
     if (paybackVar) {
         paybackVar.value = paybackVar.value * 1.2;
     }
     
-    // Altera a descrição dos itens na proposta econômica
     const inversor = propostaEconomica.pricingTable.find(item => item.category === 'Inversor');
     if (inversor) {
         inversor.item = "Inversor Econômico ABC";
@@ -154,10 +149,9 @@ function renderizarProposta(dados) {
     tarifaDistribuidora.textContent = findVariable(dados, 'tarifa_distribuidora');
     tipoInstalacao.textContent = findVariable(dados, 'topologia');
     
-    // Assumindo que a API completa tem 'financial' e 'estimatedEnergyBill'
-    valorTotal.textContent = formatarMoeda(dados.financial?.totalValue);
-    payback.textContent = `${formatarNumero(dados.financial?.payback)} anos`;
-    contaEnergiaEstimada.textContent = formatarMoeda(dados.financial?.estimatedEnergyBill);
+    valorTotal.textContent = formatarMoeda(findVariable(dados, 'f_valor_1'));
+    payback.textContent = `${formatarNumero(findVariable(dados, 'payback'))} anos`;
+    contaEnergiaEstimada.textContent = formatarMoeda(findVariable(dados, 'estimativa_conta_luz_antes'));
 
     linkPDF.href = dados.linkPdf;
 
@@ -180,7 +174,8 @@ searchButton.addEventListener('click', async () => {
     try {
         const respostaDaApi = await consultarProposta(projectId);
         
-        const proposta = respostaDaApi.data; // Acessa o objeto aninhado
+        // CORREÇÃO: Acessa o primeiro item do array 'data', como você explicou.
+        const proposta = respostaDaApi?.data[0];
 
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
