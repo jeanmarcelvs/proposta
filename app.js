@@ -17,6 +17,8 @@ const equipmentTitle = document.getElementById('equipment-title');
 const equipmentLogoContainer = document.getElementById('equipment-logo-container');
 const inversorPotencia = document.getElementById('inversor-potencia');
 const moduloPotencia = document.getElementById('modulo-potencia');
+const inversorQnt = document.getElementById('inversor-qnt');
+const moduloQnt = document.getElementById('modulo-qnt');
 const financingOptionsContainer = document.getElementById('financing-options');
 const valorTotal = document.getElementById('valor-total');
 const mainFooter = document.getElementById('main-footer');
@@ -25,22 +27,16 @@ const proposalValidity = document.getElementById('proposal-validity');
 // --- Variáveis de Estado ---
 let propostaOriginal;
 let propostaEconomica;
-let btnAltaPerformance, btnEconomica; // Declaradas aqui, atribuídas em init()
+let btnAltaPerformance, btnEconomica;
 
 // --- Mapa de Logos ---
-const logoMap = {
-    'huawei': 'logo1.png',
-    // Adicione outros fabricantes aqui
-};
+const logoMap = { 'huawei': 'logo1.png' };
 
 // --- Funções de Segurança ---
 function blockFeatures() {
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's')) e.preventDefault();
-        if (e.key === 'PrintScreen') {
-            navigator.clipboard.writeText('');
-            e.preventDefault();
-        }
+        if (e.key === 'PrintScreen') { navigator.clipboard.writeText(''); e.preventDefault(); }
     });
 }
 
@@ -106,6 +102,8 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
     inversorPotencia.textContent = `${findVar(dados, 'inversor_potencia_nominal', true)} W`;
     moduloPotencia.textContent = `${findVar(dados, 'modulo_potencia', true)} W`;
+    inversorQnt.textContent = `${findVar(dados, 'inversor_quantidade', true)} Unidade(s)`;
+    moduloQnt.textContent = `${findVar(dados, 'modulo_quantidade', true)} Unidades`;
     valorTotal.textContent = formatarMoeda(findVar(dados, 'preco'));
     proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
 
