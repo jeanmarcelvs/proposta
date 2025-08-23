@@ -13,8 +13,9 @@ const linkPDFNav = document.getElementById('link-pdf-nav');
 
 // Seletores para os cards de valor
 const valorTotalAvista = document.getElementById('valor-total-avista');
-const economiaMensal = document.getElementById('economia-mensal');
 const paybackTempo = document.getElementById('payback-tempo');
+const geracaoMensal = document.getElementById('geracao-mensal');
+const potenciaSistema = document.getElementById('potencia-sistema');
 
 // Seletores para os detalhes do sistema
 const clienteNome = document.getElementById('cliente-nome');
@@ -23,6 +24,9 @@ const moduloDescricao = document.getElementById('modulo-descricao');
 const moduloQuantidade = document.getElementById('modulo-quantidade');
 const inversorDescricao = document.getElementById('inversor-descricao');
 const inversorQuantidade = document.getElementById('inversor-quantidade');
+
+// Seletor para as opções de financiamento
+const financingOptionsContainer = document.getElementById('financing-options');
 
 // Seletores para os botões de tema (agora em duas telas)
 const highPerformanceOptionForm = document.getElementById('high-performance-option-form');
@@ -81,47 +85,81 @@ function renderizarProposta(proposta) {
         return;
     }
 
-    // Preenche os campos da proposta
-    clienteNome.textContent = dados.name || 'Nome do Cliente';
-    clienteCidadeUf.textContent = `${dados.project?.city || ''}/${dados.project?.uf || ''}`;
-    
-    // CORREÇÃO: Encontra o objeto de Preço Total usando a KEY
+    // Limpa as opções de financiamento existentes
+    financingOptionsContainer.innerHTML = '';
+
+    // Encontra os objetos na pricingTable usando as chaves e categorias corretas
     const valorTotalObj = dados.pricingTable.find(item => item.key === "preco");
-    const valorTotalFormatado = valorTotalObj ? valorTotalObj.formattedValue : 'N/A';
-
-    // Busca o valor do payback nos project_variables
-    const paybackObj = dados.project_variables?.find(v => v.key === 'vc_payback_anos');
-    const payback = paybackObj ? paybackObj.formattedValue : 'N/A';
+    const paybackObj = dados.pricingTable.find(item => item.key === "payback");
+    const geracaoMensalObj = dados.pricingTable.find(item => item.key === "geracao_mensal");
+    const potenciaSistemaObj = dados.pricingTable.find(item => item.key === "potencia_sistema");
+    const inversorObj = dados.pricingTable.find(item => item.category === "Inversor");
+    const moduloObj = dados.pricingTable.find(item => item.category === "Módulo");
     
-    // Busca o valor da parcela nos project_variables
-    const valorParcelaObj = dados.project_variables?.find(v => v.key === 'vc_valor_parcela');
-    const valorParcela = valorParcelaObj ? valorParcela.formattedValue : 'N/A';
+    // Atualiza o HTML com os valores encontrados
+    valorTotalAvista.textContent = valorTotalObj?.formattedValue || 'N/A';
+    paybackTempo.textContent = paybackObj?.formattedValue || 'N/A';
+    geracaoMensal.textContent = `${geracaoMensalObj?.formattedValue || 'N/A'} kWh`;
+    potenciaSistema.textContent = `${potenciaSistemaObj?.formattedValue || 'N/A'} kWp`;
+    
+    inversorDescricao.textContent = inversorObj?.item || 'N/A';
+    inversorQuantidade.textContent = inversorObj?.qnt || 'N/A';
+    moduloDescricao.textContent = moduloObj?.item || 'N/A';
+    moduloQuantidade.textContent = moduloObj?.qnt || 'N/A';
 
-    valorTotalAvista.textContent = valorTotalFormatado;
-    // A economia mensal não está no JSON fornecido, definindo como 0
-    economiaMensal.textContent = (0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    paybackTempo.textContent = `${payback} Meses`;
-
-    // Acessa as propriedades corretas do inversor e módulo no pricingTable, usando a CATEGORY
-    const inversor = dados.pricingTable.find(item => item.category === 'Inversor');
-    const modulo = dados.pricingTable.find(item => item.category === 'Módulo');
-
-    inversorDescricao.textContent = inversor?.item || 'N/A';
-    inversorQuantidade.textContent = inversor?.qnt || 'N/A';
-    moduloDescricao.textContent = modulo?.item || 'N/A';
-    moduloQuantidade.textContent = modulo?.qnt || 'N/A';
+    // Renderiza as opções de financiamento
+    renderFinancingOptions(dados.pricingTable);
+    
+    // Encontra o valor da primeira parcela para a barra de navegação
+    const primeiraParcelaObj = dados.pricingTable.find(item => item.key === 'f_valor_1');
     
     // Atualiza a barra de navegação superior
-    navBarAvistaPrice.textContent = valorTotalFormatado;
-    navBarMinParcel.textContent = valorParcela;
+    navBarAvistaPrice.textContent = valorTotalObj?.formattedValue || 'N/A';
+    navBarMinParcel.textContent = primeiraParcelaObj?.formattedValue || 'N/A';
 
     // Link para o PDF
+    const linkPDF = document.getElementById('link-pdf');
     linkPDFNav.href = dados.linkPdf || '#';
+    linkPDF.href = dados.linkPdf || '#';
     linkPDFNav.style.display = dados.linkPdf ? 'inline-block' : 'none';
+    linkPDF.style.display = dados.linkPdf ? 'inline-block' : 'none';
 
     // Mostra a seção de detalhes e esconde o formulário
     formContainer.style.display = 'none';
     proposalContainer.style.display = 'block';
+}
+
+/**
+ * Renderiza dinamicamente os cards de financiamento.
+ * @param {Array<Object>} pricingTable - O array de itens da pricingTable.
+ */
+function renderFinancingOptions(pricingTable) {
+  // Cria um mapa para agrupar valor e prazo pela numeração
+  const financingMap = new Map();
+  pricingTable.forEach(item => {
+    const match = item.key.match(/f_(valor|prazo)_(\d+)/);
+    if (match) {
+      const type = match[1];
+      const index = match[2];
+      if (!financingMap.has(index)) {
+        financingMap.set(index, {});
+      }
+      financingMap.get(index)[type] = item.formattedValue;
+    }
+  });
+
+  // Cria os elementos HTML para cada opção de financiamento
+  financingMap.forEach(option => {
+    if (option.valor && option.prazo) {
+      const card = document.createElement('div');
+      card.className = 'financing-card';
+      card.innerHTML = `
+        <h4>${option.prazo} Meses</h4>
+        <span class="value">${option.valor}</span>
+      `;
+      financingOptionsContainer.appendChild(card);
+    }
+  });
 }
 
 // Lida com o envio do formulário
@@ -148,13 +186,30 @@ searchForm.addEventListener('submit', async (e) => {
         const proposta = await consultarProposta(projectId);
         // Adicionando um console.log para inspecionar os dados recebidos
         console.log('Dados recebidos do backend:', proposta);
-        if (proposta && proposta.data && proposta.data.pricingTable) {
-            renderizarProposta(proposta);
-        } else {
-            messageBox.textContent = 'Proposta não encontrada ou dados incompletos para o projeto especificado.';
+        
+        // Verifica se a estrutura de dados é a esperada
+        if (!proposta) {
+            messageBox.textContent = 'Proposta não encontrada. Verifique o ID do projeto.';
             messageBox.style.display = 'block';
             proposalContainer.style.display = 'none';
+            return;
         }
+
+        if (!proposta.data) {
+            messageBox.textContent = 'A estrutura da resposta da API está incompleta. O objeto "data" está faltando.';
+            messageBox.style.display = 'block';
+            proposalContainer.style.display = 'none';
+            return;
+        }
+
+        if (!proposta.data.pricingTable) {
+            messageBox.textContent = 'A resposta da API está incompleta. O "pricingTable" está faltando.';
+            messageBox.style.display = 'block';
+            proposalContainer.style.display = 'none';
+            return;
+        }
+
+        renderizarProposta(proposta);
     } catch (err) {
         messageBox.textContent = `Erro ao carregar proposta: ${err.message}`;
         messageBox.style.display = 'block';
@@ -167,7 +222,7 @@ searchForm.addEventListener('submit', async (e) => {
 
 // Listener de scroll para a barra de navegação
 window.addEventListener('scroll', () => {
-  const proposalHeader = document.getElementById('proposal-header');
+  const proposalHeader = document.querySelector('.proposal-header');
   if (proposalHeader) {
     const scrollPosition = window.scrollY;
     const headerBottom = proposalHeader.offsetTop + proposalHeader.offsetHeight;

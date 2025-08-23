@@ -5,110 +5,420 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GDIS Solar - Proposta</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <style>
+    /* ---------------------- */
+    /* Cores e Variáveis      */
+    /* ---------------------- */
+    :root {
+      /* Tema padrão: Alta Performance */
+      --main-blue: #123d8c;
+      --dark-blue: #0a2a5c;
+      --highlight-color: #ff7a29;
+      --secondary-highlight: #ff7a29;
+      --white: #ffffff;
+      --light-gray: #f4f6fb;
+      --muted-text: #6f7d95;
+      --nav-bg: rgba(18, 61, 140, 0.9);
+      --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #174296 100%);
+      --radius: 22px;
+      --shadow: 0 8px 20px rgba(0, 0, 0, .15);
+    }
 
-  <!-- Barra de navegação fixa que aparece após o scroll -->
+    body.economic-theme {
+      /* NOVO TEMA: Econômico */
+      --main-blue: #598c76;
+      --dark-blue: #315e4a;
+      --highlight-color: #79c9a0;
+      --secondary-highlight: #598c76;
+      --white: #ffffff;
+      --light-gray: #f7faf7;
+      --muted-text: #8e9a8f;
+      --nav-bg: rgba(89, 140, 118, 0.9);
+      --gradient-bg: linear-gradient(135deg, var(--main-blue) 0%, var(--dark-blue) 50%, #3a6857 100%);
+    }
+
+    /* ---------------------- */
+    /* Estilos Gerais         */
+    /* ---------------------- */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: var(--light-gray);
+      color: var(--dark-blue);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .message-box {
+      display: none;
+      padding: 1rem;
+      margin-top: 1rem;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--nav-bg);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      color: var(--white);
+      z-index: 1000;
+      padding: 1rem 2rem;
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-bar.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .nav-bar .price-info {
+        display: none;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    
+    .nav-bar.show-prices .price-info {
+        display: flex;
+    }
+
+    .nav-bar .price-info span {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .nav-bar .price-info small {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      max-width: 150px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      color: var(--dark-blue);
+      font-weight: 800;
+      font-size: 2.5rem;
+      margin: 0;
+      transition: color 0.3s ease;
+    }
+
+    .theme-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .theme-switcher button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background-color: var(--white);
+      color: var(--main-blue);
+      border: 1px solid var(--main-blue);
+    }
+
+    .theme-switcher button.active {
+      background-color: var(--main-blue);
+      color: var(--white);
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-switcher button:hover {
+      transform: scale(1.05);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--main-blue);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+    }
+
+    form button {
+      width: 100%;
+      padding: 1rem;
+      background: var(--gradient-bg);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    form button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    form button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .proposal-details {
+      display: none;
+      /* Começa escondido */
+    }
+
+    .proposal-header {
+      background-color: var(--main-blue);
+      color: var(--white);
+      padding: 1.5rem;
+      border-radius: 18px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .proposal-header h2 {
+      color: var(--white);
+      border-bottom: 2px solid var(--highlight-color);
+      display: inline-block;
+      padding-bottom: 0.5rem;
+      margin: 0;
+    }
+
+    .proposal-header p {
+      margin: 0.5rem 0;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .value-card, .system-item {
+        background-color: var(--light-gray);
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .value-card h4, .system-item h4 {
+        margin-top: 0;
+        color: var(--dark-blue);
+        font-weight: 700;
+    }
+    
+    .value-card .value, .system-item .value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--highlight-color);
+        display: block;
+        margin-top: 0.5rem;
+    }
+    
+    .system-item p {
+        margin: 0.25rem 0;
+    }
+
+    .financing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .financing-card {
+        background-color: var(--light-gray);
+        padding: 1rem;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+    
+    .financing-card h4 {
+        margin: 0;
+        color: var(--main-blue);
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .financing-card .value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--highlight-color);
+        display: block;
+        margin-top: 0.25rem;
+    }
+
+    .link-pdf {
+      display: none;
+      /* Começa escondido */
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--gradient-bg);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .link-pdf:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Barra de Navegação Superior (escondida por padrão) -->
   <nav class="nav-bar">
-    <div class="logo">
-      <img src="https://gdis-solar.vercel.app/img/gdis-solar-logo.png" alt="GDIS Solar Logo" class="logo">
+    <div class="price-info">
+      <small>Valor Total da Proposta</small>
+      <span id="nav-bar-avista-price">R$ 0,00</span>
     </div>
-    <div class="nav-middle-content">
-      <!-- Opções de tema no centro da nav-bar -->
-      <div class="theme-switcher">
-        <button id="high-performance-option-nav" class="active">Alta Performance</button>
-        <button id="economic-option-nav">Econômico</button>
-      </div>
-      <!-- Preços que aparecem com a nav-bar -->
-      <div class="header-prices-info">
-        <div class="header-price-item">
-          <small>VALOR À VISTA</small>
-          <p id="nav-bar-avista-price">R$ 0,00</p>
-        </div>
-        <div class="header-price-item">
-          <small>PARCELA MÍNIMA</small>
-          <p id="nav-bar-min-parcel">R$ 0,00</p>
-        </div>
-      </div>
+    <div class="price-info">
+      <small>Parcela Mínima</small>
+      <span id="nav-bar-min-parcel">R$ 0,00</span>
     </div>
-    <div class="proposal-options">
-      <!-- Link para o PDF -->
-      <a href="#" id="link-pdf-nav" class="link-pdf-nav" target="_blank">Baixar PDF</a>
+    <a href="#" id="link-pdf-nav" class="link-pdf">Ver PDF</a>
+    <div class="theme-switcher">
+      <button id="high-performance-option-nav" class="active">Alta Performance</button>
+      <button id="economic-option-nav">Econômico</button>
     </div>
   </nav>
 
-  <!-- Container do formulário de busca, com gradiente de fundo -->
-  <div id="form-container" class="form-container">
-    <div class="form-box">
-      <div class="logo">
-        <img src="https://gdis-solar.vercel.app/img/gdis-solar-logo.png" alt="GDIS Solar Logo">
-      </div>
+  <div class="container" id="form-container">
+    <header>
+      <img src="https://gdis-solar.vercel.app/img/gdis-solar-logo.png" alt="GDIS Solar Logo" class="logo">
       <h1>Detalhes da Proposta</h1>
-      <p>Consulte sua proposta pelo ID do projeto.</p>
-      
-      <!-- Seletor de tema dentro do form-box para a tela inicial -->
-      <div class="theme-switcher">
-        <button id="high-performance-option-form" class="active">Alta Performance</button>
-        <button id="economic-option-form">Econômico</button>
-      </div>
-
-      <form id="search-form" class="search-form">
-        <input type="text" id="project-id" name="projectId" placeholder="Ex: 2390" required>
-        <button type="submit">Consultar Proposta</button>
-      </form>
-      <div id="message-box" class="message-box"></div>
-    </div>
-  </div>
-
-  <!-- Container da proposta, inicialmente escondido -->
-  <div id="proposal-container" class="proposal-container">
-    
-    <!-- Hero Header - cabeçalho principal da proposta -->
-    <header id="proposal-header" class="hero">
-      <div class="title-and-subtitle">
-        <h1 id="cliente-nome">Nome do Cliente</h1>
-        <p><span id="cliente-cidade-uf">Cidade/UF</span></p>
-      </div>
     </header>
 
-    <!-- Seção de cards de valores -->
-    <section class="clean-section">
-      <div class="grid grid-3 text-center">
-        <div class="card">
-          <small class="text-muted">Valor à Vista da Proposta</small>
-          <h3 id="valor-total-avista">R$ 0,00</h3>
-        </div>
-        <div class="card">
-          <small class="text-muted">Economia Mensal Estimada</small>
-          <h3 id="economia-mensal">R$ 0,00</h3>
-        </div>
-        <div class="card">
-          <small class="text-muted">Payback Estimado</small>
-          <h3 id="payback-tempo">0 Meses</h3>
-        </div>
-      </div>
-    </section>
+    <div class="theme-switcher">
+      <button id="high-performance-option-form" class="active">Alta Performance</button>
+      <button id="economic-option-form">Econômico</button>
+    </div>
 
-    <!-- Seção de detalhes do sistema -->
-    <section class="clean-section">
-      <h2>Detalhes Técnicos</h2>
-      <p class="lead">Informações completas sobre os equipamentos do seu projeto.</p>
-      <div class="grid grid-2">
-        <div class="card">
-          <h4>Módulo Fotovoltaico</h4>
-          <p><span class="label">Descrição:</span> <span id="modulo-descricao"></span></p>
-          <p><span class="label">Quantidade:</span> <span id="modulo-quantidade"></span></p>
+    <form id="search-form">
+      <div class="form-group">
+        <label for="project-id">ID do Projeto:</label>
+        <input type="text" id="project-id" name="projectId" placeholder="Ex: 2390" required>
+      </div>
+      <button type="submit">Consultar Proposta</button>
+    </form>
+
+    <div id="message-box" class="message-box"></div>
+  </div>
+
+
+  <div class="container" id="proposal-container" style="display: none;">
+    <section id="proposal-details" class="proposal-details">
+      <div class="proposal-header">
+        <h2 id="cliente-nome">Nome do Cliente</h2>
+        <p id="cliente-cidade-uf">Cidade/UF</p>
+      </div>
+
+      <div class="grid-container">
+        <div class="value-card">
+          <h4>Valor Total da Proposta</h4>
+          <span id="valor-total-avista" class="value">R$ 0,00</span>
         </div>
-        <div class="card">
-          <h4>Inversor</h4>
-          <p><span class="label">Descrição:</span> <span id="inversor-descricao"></span></p>
-          <p><span class="label">Quantidade:</span> <span id="inversor-quantidade"></span></p>
+        <div class="value-card">
+          <h4>Payback</h4>
+          <span id="payback-tempo" class="value">0 Meses</span>
+        </div>
+        <div class="value-card">
+          <h4>Geração Mensal Estimada</h4>
+          <span id="geracao-mensal" class="value">0 kWh</span>
+        </div>
+        <div class="value-card">
+            <h4>Potência do Sistema</h4>
+            <span id="potencia-sistema" class="value">0 kWp</span>
         </div>
       </div>
+
+      <h3 style="color: var(--main-blue); text-align: center; margin: 2rem 0 1rem;">Componentes do Sistema</h3>
+      <div class="grid-container">
+        <div class="system-item">
+          <h4>Módulo Fotovoltaico</h4>
+          <p><strong>Descrição:</strong> <span id="modulo-descricao">N/A</span></p>
+          <p><strong>Quantidade:</strong> <span id="modulo-quantidade">N/A</span></p>
+        </div>
+        <div class="system-item">
+          <h4>Inversor</h4>
+          <p><strong>Descrição:</strong> <span id="inversor-descricao">N/A</span></p>
+          <p><strong>Quantidade:</strong> <span id="inversor-quantidade">N/A</span></p>
+        </div>
+      </div>
+      
+      <h3 style="color: var(--main-blue); text-align: center; margin: 2rem 0 1rem;">Opções de Financiamento</h3>
+      <div id="financing-options" class="financing-grid">
+          <!-- Cards de financiamento serão gerados aqui pelo JS -->
+      </div>
+
+      <a href="#" id="link-pdf" class="link-pdf" target="_blank">Ver Proposta em PDF</a>
     </section>
   </div>
   
   <script src="script.js"></script>
+
 </body>
 </html>
