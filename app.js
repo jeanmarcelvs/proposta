@@ -3,6 +3,8 @@ import { consultarProposta } from "./api.js";
 // --- Seletores do DOM ---
 const searchForm = document.getElementById('search-form');
 const proposalDetailsSection = document.getElementById('proposal-details');
+const expiredProposalSection = document.getElementById('expired-proposal-section');
+const errorPopup = document.getElementById('error-popup');
 const proposalHeader = document.getElementById('proposal-header');
 const projectIdInput = document.getElementById('project-id');
 const searchButton = document.getElementById('search-button');
@@ -22,6 +24,7 @@ const valorTotal = document.getElementById('valor-total');
 const btnAltaPerformance = document.getElementById('btn-alta-performance');
 const btnEconomica = document.getElementById('btn-economica');
 const mainFooter = document.getElementById('main-footer');
+const proposalValidity = document.getElementById('proposal-validity');
 
 // --- Variáveis de Estado ---
 let propostaOriginal;
@@ -30,11 +33,16 @@ let propostaEconomica;
 // --- Funções de Segurança ---
 function blockFeatures() {
     document.addEventListener('keydown', (e) => {
+        // Bloqueia Ctrl+P, Ctrl+S, Command+P, Command+S
         if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's')) {
             e.preventDefault();
+            console.log('A impressão está desabilitada.');
         }
+        // Bloqueia a tecla PrintScreen
         if (e.key === 'PrintScreen') {
+            navigator.clipboard.writeText(''); // Limpa a área de transferência para dificultar
             e.preventDefault();
+            console.log('A captura de tela está desabilitada.');
         }
     }, false);
 }
@@ -87,8 +95,10 @@ function renderizarFinanciamento(dados) {
         div.className = 'financing-option';
         if (melhorOpcao && opcao.prazo === melhorOpcao.prazo) {
             div.classList.add('highlight');
+            div.innerHTML = `<div class="highlight-tag">Equilibrado</div><div class="prazo">${opcao.prazo}<span>x</span></div><div class="valor">${formatarMoeda(opcao.valorParcela)}</div>`;
+        } else {
+            div.innerHTML = `<div class="prazo">${opcao.prazo}<span>x</span></div><div class="valor">${formatarMoeda(opcao.valorParcela)}</div>`;
         }
-        div.innerHTML = `<div class="prazo">${opcao.prazo}<span>x</span></div><div class="valor">${formatarMoeda(opcao.valorParcela)}</div>`;
         financingOptionsContainer.appendChild(div);
     });
 }
@@ -100,14 +110,15 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
     const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0;
     const contaAtual = geracaoMensalValor * tarifaValor;
-    contaEnergiaEstimada.innerHTML = `Ideal para contas de energia de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
     equipmentTitle.innerHTML = tipoProposta === 'economica' 
         ? '<i class="fas fa-cogs"></i> Equipamentos Eficientes' 
         : '<i class="fas fa-cogs"></i> Equipamentos de Ponta';
 
-    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : `${findVariable(dados, 'inversor_fabricante').toLowerCase().split(' ')[0]}.png`;
-    equipmentLogoContainer.innerHTML = `<img src="${logoFileName}" alt="Logo do equipamento">`;
+    const fabricante = findVariable(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : `${fabricante}.png`;
+    equipmentLogoContainer.innerHTML = `<img src="${logoFileName}" alt="Logo do equipamento" onerror="this.style.display='none'; this.parentElement.innerHTML='<p>Logo não encontrada.</p>';">`;
 
     clienteNome.textContent = findVariable(dados, 'cliente_nome');
     clienteCidadeUf.textContent = `${findVariable(dados, 'cidade')} - ${findVariable(dados, 'estado')}`;
@@ -125,7 +136,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
 async function handleSearch() {
     const projectId = projectIdInput.value.trim();
     if (!/^[0-9]{1,6}$/.test(projectId)) {
-        // Exibir erro
+        // Implementar exibição de erro
         return;
     }
     searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -134,8 +145,8 @@ async function handleSearch() {
     try {
         const proposta = await consultarProposta(projectId);
         if (!proposta || !proposta.id) {
-            // Exibir erro
-            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i>';
+            // Implementar exibição de erro
+            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
             searchButton.disabled = false;
             return;
         }
@@ -153,13 +164,14 @@ async function handleSearch() {
 
     } catch (err) {
         console.error("Erro na busca:", err);
-        // Exibir erro
-        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i>';
+        // Implementar exibição de erro
+        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
         searchButton.disabled = false;
     }
 }
 
 searchButton.addEventListener('click', handleSearch);
+
 btnAltaPerformance.addEventListener('click', () => {
     if (btnAltaPerformance.classList.contains('active')) return;
     document.body.classList.remove('theme-economic');
@@ -167,9 +179,23 @@ btnAltaPerformance.addEventListener('click', () => {
     btnAltaPerformance.classList.add('active');
     if (propostaOriginal) renderizarProposta(propostaOriginal, 'performance');
 });
+
 btnEconomica.addEventListener('click', () => {
     if (btnEconomica.classList.contains('active')) return;
     document.body.classList.add('theme-economic');
     btnAltaPerformance.classList.remove('active');
     btnEconomica.classList.add('active');
-    if
+    // ATENÇÃO: A lógica da proposta econômica precisa ser implementada.
+    // Por enquanto, ela renderiza os mesmos dados, mas com o tema e logo diferentes.
+    if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
+});
+
+// --- Inicialização da Página ---
+function init() {
+    searchForm.style.display = 'flex';
+    proposalDetailsSection.style.display = 'none';
+    proposalHeader.style.display = 'none';
+    mainFooter.style.display = 'none';
+}
+
+init();
