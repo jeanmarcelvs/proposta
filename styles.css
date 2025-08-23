@@ -1,771 +1,120 @@
-/* Importação de fonte do Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap' );
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' );
 
 :root {
-    /* Tema Padrão: Alta Performance (Azul & Laranja) */
-    --color-primary: #1a2533;
-    --color-secondary: #ff7f00;
-    --color-background: #f4f7f9;
-    --color-text: #333;
-    --color-text-light: #6c757d;
-    --color-card-bg: #ffffff;
-    --color-border: #e9ecef;
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-    --border-radius: 12px;
+    --color-primary: #0a192f;
+    --color-secondary: #ff8c00;
+    --color-accent: #64ffda;
+    --color-background: #0a192f;
+    --color-card-bg: #112240;
+    --color-text: #ccd6f6;
+    --color-text-light: #8892b0;
+    --shadow-md: 0 10px 30px -15px rgba(2,12,27,0.7);
+    --border-radius: 8px;
+    --font-sans: 'Inter', sans-serif;
 }
 
-/* Tema Econômica (Verde) */
 body.theme-economic {
     --color-primary: #2f5d62;
     --color-secondary: #5e8b7e;
+    --color-accent: #a7c4bc;
     --color-background: #f0f5f4;
+    --color-card-bg: #ffffff;
     --color-text: #2f5d62;
     --color-text-light: #557b75;
-    --color-card-bg: #ffffff;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-sans);
     background-color: var(--color-background);
     color: var(--color-text);
-    line-height: 1.7;
-    transition: background-color 0.4s ease;
-}
-
-.screen {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
-}
-
-/* --- ESTILOS DO BOTÃO --- */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.8rem 1.8rem;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-sm);
-}
-.btn--primary {
-    background-color: var(--color-secondary);
-    color: white;
-}
-.btn--primary:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    background-color: color-mix(in srgb, var(--color-secondary), black 10%);
-}
-.btn--large {
-    padding: 1rem 2.5rem;
-    font-size: 1.1rem;
-}
-
-/* --- CABEÇALHO FIXO --- */
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-    z-index: 1000;
-    display: none; /* Controlado por JS */
-    color: white;
-}
-.header__container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0.75rem 2rem;
-}
-.header__logo img {
-    height: 40px;
-}
-.header__options {
-    display: flex;
-    gap: 0.5rem;
-    background-color: color-mix(in srgb, var(--color-primary), white 10%);
-    border-radius: 50px;
-    padding: 0.25rem;
-}
-.option-button {
-    background: transparent;
-    border: none;
-    border-radius: 20px;
-    padding: 0.5rem 1.2rem;
-    font-weight: 500;
-    cursor: pointer;
-    color: #ccc;
-    transition: all 0.3s ease;
-}
-.option-button.active {
-    background-color: var(--color-secondary);
-    color: white;
-    box-shadow: var(--shadow-sm);
-}
-
-/* --- TELA DE BUSCA --- */
-.search-card {
-    background-color: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-}
-.search-card__logo {
-    height: 60px;
-    margin-bottom: 1.5rem;
-}
-.search-card__title {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    color: var(--color-primary);
-}
-.search-card__subtitle {
-    color: var(--color-text-light);
-    margin-bottom: 2rem;
-}
-.search-card__panel {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-.search-card__panel input {
-    padding: 0.9rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    font-size: 1rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    outline: none;
-}
-.search-card__panel input:focus {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary), transparent 80%);
-}
-
-/* --- TELA DE DETALHES DA PROPOSTA --- */
-.proposal-details {
-    padding-top: 8rem; /* Espaço para o header fixo */
-    padding-bottom: 4rem;
-}
-.proposal-details__container {
-    width: 100%;
-    max-width: 1100px;
-}
-.proposal-details__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-.proposal-details__actions {
-    text-align: center;
-    margin-top: 2.5rem;
-}
-.proposal-validity {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-}
-
-/* --- CARDS DE INFORMAÇÃO --- */
-.info-card {
-    background-color: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.info-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-}
-.info-card--welcome {
-    text-align: center;
-    background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 20%));
-    color: white;
-}
-.info-card--welcome h2 {
-    font-size: 2rem;
-    font-weight: 600;
-}
-.info-card--welcome p {
-    font-size: 1.2rem;
-    color: #eee;
-}
-.info-card__date {
-    display: block;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #ccc;
-}
-.info-card__header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 0.75rem;
-}
-.info-card__header i {
-    color: var(--color-secondary);
-    font-size: 1.2rem;
-}
-.info-card__header h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-primary);
-}
-.info-card__body p {
-    margin-bottom: 0.5rem;
-}
-.info-card__body p:last-child {
-    margin-bottom: 0;
-}
-.info-card__subtext {
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-    margin-top: 1rem;
-    text-align: center;
-}
-.info-card--full-width {
-    grid-column: 1 / -1;
-}
-
-/* Métricas de Destaque (Valor Total, Payback) */
-.highlight-metric {
-    text-align: center;
-    margin: 1rem 0;
-}
-.highlight-metric span {
-    display: block;
-    font-size: 1rem;
-    color: var(--color-text-light);
-}
-.highlight-metric strong {
-    display: block;
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--color-secondary);
-}
-
-/* Grid de Financiamento */
-.financing-options-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-.financing-option {
-    background-color: var(--color-background);
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    border: 1px solid var(--color-border);
-    font-weight: 500;
-}
-
-/* --- TELAS DE STATUS (Expirado, Erro) --- */
-.status-card {
-    background-color: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-}
-.status-card__icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-.status-card__icon--warning { color: #f39c12; }
-.status-card__icon--error { color: #e74c3c; }
-.status-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; }
-.status-card__subtitle { color: var(--color-text-light); margin-bottom: 2rem; }
-
-/* --- POPUP --- */
-.popup-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    backdrop-filter: blur(5px);
-}
-.popup-content {
-    animation: popup-enter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes popup-enter {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* --- ANIMAÇÕES --- */
-.screen.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-.screen.animate-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-/* --- RESPONSIVIDADE --- */
-@media (max-width: 768px) {
-    .header__container {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    .proposal-details {
-        padding-top: 10rem; /* Mais espaço para o header maior */
-    }
-    .proposal-details__grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* =============================================== */
-/* --- CORREÇÃO FINAL DE VISIBILIDADE DE TEXTO --- */
-/* =============================================== */
-
-/* 1. Força a cor do texto em todos os parágrafos dentro do corpo de um card */
-.info-card__body p {
-    color: var(--color-text-light); /* Cor cinza claro para o texto descritivo */
-}
-
-/* 2. Força a cor nos SPANS que recebem os dados do JavaScript. */
-/*    Esta é a regra mais importante. !important é usado como último recurso */
-/*    para garantir que nenhuma outra regra se sobreponha. */
-#cliente-cidade-uf,
-#data-geracao,
-#inversor-descricao,
-#modulo-descricao,
-#potencia-sistema,
-#geracao-mensal,
-#tarifa-distribuidora,
-#tipo-instalacao {
-    color: var(--color-text) !important; /* Cor de texto principal (escura) */
-    font-weight: 500; /* Adiciona um leve negrito para destaque */
-}
-
-/* 3. Força a cor nos campos de destaque (Valor Total e Payback) */
-#valor-total,
-#payback {
-    color: var(--color-secondary) !important; /* Cor de destaque (laranja/verde) */
-}
-
-/* 4. Garante que o texto descritivo desses campos de destaque seja visível */
-.highlight-metric span {
-    color: var(--color-text-light);
-}
-
-/* 5. Garante que o texto no card de boas-vindas continue branco */
-.info-card--welcome, .info-card--welcome * {
-    color: #ffffff !important;
-}
-
-/* ======================================================== */
-/* --- NOVA ESTRUTURA DE SEÇÕES E CORREÇÃO DE COR --- */
-/* ======================================================== */
-
-.proposal-container {
-    width: 100%;
-    max-width: 900px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* Espaçamento profissional entre as seções */
-}
-
-.proposal-section {
-    background-color: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
-    border: 1px solid var(--color-border);
-    transition: all 0.3s ease;
-}
-
-.proposal-section:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-}
-
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.section-title i {
-    color: var(--color-secondary);
-}
-
-.section-content p {
-    color: var(--color-text); /* CORREÇÃO: Garante que o texto do parágrafo seja visível */
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-}
-
-.section-content p strong {
-    color: var(--color-text-light); /* CORREÇÃO: Cor para o rótulo (ex: "Localidade:") */
-    font-weight: 500;
-    min-width: 180px;
-    display: inline-block;
-}
-
-.section-content p span {
-    color: var(--color-text); /* CORREÇÃO: Cor para o dado (ex: "São Paulo - SP") */
-    font-weight: 500;
-}
-
-/* Estilos para o grid de métricas (Valor e Payback) */
-.section-content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.metric-box {
-    text-align: center;
-    padding: 1rem;
-}
-
-.metric-label {
-    display: block;
-    color: var(--color-text-light); /* CORREÇÃO: Cor do rótulo */
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
-}
-
-.metric-value {
-    display: block;
-    color: var(--color-secondary); /* CORREÇÃO: Cor de destaque para o valor */
-    font-size: 2.2rem;
-    font-weight: 700;
-}
-
-.section-footnote {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--color-text-light); /* CORREÇÃO: Cor para a nota de rodapé */
-}
-
-/* Grid de financiamento */
-.financing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-}
-
-.financing-grid .financing-option {
-    background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    color: var(--color-text); /* CORREÇÃO: Garante visibilidade */
-}
-
-/* Seção de Ações */
-.proposal-actions {
-    text-align: center;
-    margin-top: 1.5rem;
-}
-
-/* ======================================================== */
-/* --- ESTILOS PARA DESTAQUE E LOGO DINÂMICA --- */
-/* ======================================================== */
-
-/* Estilo para o novo bloco de destaque combinado */
-.highlight-box {
-    grid-column: 1 / -1; /* Faz o box ocupar a largura total no grid */
-    background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-}
-
-.metric-subvalue {
-    color: var(--color-text-light);
-    margin-top: 0.25rem;
-}
-
-/* Estilo para valores de métricas menores (Potência, Instalação) */
-.metric-value-small {
-    display: block;
-    color: var(--color-primary);
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
-/* Estilo para o container da logo do equipamento */
-.equipment-logo-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem 1rem;
-    min-height: 100px; /* Garante uma altura mínima */
-}
-
-.equipment-logo-wrapper img {
-    max-height: 60px; /* Define a altura máxima da logo */
-    width: auto;
-    max-width: 250px; /* Previne que a logo fique muito larga */
-    object-fit: contain;
-    opacity: 0; /* Começa invisível para a animação */
-    animation: fadeInLogo 0.5s ease forwards;
-}
-
-@keyframes fadeInLogo {
-    to {
-        opacity: 1;
-    }
-}
-
-/* ======================================================== */
-/* --- ESTILOS PARA SEÇÃO DE ECONOMIA E EQUIPAMENTOS --- */
-/* ======================================================== */
-
-/* Nova seção de destaque para a economia */
-.economy-highlight-section {
-    background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 20%));
-    color: #ffffff;
-    text-align: center;
-}
-
-.economy-highlight-section .section-title,
-.economy-highlight-section .section-title i {
-    color: #ffffff;
-    border-bottom-color: rgba(255, 255, 255, 0.2);
-}
-
-.economy-box p {
-    font-size: 1.3rem;
-    font-weight: 500;
-}
-
-.economy-box strong {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--color-secondary);
-    display: block;
-    margin-top: 0.5rem;
-}
-
-/* Aumenta o destaque da logo */
-.equipment-logo-wrapper img {
-    max-height: 80px; /* Logo maior */
-    margin-bottom: 1rem; /* Espaçamento abaixo da logo */
-}
-
-/* Estilo para as especificações dos equipamentos */
-.equipment-specs {
-    text-align: center;
-    border-top: 1px solid var(--color-border);
-    padding-top: 1rem;
-    margin-top: 1rem;
-}
-
-.equipment-specs p {
-    color: var(--color-text);
-    font-size: 1rem;
-}
-
-.equipment-specs p strong {
-    color: var(--color-text-light);
-}
-
-/* ======================================================== */
-/* --- AJUSTES FINAIS DE LAYOUT E CORES --- */
-/* ======================================================== */
-
-/* 1. Unifica o tamanho da fonte para TODAS as métricas principais */
-.metric-value {
-    display: block;
-    font-size: 2.2rem; /* Tamanho grande e consistente */
-    font-weight: 700;
-    color: var(--color-secondary);
-    line-height: 1.2;
-}
-
-/* Remove a classe de valor pequeno que não é mais necessária */
-.metric-value-small {
-    /* Esta classe pode ser removida ou deixada em branco */
-}
-
-/* 2. NovoEntendido! Perfeito, esses são os ajustes finos que realmente elevam a qualidade do design e da comunicação. A sua visão está muito clara: consistência visual, informações diretas e uma paleta de cores mais sofisticada para os dados financeiros.
-
-Preparei todas as alterações nos arquivos `index.html`, `styles.css` e `app.js` para implementar cada um dos seus pedidos.
-
-### 1. Alterações no `index.html`
-
-A estrutura foi simplificada para remover a seção de "Economia" e integrar a informação da conta de energia de volta à seção "Detalhes do Sistema Solar", como um subtítulo de destaque. Também removi a descrição textual dos equipamentos.
-
-**O que foi feito:**
-1.  A seção "Sua Economia na Prática" foi **removida**.
-2.  O elemento `p` com `id="conta-energia-estimada"` foi movido de volta para a seção "Detalhes do Sistema Solar", posicionado logo abaixo do `metric-box` da geração mensal.
-3.  Na seção "Equipamentos de Ponta", a lógica para exibir a potência foi mantida, mas qualquer descrição extra foi removida para focar apenas nos dados.
-
-**Ação:** Substitua a `main` com `id="proposal-details"` no seu `index.html` por este novo bloco, mais limpo e direto:
-
-```html
-<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO FINAL E REFINADA -->
-<main id="proposal-details" class="screen proposal-details" style="display: none;">
-    <div class="proposal-container">
-
-        <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
-            <div class="section-content">
-                <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
-                <p><strong>Data da Proposta:</strong> <span id="data-geracao"></span></p>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR (Layout interno ajustado) -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema Solar</h2>
-            <div class="section-content-grid">
-                <div class="metric-box">
-                    <span class="metric-label">Geração Média Mensal</span>
-                    <span class="metric-value" id="geracao-mensal"></span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Potência do Sistema</span>
-                    <span class="metric-value" id="potencia-sistema"></span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Tipo de Instalação</span>
-                    <span class="metric-value" id="tipo-instalacao"></span>
-                </div>
-            </div>
-            <!-- Destaque da conta de energia integrado aqui -->
-            <p id="conta-energia-estimada" class="section-footnote highlight-footnote"></p>
-        </section>
-
-        <!-- SEÇÃO 3: EQUIPAMENTOS DE PONTA (Foco na logo e dados) -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
-            <div id="equipment-logo-container" class="equipment-logo-wrapper">
-                <!-- A imagem da logo será inserida aqui pelo JS -->
-            </div>
-            <div class="equipment-specs">
-                <p><strong>Potência do Inversor:</strong> <span id="inversor-potencia"></span></p>
-                <p><strong>Potência dos Módulos:</strong> <span id="modulo-potencia"></span></p>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 4: RESUMO FINANCEIRO E INVESTIMENTO -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-dollar-sign"></i> Investimento e Retorno</h2>
-            <div class="section-content-grid">
-                <div class="metric-box">
-                    <span class="metric-label">Valor Total do Projeto</span>
-                    <span class="metric-value financial-value" id="valor-total"></span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Retorno (Payback)</span>
-                    <span class="metric-value financial-value" id="payback"></span>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÕES 5 e 6 (Financiamento e Ações) permanecem iguais -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
-            <div id="financing-options" class="financing-grid"></div>
-            <div id="parcela-equilibrada"></div>
-        </section>
-        <section class="proposal-actions">
-            <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
-                <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
-            </a>
-            <p class="proposal-validity">Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
-        </section>
-
-    </div>
-</main>
-
-/* ======================================================== */
-/* --- AJUSTES FINAIS DE LAYOUT E DESIGN --- */
-/* ======================================================== */
-
-/* 1. Uniformiza o tamanho da fonte para todos os valores de métricas */
-.metric-value {
-    font-size: 2.2rem; /* Tamanho padrão para todos os valores em destaque */
-}
-
-/* Remove a classe que diminuía a fonte, pois agora todas são iguais */
-.metric-value-small {
-    font-size: inherit; /* Herda o tamanho de .metric-value */
-    font-weight: inherit;
-    color: inherit;
-}
-
-/* 2. Novo estilo para o destaque da conta de energia */
-.highlight-footnote {
-    text-align: center;
-    margin-top: 1rem;
-    padding: 0.75rem;
-    background-color: var(--color-background);
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-.highlight-footnote strong {
-    color: var(--color-secondary);
-    font-weight: 600;
-}
-
-/* 3. Aumenta o destaque da logo do equipamento */
-.equipment-logo-wrapper img {
-    max-height: 70px; /* Um pouco maior para mais destaque */
-    margin-bottom: 1rem;
-}
-
-/* 4. Novas cores para os valores financeiros */
-.financial-value {
-    color: var(--color-primary); /* Usa a cor primária (escura) para um visual mais sóbrio e profissional */
-}
-
-/* Garante que a cor do tema econômico seja aplicada corretamente */
-body.theme-economic .financial-value {
-    color: var(--color-primary); /* Mantém a cor primária do tema verde */
+    -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+}
+
+.screen { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; }
+
+.btn { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1.8rem; border: 1px solid var(--color-secondary); border-radius: 50px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
+.btn--primary { background-color: var(--color-secondary); color: var(--color-primary); }
+.btn--primary:hover { background-color: transparent; color: var(--color-secondary); }
+
+.header { position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(10, 25, 47, 0.85); backdrop-filter: blur(10px); box-shadow: var(--shadow-md); z-index: 1000; display: none; color: white; }
+.header__container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0.75rem 2rem; }
+.header__logo img { height: 40px; filter: brightness(0) invert(1); }
+.header__options { display: flex; gap: 0.5rem; background-color: var(--color-primary); border-radius: 50px; padding: 0.25rem; }
+.option-button { background: transparent; border: none; border-radius: 20px; padding: 0.5rem 1.2rem; font-weight: 500; cursor: pointer; color: var(--color-text-light); transition: all 0.3s ease; }
+.option-button.active { background-color: var(--color-secondary); color: var(--color-primary); }
+
+.search-card { background-color: transparent; width: 100%; max-width: 500px; text-align: center; }
+.search-card__logo-wrapper { background-color: var(--color-primary); padding: 1rem; border-radius: 50%; display: inline-block; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
+.search-card__logo { height: 60px; filter: brightness(0) invert(1); }
+.search-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--color-text); }
+.search-card__subtitle { color: var(--color-text-light); margin-bottom: 2rem; }
+.search-card__panel { display: flex; flex-direction: column; gap: 1rem; }
+.search-card__panel input { background-color: var(--color-card-bg); color: var(--color-text); padding: 0.9rem; border: 1px solid var(--color-text-light); border-radius: 8px; font-size: 1rem; text-align: center; transition: all 0.3s ease; outline: none; }
+.search-card__panel input:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary), transparent 80%); }
+
+.proposal-details { padding-top: 8rem; padding-bottom: 4rem; }
+.proposal-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 1.5rem; }
+.proposal-section { background-color: var(--color-card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-md); padding: 1.5rem; border: 1px solid #233554; }
+.section-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 600; color: var(--color-text); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #233554; }
+.section-title i { color: var(--color-secondary); }
+.section-content p { color: var(--color-text); margin-bottom: 0.5rem; }
+.section-content p strong { color: var(--color-text-light); font-weight: 500; min-width: 100px; display: inline-block; }
+.section-content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.metric-box { text-align: center; padding: 1rem; }
+.metric-label { display: block; color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-value { display: block; color: var(--color-accent); font-size: 2.2rem; font-weight: 700; line-height: 1.2; }
+.highlight-footnote-wrapper { border-top: 1px solid #233554; margin-top: 1rem; padding-top: 1rem; }
+.highlight-footnote { text-align: center; font-size: 1.1rem; font-weight: 500; color: var(--color-text); }
+.highlight-footnote strong { color: var(--color-accent); font-weight: 700; }
+
+.equipment-logo-wrapper { display: flex; justify-content: center; align-items: center; padding: 1rem; }
+.equipment-logo-wrapper img { max-height: 60px; width: auto; max-width: 200px; object-fit: contain; }
+.equipment-specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; border-top: 1px solid #233554; padding-top: 1.5rem; margin-top: 1.5rem; }
+.spec-card { background-color: var(--color-primary); padding: 1rem; border-radius: var(--border-radius); text-align: center; }
+.spec-label { display: block; color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 0.5rem; }
+.spec-value { display: block; color: var(--color-text); font-size: 1.5rem; font-weight: 600; }
+
+.financing-carousel { display: grid; grid-auto-flow: column; grid-auto-columns: 220px; gap: 1rem; overflow-x: auto; padding: 1rem 0; scrollbar-width: thin; scrollbar-color: var(--color-secondary) var(--color-primary); }
+.financing-carousel::-webkit-scrollbar { height: 8px; }
+.financing-carousel::-webkit-scrollbar-thumb { background-color: var(--color-secondary); border-radius: 10px; }
+.financing-option { background-color: var(--color-primary); border: 1px solid #233554; border-radius: var(--border-radius); padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; }
+.financing-option.highlight { border-color: var(--color-accent); box-shadow: 0 0 15px color-mix(in srgb, var(--color-accent), transparent 70%); transform: scale(1.05); }
+.financing-option .prazo { font-size: 2rem; font-weight: 700; color: var(--color-text); }
+.financing-option .prazo span { font-size: 1rem; font-weight: 500; }
+.financing-option .valor { font-size: 1.2rem; font-weight: 500; color: var(--color-accent); }
+.balanced-installment-highlight { text-align: center; margin-top: 1rem; color: var(--color-accent); font-weight: 500; }
+
+.investment-section { background: linear-gradient(135deg, var(--color-secondary), color-mix(in srgb, var(--color-secondary), black 25%)); }
+.investment-section .section-title, .investment-section .section-title i { color: var(--color-primary); border-bottom-color: color-mix(in srgb, var(--color-primary), transparent 50%); }
+.investment-box { text-align: center; padding: 1rem 0; }
+.investment-label { display: block; font-size: 1rem; font-weight: 500; color: var(--color-primary); }
+.investment-value { display: block; font-size: 3rem; font-weight: 800; color: white; line-height: 1.1; }
+.payment-method { display: flex; justify-content: center; margin-top: 0.5rem; }
+.payment-tag { background-color: white; color: var(--color-primary); padding: 0.3rem 1rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; }
+.alternative-payment { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid color-mix(in srgb, var(--color-primary), transparent 50%); color: var(--color-primary); }
+
+.validity-banner { text-align: center; padding: 1rem; background-color: var(--color-card-bg); border-radius: var(--border-radius); border: 1px solid var(--color-secondary); }
+.validity-banner i { color: var(--color-secondary); margin-right: 0.5rem; }
+
+.footer { background-color: #020c1b; color: var(--color-text-light); padding: 2rem; text-align: center; margin-top: 4rem; }
+.footer-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+.footer-logo img { height: 50px; filter: brightness(0) invert(1); }
+.footer-contact { display: flex; flex-direction: column; gap: 0.5rem; }
+.contact-item { display: flex; align-items: center; gap: 0.75rem; }
+.contact-item i { color: var(--color-secondary); }
+.footer-social { display: flex; gap: 1.5rem; font-size: 1.2rem; }
+.footer-social a { color: var(--color-text-light); transition: color 0.3s ease; }
+.footer-social a:hover { color: var(--color-secondary); }
+.footer-bottom { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #233554; width: 100%; }
+
+@media (min-width: 768px) {
+    .footer-container { flex-direction: row; justify-content: space-between; }
+    .footer-contact { flex-direction: row; gap: 1.5rem; }
+}
+
+@media print {
+    .no-print, .no-print * { display: none !important; }
+    body { -webkit-user-select: none; user-select: none; }
 }

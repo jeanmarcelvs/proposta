@@ -6,10 +6,9 @@
     <title>Sua Proposta de Energia Solar | GDIS</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="/gdisFavicon.ico" type="image/x-icon">
-    <!-- Adicionando Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body oncontextmenu="return false;">
 
     <!-- CABEÇALHO FIXO -->
     <header id="proposal-header" class="header">
@@ -27,11 +26,11 @@
     <!-- TELA DE BUSCA INICIAL -->
     <main id="search-form" class="screen">
         <div class="search-card">
-            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+            <div class="search-card__logo-wrapper">
+                <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+            </div>
             <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
-            <p class="search-card__subtitle">
-                Digite o ID do projeto fornecido por nossa equipe comercial para ver os detalhes da sua oferta.
-            </p>
+            <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
             <div class="search-card__panel">
                 <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
                 <button type="button" id="search-button" class="btn btn--primary">
@@ -42,109 +41,115 @@
     </main>
 
     <!-- TELA DE DETALHES DA PROPOSTA -->
-<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO FINAL REFINADA -->
-<main id="proposal-details" class="screen proposal-details" style="display: none;">
-    <div class="proposal-container">
+    <main id="proposal-details" class="screen proposal-details" style="display: none;">
+        <div class="proposal-container">
 
-        <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
-            <div class="section-content">
-                <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
-                <p><strong>Data da Proposta:</strong> <span id="data-geracao"></span></p>
+            <section class="proposal-section">
+                <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
+                <div class="section-content">
+                    <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
+                    <p><strong>Data:</strong> <span id="data-geracao"></span></p>
+                </div>
+            </section>
+
+            <section class="proposal-section">
+                <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema</h2>
+                <div class="section-content-grid">
+                    <div class="metric-box">
+                        <span class="metric-label">Geração Média</span>
+                        <span class="metric-value" id="geracao-mensal"></span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Potência</span>
+                        <span class="metric-value" id="potencia-sistema"></span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Instalação</span>
+                        <span class="metric-value" id="tipo-instalacao"></span>
+                    </div>
+                </div>
+                <div class="highlight-footnote-wrapper">
+                    <p id="conta-energia-estimada" class="highlight-footnote"></p>
+                </div>
+            </section>
+
+            <section class="proposal-section">
+                <h2 id="equipment-title" class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
+                <div id="equipment-logo-container" class="equipment-logo-wrapper"></div>
+                <div class="equipment-specs-grid">
+                    <div class="spec-card">
+                        <span class="spec-label">Inversor</span>
+                        <span class="spec-value" id="inversor-potencia"></span>
+                    </div>
+                    <div class="spec-card">
+                        <span class="spec-label">Módulos</span>
+                        <span class="spec-value" id="modulo-potencia"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="proposal-section">
+                <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
+                <div id="financing-options" class="financing-carousel"></div>
+                <div id="parcela-equilibrada" class="balanced-installment-highlight"></div>
+            </section>
+
+            <section class="proposal-section investment-section">
+                <h2 class="section-title"><i class="fas fa-wallet"></i> Seu Investimento</h2>
+                <div class="investment-box">
+                    <span class="investment-label">Valor Total do Projeto</span>
+                    <span class="investment-value" id="valor-total"></span>
+                    <div class="payment-method">
+                        <span class="payment-tag">À VISTA</span>
+                    </div>
+                </div>
+                <div class="alternative-payment">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Consulte também as condições para pagamento com <strong>Cartão de Crédito</strong>.</span>
+                </div>
+            </section>
+
+            <div class="validity-banner">
+                <i class="fas fa-info-circle"></i>
+                <p id="proposal-validity">Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.</p>
             </div>
-        </section>
-
-        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR (Com novo destaque para conta) -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema Solar</h2>
-            <div class="section-content-grid">
-                <div class="metric-box">
-                    <span class="metric-label">Geração Média Mensal</span>
-                    <span class="metric-value" id="geracao-mensal"></span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Potência do Sistema</span>
-                    <span class="metric-value" id="potencia-sistema"></span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Tipo de Instalação</span>
-                    <span class="metric-value" id="tipo-instalacao"></span>
-                </div>
-                <!-- NOVO: Bloco de destaque para a conta de energia -->
-                <div class="metric-box highlight-box">
-                    <p id="conta-energia-estimada"></p>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 3: EQUIPAMENTOS DE PONTA (Apenas logo e potências) -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
-            <div id="equipment-logo-container" class="equipment-logo-wrapper">
-                <!-- A imagem da logo será inserida aqui pelo JS -->
-            </div>
-            <div class="equipment-specs">
-                <p><strong>Potência do Inversor:</strong> <span id="inversor-potencia"></span></p>
-                <p><strong>Potência dos Módulos:</strong> <span id="modulo-potencia"></span></p>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 4: INVESTIMENTO E RETORNO -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-dollar-sign"></i> Investimento e Retorno</h2>
-            <div class="section-content-grid">
-                <div class="metric-box">
-                    <span class="metric-label">Valor Total do Projeto</span>
-                    <span class="metric-value" id="valor-total"></span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Retorno (Payback)</span>
-                    <span class="metric-value" id="payback"></span>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÕES 5 e 6 (Financiamento e Ações) permanecem iguais -->
-        <section class="proposal-section">
-            <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
-            <div id="financing-options" class="financing-grid"></div>
-            <div id="parcela-equilibrada"></div>
-        </section>
-        <section class="proposal-actions">
-            <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
-                <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
-            </a>
-            <p class="proposal-validity">Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
-        </section>
-
-    </div>
-</main>
-
-
-
-
-    <!-- TELA DE PROPOSTA EXPIRADA -->
-    <main id="expired-proposal-section" class="screen" style="display: none;">
-        <div class="status-card">
-            <i class="fas fa-exclamation-triangle status-card__icon status-card__icon--warning"></i>
-            <h1 class="status-card__title">Sua Proposta Expirou</h1>
-            <p class="status-card__subtitle">
-                Para garantir os melhores valores e a disponibilidade de estoque, por favor, solicite uma nova proposta.
-            </p>
-            <button class="btn btn--primary" onclick="location.reload();">Voltar ao Início</button>
         </div>
     </main>
 
-    <!-- POPUP DE ERRO -->
-    <div id="error-popup" class="popup-backdrop" style="display: none;">
-        <div class="popup-content">
-            <i class="fas fa-times-circle status-card__icon status-card__icon--error"></i>
-            <h2 id="popup-title">Ops, Algo deu Errado!</h2>
-            <p id="popup-message"></p>
-            <button id="popup-close-btn" class="btn btn--primary">Fechar</button>
+    <!-- RODAPÉ PROFISSIONAL -->
+    <footer id="main-footer" class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Logo GDIS">
+            </div>
+            <div class="footer-contact">
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>(XX ) XXXX-XXXX</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>contato@gdis.com.br</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Seu Endereço, Cidade - UF</span>
+                </div>
+            </div>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
         </div>
-    </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 GDIS Solar. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- TELAS DE STATUS (Expirado, Erro) -->
+    <main id="expired-proposal-section" class="screen" style="display: none;"></main>
+    <div id="error-popup" class="popup-backdrop" style="display: none;"></div>
 
 </body>
 <script type="module" src="api.js" defer></script>
