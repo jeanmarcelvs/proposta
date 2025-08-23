@@ -177,9 +177,8 @@ searchButton.addEventListener('click', async () => {
     try {
         const respostaDaApi = await consultarProposta(projectId);
         
-        // CORREÇÃO: Acessa o primeiro item do array 'data', como você explicou.
-        // O uso de optional chaining garante que não haverá erros se o array estiver vazio.
-        const proposta = respostaDaApi?.data?.[0];
+        // CORREÇÃO FINAL: Acessa o objeto diretamente na chave 'data'.
+        const proposta = respostaDaApi?.data;
 
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
@@ -200,7 +199,7 @@ searchButton.addEventListener('click', async () => {
         
         ocultarTodasAsTelas();
         proposalHeader.style.display = 'flex';
-        toggleProposalView(propostaOriginal, 'alta-performance');
+        renderizarProposta(propostaOriginal);
         resetarBotao();
 
     } catch (err) {
@@ -218,13 +217,13 @@ popupCloseBtn.addEventListener('click', () => {
 // Eventos para os botões de opção de proposta
 btnAltaPerformance.addEventListener('click', () => {
     if (propostaOriginal) {
-        toggleProposalView(propostaOriginal, 'alta-performance');
+        renderizarProposta(propostaOriginal);
     }
 });
 
 btnEconomica.addEventListener('click', () => {
     if (propostaEconomica) {
-        toggleProposalView(propostaEconomica, 'economic');
+        renderizarProposta(propostaEconomica);
     }
 });
 
