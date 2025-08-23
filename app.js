@@ -174,7 +174,7 @@ searchButton.addEventListener('click', async () => {
     try {
         const respostaDaApi = await consultarProposta(projectId);
         
-        // CORREÇÃO FINAL: Extração do objeto 'data' aqui, no ponto de uso.
+        // CORREÇÃO: Extração do objeto 'data' aqui, no ponto de uso.
         const proposta = respostaDaApi?.data;
 
         if (!proposta || !proposta.id) {
@@ -196,7 +196,7 @@ searchButton.addEventListener('click', async () => {
         
         ocultarTodasAsTelas();
         proposalHeader.style.display = 'flex';
-        renderizarProposta(propostaOriginal);
+        toggleProposalView(propostaOriginal, 'alta-performance');
         resetarBotao();
 
     } catch (err) {
@@ -214,13 +214,13 @@ popupCloseBtn.addEventListener('click', () => {
 // Eventos para os botões de opção de proposta
 btnAltaPerformance.addEventListener('click', () => {
     if (propostaOriginal) {
-        renderizarProposta(propostaOriginal);
+        toggleProposalView(propostaOriginal, 'alta-performance');
     }
 });
 
 btnEconomica.addEventListener('click', () => {
     if (propostaEconomica) {
-        renderizarProposta(propostaEconomica);
+        toggleProposalView(propostaEconomica, 'economic');
     }
 });
 
