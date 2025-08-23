@@ -75,7 +75,7 @@ function renderizarEquipamentos(dados, tipoProposta) {
         ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
         : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
 
-    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_'));
+    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
     const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
     const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
     
@@ -87,7 +87,6 @@ function renderizarEquipamentos(dados, tipoProposta) {
         const index = inv.key.split('_').pop();
         const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
         const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-        if (!inv.value) return ''; // Não renderiza se o modelo for nulo/vazio
         return `
             <div class="spec-card">
                 <span class="spec-label">Inversor ${inv.value}</span>
