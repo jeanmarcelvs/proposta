@@ -10,40 +10,22 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- CABEÇALHO FIXO -->
-    <header id="proposal-header" class="header">
-        <div class="header__container">
-            <div class="header__logo">
-                <img src="logo.png" alt="Logo da GDIS">
-            </div>
-            <div class="header__options">
-                <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
-                <button id="btn-economica" class="option-button">Econômica</button>
-            </div>
-        </div>
-    </header>
+    <header id="proposal-header" class="header"></header>
 
-    <!-- TELA DE BUSCA INICIAL -->
     <main id="search-form" class="screen">
         <div class="search-card">
-            <div class="search-card__logo-wrapper">
-                <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
-            </div>
+            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
             <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
             <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
             <div class="search-card__panel">
                 <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-                <button type="button" id="search-button" class="btn btn--primary">
-                    <i class="fas fa-arrow-right"></i> Visualizar Proposta
-                </button>
+                <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
             </div>
         </div>
     </main>
 
-    <!-- TELA DE DETALHES DA PROPOSTA -->
     <main id="proposal-details" class="screen proposal-details" style="display: none;">
         <div class="proposal-container">
-
             <section class="proposal-section">
                 <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
                 <div class="section-content">
@@ -68,13 +50,13 @@
                         <span class="metric-value" id="tipo-instalacao"></span>
                     </div>
                 </div>
-                <div class="highlight-footnote-wrapper">
-                    <p id="conta-energia-estimada" class="highlight-footnote"></p>
+                <div class="economy-highlight-card">
+                    <p id="conta-energia-estimada"></p>
                 </div>
             </section>
 
             <section class="proposal-section">
-                <h2 id="equipment-title" class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
+                <h2 id="equipment-title" class="section-title"></h2>
                 <div id="equipment-logo-container" class="equipment-logo-wrapper"></div>
                 <div class="equipment-specs-grid">
                     <div class="spec-card">
@@ -91,7 +73,6 @@
             <section class="proposal-section">
                 <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
                 <div id="financing-options" class="financing-carousel"></div>
-                <div id="parcela-equilibrada" class="balanced-installment-highlight"></div>
             </section>
 
             <section class="proposal-section investment-section">
@@ -105,18 +86,17 @@
                 </div>
                 <div class="alternative-payment">
                     <i class="fas fa-credit-card"></i>
-                    <span>Consulte também as condições para pagamento com <strong>Cartão de Crédito</strong>.</span>
+                    <span>Consulte também as condições para <strong>Cartão de Crédito</strong>.</span>
                 </div>
             </section>
 
             <div class="validity-banner">
                 <i class="fas fa-info-circle"></i>
-                <p id="proposal-validity">Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.</p>
+                <p id="proposal-validity"></p>
             </div>
         </div>
     </main>
 
-    <!-- RODAPÉ PROFISSIONAL -->
     <footer id="main-footer" class="footer">
         <div class="footer-container">
             <div class="footer-logo">
@@ -125,21 +105,15 @@
             <div class="footer-contact">
                 <div class="contact-item">
                     <i class="fas fa-phone"></i>
-                    <span>(XX ) XXXX-XXXX</span>
+                    <span>(82 ) 9.9425-5946</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
                     <span>contato@gdis.com.br</span>
                 </div>
-                <div class="contact-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Seu Endereço, Cidade - UF</span>
-                </div>
             </div>
             <div class="footer-social">
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/gdis.solar" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -147,11 +121,11 @@
         </div>
     </footer>
 
-    <!-- TELAS DE STATUS (Expirado, Erro) -->
+    <!-- Telas de Status e Erro (simplificadas ) -->
     <main id="expired-proposal-section" class="screen" style="display: none;"></main>
     <div id="error-popup" class="popup-backdrop" style="display: none;"></div>
 
+    <script type="module" src="api.js" defer></script>
+    <script type="module" src="app.js" defer></script>
 </body>
-<script type="module" src="api.js" defer></script>
-<script type="module" src="app.js" defer></script>
 </html>
