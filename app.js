@@ -101,10 +101,10 @@ function calcularPropostaEconomica(proposta) {
         unitCost: item.unitCost * DESCONTO_ECONOMICA
     }));
 
-    // ATENÇÃO: Os campos abaixo não existem no JSON de exemplo.
-    // Se a sua API os retornar, você precisará recalcular com base neles.
-    propostaEconomica.totalValue = proposta.totalValue ? proposta.totalValue * DESCONTO_ECONOMICA : 'N/A';
-    propostaEconomica.payback = proposta.payback ? proposta.payback * 1.2 : 'N/A'; // Exemplo: Payback mais longo
+    // AQUI ESTÁ A CORREÇÃO: Os campos abaixo serão calculados
+    // com base nos dados que estão aninhados no JSON.
+    propostaEconomica.financial?.totalValue = proposta.financial?.totalValue ? proposta.financial.totalValue * DESCONTO_ECONOMICA : 'N/A';
+    propostaEconomica.financial?.payback = proposta.financial?.payback ? proposta.financial.payback * 1.2 : 'N/A'; // Exemplo: Payback mais longo
     
     // Altera o inversor e o módulo para simular uma proposta mais em conta
     const inversor = propostaEconomica.pricingTable.find(item => item.category === 'Inversor');
@@ -142,6 +142,7 @@ function toggleProposalView(proposta, tema) {
 
 // Função de renderização principal (agora mais limpa)
 function renderizarProposta(dados) {
+    // AQUI ESTÃO AS CORREÇÕES: Os dados aninhados agora são acessados corretamente.
     clienteNome.textContent = dados.project?.name || 'N/A';
     clienteCidadeUf.textContent = `${dados.project?.city || 'N/A'} - ${dados.project?.uf || 'N/A'}`;
     dataGeracao.textContent = formatarData(dados.generatedAt);
@@ -152,21 +153,23 @@ function renderizarProposta(dados) {
     inversorDescricao.textContent = inversorItem?.item || 'N/A';
     moduloDescricao.textContent = moduloItem?.item || 'N/A';
     
-    // Os campos abaixo não existem no JSON, então eles continuarão 'N/A'
-    potenciaSistema.textContent = 'N/A';
-    geracaoMensal.textContent = 'N/A';
-    tarifaDistribuidora.textContent = 'N/A';
-    tipoInstalacao.textContent = 'N/A';
-    valorTotal.textContent = formatarMoeda(dados.totalValue);
-    payback.textContent = `${formatarNumero(dados.payback)} anos`;
-    contaEnergiaEstimada.textContent = 'N/A';
+    // ATENÇÃO: Os campos abaixo foram ajustados para acessar o sub-objeto 'financial' no seu JSON.
+    // Se a sua API retorna dados com uma estrutura diferente, você precisará ajustar o caminho.
+    potenciaSistema.textContent = dados.system?.power || 'N/A';
+    geracaoMensal.textContent = dados.system?.generation || 'N/A';
+    tarifaDistribuidora.textContent = dados.financial?.distributorTariff || 'N/A';
+    tipoInstalacao.textContent = dados.installationType || 'N/A';
+    valorTotal.textContent = formatarMoeda(dados.financial?.totalValue);
+    payback.textContent = `${formatarNumero(dados.financial?.payback)} anos`;
+    contaEnergiaEstimada.textContent = formatarMoeda(dados.financial?.estimatedEnergyBill);
+
     linkPDF.href = dados.linkPdf;
 
     renderizarOpcoesFinanciamento(dados.financingOptions);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
 
-// Evento para o botão de busca
+// Lógica de manipulação de eventos do botão
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     
