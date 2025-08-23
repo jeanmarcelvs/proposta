@@ -1,7 +1,6 @@
 import { consultarProposta } from "./api.js";
 
 // --- Seletores do DOM ---
-const backToSearchBtn = document.getElementById('back-to-search-btn');
 const searchForm = document.getElementById('search-form');
 const proposalDetailsSection = document.getElementById('proposal-details');
 const proposalHeader = document.getElementById('proposal-header');
@@ -131,6 +130,25 @@ async function handleSearch() {
         
         renderizarProposta(propostaOriginal, 'performance');
         blockFeatures();
+
+        // =================================================================
+        // CORREÇÃO APLICADA AQUI
+        // =================================================================
+        // 1. Encontra o botão DEPOIS que a seção dele está visível.
+        const backToSearchBtn = document.getElementById('back-to-search-btn');
+
+        // 2. Adiciona o evento de clique aqui, garantindo que o botão existe.
+        backToSearchBtn.addEventListener('click', () => {
+            proposalDetailsSection.style.display = 'none';
+            proposalHeader.style.display = 'none';
+            searchForm.style.display = 'flex';
+            projectIdInput.value = '';
+            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+            searchButton.disabled = false;
+        });
+        // =================================================================
+        // FIM DA CORREÇÃO
+        // =================================================================
 
     } catch (err) {
         console.error("Erro na busca:", err);
