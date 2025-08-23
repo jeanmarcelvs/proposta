@@ -119,27 +119,44 @@ function renderizarParcelaEquilibrada(parcela) {
 }
 
 function renderizarProposta(dados) {
+    // --- Lógica de formatação de dados ---
+    
+    // Formata a data para exibir apenas DD/MM/AAAA
+    const dataCompleta = findVariable(dados, 'data_geracao', true);
+    const dataFormatada = dataCompleta.split(' ')[0];
+
+    // Calcula o valor da conta de energia para o texto personalizado
+    const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
+    const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0; // Ainda precisamos do valor para o cálculo
+    const contaAtual = geracaoMensalValor * tarifaValor;
+    const textoContaEnergia = `Ideal para contas de energia de até ${formatarMoeda(contaAtual)}`;
+
+    // --- Renderização dos dados nos elementos HTML ---
+    
     clienteNome.textContent = findVariable(dados, 'cliente_nome', true) || 'Cliente GDIS';
     const cidade = findVariable(dados, 'cidade');
     const uf = findVariable(dados, 'estado');
     clienteCidadeUf.textContent = (cidade !== 'N/A' && uf !== 'N/A') ? `${cidade} - ${uf}` : 'Localidade não informada';
-    dataGeracao.textContent = findVariable(dados, 'data_geracao', true);
+    dataGeracao.textContent = dataFormatada;
+    
     inversorDescricao.textContent = findItem(dados, 'Inversor');
     moduloDescricao.textContent = findItem(dados, 'Módulo');
-    const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
-    const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0;
-    potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
+    
+    // A ordem de renderização aqui não importa, pois o HTML já define a ordem visual
     geracaoMensal.textContent = `${findVariable(dados, 'geracao_mensal', true)} kWh`;
-    tarifaDistribuidora.textContent = formatarMoeda(tarifaValor);
+    contaEnergiaEstimada.textContent = textoContaEnergia;
+    potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
     tipoInstalacao.textContent = findVariable(dados, 'vc_tipo_de_estrutura', true);
+    
     valorTotal.textContent = formatarMoeda(findVariable(dados, 'preco'));
     payback.textContent = findVariable(dados, 'payback', true);
-    const contaAtual = geracaoMensalValor * tarifaValor;
-    contaEnergiaEstimada.textContent = `Ideal para contas de energia a partir de ${formatarMoeda(contaAtual)}`;
+    
     linkPDF.href = dados.linkPdf;
+    
     renderizarOpcoesFinanciamento(dados);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
+
 
 // ---- Eventos ----
 searchButton.addEventListener('click', async () => {

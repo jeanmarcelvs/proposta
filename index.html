@@ -42,11 +42,11 @@
     </main>
 
     <!-- TELA DE DETALHES DA PROPOSTA -->
-    <!-- SUBSTITUA A MAIN ANTIGA POR ESTA NOVA ESTRUTURA -->
+<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO FINAL REORDENADA -->
 <main id="proposal-details" class="screen proposal-details" style="display: none;">
     <div class="proposal-container">
 
-        <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE -->
+        <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE (Permanece igual) -->
         <section class="proposal-section">
             <h2 class="section-title">
                 <i class="fas fa-user"></i>
@@ -58,7 +58,23 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 2: RESUMO FINANCEIRO E INVESTIMENTO -->
+        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR (Estrutura interna ajustada) -->
+        <section class="proposal-section">
+            <h2 class="section-title">
+                <i class="fas fa-solar-panel"></i>
+                Detalhes do Sistema Solar
+            </h2>
+            <div class="section-content">
+                <!-- Ordem dos parágrafos alterada e campo de tarifa removido -->
+                <p><strong>Geração Média Mensal:</strong> <span id="geracao-mensal"></span></p>
+                <p id="conta-energia-estimada" class="section-footnote"></p> <!-- Movido para cá e mantido como nota de rodapé para destaque -->
+                <p><strong>Potência do Sistema:</strong> <span id="potencia-sistema"></span></p>
+                <p><strong>Tipo de Instalação:</strong> <span id="tipo-instalacao"></span></p>
+                <!-- O campo "Tarifa da Concessionária" foi removido daqui -->
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: RESUMO FINANCEIRO E INVESTIMENTO (Permanece igual) -->
         <section class="proposal-section">
             <h2 class="section-title">
                 <i class="fas fa-dollar-sign"></i>
@@ -74,24 +90,9 @@
                     <span class="metric-value" id="payback"></span>
                 </div>
             </div>
-            <p class="section-footnote" id="conta-energia-estimada"></p>
         </section>
 
-        <!-- SEÇÃO 3: DETALHES DO SISTEMA SOLAR -->
-        <section class="proposal-section">
-            <h2 class="section-title">
-                <i class="fas fa-solar-panel"></i>
-                Detalhes do Sistema Solar
-            </h2>
-            <div class="section-content">
-                <p><strong>Potência do Sistema:</strong> <span id="potencia-sistema"></span></p>
-                <p><strong>Geração Média Mensal:</strong> <span id="geracao-mensal"></span></p>
-                <p><strong>Tipo de Instalação:</strong> <span id="tipo-instalacao"></span></p>
-                <p><strong>Tarifa da Concessionária:</strong> <span id="tarifa-distribuidora"></span></p>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 4: EQUIPAMENTOS -->
+        <!-- SEÇÃO 4: EQUIPAMENTOS (Permanece igual) -->
         <section class="proposal-section">
             <h2 class="section-title">
                 <i class="fas fa-cogs"></i>
@@ -103,7 +104,7 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 5: OPÇÕES DE FINANCIAMENTO -->
+        <!-- SEÇÃO 5: OPÇÕES DE FINANCIAMENTO (Permanece igual) -->
         <section class="proposal-section">
             <h2 class="section-title">
                 <i class="fas fa-hand-holding-dollar"></i>
@@ -115,7 +116,7 @@
             <div id="parcela-equilibrada"></div>
         </section>
 
-        <!-- SEÇÃO 6: AÇÕES -->
+        <!-- SEÇÃO 6: AÇÕES (Permanece igual) -->
         <section class="proposal-actions">
             <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
                 <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
