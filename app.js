@@ -33,8 +33,8 @@ const parcelaEquilibradaContainer = document.getElementById('parcela-equilibrada
 const btnAltaPerformance = document.getElementById('btn-alta-performance');
 const btnEconomica = document.getElementById('btn-economica');
 
-let propostaAtual;
-let propostaAtualTipo = 'altaPerformance';
+let propostaOriginal; // Armazena a proposta original da API
+let propostaEconomica; // Armazena a proposta econômica calculada
 
 // Oculta todas as telas, exceto a de busca
 function ocultarTodasAsTelas() {
@@ -53,7 +53,7 @@ function resetarBotao() {
 // Exibe o popup de erro com a mensagem fornecida
 function exibirMensagemDeErro(mensagem) {
     popupMessage.textContent = mensagem;
-    errorPopup.style.display = 'flex'; // Torna o popup visível
+    errorPopup.style.display = 'flex';
 }
 
 // Funções de formatação
@@ -78,54 +78,92 @@ function formatarData(dataISO) {
 // Renderiza as opções de financiamento
 function renderizarOpcoesFinanciamento(opcoes) {
     financingOptionsContainer.innerHTML = '';
-    // Como a sua API não retorna opções de financiamento, esta parte permanece como placeholder
+    // A sua API não retorna opções de financiamento, esta parte permanece como placeholder
 }
 
 // Renderiza a parcela equilibrada
 function renderizarParcelaEquilibrada(parcela) {
-    // Como a sua API não retorna a parcela equilibrada, esta parte permanece como placeholder
+    // A sua API não retorna a parcela equilibrada, esta parte permanece como placeholder
     parcelaEquilibradaContainer.innerHTML = '';
 }
 
-// Exibe os detalhes da proposta
-function exibirDetalhesProposta(proposta) {
-    propostaAtual = proposta;
-    ocultarTodasAsTelas();
-    proposalHeader.style.display = 'flex';
-    proposalDetailsSection.style.display = 'block';
-
-    // AQUI ESTÁ A CORREÇÃO: Usamos a estrutura do JSON que você me forneceu.
-    // Mapeamos os dados para os elementos da página de forma segura.
-    clienteNome.textContent = proposta.project?.name || 'N/A';
-    clienteCidadeUf.textContent = `${proposta.project?.city || 'N/A'} - ${proposta.project?.uf || 'N/A'}`;
-    dataGeracao.textContent = formatarData(proposta.generatedAt);
+// NOVO: Função para calcular a proposta econômica com base na proposta original
+function calcularPropostaEconomica(proposta) {
+    const propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Cria uma cópia profunda
     
-    // As informações de inversor e módulo são extraídas do array `pricingTable`.
-    const inversorItem = proposta.pricingTable?.find(item => item.category === 'Inversor');
-    const moduloItem = proposta.pricingTable?.find(item => item.category === 'Módulo');
+    // Supondo que a proposta econômica tem um desconto de 15%
+    const DESCONTO_ECONOMICA = 0.85; // 15% de desconto
+
+    // Recalcula o custo total com desconto
+    propostaEconomica.pricingTable = proposta.pricingTable.map(item => ({
+        ...item,
+        totalCost: item.totalCost * DESCONTO_ECONOMICA,
+        unitCost: item.unitCost * DESCONTO_ECONOMICA
+    }));
+
+    // ATENÇÃO: Os campos abaixo não existem no JSON de exemplo.
+    // Se a sua API os retornar, você precisará recalcular com base neles.
+    propostaEconomica.totalValue = proposta.totalValue ? proposta.totalValue * DESCONTO_ECONOMICA : 'N/A';
+    propostaEconomica.payback = proposta.payback ? proposta.payback * 1.2 : 'N/A'; // Exemplo: Payback mais longo
+    
+    // Altera o inversor e o módulo para simular uma proposta mais em conta
+    const inversor = propostaEconomica.pricingTable.find(item => item.category === 'Inversor');
+    if (inversor) {
+        inversor.item = "Inversor Econômico ABC"; // Exemplo de alteração
+    }
+    const modulo = propostaEconomica.pricingTable.find(item => item.category === 'Módulo');
+    if (modulo) {
+        modulo.item = "Módulo Padrão Custo-Benefício"; // Exemplo de alteração
+    }
+
+    return propostaEconomica;
+}
+
+// NOVO: Função para alternar entre as propostas e os temas
+function toggleProposalView(proposta, tema) {
+    // Renderiza a proposta na tela
+    renderizarProposta(proposta);
+
+    // Altera a classe do body para mudar o tema de cores
+    document.body.className = `${tema}-theme`;
+
+    // Atualiza o estado dos botões
+    if (tema === 'alta-performance') {
+        btnAltaPerformance.classList.add('active');
+        btnEconomica.classList.remove('active');
+    } else if (tema === 'economic') {
+        btnEconomica.classList.add('active');
+        btnAltaPerformance.classList.remove('active');
+    }
+}
+
+// Função de renderização principal (agora mais limpa)
+function renderizarProposta(dados) {
+    clienteNome.textContent = dados.project?.name || 'N/A';
+    clienteCidadeUf.textContent = `${dados.project?.city || 'N/A'} - ${dados.project?.uf || 'N/A'}`;
+    dataGeracao.textContent = formatarData(dados.generatedAt);
+    
+    const inversorItem = dados.pricingTable?.find(item => item.category === 'Inversor');
+    const moduloItem = dados.pricingTable?.find(item => item.category === 'Módulo');
     
     inversorDescricao.textContent = inversorItem?.item || 'N/A';
     moduloDescricao.textContent = moduloItem?.item || 'N/A';
-
-    // ATENÇÃO: Os campos abaixo não existem no JSON que você me forneceu.
-    // Eles permanecerão com 'N/A' até que você os adicione no retorno da sua API.
+    
+    // Os campos abaixo não existem no JSON, então eles continuarão 'N/A'
     potenciaSistema.textContent = 'N/A';
     geracaoMensal.textContent = 'N/A';
     tarifaDistribuidora.textContent = 'N/A';
     tipoInstalacao.textContent = 'N/A';
-    valorTotal.textContent = 'N/A';
-    payback.textContent = 'N/A';
+    valorTotal.textContent = formatarMoeda(dados.totalValue);
+    payback.textContent = `${formatarNumero(dados.payback)} anos`;
     contaEnergiaEstimada.textContent = 'N/A';
-    
-    // O link do PDF é pego diretamente do JSON
-    linkPDF.href = proposta.linkPdf;
+    linkPDF.href = dados.linkPdf;
 
-    // As funções de renderização de financiamento são chamadas, mas estarão vazias.
-    renderizarOpcoesFinanciamento(proposta.financingOptions);
-    renderizarParcelaEquilibrada(proposta.balancedInstallment);
+    renderizarOpcoesFinanciamento(dados.financingOptions);
+    renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
 
-// Lógica de manipulação de eventos do botão
+// Evento para o botão de busca
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     
@@ -140,7 +178,6 @@ searchButton.addEventListener('click', async () => {
     try {
         const proposta = await consultarProposta(projectId);
         
-        // A lógica de verificação foi simplificada para a nova estrutura.
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
             resetarBotao();
@@ -155,8 +192,12 @@ searchButton.addEventListener('click', async () => {
             return;
         }
 
-        propostaAtualTipo = 'altaPerformance';
-        exibirDetalhesProposta(proposta);
+        propostaOriginal = proposta;
+        propostaEconomica = calcularPropostaEconomica(proposta);
+        
+        ocultarTodasAsTelas();
+        proposalHeader.style.display = 'flex';
+        toggleProposalView(propostaOriginal, 'alta-performance');
         resetarBotao();
 
     } catch (err) {
@@ -170,22 +211,17 @@ popupCloseBtn.addEventListener('click', () => {
     errorPopup.style.display = 'none';
 });
 
+// Eventos para os botões de opção de proposta
 btnAltaPerformance.addEventListener('click', () => {
-    // ATENÇÃO: Esta parte do código assume que a API pode ter uma 'proposta econômica'
-    // que não está presente no JSON fornecido.
-    if (propostaAtual) {
-        exibirDetalhesProposta(propostaAtual);
-        btnAltaPerformance.classList.add('active');
-        btnEconomica.classList.remove('active');
+    if (propostaOriginal) {
+        toggleProposalView(propostaOriginal, 'alta-performance');
     }
 });
 
 btnEconomica.addEventListener('click', () => {
-    // ATENÇÃO: Esta parte do código ainda precisa ser ajustada quando você tiver o JSON da proposta econômica.
-    // Atualmente, ela não tem dados para exibir.
-    exibirMensagemDeErro("Não há uma proposta econômica disponível para este projeto.");
-    btnEconomica.classList.add('active');
-    btnAltaPerformance.classList.remove('active');
+    if (propostaEconomica) {
+        toggleProposalView(propostaEconomica, 'economic');
+    }
 });
 
 // Ações iniciais ao carregar a página
