@@ -142,7 +142,6 @@ function renderizarProposta(dados) {
 }
 
 // ---- Eventos ----
-// ---- Eventos ----
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     if (!/^[0-9]{1,6}$/.test(projectId)) {
@@ -153,21 +152,20 @@ searchButton.addEventListener('click', async () => {
     searchButton.disabled = true;
 
     try {
-        // 1. Busca os dados da API. 'respostaDaApi' conterá o objeto completo.
-        const respostaDaApi = await consultarProposta(projectId);
-
         // --- CORREÇÃO APLICADA AQUI ---
-        // 2. Extrai o objeto da proposta de dentro da chave "data".
-        const proposta = respostaDaApi.data; 
+        // A função consultarProposta JÁ RETORNA o objeto da proposta, não um objeto {data: ...}
+        const proposta = await consultarProposta(projectId);
 
-        // 3. Valida a proposta extraída.
+        // Adicionamos um log para depuração futura. Você pode vê-lo no console do navegador (F12).
+        console.log("Objeto da proposta recebido:", proposta);
+
+        // Valida a proposta recebida diretamente.
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID e tente novamente.');
             resetarBotao();
             return;
         }
         
-        // 4. Valida a data de expiração.
         const expirationDate = new Date(proposta.expirationDate);
         if (expirationDate < new Date()) {
             ocultarTodasAsTelas();
@@ -176,29 +174,23 @@ searchButton.addEventListener('click', async () => {
             return;
         }
 
-        // 5. Armazena os dados corretos.
         propostaOriginal = proposta;
         propostaEconomica = JSON.parse(JSON.stringify(proposta));
 
-        // 6. Executa a transição de tela.
         ocultarTodasAsTelas();
-        renderizarProposta(propostaOriginal); // Agora 'propostaOriginal' tem a estrutura correta.
+        renderizarProposta(propostaOriginal); // 'propostaOriginal' agora tem a estrutura correta.
         proposalHeader.style.display = 'block';
         proposalDetailsSection.style.display = 'flex';
         
         resetarBotao();
 
     } catch (err) {
-        console.error("Erro na busca da proposta:", err);
-        // Adiciona uma verificação para o caso de 'respostaDaApi' ser o problema
-        if (err instanceof TypeError && err.message.includes("Cannot read properties of undefined (reading 'data')")) {
-             exibirMensagemDeErro('A resposta da API não tem o formato esperado. Verifique o backend.');
-        } else {
-             exibirMensagemDeErro('Erro de comunicação. Tente novamente mais tarde.');
-        }
+        console.error("Erro detalhado na busca da proposta:", err);
+        exibirMensagemDeErro('Erro de comunicação. Verifique o console para mais detalhes.');
         resetarBotao();
     }
 });
+
 
 
 popupCloseBtn.addEventListener('click', () => {
