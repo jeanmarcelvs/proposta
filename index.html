@@ -19,9 +19,7 @@
             <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
             <div class="search-card__panel">
                 <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-                <button type="button" id="search-button" class="btn btn--primary" onclick="handleSearchClick()"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
-
-
+                <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
             </div>
         </div>
     </main>
@@ -66,7 +64,64 @@
                 <div id="equipment-container" class="equipment-showcase"></div>
             </section>
 
-            <!-- NOVA SEÇÃO: PADRÃO DE INSTALAÇÃO -->
             <section class="proposal-section">
                 <h2 id="installation-title" class="section-title"></h2>
-                <ul
+                <ul id="installation-standard-list" class="installation-standard-list"></ul>
+            </section>
+
+            <section class="proposal-section">
+                <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
+                <div id="financing-options" class="financing-grid"></div>
+            </section>
+
+            <section class="proposal-section investment-section">
+                <h2 class="section-title"><i class="fas fa-wallet"></i> Seu Investimento</h2>
+                <div class="investment-box">
+                    <span class="investment-label">Valor Total do Projeto</span>
+                    <span class="investment-value" id="valor-total"></span>
+                    <div class="payment-method">
+                        <span class="payment-tag">À VISTA</span>
+                    </div>
+                </div>
+                <div class="alternative-payment">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Consulte também as condições para <strong>Cartão de Crédito</strong>.</span>
+                </div>
+            </section>
+
+            <div class="validity-banner">
+                <i class="fas fa-info-circle"></i>
+                <p id="proposal-validity"></p>
+            </div>
+        </div>
+    </main>
+    
+    <main id="expired-proposal-section" class="screen" style="display: none;"></main>
+
+    <footer id="main-footer" class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Logo GDIS">
+            </div>
+            <div class="footer-contact">
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>(82 ) 9.9425-5946</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>contato@gdis.com.br</span>
+                </div>
+            </div>
+            <div class="footer-social">
+                <a href="https://www.instagram.com/gdis.solar" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CHAMADA DOS SCRIPTS - ESSENCIAL PARA O FUNCIONAMENTO -->
+    <script type="module" src="api.js" defer></script>
+    <script type="module" src="app.js" defer></script>
+
+</body>
+</html>
