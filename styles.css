@@ -354,3 +354,34 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* --- CORREÇÃO DE COR DE TEXTO --- */
+
+/* Garante que o texto dentro dos cards padrão seja da cor principal do tema */
+.info-card .info-card__body,
+.info-card .highlight-metric {
+    color: var(--color-text);
+}
+
+/* Define a cor para os dados específicos (os spans) */
+.info-card__body span,
+.highlight-metric strong {
+    color: var(--color-primary); /* Usa a cor primária mais escura para destaque */
+    font-weight: 500; /* Dá um leve destaque */
+}
+
+/* Garante que o texto do card de boas-vindas permaneça branco */
+.info-card--welcome,
+.info-card--welcome h2,
+.info-card--welcome p,
+.info-card--welcome span,
+.info-card--welcome strong {
+    color: #ffffff;
+}
+
+/* Ajuste fino para o texto "Ideal para contas de energia..." */
+.info-card__subtext {
+    color: var(--color-text-light); /* Usa a cor de texto mais clara */
+    font-weight: 400;
+}
+
