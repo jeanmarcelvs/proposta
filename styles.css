@@ -506,3 +506,53 @@ body {
     text-align: center;
     margin-top: 1.5rem;
 }
+
+/* ======================================================== */
+/* --- ESTILOS PARA DESTAQUE E LOGO DINÂMICA --- */
+/* ======================================================== */
+
+/* Estilo para o novo bloco de destaque combinado */
+.highlight-box {
+    grid-column: 1 / -1; /* Faz o box ocupar a largura total no grid */
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+}
+
+.metric-subvalue {
+    color: var(--color-text-light);
+    margin-top: 0.25rem;
+}
+
+/* Estilo para valores de métricas menores (Potência, Instalação) */
+.metric-value-small {
+    display: block;
+    color: var(--color-primary);
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Estilo para o container da logo do equipamento */
+.equipment-logo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    min-height: 100px; /* Garante uma altura mínima */
+}
+
+.equipment-logo-wrapper img {
+    max-height: 60px; /* Define a altura máxima da logo */
+    width: auto;
+    max-width: 250px; /* Previne que a logo fique muito larga */
+    object-fit: contain;
+    opacity: 0; /* Começa invisível para a animação */
+    animation: fadeInLogo 0.5s ease forwards;
+}
+
+@keyframes fadeInLogo {
+    to {
+        opacity: 1;
+    }
+}

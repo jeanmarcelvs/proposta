@@ -118,31 +118,45 @@ function renderizarParcelaEquilibrada(parcela) {
     parcelaEquilibradaContainer.innerHTML = `<p class="info-card__subtext"><strong>Parcela Equilibrada:</strong> ${formatarMoeda(parcela.value)} em ${parcela.installments}x</p>`;
 }
 
+// Adicione este novo seletor no início do seu app.js, junto com os outros
+const equipmentLogoContainer = document.getElementById('equipment-logo-container');
+
+// Agora, substitua a função renderizarProposta inteira por esta:
 function renderizarProposta(dados) {
     // --- Lógica de formatação de dados ---
-    
-    // Formata a data para exibir apenas DD/MM/AAAA
     const dataCompleta = findVariable(dados, 'data_geracao', true);
     const dataFormatada = dataCompleta.split(' ')[0];
 
-    // Calcula o valor da conta de energia para o texto personalizado
     const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
-    const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0; // Ainda precisamos do valor para o cálculo
+    const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0;
     const contaAtual = geracaoMensalValor * tarifaValor;
     const textoContaEnergia = `Ideal para contas de energia de até ${formatarMoeda(contaAtual)}`;
 
+    // --- Lógica da Logo Dinâmica ---
+    const fabricanteInversor = findVariable(dados, 'inversor_fabricante', false).toLowerCase();
+    // Cria um nome de arquivo de imagem simples a partir do nome do fabricante.
+    // Ex: "HUAWEI" -> "huawei.png", "FRONIUS" -> "fronius.png"
+    const logoFileName = `${fabricanteInversor.split(' ')[0]}.png`; // Pega só o primeiro nome
+
+    // Limpa o container da logo e insere a nova imagem
+    equipmentLogoContainer.innerHTML = ''; // Limpa qualquer logo anterior
+    const logoImg = document.createElement('img');
+    logoImg.src = logoFileName;
+    logoImg.alt = `Logo ${fabricanteInversor}`;
+    // Adiciona um tratamento de erro caso a imagem não seja encontrada
+    logoImg.onerror = () => { 
+        equipmentLogoContainer.innerHTML = `<p><strong>Inversor:</strong> ${findItem(dados, 'Inversor')}</p>`;
+    };
+    equipmentLogoContainer.appendChild(logoImg);
+
+
     // --- Renderização dos dados nos elementos HTML ---
-    
     clienteNome.textContent = findVariable(dados, 'cliente_nome', true) || 'Cliente GDIS';
     const cidade = findVariable(dados, 'cidade');
     const uf = findVariable(dados, 'estado');
     clienteCidadeUf.textContent = (cidade !== 'N/A' && uf !== 'N/A') ? `${cidade} - ${uf}` : 'Localidade não informada';
     dataGeracao.textContent = dataFormatada;
     
-    inversorDescricao.textContent = findItem(dados, 'Inversor');
-    moduloDescricao.textContent = findItem(dados, 'Módulo');
-    
-    // A ordem de renderização aqui não importa, pois o HTML já define a ordem visual
     geracaoMensal.textContent = `${findVariable(dados, 'geracao_mensal', true)} kWh`;
     contaEnergiaEstimada.textContent = textoContaEnergia;
     potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
@@ -156,6 +170,7 @@ function renderizarProposta(dados) {
     renderizarOpcoesFinanciamento(dados);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
+
 
 
 // ---- Eventos ----
