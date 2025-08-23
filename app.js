@@ -1,8 +1,9 @@
 import { consultarProposta } from "./api.js";
 
-// --- Seletores do DOM (apenas os que existem no carregamento inicial) ---
+// --- Seletores do DOM ---
 const searchForm = document.getElementById('search-form');
 const proposalDetailsSection = document.getElementById('proposal-details');
+const expiredProposalSection = document.getElementById('expired-proposal-section'); // Seletor necessário
 const proposalHeader = document.getElementById('proposal-header');
 const projectIdInput = document.getElementById('project-id');
 const searchButton = document.getElementById('search-button');
@@ -11,6 +12,10 @@ const mainFooter = document.getElementById('main-footer');
 // --- Variáveis de Estado ---
 let propostaOriginal;
 let propostaEconomica;
+let btnAltaPerformance, btnEconomica;
+
+// --- Mapa de Logos ---
+const logoMap = { 'huawei': 'logo1.png' };
 
 // --- Funções de Segurança ---
 function blockFeatures() {
@@ -29,7 +34,6 @@ const findVar = (proposta, key, useFormatted = false) => {
 };
 
 // --- Funções de Renderização ---
-
 function renderizarFinanciamento(dados) {
     const financingOptionsContainer = document.getElementById('financing-options');
     const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
@@ -59,9 +63,8 @@ function renderizarFinanciamento(dados) {
     `).join('');
 }
 
-// ESTA É A FUNÇÃO COMPLETA E CORRIGIDA
 function renderizarProposta(dados, tipoProposta = 'performance') {
-    // Seletores dos campos de dados
+    // Seletores de elementos internos
     const clienteNome = document.getElementById('cliente-nome');
     const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
     const dataGeracao = document.getElementById('data-geracao');
@@ -77,7 +80,6 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     const moduloQnt = document.getElementById('modulo-qnt');
     const valorTotal = document.getElementById('valor-total');
     const proposalValidity = document.getElementById('proposal-validity');
-    const logoMap = { 'huawei': 'logo1.png' };
 
     // Lógica de renderização
     dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
@@ -122,6 +124,25 @@ async function handleSearch() {
         const proposta = await consultarProposta(projectIdInput.value.trim());
         if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
 
+        // =================================================================
+        // LÓGICA DE EXPIRAÇÃO RESTAURADA AQUI
+        // =================================================================
+        const expirationDate = new Date(proposta.expirationDate);
+        if (expirationDate < new Date()) {
+            searchForm.style.display = 'none';
+            expiredProposalSection.style.display = 'flex'; // Mostra a tela de expirado
+            // Adicione o conteúdo da tela de expirado se necessário
+            expiredProposalSection.innerHTML = `
+                <div class="search-card">
+                    <h1 class="search-card__title">Proposta Expirada</h1>
+                    <p class="search-card__subtitle">Por favor, solicite uma nova proposta para garantir os valores e a disponibilidade.</p>
+                    <button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button>
+                </div>
+            `;
+            return; // Interrompe a execução
+        }
+        // =================================================================
+
         propostaOriginal = proposta;
         propostaEconomica = JSON.parse(JSON.stringify(proposta));
 
@@ -137,6 +158,7 @@ async function handleSearch() {
         backToSearchBtn.addEventListener('click', () => {
             proposalDetailsSection.style.display = 'none';
             proposalHeader.style.display = 'none';
+            expiredProposalSection.style.display = 'none';
             searchForm.style.display = 'flex';
             projectIdInput.value = '';
             searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
@@ -152,8 +174,6 @@ async function handleSearch() {
 
 // --- Inicialização da Página ---
 function init() {
-    let btnAltaPerformance, btnEconomica;
-
     proposalHeader.innerHTML = `
         <div class="header__container">
             <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
@@ -185,6 +205,7 @@ function init() {
 
     searchForm.style.display = 'flex';
     proposalDetailsSection.style.display = 'none';
+    expiredProposalSection.style.display = 'none';
     proposalHeader.style.display = 'none';
     mainFooter.style.display = 'block';
 }
