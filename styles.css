@@ -394,3 +394,115 @@ body {
 .info-card--welcome, .info-card--welcome * {
     color: #ffffff !important;
 }
+
+/* ======================================================== */
+/* --- NOVA ESTRUTURA DE SEÇÕES E CORREÇÃO DE COR --- */
+/* ======================================================== */
+
+.proposal-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espaçamento profissional entre as seções */
+}
+
+.proposal-section {
+    background-color: var(--color-card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+}
+
+.proposal-section:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.section-title i {
+    color: var(--color-secondary);
+}
+
+.section-content p {
+    color: var(--color-text); /* CORREÇÃO: Garante que o texto do parágrafo seja visível */
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.section-content p strong {
+    color: var(--color-text-light); /* CORREÇÃO: Cor para o rótulo (ex: "Localidade:") */
+    font-weight: 500;
+    min-width: 180px;
+    display: inline-block;
+}
+
+.section-content p span {
+    color: var(--color-text); /* CORREÇÃO: Cor para o dado (ex: "São Paulo - SP") */
+    font-weight: 500;
+}
+
+/* Estilos para o grid de métricas (Valor e Payback) */
+.section-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.metric-box {
+    text-align: center;
+    padding: 1rem;
+}
+
+.metric-label {
+    display: block;
+    color: var(--color-text-light); /* CORREÇÃO: Cor do rótulo */
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    display: block;
+    color: var(--color-secondary); /* CORREÇÃO: Cor de destaque para o valor */
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+.section-footnote {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--color-text-light); /* CORREÇÃO: Cor para a nota de rodapé */
+}
+
+/* Grid de financiamento */
+.financing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.financing-grid .financing-option {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text); /* CORREÇÃO: Garante visibilidade */
+}
+
+/* Seção de Ações */
+.proposal-actions {
+    text-align: center;
+    margin-top: 1.5rem;
+}

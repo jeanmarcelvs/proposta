@@ -42,84 +42,90 @@
     </main>
 
     <!-- TELA DE DETALHES DA PROPOSTA -->
-    <main id="proposal-details" class="screen proposal-details animate-on-scroll" style="display: none;">
-        <div class="proposal-details__container">
-            <!-- Card de Boas-vindas -->
-            <div class="info-card info-card--welcome animate-on-scroll">
-                <h2 id="cliente-nome">Nome do Cliente</h2>
-                <p id="cliente-cidade-uf">Cidade - UF</p>
-                <span class="info-card__date">Proposta gerada em: <strong id="data-geracao"></strong></span>
+    <!-- SUBSTITUA A MAIN ANTIGA POR ESTA NOVA ESTRUTURA -->
+<main id="proposal-details" class="screen proposal-details" style="display: none;">
+    <div class="proposal-container">
+
+        <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE -->
+        <section class="proposal-section">
+            <h2 class="section-title">
+                <i class="fas fa-user"></i>
+                Proposta para <span id="cliente-nome"></span>
+            </h2>
+            <div class="section-content">
+                <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
+                <p><strong>Data da Proposta:</strong> <span id="data-geracao"></span></p>
             </div>
+        </section>
 
-            <!-- Grid de Informações -->
-            <div class="proposal-details__grid">
-                <!-- Card: Resumo Financeiro -->
-                <div class="info-card animate-on-scroll">
-                    <div class="info-card__header">
-                        <i class="fas fa-dollar-sign"></i>
-                        <h3>Resumo Financeiro</h3>
-                    </div>
-                    <div class="info-card__body">
-                        <div class="highlight-metric">
-                            <span>Valor Total do Projeto</span>
-                            <strong id="valor-total">R$ 0,00</strong>
-                        </div>
-                        <div class="highlight-metric">
-                            <span>Retorno do Investimento (Payback )</span>
-                            <strong id="payback">N/A</strong>
-                        </div>
-                        <p class="info-card__subtext" id="conta-energia-estimada">Para contas de energia de R$ 0,00</p>
-                    </div>
+        <!-- SEÇÃO 2: RESUMO FINANCEIRO E INVESTIMENTO -->
+        <section class="proposal-section">
+            <h2 class="section-title">
+                <i class="fas fa-dollar-sign"></i>
+                Investimento e Retorno
+            </h2>
+            <div class="section-content-grid">
+                <div class="metric-box">
+                    <span class="metric-label">Valor Total do Projeto</span>
+                    <span class="metric-value" id="valor-total"></span>
                 </div>
-
-                <!-- Card: Seu Sistema Solar -->
-                <div class="info-card animate-on-scroll">
-                    <div class="info-card__header">
-                        <i class="fas fa-solar-panel"></i>
-                        <h3>Seu Sistema Solar</h3>
-                    </div>
-                    <div class="info-card__body">
-                        <p><strong>Potência:</strong> <span id="potencia-sistema"></span></p>
-                        <p><strong>Geração Média Mensal:</strong> <span id="geracao-mensal"></span></p>
-                        <p><strong>Tipo de Instalação:</strong> <span id="tipo-instalacao"></span></p>
-                        <p><strong>Tarifa Considerada:</strong> <span id="tarifa-distribuidora"></span></p>
-                    </div>
-                </div>
-
-                <!-- Card: Equipamentos -->
-                <div class="info-card animate-on-scroll">
-                    <div class="info-card__header">
-                        <i class="fas fa-cogs"></i>
-                        <h3>Equipamentos de Ponta</h3>
-                    </div>
-                    <div class="info-card__body">
-                        <p><strong>Inversor:</strong> <span id="inversor-descricao"></span></p>
-                        <p><strong>Módulos Fotovoltaicos:</strong> <span id="modulo-descricao"></span></p>
-                    </div>
-                </div>
-
-                <!-- Card: Opções de Financiamento -->
-                <div class="info-card info-card--full-width animate-on-scroll">
-                    <div class="info-card__header">
-                        <i class="fas fa-hand-holding-dollar"></i>
-                        <h3>Opções de Financiamento</h3>
-                    </div>
-                    <div id="financing-options" class="financing-options-grid">
-                        <!-- As opções serão inseridas aqui pelo JS -->
-                    </div>
-                    <div id="parcela-equilibrada"></div>
+                <div class="metric-box">
+                    <span class="metric-label">Retorno (Payback)</span>
+                    <span class="metric-value" id="payback"></span>
                 </div>
             </div>
+            <p class="section-footnote" id="conta-energia-estimada"></p>
+        </section>
 
-            <!-- Ações e Validade -->
-            <div class="proposal-details__actions animate-on-scroll">
-                <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
-                    <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
-                </a>
-                <p class="proposal-validity">Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
+        <!-- SEÇÃO 3: DETALHES DO SISTEMA SOLAR -->
+        <section class="proposal-section">
+            <h2 class="section-title">
+                <i class="fas fa-solar-panel"></i>
+                Detalhes do Sistema Solar
+            </h2>
+            <div class="section-content">
+                <p><strong>Potência do Sistema:</strong> <span id="potencia-sistema"></span></p>
+                <p><strong>Geração Média Mensal:</strong> <span id="geracao-mensal"></span></p>
+                <p><strong>Tipo de Instalação:</strong> <span id="tipo-instalacao"></span></p>
+                <p><strong>Tarifa da Concessionária:</strong> <span id="tarifa-distribuidora"></span></p>
             </div>
-        </div>
-    </main>
+        </section>
+
+        <!-- SEÇÃO 4: EQUIPAMENTOS -->
+        <section class="proposal-section">
+            <h2 class="section-title">
+                <i class="fas fa-cogs"></i>
+                Equipamentos de Ponta
+            </h2>
+            <div class="section-content">
+                <p><strong>Inversor Principal:</strong> <span id="inversor-descricao"></span></p>
+                <p><strong>Módulos Fotovoltaicos:</strong> <span id="modulo-descricao"></span></p>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: OPÇÕES DE FINANCIAMENTO -->
+        <section class="proposal-section">
+            <h2 class="section-title">
+                <i class="fas fa-hand-holding-dollar"></i>
+                Opções de Financiamento
+            </h2>
+            <div id="financing-options" class="financing-grid">
+                <!-- Opções de financiamento inseridas pelo JS -->
+            </div>
+            <div id="parcela-equilibrada"></div>
+        </section>
+
+        <!-- SEÇÃO 6: AÇÕES -->
+        <section class="proposal-actions">
+            <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
+                <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
+            </a>
+            <p class="proposal-validity">Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
+        </section>
+
+    </div>
+</main>
+
 
     <!-- TELA DE PROPOSTA EXPIRADA -->
     <main id="expired-proposal-section" class="screen" style="display: none;">
