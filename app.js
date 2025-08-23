@@ -50,7 +50,7 @@ function resetarBotao() {
     searchButton.disabled = false;
 }
 
-// NOVO: Exibe o popup de erro com a mensagem fornecida
+// Exibe o popup de erro com a mensagem fornecida
 function exibirMensagemDeErro(mensagem) {
     popupMessage.textContent = mensagem;
     errorPopup.style.display = 'flex'; // Torna o popup visível
@@ -58,11 +58,15 @@ function exibirMensagemDeErro(mensagem) {
 
 // Funções de formatação
 function formatarMoeda(valor) {
-    return `R$ ${parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const num = parseFloat(valor);
+    if (isNaN(num)) return 'N/A';
+    return `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatarNumero(valor) {
-    return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const num = parseFloat(valor);
+    if (isNaN(num)) return 'N/A';
+    return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatarData(dataISO) {
@@ -74,34 +78,13 @@ function formatarData(dataISO) {
 // Renderiza as opções de financiamento
 function renderizarOpcoesFinanciamento(opcoes) {
     financingOptionsContainer.innerHTML = '';
-    opcoes.forEach(opcao => {
-        const div = document.createElement('div');
-        div.className = 'financing-option';
-        if (opcao.recommended) {
-            div.classList.add('recommended');
-        }
-        div.innerHTML = `
-            <h3>${opcao.label}</h3>
-            <p>${formatarMoeda(opcao.value)}</p>
-            <p style="font-size: 0.8rem; color: #999;">${opcao.description}</p>
-        `;
-        financingOptionsContainer.appendChild(div);
-    });
+    // Como a sua API não retorna opções de financiamento, esta parte permanece como placeholder
 }
 
 // Renderiza a parcela equilibrada
 function renderizarParcelaEquilibrada(parcela) {
-    if (parcela) {
-        parcelaEquilibradaContainer.innerHTML = `
-            <div class="financing-option recommended" style="margin-top: 2rem;">
-                <h3>Sua Parcela Equilibrada</h3>
-                <p>${formatarMoeda(parcela.value)}</p>
-                <p class="balanced-text">${parcela.description}</p>
-            </div>
-        `;
-    } else {
-        parcelaEquilibradaContainer.innerHTML = '';
-    }
+    // Como a sua API não retorna a parcela equilibrada, esta parte permanece como placeholder
+    parcelaEquilibradaContainer.innerHTML = '';
 }
 
 // Exibe os detalhes da proposta
@@ -111,33 +94,41 @@ function exibirDetalhesProposta(proposta) {
     proposalHeader.style.display = 'flex';
     proposalDetailsSection.style.display = 'block';
 
-    const dados = proposta.propostaPrincipal;
+    // AQUI ESTÁ A CORREÇÃO: Usamos a estrutura do JSON que você me forneceu.
+    // Mapeamos os dados para os elementos da página de forma segura.
+    clienteNome.textContent = proposta.project?.name || 'N/A';
+    clienteCidadeUf.textContent = `${proposta.project?.city || 'N/A'} - ${proposta.project?.uf || 'N/A'}`;
+    dataGeracao.textContent = formatarData(proposta.generatedAt);
+    
+    // As informações de inversor e módulo são extraídas do array `pricingTable`.
+    const inversorItem = proposta.pricingTable?.find(item => item.category === 'Inversor');
+    const moduloItem = proposta.pricingTable?.find(item => item.category === 'Módulo');
+    
+    inversorDescricao.textContent = inversorItem?.item || 'N/A';
+    moduloDescricao.textContent = moduloItem?.item || 'N/A';
 
-    // Preenche as informações da proposta
-    clienteNome.textContent = dados.cliente.nome;
-    clienteCidadeUf.textContent = `${dados.cliente.cidade} - ${dados.cliente.uf}`;
-    dataGeracao.textContent = formatarData(dados.geradaEm);
-    inversorDescricao.textContent = dados.inversor.descricao;
-    moduloDescricao.textContent = dados.modulo.descricao;
-    potenciaSistema.textContent = `${formatarNumero(dados.potenciaSistema)} kWp`;
-    geracaoMensal.textContent = `${formatarNumero(dados.geracaoEstimada)} kWh/mês`;
-    tarifaDistribuidora.textContent = formatarMoeda(dados.tarifaDistribuidora);
-    tipoInstalacao.textContent = dados.tipoInstalacao;
-    valorTotal.textContent = formatarMoeda(dados.valorTotal);
-    payback.textContent = `${formatarNumero(dados.payback)} anos`;
-    contaEnergiaEstimada.textContent = formatarMoeda(dados.contaEnergiaEstimada);
-    linkPDF.href = dados.linkPdf;
+    // ATENÇÃO: Os campos abaixo não existem no JSON que você me forneceu.
+    // Eles permanecerão com 'N/A' até que você os adicione no retorno da sua API.
+    potenciaSistema.textContent = 'N/A';
+    geracaoMensal.textContent = 'N/A';
+    tarifaDistribuidora.textContent = 'N/A';
+    tipoInstalacao.textContent = 'N/A';
+    valorTotal.textContent = 'N/A';
+    payback.textContent = 'N/A';
+    contaEnergiaEstimada.textContent = 'N/A';
+    
+    // O link do PDF é pego diretamente do JSON
+    linkPDF.href = proposta.linkPdf;
 
-    // Renderiza as opções de financiamento
-    renderizarOpcoesFinanciamento(dados.opcoesFinanciamento);
-    renderizarParcelaEquilibrada(dados.parcelaEquilibrada);
+    // As funções de renderização de financiamento são chamadas, mas estarão vazias.
+    renderizarOpcoesFinanciamento(proposta.financingOptions);
+    renderizarParcelaEquilibrada(proposta.balancedInstallment);
 }
 
-// Lógica de manipulação de eventos do botão (agora por clique)
+// Lógica de manipulação de eventos do botão
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     
-    // Validação do ID do projeto
     if (!/^\d{4}$/.test(projectId)) {
         exibirMensagemDeErro('Por favor, digite um ID de projeto válido de 4 dígitos numéricos.');
         return;
@@ -149,14 +140,14 @@ searchButton.addEventListener('click', async () => {
     try {
         const proposta = await consultarProposta(projectId);
         
-        if (!proposta || !proposta.propostaPrincipal) {
+        // A lógica de verificação foi simplificada para a nova estrutura.
+        if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID do projeto e tente novamente.');
             resetarBotao();
             return;
         }
 
-        // Verifica a validade da proposta
-        const expirationDate = new Date(proposta.propostaPrincipal.expirationDate);
+        const expirationDate = new Date(proposta.expirationDate);
         if (expirationDate < new Date()) {
             ocultarTodasAsTelas();
             expiredProposalSection.style.display = 'flex';
@@ -180,8 +171,9 @@ popupCloseBtn.addEventListener('click', () => {
 });
 
 btnAltaPerformance.addEventListener('click', () => {
-    if (propostaAtual && propostaAtual.propostaPrincipal) {
-        propostaAtualTipo = 'altaPerformance';
+    // ATENÇÃO: Esta parte do código assume que a API pode ter uma 'proposta econômica'
+    // que não está presente no JSON fornecido.
+    if (propostaAtual) {
         exibirDetalhesProposta(propostaAtual);
         btnAltaPerformance.classList.add('active');
         btnEconomica.classList.remove('active');
@@ -189,16 +181,11 @@ btnAltaPerformance.addEventListener('click', () => {
 });
 
 btnEconomica.addEventListener('click', () => {
-    if (propostaAtual && propostaAtual.propostaEconomica) {
-        propostaAtualTipo = 'economica';
-        const propostaEconomica = {
-            propostaPrincipal: propostaAtual.propostaEconomica,
-            propostaEconomica: propostaAtual.propostaEconomica
-        };
-        exibirDetalhesProposta(propostaEconomica);
-        btnEconomica.classList.add('active');
-        btnAltaPerformance.classList.remove('active');
-    }
+    // ATENÇÃO: Esta parte do código ainda precisa ser ajustada quando você tiver o JSON da proposta econômica.
+    // Atualmente, ela não tem dados para exibir.
+    exibirMensagemDeErro("Não há uma proposta econômica disponível para este projeto.");
+    btnEconomica.classList.add('active');
+    btnAltaPerformance.classList.remove('active');
 });
 
 // Ações iniciais ao carregar a página
