@@ -79,8 +79,7 @@ async function consultarProposta(projectId) {
  * @param {Object} proposta - O objeto da proposta recebido do backend.
  */
 function renderizarProposta(proposta) {
-    const dados = proposta.data;
-    if (!dados || !dados.pricingTable) {
+    if (!proposta || !proposta.pricingTable) {
         console.error('Dados da proposta ou pricingTable não encontrados.');
         return;
     }
@@ -89,12 +88,12 @@ function renderizarProposta(proposta) {
     financingOptionsContainer.innerHTML = '';
 
     // Encontra os objetos na pricingTable usando as chaves e categorias corretas
-    const valorTotalObj = dados.pricingTable.find(item => item.key === "preco");
-    const paybackObj = dados.pricingTable.find(item => item.key === "payback");
-    const geracaoMensalObj = dados.pricingTable.find(item => item.key === "geracao_mensal");
-    const potenciaSistemaObj = dados.pricingTable.find(item => item.key === "potencia_sistema");
-    const inversorObj = dados.pricingTable.find(item => item.category === "Inversor");
-    const moduloObj = dados.pricingTable.find(item => item.category === "Módulo");
+    const valorTotalObj = proposta.pricingTable.find(item => item.key === "preco");
+    const paybackObj = proposta.pricingTable.find(item => item.key === "payback");
+    const geracaoMensalObj = proposta.pricingTable.find(item => item.key === "geracao_mensal");
+    const potenciaSistemaObj = proposta.pricingTable.find(item => item.key === "potencia_sistema");
+    const inversorObj = proposta.pricingTable.find(item => item.category === "Inversor");
+    const moduloObj = proposta.pricingTable.find(item => item.category === "Módulo");
     
     // Atualiza o HTML com os valores encontrados
     valorTotalAvista.textContent = valorTotalObj?.formattedValue || 'N/A';
@@ -108,10 +107,10 @@ function renderizarProposta(proposta) {
     moduloQuantidade.textContent = moduloObj?.qnt || 'N/A';
 
     // Renderiza as opções de financiamento
-    renderFinancingOptions(dados.pricingTable);
+    renderFinancingOptions(proposta.pricingTable);
     
     // Encontra o valor da primeira parcela para a barra de navegação
-    const primeiraParcelaObj = dados.pricingTable.find(item => item.key === 'f_valor_1');
+    const primeiraParcelaObj = proposta.pricingTable.find(item => item.key === 'f_valor_1');
     
     // Atualiza a barra de navegação superior
     navBarAvistaPrice.textContent = valorTotalObj?.formattedValue || 'N/A';
@@ -119,10 +118,10 @@ function renderizarProposta(proposta) {
 
     // Link para o PDF
     const linkPDF = document.getElementById('link-pdf');
-    linkPDFNav.href = dados.linkPdf || '#';
-    linkPDF.href = dados.linkPdf || '#';
-    linkPDFNav.style.display = dados.linkPdf ? 'inline-block' : 'none';
-    linkPDF.style.display = dados.linkPdf ? 'inline-block' : 'none';
+    linkPDFNav.href = proposta.linkPdf || '#';
+    linkPDF.href = proposta.linkPdf || '#';
+    linkPDFNav.style.display = proposta.linkPdf ? 'inline-block' : 'none';
+    linkPDF.style.display = proposta.linkPdf ? 'inline-block' : 'none';
 
     // Mostra a seção de detalhes e esconde o formulário
     formContainer.style.display = 'none';
@@ -184,26 +183,10 @@ searchForm.addEventListener('submit', async (e) => {
 
     try {
         const proposta = await consultarProposta(projectId);
-        // Adicionando um console.log para inspecionar os dados recebidos
-        console.log('Dados recebidos do backend:', proposta);
         
         // Verifica se a estrutura de dados é a esperada
-        if (!proposta) {
-            messageBox.textContent = 'Proposta não encontrada. Verifique o ID do projeto.';
-            messageBox.style.display = 'block';
-            proposalContainer.style.display = 'none';
-            return;
-        }
-
-        if (!proposta.data) {
-            messageBox.textContent = 'A estrutura da resposta da API está incompleta. O objeto "data" está faltando.';
-            messageBox.style.display = 'block';
-            proposalContainer.style.display = 'none';
-            return;
-        }
-
-        if (!proposta.data.pricingTable) {
-            messageBox.textContent = 'A resposta da API está incompleta. O "pricingTable" está faltando.';
+        if (!proposta || !proposta.pricingTable) {
+            messageBox.textContent = 'Proposta não encontrada ou dados incompletos. Verifique o ID do projeto.';
             messageBox.style.display = 'block';
             proposalContainer.style.display = 'none';
             return;
