@@ -148,10 +148,12 @@ searchForm.addEventListener('submit', async (e) => {
 
     try {
         const proposta = await consultarProposta(projectId);
-        if (proposta && proposta.data) {
+        // Adicionando um console.log para inspecionar os dados recebidos
+        console.log('Dados recebidos do backend:', proposta);
+        if (proposta && proposta.data && proposta.data.pricingTable) {
             renderizarProposta(proposta);
         } else {
-            messageBox.textContent = 'Proposta não encontrada para o projeto especificado.';
+            messageBox.textContent = 'Proposta não encontrada ou dados incompletos para o projeto especificado.';
             messageBox.style.display = 'block';
             proposalContainer.style.display = 'none';
         }
