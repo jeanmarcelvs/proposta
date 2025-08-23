@@ -160,6 +160,7 @@ function renderizarProposta(dados) {
 
 // ---- Eventos ----
 // ---- Eventos ----
+// ---- Eventos ----
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     if (!/^[0-9]{1,6}$/.test(projectId)) {
@@ -170,12 +171,17 @@ searchButton.addEventListener('click', async () => {
     searchButton.disabled = true;
 
     try {
+        // 1. Busca os dados da proposta
         const proposta = await consultarProposta(projectId);
+
+        // 2. Valida a resposta da API
         if (!proposta || !proposta.id) {
             exibirMensagemDeErro('Proposta não encontrada. Verifique o ID e tente novamente.');
             resetarBotao();
             return;
         }
+
+        // 3. Valida a data de expiração
         const expirationDate = new Date(proposta.expirationDate);
         if (expirationDate < new Date()) {
             ocultarTodasAsTelas();
@@ -183,29 +189,29 @@ searchButton.addEventListener('click', async () => {
             resetarBotao();
             return;
         }
+
+        // 4. Armazena os dados da proposta
         propostaOriginal = proposta;
         propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Placeholder
 
-        // --- LÓGICA DE TRANSIÇÃO CORRIGIDA ---
-        // 1. Oculta a tela de busca imediatamente
+        // --- LÓGICA DE TRANSIÇÃO DE TELA (SIMPLIFICADA E CORRIGIDA) ---
+
+        // 5. Esconde TODAS as telas para garantir um estado limpo.
         ocultarTodasAsTelas();
-        
-        // 2. Exibe a nova tela (ainda invisível por causa do CSS)
+
+        // 6. Renderiza os dados na tela de detalhes (que ainda está invisível).
+        renderizarProposta(propostaOriginal);
+
+        // 7. TORNA A TELA DE DETALHES E O CABEÇALHO VISÍVEIS.
+        // Esta é a etapa crucial. Ao mudar o 'display', a tela passa a existir no layout.
         proposalHeader.style.display = 'block';
         proposalDetailsSection.style.display = 'flex';
         
-        // 3. Renderiza os dados na nova tela
-        renderizarProposta(propostaOriginal);
-        
-        // 4. Força o navegador a aplicar as mudanças antes de adicionar a classe de animação
-        // Isso garante que a animação de entrada funcione corretamente.
-        requestAnimationFrame(() => {
-            proposalDetailsSection.classList.add('is-visible');
-        });
-
+        // 8. Reseta o botão para o estado original.
         resetarBotao();
 
     } catch (err) {
+        // Em caso de erro de rede ou outro problema
         console.error("Erro na busca da proposta:", err);
         exibirMensagemDeErro('Erro de comunicação. Tente novamente mais tarde.');
         resetarBotao();
