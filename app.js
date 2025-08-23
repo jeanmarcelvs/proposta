@@ -1,6 +1,7 @@
 import { consultarProposta } from "./api.js";
 
 // --- Seletores do DOM ---
+const backToSearchBtn = document.getElementById('back-to-search-btn');
 const searchForm = document.getElementById('search-form');
 const proposalDetailsSection = document.getElementById('proposal-details');
 const proposalHeader = document.getElementById('proposal-header');
@@ -151,6 +152,21 @@ function init() {
     
     btnAltaPerformance = document.getElementById('btn-alta-performance');
     btnEconomica = document.getElementById('btn-economica');
+
+    backToSearchBtn.addEventListener('click', () => {
+    // Esconde a tela de detalhes e o cabeçalho
+    proposalDetailsSection.style.display = 'none';
+    proposalHeader.style.display = 'none';
+
+    // Mostra a tela de busca
+    searchForm.style.display = 'flex';
+
+    // Limpa o campo de input e reseta o botão de busca
+    projectIdInput.value = '';
+    searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+    searchButton.disabled = false;
+});
+
 
     searchButton.addEventListener('click', handleSearch);
     btnAltaPerformance.addEventListener('click', () => {

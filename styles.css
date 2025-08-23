@@ -134,3 +134,37 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 @media print {
     body * { display: none !important; }
 }
+
+/* --- ESTILOS PARA O BOTÃO DE VOLTAR --- */
+
+.back-button-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; /* Alinha o botão à esquerda */
+    margin-bottom: 1rem; /* Espaçamento abaixo do botão */
+}
+
+.btn--secondary {
+    background-color: transparent;
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+    font-weight: 500;
+}
+
+.btn--secondary:hover {
+    background-color: var(--color-card-bg);
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+body.theme-economic .btn--secondary {
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+body.theme-economic .btn--secondary:hover {
+    background-color: var(--color-card-bg);
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
