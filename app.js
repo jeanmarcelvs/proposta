@@ -59,13 +59,13 @@ function exibirMensagemDeErro(mensagem) {
 // Funções de formatação
 function formatarMoeda(valor) {
     const num = parseFloat(valor);
-    if (isNaN(num)) return 'N/A';
+    if (isNaN(num)) return valor || 'N/A';
     return `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatarNumero(valor) {
     const num = parseFloat(valor);
-    if (isNaN(num)) return 'N/A';
+    if (isNaN(num)) return valor || 'N/A';
     return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
@@ -86,9 +86,10 @@ function renderizarParcelaEquilibrada(parcela) {
 }
 
 // Função para buscar um valor no array 'variables' da API
-function findVariable(proposta, key) {
+function findVariable(proposta, key, usarFormatado = false) {
     const variable = proposta.variables?.find(v => v.key === key);
-    return variable ? variable.value : 'N/A';
+    if (!variable) return 'N/A';
+    return usarFormatado && variable.formattedValue ? variable.formattedValue : variable.value;
 }
 
 // Função para buscar um item no array 'pricingTable' da API
@@ -110,13 +111,13 @@ function calcularPropostaEconomica(proposta) {
     }));
 
     const totalValueVar = propostaEconomica.variables?.find(v => v.key === 'f_valor_1');
-    if (totalValueVar) {
-        totalValueVar.value = totalValueVar.value * DESCONTO_ECONOMICA;
+    if (totalValueVar && !isNaN(parseFloat(totalValueVar.value))) {
+        totalValueVar.value = parseFloat(totalValueVar.value) * DESCONTO_ECONOMICA;
     }
     
     const paybackVar = propostaEconomica.variables?.find(v => v.key === 'payback');
-    if (paybackVar) {
-        paybackVar.value = paybackVar.value * 1.2;
+    if (paybackVar && !isNaN(parseFloat(paybackVar.value))) {
+        paybackVar.value = parseFloat(paybackVar.value) * 1.2;
     }
     
     const inversor = propostaEconomica.pricingTable?.find(item => item.category === 'Inversor');
@@ -144,14 +145,17 @@ function renderizarProposta(dados) {
     inversorDescricao.textContent = findItem(dados, 'Inversor');
     moduloDescricao.textContent = findItem(dados, 'Módulo');
     
-    potenciaSistema.textContent = findVariable(dados, 'potencia_sistema');
-    geracaoMensal.textContent = findVariable(dados, 'geracao_mensal');
-    tarifaDistribuidora.textContent = findVariable(dados, 'tarifa_distribuidora');
+    potenciaSistema.textContent = formatarNumero(findVariable(dados, 'potencia_sistema'));
+    geracaoMensal.textContent = formatarNumero(findVariable(dados, 'geracao_mensal'));
+    tarifaDistribuidora.textContent = formatarNumero(findVariable(dados, 'tarifa_distribuidora'));
     tipoInstalacao.textContent = findVariable(dados, 'topologia');
     
     valorTotal.textContent = formatarMoeda(findVariable(dados, 'f_valor_1'));
-    payback.textContent = `${formatarNumero(findVariable(dados, 'payback'))} anos`;
-    contaEnergiaEstimada.textContent = formatarMoeda(findVariable(dados, 'estimativa_conta_luz_antes'));
+    
+    // Payback é texto no JSON, então não usar parseFloat
+    payback.textContent = findVariable(dados, 'payback', true);
+
+    contaEnergiaEstimada.textContent = formatarMoeda(findVariable(dados, 'gasto_energia_mensal_atual'));
 
     linkPDF.href = dados.linkPdf;
 
@@ -163,8 +167,8 @@ function renderizarProposta(dados) {
 searchButton.addEventListener('click', async () => {
     const projectId = projectIdInput.value.trim();
     
-    if (!/^\d{4}$/.test(projectId)) {
-        exibirMensagemDeErro('Por favor, digite um ID de projeto válido de 4 dígitos numéricos.');
+    if (!/^[0-9]{1,6}$/.test(projectId)) {
+        exibirMensagemDeErro('Por favor, digite um ID de projeto válido (até 6 dígitos numéricos).');
         return;
     }
 
