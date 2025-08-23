@@ -82,28 +82,47 @@ function findItem(proposta, category) {
 // ---- Renderização ----
 function renderizarOpcoesFinanciamento(dados) {
     financingOptionsContainer.innerHTML = '';
+    const todasVariaveis = dados.variables;
 
-    // pega todas as variáveis com prefixo f_valor_
-    const parcelas = dados.variables?.filter(v => v.key.startsWith('f_valor_')) || [];
+    // 1. Encontramos todas as variáveis de PARCELA, que contêm o valor que queremos exibir.
+    // Isso nos dará f_parcela, f_parcela_2, f_parcela_3, etc.
+    const todasAsParcelas = todasVariaveis.filter(v => v.key.startsWith('f_parcela'));
 
-    if (parcelas.length === 0) {
+    // 2. Para cada variável de parcela encontrada, buscamos o seu prazo correspondente.
+    const opcoesFinanciamento = todasAsParcelas.map(parcelaVar => {
+        // Montamos a chave do prazo correspondente.
+        // Se a chave da parcela for "f_parcela_3", a chave do prazo será "f_prazo_3".
+        // Se for "f_parcela", a chave do prazo será "f_prazo".
+        const prazoKey = parcelaVar.key.replace('parcela', 'prazo');
+        
+        // Buscamos a variável do prazo no array original.
+        const prazoVar = todasVariaveis.find(v => v.key === prazoKey);
+
+        // Se encontramos ambos (parcela e prazo), retornamos um objeto limpo.
+        if (prazoVar && prazoVar.value && parcelaVar.value) {
+            return {
+                prazo: parseInt(prazoVar.value, 10),
+                valorParcela: parseFloat(parcelaVar.value)
+            };
+        }
+        // Se não encontrar o par, retorna null para ser filtrado depois.
+        return null; 
+    }).filter(opt => opt !== null && !isNaN(opt.prazo) && !isNaN(opt.valorParcela)); // Remove nulos e inválidos
+
+    // 3. Verificamos se encontramos alguma opção válida.
+    if (opcoesFinanciamento.length === 0) {
         financingOptionsContainer.textContent = "Nenhuma opção de financiamento disponível.";
         return;
     }
 
-    // ordenar pelo número de parcelas (12, 24, 36, ...)
-    parcelas.sort((a, b) => {
-        const nA = parseInt(a.key.replace('f_valor_', ''));
-        const nB = parseInt(b.key.replace('f_valor_', ''));
-        return nA - nB;
-    });
+    // 4. Ordenamos as opções pelo prazo (número de parcelas).
+    opcoesFinanciamento.sort((a, b) => a.prazo - b.prazo);
 
-    parcelas.forEach(parcela => {
-        const numeroParcelas = parseInt(parcela.key.replace('f_valor_', ''));
-        const valor = formatarMoeda(parcela.value);
-
+    // 5. Renderizamos cada opção na tela.
+    opcoesFinanciamento.forEach(opcao => {
         const div = document.createElement('div');
-        div.textContent = `${numeroParcelas}x de ${valor}`;
+        div.className = 'financing-option';
+        div.textContent = `${opcao.prazo}x de ${formatarMoeda(opcao.valorParcela)}`;
         financingOptionsContainer.appendChild(div);
     });
 }
