@@ -103,14 +103,12 @@ function calcularPropostaEconomica(proposta) {
     
     const DESCONTO_ECONOMICA = 0.85;
 
-    // Atualiza o pricingTable para a versão econômica
     propostaEconomica.pricingTable = propostaEconomica.pricingTable?.map(item => ({
         ...item,
         totalCost: item.totalCost * DESCONTO_ECONOMICA,
         unitCost: item.unitCost * DESCONTO_ECONOMICA
     }));
 
-    // Localiza e atualiza os valores na array `variables`
     const totalValueVar = propostaEconomica.variables?.find(v => v.key === 'f_valor_1');
     if (totalValueVar) {
         totalValueVar.value = totalValueVar.value * DESCONTO_ECONOMICA;
@@ -121,7 +119,6 @@ function calcularPropostaEconomica(proposta) {
         paybackVar.value = paybackVar.value * 1.2;
     }
     
-    // Altera a descrição dos itens na proposta econômica
     const inversor = propostaEconomica.pricingTable?.find(item => item.category === 'Inversor');
     if (inversor) {
         inversor.item = "Inversor Econômico ABC";
