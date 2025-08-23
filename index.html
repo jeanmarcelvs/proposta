@@ -26,15 +26,10 @@
 
     <main id="proposal-details" class="screen proposal-details" style="display: none;">
         <div class="proposal-container">
-	<!-- ================================================== -->
-        <!-- GARANTA QUE ESTE BLOCO EXISTA EXATAMENTE ASSIM -->
-        <!-- ================================================== -->
-        <div class="back-button-wrapper">
-            <button id="back-to-search-btn" class="btn btn--secondary">
-                <i class="fas fa-arrow-left"></i> Nova Consulta
-            </button>
-        </div>
-        <!-- ================================================== -->
+            <div class="back-button-wrapper">
+                <button id="back-to-search-btn" class="btn btn--secondary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
+            </div>
+
             <section class="proposal-section">
                 <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
                 <div class="section-content">
@@ -66,78 +61,10 @@
 
             <section class="proposal-section">
                 <h2 id="equipment-title" class="section-title"></h2>
-                <div class="equipment-showcase">
-                    <div id="equipment-logo-container" class="equipment-logo-wrapper"></div>
-                    <div class="spec-card">
-                        <span class="spec-label">Inversor</span>
-                        <span class="spec-value" id="inversor-potencia"></span>
-                        <span class="spec-label" id="inversor-qnt"></span>
-                    </div>
-                    <div class="spec-card">
-                        <span class="spec-label">Módulos</span>
-                        <span class="spec-value" id="modulo-potencia"></span>
-                        <span class="spec-label" id="modulo-qnt"></span>
-                    </div>
-                </div>
+                <div id="equipment-container" class="equipment-showcase"></div>
             </section>
 
+            <!-- NOVA SEÇÃO: PADRÃO DE INSTALAÇÃO -->
             <section class="proposal-section">
-                <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
-                <div id="financing-options" class="financing-grid"></div>
-            </section>
-
-            <section class="proposal-section investment-section">
-                <h2 class="section-title"><i class="fas fa-wallet"></i> Seu Investimento</h2>
-                <div class="investment-box">
-                    <span class="investment-label">Valor Total do Projeto</span>
-                    <span class="investment-value" id="valor-total"></span>
-                    <div class="payment-method">
-                        <span class="payment-tag">À VISTA</span>
-                    </div>
-                </div>
-                <div class="alternative-payment">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Consulte também as condições para <strong>Cartão de Crédito</strong>.</span>
-                </div>
-            </section>
-
-            <div class="validity-banner">
-                <i class="fas fa-info-circle"></i>
-                <p id="proposal-validity"></p>
-            </div>
-        </div>
-    </main>
-
-	<!-- ================================================== -->
-	<!-- ELEMENTO FALTANTE ADICIONADO AQUI -->
-	<!-- ================================================== -->
-	<main id="expired-proposal-section" class="screen" style="display: none;">
-    		<!-- O conteúdo desta seção será gerado pelo JavaScript se necessário -->
-	</main>
-	<!-- ================================================== -->
-
-    <footer id="main-footer" class="footer">
-        <div class="footer-container">
-            <div class="footer-logo">
-                <img src="logo.png" alt="Logo GDIS">
-            </div>
-            <div class="footer-contact">
-                <div class="contact-item">
-                    <i class="fas fa-phone"></i>
-                    <span>(82 ) 9.9425-5946</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>contato@gdis.com.br</span>
-                </div>
-            </div>
-            <div class="footer-social">
-                <a href="https://www.instagram.com/gdis.solar" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-    </footer>
-
-    <script type="module" src="api.js" defer></script>
-    <script type="module" src="app.js" defer></script>
-</body>
-</html>
+                <h2 id="installation-title" class="section-title"></h2>
+                <ul
