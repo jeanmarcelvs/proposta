@@ -1,84 +1,50 @@
 import { consultarProposta } from "./api.js";
 
-// =================================================================================
-// CORREÇÃO APLICADA AQUI:
-// Tornamos a função explicitamente parte do objeto 'window',
-// tornando-a global e acessível para o 'onclick' do HTML.
-// =================================================================================
-window.handleSearchClick = async function() {
-    const projectIdInput = document.getElementById('project-id');
-    const searchButton = document.getElementById('search-button');
-
-    if (!/^[0-9]{1,6}$/.test(projectIdInput.value.trim())) return;
-    searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    searchButton.disabled = true;
-
-    try {
-        const proposta = await consultarProposta(projectIdInput.value.trim());
-        if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
-
-        const expirationDate = new Date(proposta.expirationDate);
-        if (expirationDate < new Date()) {
-            document.getElementById('search-form').style.display = 'none';
-            const expiredSection = document.getElementById('expired-proposal-section');
-            expiredSection.style.display = 'flex';
-            expiredSection.innerHTML = `<div class="search-card"><h1 class="search-card__title">Proposta Expirada</h1><p class="search-card__subtitle">Por favor, solicite uma nova proposta.</p><button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button></div>`;
-            return;
-        }
-
-        // Armazena as propostas globalmente para os outros botões usarem
-        window.propostaOriginal = proposta;
-        window.propostaEconomica = JSON.parse(JSON.stringify(proposta));
-
-        document.getElementById('search-form').style.display = 'none';
-        document.getElementById('proposal-header').style.display = 'block';
-        document.getElementById('proposal-details').style.display = 'flex';
-        document.getElementById('main-footer').style.display = 'block';
-        
-        renderizarProposta(proposta, 'performance');
-        blockFeatures();
-
-        const backToSearchBtn = document.getElementById('back-to-search-btn');
-        backToSearchBtn.addEventListener('click', () => {
-            document.getElementById('proposal-details').style.display = 'none';
-            document.getElementById('proposal-header').style.display = 'none';
-            document.getElementById('expired-proposal-section').style.display = 'none';
-            document.getElementById('search-form').style.display = 'flex';
-            projectIdInput.value = '';
-            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-            searchButton.disabled = false;
-        });
-
-    } catch (err) {
-        console.error("Erro na busca:", err);
-        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-        searchButton.disabled = false;
-    }
-}
-
-// --- Funções que podem permanecer no escopo do módulo ---
-
-function blockFeatures() {
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's')) e.preventDefault();
-        if (e.key === 'PrintScreen') { navigator.clipboard.writeText(''); e.preventDefault(); }
-    });
-}
-
-const formatarMoeda = (valor) => {
+// --- Funções Utilitárias Globais ---
+// Colocamos estas funções no escopo global (window) para que possam ser usadas em qualquer lugar.
+window.formatarMoeda = (valor) => {
     const num = parseFloat(valor);
     if (isNaN(num)) return 'N/A';
     const [integer, decimal] = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',');
     return `<span class="currency-symbol">R$</span>${integer},${decimal}`;
 };
 
-const findVar = (proposta, key, useFormatted = false) => {
+window.findVar = (proposta, key, useFormatted = false) => {
     const variable = proposta.variables?.find(v => v.key === key);
     if (!variable) return 'N/A';
     return useFormatted && variable.formattedValue ? variable.formattedValue : variable.value;
 };
 
-function renderizarFinanciamento(dados) {
+// --- Funções de Renderização Globais ---
+window.renderizarProposta = function(dados, tipoProposta = 'performance') {
+    const clienteNome = document.getElementById('cliente-nome');
+    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+    const dataGeracao = document.getElementById('data-geracao');
+    const geracaoMensal = document.getElementById('geracao-mensal');
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const tipoInstalacao = document.getElementById('tipo-instalacao');
+    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+    const valorTotal = document.getElementById('valor-total');
+    const proposalValidity = document.getElementById('proposal-validity');
+
+    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+
+    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+    geracaoMensal.textContent = `${findVar(dados, 'geracao_mensal', true)} kWh`;
+    potenciaSistema.textContent = `${findVar(dados, 'potencia_sistema', true)} kWp`;
+    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+    valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+
+    renderizarEquipamentos(dados, tipoProposta);
+    renderizarPadraoInstalacao(tipoProposta);
+    renderizarFinanciamento(dados);
+}
+
+window.renderizarFinanciamento = function(dados) {
     const financingOptionsContainer = document.getElementById('financing-options');
     const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
     let opcoes = todasAsParcelas.map(pVar => {
@@ -107,7 +73,7 @@ function renderizarFinanciamento(dados) {
     `).join('');
 }
 
-function renderizarEquipamentos(dados, tipoProposta) {
+window.renderizarEquipamentos = function(dados, tipoProposta) {
     const equipmentContainer = document.getElementById('equipment-container');
     const equipmentTitle = document.getElementById('equipment-title');
     const logoMap = { 'huawei': 'logo1.png' };
@@ -152,7 +118,7 @@ function renderizarEquipamentos(dados, tipoProposta) {
     `;
 }
 
-function renderizarPadraoInstalacao(tipoProposta) {
+window.renderizarPadraoInstalacao = function(tipoProposta) {
     const installationTitle = document.getElementById('installation-title');
     const installationList = document.getElementById('installation-standard-list');
     
@@ -183,32 +149,54 @@ function renderizarPadraoInstalacao(tipoProposta) {
     `).join('');
 }
 
-function renderizarProposta(dados, tipoProposta = 'performance') {
-    const clienteNome = document.getElementById('cliente-nome');
-    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-    const dataGeracao = document.getElementById('data-geracao');
-    const geracaoMensal = document.getElementById('geracao-mensal');
-    const potenciaSistema = document.getElementById('potencia-sistema');
-    const tipoInstalacao = document.getElementById('tipo-instalacao');
-    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-    const valorTotal = document.getElementById('valor-total');
-    const proposalValidity = document.getElementById('proposal-validity');
+// --- Função de Busca Principal (Global) ---
+window.handleSearchClick = async function() {
+    const projectIdInput = document.getElementById('project-id');
+    const searchButton = document.getElementById('search-button');
 
-    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+    if (!/^[0-9]{1,6}$/.test(projectIdInput.value.trim())) return;
+    searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    searchButton.disabled = true;
 
-    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-    geracaoMensal.textContent = `${findVar(dados, 'geracao_mensal', true)} kWh`;
-    potenciaSistema.textContent = `${findVar(dados, 'potencia_sistema', true)} kWp`;
-    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-    valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+    try {
+        const proposta = await consultarProposta(projectIdInput.value.trim());
+        if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
 
-    renderizarEquipamentos(dados, tipoProposta);
-    renderizarPadraoInstalacao(tipoProposta);
-    renderizarFinanciamento(dados);
+        const expirationDate = new Date(proposta.expirationDate);
+        if (expirationDate < new Date()) {
+            document.getElementById('search-form').style.display = 'none';
+            const expiredSection = document.getElementById('expired-proposal-section');
+            expiredSection.style.display = 'flex';
+            expiredSection.innerHTML = `<div class="search-card"><h1 class="search-card__title">Proposta Expirada</h1><p class="search-card__subtitle">Por favor, solicite uma nova proposta.</p><button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button></div>`;
+            return;
+        }
+
+        window.propostaOriginal = proposta;
+        window.propostaEconomica = JSON.parse(JSON.stringify(proposta));
+
+        document.getElementById('search-form').style.display = 'none';
+        document.getElementById('proposal-header').style.display = 'block';
+        document.getElementById('proposal-details').style.display = 'flex';
+        document.getElementById('main-footer').style.display = 'block';
+        
+        renderizarProposta(proposta, 'performance');
+        
+        const backToSearchBtn = document.getElementById('back-to-search-btn');
+        backToSearchBtn.addEventListener('click', () => {
+            document.getElementById('proposal-details').style.display = 'none';
+            document.getElementById('proposal-header').style.display = 'none';
+            document.getElementById('expired-proposal-section').style.display = 'none';
+            document.getElementById('search-form').style.display = 'flex';
+            projectIdInput.value = '';
+            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+            searchButton.disabled = false;
+        });
+
+    } catch (err) {
+        console.error("Erro na busca:", err);
+        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+        searchButton.disabled = false;
+    }
 }
 
 // --- Inicialização da Página ---
