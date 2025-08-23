@@ -3,115 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sua Proposta de Energia Solar</title>
+    <title>Sua Proposta de Energia Solar | GDIS</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="/gdisFavicon.ico" type="image/x-icon">
-    <script type="module" src="api.js"></script>
-    <script type="module" src="app.js"></script>
+    <!-- Adicionando Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
-    <header id="proposal-header">
-        <nav class="container">
-            <div class="logo">
+    <!-- CABEÇALHO FIXO -->
+    <header id="proposal-header" class="header">
+        <div class="header__container">
+            <div class="header__logo">
                 <img src="logo.png" alt="Logo da GDIS">
             </div>
-            <div class="proposal-options">
+            <div class="header__options">
                 <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
                 <button id="btn-economica" class="option-button">Econômica</button>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <main class="container screen" id="search-form">
-        <div class="initial-logo">
-            <img src="logo.png" alt="Logo da GDIS">
-        </div>
-        <div class="card">
-            <h1 class="card-title">Acesse sua Proposta Personalizada</h1>
-            <p class="card-subtitle">
-                Digite o ID do projeto que sua equipe comercial GDIS lhe forneceu
-                para visualizar todos os detalhes de sua oferta.
+    <!-- TELA DE BUSCA INICIAL -->
+    <main id="search-form" class="screen">
+        <div class="search-card">
+            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+            <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
+            <p class="search-card__subtitle">
+                Digite o ID do projeto fornecido por nossa equipe comercial para ver os detalhes da sua oferta.
             </p>
-            <div id="project-search-panel">
-                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="4" required>
-                <button type="button" id="search-button" class="btn btn-primary">Visualizar Proposta</button>
-            </div>
-            </div>
-    </main>
-
-    <main class="container screen" id="proposal-details" style="display: none;">
-        <div class="card">
-            <h2 class="card-title">Detalhes da Proposta</h2>
-            <p class="card-subtitle">Informações gerais e financeiras do seu projeto de energia solar.</p>
-            
-            <section class="info-section">
-                <h3>Informações da Proposta</h3>
-                <div class="info-grid">
-                    <div><strong>Cliente:</strong> <span id="cliente-nome"></span></div>
-                    <div><strong>Local:</strong> <span id="cliente-cidade-uf"></span></div>
-                    <div><strong>Gerada em:</strong> <span id="data-geracao"></span></div>
-                </div>
-            </section>
-            
-            <section class="info-section">
-                <h3>Seu Sistema Solar</h3>
-                <div class="info-grid">
-                    <div><strong>Geração Estimada:</strong> <span id="geracao-mensal"></span></div>
-                    <div><strong>Potência do Sistema:</strong> <span id="potencia-sistema"></span></div>
-                    <div><strong>Tarifa da Concessionária:</strong> <span id="tarifa-distribuidora"></span></div>
-                    <div><strong>Tipo de Instalação:</strong> <span id="tipo-instalacao"></span></div>
-                </div>
-            </section>
-            
-            <section class="info-section">
-                <h3>Equipamentos</h3>
-                <div class="info-grid">
-                    <div><strong>Inversor:</strong> <span id="inversor-descricao"></span></div>
-                    <div><strong>Painéis:</strong> <span id="modulo-descricao"></span></div>
-                </div>
-            </section>
-            
-            <section class="info-section">
-                <h3>Resumo Finan-ceiro</h3>
-                <div class="info-grid">
-                    <div><strong>Valor Total:</strong> <span id="valor-total"></span></div>
-                    <div><strong>Payback:</strong> <span id="payback"></span></div>
-                    <div><strong>Conta de Luz Antes:</strong> <span id="conta-energia-estimada"></span></div>
-                </div>
-            </section>
-
-            <section class="info-section">
-                <h3>Opções de Financiamento</h3>
-                <div id="financing-options" class="financing-options"></div>
-                <div id="parcela-equilibrada"></div>
-            </section>
-            
-            <a id="link-pdf" href="#" target="_blank" class="btn btn-primary">Baixar Proposta em PDF</a>
-
-            <div class="proposal-validity">
-                <p>Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
+            <div class="search-card__panel">
+                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
+                <button type="button" id="search-button" class="btn btn--primary">
+                    <i class="fas fa-arrow-right"></i> Visualizar Proposta
+                </button>
             </div>
         </div>
     </main>
-    
-    <main class="container screen" id="expired-proposal-section" style="display: none;">
-        <div class="card expired-card">
-            <h1 class="card-title">Sua Proposta Expirou.</h1>
-            <p class="card-subtitle">
-                Para garantir a precisão de valores e a disponibilidade de estoque,
-                por favor, solicite uma nova proposta e receba as informações mais atualizadas.
+
+    <!-- TELA DE DETALHES DA PROPOSTA -->
+    <main id="proposal-details" class="screen proposal-details" style="display: none;">
+        <div class="proposal-details__container">
+            <!-- Card de Boas-vindas -->
+            <div class="info-card info-card--welcome animate-on-scroll">
+                <h2 id="cliente-nome">Nome do Cliente</h2>
+                <p id="cliente-cidade-uf">Cidade - UF</p>
+                <span class="info-card__date">Proposta gerada em: <strong id="data-geracao"></strong></span>
+            </div>
+
+            <!-- Grid de Informações -->
+            <div class="proposal-details__grid">
+                <!-- Card: Resumo Financeiro -->
+                <div class="info-card animate-on-scroll">
+                    <div class="info-card__header">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h3>Resumo Financeiro</h3>
+                    </div>
+                    <div class="info-card__body">
+                        <div class="highlight-metric">
+                            <span>Valor Total do Projeto</span>
+                            <strong id="valor-total">R$ 0,00</strong>
+                        </div>
+                        <div class="highlight-metric">
+                            <span>Retorno do Investimento (Payback )</span>
+                            <strong id="payback">N/A</strong>
+                        </div>
+                        <p class="info-card__subtext" id="conta-energia-estimada">Para contas de energia de R$ 0,00</p>
+                    </div>
+                </div>
+
+                <!-- Card: Seu Sistema Solar -->
+                <div class="info-card animate-on-scroll">
+                    <div class="info-card__header">
+                        <i class="fas fa-solar-panel"></i>
+                        <h3>Seu Sistema Solar</h3>
+                    </div>
+                    <div class="info-card__body">
+                        <p><strong>Potência:</strong> <span id="potencia-sistema"></span></p>
+                        <p><strong>Geração Média Mensal:</strong> <span id="geracao-mensal"></span></p>
+                        <p><strong>Tipo de Instalação:</strong> <span id="tipo-instalacao"></span></p>
+                        <p><strong>Tarifa Considerada:</strong> <span id="tarifa-distribuidora"></span></p>
+                    </div>
+                </div>
+
+                <!-- Card: Equipamentos -->
+                <div class="info-card animate-on-scroll">
+                    <div class="info-card__header">
+                        <i class="fas fa-cogs"></i>
+                        <h3>Equipamentos de Ponta</h3>
+                    </div>
+                    <div class="info-card__body">
+                        <p><strong>Inversor:</strong> <span id="inversor-descricao"></span></p>
+                        <p><strong>Módulos Fotovoltaicos:</strong> <span id="modulo-descricao"></span></p>
+                    </div>
+                </div>
+
+                <!-- Card: Opções de Financiamento -->
+                <div class="info-card info-card--full-width animate-on-scroll">
+                    <div class="info-card__header">
+                        <i class="fas fa-hand-holding-dollar"></i>
+                        <h3>Opções de Financiamento</h3>
+                    </div>
+                    <div id="financing-options" class="financing-options-grid">
+                        <!-- As opções serão inseridas aqui pelo JS -->
+                    </div>
+                    <div id="parcela-equilibrada"></div>
+                </div>
+            </div>
+
+            <!-- Ações e Validade -->
+            <div class="proposal-details__actions animate-on-scroll">
+                <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
+                    <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
+                </a>
+                <p class="proposal-validity">Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- TELA DE PROPOSTA EXPIRADA -->
+    <main id="expired-proposal-section" class="screen" style="display: none;">
+        <div class="status-card">
+            <i class="fas fa-exclamation-triangle status-card__icon status-card__icon--warning"></i>
+            <h1 class="status-card__title">Sua Proposta Expirou</h1>
+            <p class="status-card__subtitle">
+                Para garantir os melhores valores e a disponibilidade de estoque, por favor, solicite uma nova proposta.
             </p>
-            <button class="btn btn-primary" onclick="location.reload();">Voltar ao Início</button>
+            <button class="btn btn--primary" onclick="location.reload();">Voltar ao Início</button>
         </div>
     </main>
 
+    <!-- POPUP DE ERRO -->
     <div id="error-popup" class="popup-backdrop" style="display: none;">
         <div class="popup-content">
+            <i class="fas fa-times-circle status-card__icon status-card__icon--error"></i>
             <h2 id="popup-title">Ops, Algo deu Errado!</h2>
             <p id="popup-message"></p>
-            <button id="popup-close-btn" class="btn btn-primary">Fechar</button>
+            <button id="popup-close-btn" class="btn btn--primary">Fechar</button>
         </div>
     </div>
+
 </body>
 </html>
