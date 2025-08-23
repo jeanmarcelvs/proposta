@@ -609,3 +609,163 @@ body {
 .equipment-specs p strong {
     color: var(--color-text-light);
 }
+
+/* ======================================================== */
+/* --- AJUSTES FINAIS DE LAYOUT E CORES --- */
+/* ======================================================== */
+
+/* 1. Unifica o tamanho da fonte para TODAS as métricas principais */
+.metric-value {
+    display: block;
+    font-size: 2.2rem; /* Tamanho grande e consistente */
+    font-weight: 700;
+    color: var(--color-secondary);
+    line-height: 1.2;
+}
+
+/* Remove a classe de valor pequeno que não é mais necessária */
+.metric-value-small {
+    /* Esta classe pode ser removida ou deixada em branco */
+}
+
+/* 2. NovoEntendido! Perfeito, esses são os ajustes finos que realmente elevam a qualidade do design e da comunicação. A sua visão está muito clara: consistência visual, informações diretas e uma paleta de cores mais sofisticada para os dados financeiros.
+
+Preparei todas as alterações nos arquivos `index.html`, `styles.css` e `app.js` para implementar cada um dos seus pedidos.
+
+### 1. Alterações no `index.html`
+
+A estrutura foi simplificada para remover a seção de "Economia" e integrar a informação da conta de energia de volta à seção "Detalhes do Sistema Solar", como um subtítulo de destaque. Também removi a descrição textual dos equipamentos.
+
+**O que foi feito:**
+1.  A seção "Sua Economia na Prática" foi **removida**.
+2.  O elemento `p` com `id="conta-energia-estimada"` foi movido de volta para a seção "Detalhes do Sistema Solar", posicionado logo abaixo do `metric-box` da geração mensal.
+3.  Na seção "Equipamentos de Ponta", a lógica para exibir a potência foi mantida, mas qualquer descrição extra foi removida para focar apenas nos dados.
+
+**Ação:** Substitua a `main` com `id="proposal-details"` no seu `index.html` por este novo bloco, mais limpo e direto:
+
+```html
+<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO FINAL E REFINADA -->
+<main id="proposal-details" class="screen proposal-details" style="display: none;">
+    <div class="proposal-container">
+
+        <!-- SEÇÃO 1: INFORMAÇÕES DO CLIENTE -->
+        <section class="proposal-section">
+            <h2 class="section-title"><i class="fas fa-user"></i> Proposta para <span id="cliente-nome"></span></h2>
+            <div class="section-content">
+                <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
+                <p><strong>Data da Proposta:</strong> <span id="data-geracao"></span></p>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR (Layout interno ajustado) -->
+        <section class="proposal-section">
+            <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema Solar</h2>
+            <div class="section-content-grid">
+                <div class="metric-box">
+                    <span class="metric-label">Geração Média Mensal</span>
+                    <span class="metric-value" id="geracao-mensal"></span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Potência do Sistema</span>
+                    <span class="metric-value" id="potencia-sistema"></span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Tipo de Instalação</span>
+                    <span class="metric-value" id="tipo-instalacao"></span>
+                </div>
+            </div>
+            <!-- Destaque da conta de energia integrado aqui -->
+            <p id="conta-energia-estimada" class="section-footnote highlight-footnote"></p>
+        </section>
+
+        <!-- SEÇÃO 3: EQUIPAMENTOS DE PONTA (Foco na logo e dados) -->
+        <section class="proposal-section">
+            <h2 class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
+            <div id="equipment-logo-container" class="equipment-logo-wrapper">
+                <!-- A imagem da logo será inserida aqui pelo JS -->
+            </div>
+            <div class="equipment-specs">
+                <p><strong>Potência do Inversor:</strong> <span id="inversor-potencia"></span></p>
+                <p><strong>Potência dos Módulos:</strong> <span id="modulo-potencia"></span></p>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 4: RESUMO FINANCEIRO E INVESTIMENTO -->
+        <section class="proposal-section">
+            <h2 class="section-title"><i class="fas fa-dollar-sign"></i> Investimento e Retorno</h2>
+            <div class="section-content-grid">
+                <div class="metric-box">
+                    <span class="metric-label">Valor Total do Projeto</span>
+                    <span class="metric-value financial-value" id="valor-total"></span>
+                </div>
+                <div class="metric-box">
+                    <span class="metric-label">Retorno (Payback)</span>
+                    <span class="metric-value financial-value" id="payback"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÕES 5 e 6 (Financiamento e Ações) permanecem iguais -->
+        <section class="proposal-section">
+            <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
+            <div id="financing-options" class="financing-grid"></div>
+            <div id="parcela-equilibrada"></div>
+        </section>
+        <section class="proposal-actions">
+            <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
+                <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
+            </a>
+            <p class="proposal-validity">Proposta válida por 3 dias ou enquanto durarem os estoques.</p>
+        </section>
+
+    </div>
+</main>
+
+/* ======================================================== */
+/* --- AJUSTES FINAIS DE LAYOUT E DESIGN --- */
+/* ======================================================== */
+
+/* 1. Uniformiza o tamanho da fonte para todos os valores de métricas */
+.metric-value {
+    font-size: 2.2rem; /* Tamanho padrão para todos os valores em destaque */
+}
+
+/* Remove a classe que diminuía a fonte, pois agora todas são iguais */
+.metric-value-small {
+    font-size: inherit; /* Herda o tamanho de .metric-value */
+    font-weight: inherit;
+    color: inherit;
+}
+
+/* 2. Novo estilo para o destaque da conta de energia */
+.highlight-footnote {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: var(--color-background);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.highlight-footnote strong {
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+/* 3. Aumenta o destaque da logo do equipamento */
+.equipment-logo-wrapper img {
+    max-height: 70px; /* Um pouco maior para mais destaque */
+    margin-bottom: 1rem;
+}
+
+/* 4. Novas cores para os valores financeiros */
+.financial-value {
+    color: var(--color-primary); /* Usa a cor primária (escura) para um visual mais sóbrio e profissional */
+}
+
+/* Garante que a cor do tema econômico seja aplicada corretamente */
+body.theme-economic .financial-value {
+    color: var(--color-primary); /* Mantém a cor primária do tema verde */
+}

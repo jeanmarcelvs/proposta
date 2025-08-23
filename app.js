@@ -135,7 +135,6 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     const geracaoMensalValor = parseFloat(findVariable(dados, 'geracao_mensal')) || 0;
     const tarifaValor = parseFloat(findVariable(dados, 'tarifa_distribuidora')) || 0;
     const contaAtual = geracaoMensalValor * tarifaValor;
-    // NOVO TEXTO: Usa HTML para mais destaque
     const textoContaEnergia = `Ideal para contas de energia de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
     // --- Lógica da Logo Dinâmica ---
@@ -154,7 +153,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     logoImg.src = logoFileName;
     logoImg.alt = logoAltText;
     logoImg.onerror = () => { 
-        equipmentLogoContainer.innerHTML = `<p><strong>Equipamento:</strong> ${findItem(dados, 'Inversor')}</p>`;
+        equipmentLogoContainer.innerHTML = `<p><strong>Equipamento não possui logo.</strong></p>`;
     };
     equipmentLogoContainer.appendChild(logoImg);
 
@@ -166,13 +165,13 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     dataGeracao.textContent = dataFormatada;
     
     geracaoMensal.textContent = `${findVariable(dados, 'geracao_mensal', true)} kWh`;
-    contaEnergiaEstimada.innerHTML = textoContaEnergia; // Usa .innerHTML para renderizar o <strong>
+    contaEnergiaEstimada.innerHTML = textoContaEnergia;
     potenciaSistema.textContent = `${findVariable(dados, 'potencia_sistema', true)} kWp`;
     tipoInstalacao.textContent = findVariable(dados, 'vc_tipo_de_estrutura', true);
     
-    // NOVO: Renderiza as potências dos equipamentos
     inversorPotencia.textContent = `${findVariable(dados, 'inversor_potencia_nominal', true)} W`;
-    moduloPotencia.textContent = `${findVariable(dados, 'modulo_potencia', true)} Wp`;
+    // AJUSTE: Remove o 'p' de 'Wp'
+    moduloPotencia.textContent = `${findVariable(dados, 'modulo_potencia', true)} W`;
     
     valorTotal.textContent = formatarMoeda(findVariable(dados, 'preco'));
     payback.textContent = findVariable(dados, 'payback', true);
@@ -182,6 +181,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     renderizarOpcoesFinanciamento(dados);
     renderizarParcelaEquilibrada(dados.balancedInstallment);
 }
+
 
 
 

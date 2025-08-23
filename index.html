@@ -42,7 +42,7 @@
     </main>
 
     <!-- TELA DE DETALHES DA PROPOSTA -->
-<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO COM SEÇÃO DE ECONOMIA DEDICADA -->
+<!-- SUBSTITUA A MAIN ANTIGA PELA VERSÃO FINAL REFINADA -->
 <main id="proposal-details" class="screen proposal-details" style="display: none;">
     <div class="proposal-container">
 
@@ -55,7 +55,7 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR -->
+        <!-- SEÇÃO 2: DETALHES DO SISTEMA SOLAR (Com novo destaque para conta) -->
         <section class="proposal-section">
             <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema Solar</h2>
             <div class="section-content-grid">
@@ -65,24 +65,20 @@
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Potência do Sistema</span>
-                    <span class="metric-value-small" id="potencia-sistema"></span>
+                    <span class="metric-value" id="potencia-sistema"></span>
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Tipo de Instalação</span>
-                    <span class="metric-value-small" id="tipo-instalacao"></span>
+                    <span class="metric-value" id="tipo-instalacao"></span>
+                </div>
+                <!-- NOVO: Bloco de destaque para a conta de energia -->
+                <div class="metric-box highlight-box">
+                    <p id="conta-energia-estimada"></p>
                 </div>
             </div>
         </section>
 
-        <!-- NOVA SEÇÃO 3: DESTAQUE PARA ECONOMIA -->
-        <section class="proposal-section economy-highlight-section">
-            <h2 class="section-title"><i class="fas fa-piggy-bank"></i> Sua Economia na Prática</h2>
-            <div class="economy-box">
-                <p id="conta-energia-estimada"></p>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 4: EQUIPAMENTOS DE PONTA (Com dados de potência) -->
+        <!-- SEÇÃO 3: EQUIPAMENTOS DE PONTA (Apenas logo e potências) -->
         <section class="proposal-section">
             <h2 class="section-title"><i class="fas fa-cogs"></i> Equipamentos de Ponta</h2>
             <div id="equipment-logo-container" class="equipment-logo-wrapper">
@@ -94,7 +90,7 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 5: RESUMO FINANCEIRO E INVESTIMENTO -->
+        <!-- SEÇÃO 4: INVESTIMENTO E RETORNO -->
         <section class="proposal-section">
             <h2 class="section-title"><i class="fas fa-dollar-sign"></i> Investimento e Retorno</h2>
             <div class="section-content-grid">
@@ -109,14 +105,12 @@
             </div>
         </section>
 
-        <!-- SEÇÃO 6: OPÇÕES DE FINANCIAMENTO -->
+        <!-- SEÇÕES 5 e 6 (Financiamento e Ações) permanecem iguais -->
         <section class="proposal-section">
             <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
             <div id="financing-options" class="financing-grid"></div>
             <div id="parcela-equilibrada"></div>
         </section>
-
-        <!-- SEÇÃO 7: AÇÕES -->
         <section class="proposal-actions">
             <a id="link-pdf" href="#" target="_blank" class="btn btn--primary btn--large">
                 <i class="fas fa-file-pdf"></i> Baixar Proposta Completa em PDF
@@ -126,6 +120,7 @@
 
     </div>
 </main>
+
 
 
 
