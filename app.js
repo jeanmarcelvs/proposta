@@ -1,5 +1,4 @@
 import { consultarProposta, notificarVisualizacao } from "./api.js";
-import { consultarProposta } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
