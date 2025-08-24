@@ -249,3 +249,33 @@ a#whatsapp-link:hover i {
     }
 }
 
+/* --- CORREÇÃO DE COR PARA O NOME DO CLIENTE --- */
+
+/* 
+  Esta regra garante que, por padrão (Alta Performance), 
+  o nome do cliente seja branco para contrastar com o fundo escuro do card.
+*/
+.client-header__title {
+    color: white; 
+}
+
+/* 
+  Esta regra garante que, quando o tema econômico estiver ativo,
+  o nome do cliente use a cor primária (escura) do tema.
+*/
+body.theme-economic .client-header__title {
+    color: var(--color-primary);
+}
+
+/* 
+  Ajuste no subtítulo para garantir a cor correta em ambos os temas.
+  O ícone já herda a cor secundária, que muda com o tema.
+*/
+.client-header__subtitle {
+    color: #a8b2d1; /* Um cinza-azulado claro que funciona bem em ambos os fundos */
+}
+
+body.theme-economic .client-header__subtitle {
+    color: var(--color-text-light); /* Usa a cor de texto claro do tema econômico */
+}
+
