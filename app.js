@@ -69,81 +69,128 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    function renderizarEquipamentos(dados, tipoProposta) {
-        const equipmentContainer = document.getElementById('equipment-container');
-        const equipmentTitle = document.getElementById('equipment-title');
-        
-        equipmentTitle.innerHTML = tipoProposta === 'economica' 
-            ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
-            : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
+    // No seu app.js, substitua a função renderizarEquipamentos por esta:
+// No seu app.js, substitua a função renderizarEquipamentos por esta:
+function renderizarEquipamentos(dados, tipoProposta) {
+    const equipmentContainer = document.getElementById('equipment-container');
+    const equipmentTitle = document.getElementById('equipment-title');
+    
+    equipmentTitle.innerHTML = tipoProposta === 'economica' 
+        ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
+        : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
 
-        const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
-        const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
-        const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
-        
-        let logoHtml = logoFileName 
-            ? `<img src="${logoFileName}" alt="Logo do equipamento">`
-            : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
+    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+    
+    let logoHtml = logoFileName 
+        ? `<img src="${logoFileName}" alt="Logo do equipamento">`
+        : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-        let inversoresHtml = inversores.map(inv => {
-            const index = inv.key.split('_').pop();
-            const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
-            const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-            return `
-                <div class="spec-card">
-                    <span class="spec-label">Inversor ${inv.value}</span>
-                    <span class="spec-value">${potencia} W</span>
-                    <span class="spec-label">${qnt} Unidade(s)</span>
-                </div>
-            `;
-        }).join('');
-
-        const modulosHtml = `
+    // CORREÇÃO: Simplifica a descrição do inversor, mostrando apenas "Inversor"
+    let inversoresHtml = inversores.map(inv => {
+        const index = inv.key.split('_').pop();
+        const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
+        const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
+        return `
             <div class="spec-card">
-                <span class="spec-label">Módulos</span>
-                <span class="spec-value">${findVar(dados, 'modulo_potencia', true)} W</span>
-                <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
+                <span class="spec-label">Inversor</span>
+                <span class="spec-value">${potencia} W</span>
+                <span class="spec-label">${qnt} Unidade(s)</span>
             </div>
         `;
+    }).join('');
 
-        equipmentContainer.innerHTML = `
-            <div class="equipment-logo-wrapper">${logoHtml}</div>
-            ${inversoresHtml}
-            ${modulosHtml}
-        `;
+    const modulosHtml = `
+        <div class="spec-card">
+            <span class="spec-label">Módulos</span>
+            <span class="spec-value">${findVar(dados, 'modulo_potencia', true)} W</span>
+            <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
+        </div>
+    `;
+
+    equipmentContainer.innerHTML = `
+        <div class="equipment-logo-wrapper">${logoHtml}</div>
+        ${inversoresHtml}
+        ${modulosHtml}
+    `;
+}
+
+// Adicione esta nova função logo após a função renderizarEquipamentos
+function renderizarPadraoInstalacao(tipoProposta) {
+    const installationTitle = document.getElementById('installation-title');
+    const installationList = document.getElementById('installation-standard-list');
+    
+    let title, items, tagHtml;
+
+    if (tipoProposta === 'economica') {
+        title = '<i class="fas fa-tools"></i> Padrão de Instalação';
+        // Textos simplificados para a proposta econômica
+        items = [
+            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
+            { icon: 'fa-check-circle', text: 'Cabeamento simples' },
+            { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
+            { icon: 'fa-check-circle', text: 'Conectores simples' },
+        ];
+        // Etiqueta "Simples"
+        tagHtml = '<span class="section-tag tag-simple">Simples</span>';
+    } else { // Alta Performance
+        title = '<i class="fas fa-award"></i> Padrão de Instalação';
+        items = [
+            { icon: 'fa-star', text: ' Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
+            { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
+            { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus eletrodomésticos/equipamentos de picos de energia' },
+            { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e evitam o superaquecimento, garantindo a eficiência do seu sistema por muito mais tempo' },
+            
+        ];
+        // Etiqueta "Premium"
+        tagHtml = '<span class="section-tag tag-premium">Premium</span>';
     }
 
-    function renderizarPadraoInstalacao(tipoProposta) {
-        const installationTitle = document.getElementById('installation-title');
-        const installationList = document.getElementById('installation-standard-list');
-        
-        let title, items;
+    installationTitle.innerHTML = `${title} ${tagHtml}`;
+    installationList.innerHTML = items.map(item => `
+        <li><i class="fas ${item.icon}"></i> ${item.text}</li>
+    `).join('');
+}
 
-        if (tipoProposta === 'economica') {
-            title = '<i class="fas fa-tools"></i> Padrão de Instalação Eficiente';
-            items = [
-                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio e aço inox' },
-                { icon: 'fa-check-circle', text: 'Cabeamento solar com proteção UV padrão' },
-                { icon: 'fa-check-circle', text: 'Dispositivos de proteção (DPS) padrão de mercado' },
-                { icon: 'fa-check-circle', text: 'Conectores MC4 com boa vedação' },
-            ];
-        } else { // Alta Performance
-            title = '<i class="fas fa-award"></i> Padrão de Instalação Premium';
-            items = [
-                { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior' },
-                { icon: 'fa-star', text: 'Cabeamento solar com dupla isolação e alta durabilidade' },
-                { icon: 'fa-star', text: 'DPS de classe superior para máxima proteção contra surtos' },
-                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli para perdas mínimas' },
-                { icon: 'fa-star', text: 'Organização e acabamento premium do cabeamento' },
-            ];
-        }
 
-        installationTitle.innerHTML = title;
-        installationList.innerHTML = items.map(item => `
-            <li><i class="fas ${item.icon}"></i> ${item.text}</li>
-        `).join('');
+
+// Agora, substitua a função renderizarPadraoInstalacao por esta:
+function renderizarPadraoInstalacao(tipoProposta) {
+    const installationTitle = document.getElementById('installation-title');
+    const installationList = document.getElementById('installation-standard-list');
+    
+    let title, items, tagHtml;
+
+    if (tipoProposta === 'economica') {
+        title = '<i class="fas fa-tools"></i> Padrão de Instalação';
+        // CORREÇÃO: Textos simplificados
+        items = [
+            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio e aço inox' },
+            { icon: 'fa-check-circle', text: 'Cabeamento solar simples' },
+            { icon: 'fa-check-circle', text: 'Dispositivos de proteção (DPS) residencial' },
+            { icon: 'fa-check-circle', text: 'Conectores padrão' },
+        ];
+        // CORREÇÃO: Etiqueta "Simples"
+        tagHtml = '<span class="section-tag tag-simple">Simples</span>';
+    } else { // Alta Performance
+        title = '<i class="fas fa-award"></i> Padrão de Instalação';
+        items = [
+            { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior' },
+            { icon: 'fa-star', text: 'Cabeamento solar com dupla isolação e alta durabilidade' },
+            { icon: 'fa-star', text: 'DPS de classe superior para máxima proteção contra surtos' },
+            { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli para perdas mínimas' },
+            { icon: 'fa-star', text: 'Organização e acabamento premium do cabeamento' },
+        ];
+        // CORREÇÃO: Etiqueta "Premium"
+        tagHtml = '<span class="section-tag tag-premium">Premium</span>';
     }
 
+    installationTitle.innerHTML = `${title} ${tagHtml}`;
+    installationList.innerHTML = items.map(item => `
+        <li><i class="fas ${item.icon}"></i> ${item.text}</li>
+    `).join('');
+}
     function renderizarProposta(dados, tipoProposta = 'performance') {
         const clienteNome = document.getElementById('cliente-nome');
         const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
@@ -252,6 +299,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEconomica.classList.add('active');
         if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
     });
+
+    // Adiciona o link do WhatsApp dinamicamente
+    const phoneNumber = "5582994255946";
+    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+
+    // Configura a visibilidade inicial das seções
+    searchForm.style.display = 'flex';
 
     // Configura a visibilidade inicial das seções
     searchForm.style.display = 'flex';

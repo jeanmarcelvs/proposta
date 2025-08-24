@@ -137,3 +137,36 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 @media print {
     body * { display: none !important; }
 }
+
+/* --- ESTILOS PARA ETIQUETAS DE SEÇÃO E CORREÇÕES --- */
+
+.section-tag {
+    margin-left: auto; /* Empurra a etiqueta para a direita */
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.tag-premium {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+}
+
+.tag-simple {
+    background-color: var(--color-border);
+    color: var(--color-text-light);
+}
+
+/* CORREÇÃO: Cor da fonte da etiqueta "Equilibrado" no tema econômico */
+body.theme-economic .highlight-tag {
+    color: white; /* Garante que o texto seja branco sobre o fundo verde */
+}
+
+/* Garante que o link do WhatsApp no rodapé não tenha sublinhado */
+.contact-item {
+    text-decoration: none;
+    color: inherit; /* Herda a cor do texto do rodapé */
+}
+
