@@ -206,3 +206,46 @@ a#whatsapp-link:hover i {
     color: white; /* Ícone fica branco */
 }
 
+/* --- ESTILOS PARA O NOVO CABEÇALHO DO CLIENTE --- */
+
+.client-header {
+    text-align: center; /* Centraliza o texto por padrão */
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.client-header__subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Garante que o ícone e o texto fiquem centralizados */
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.25rem;
+}
+
+.client-header__subtitle i {
+    color: var(--color-secondary);
+}
+
+.client-header__title {
+    font-size: 2rem; /* Tamanho de destaque para o nome */
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1.2;
+    word-break: break-word; /* Garante que nomes muito longos quebrem a linha corretamente */
+}
+
+/* --- AJUSTES DE RESPONSIVIDADE PARA O CABEÇALHO DO CLIENTE --- */
+
+@media (max-width: 600px) {
+    .client-header__title {
+        font-size: 1.6rem; /* Diminui um pouco a fonte em telas pequenas */
+    }
+
+    .client-header__subtitle {
+        font-size: 1rem;
+    }
+}
+
