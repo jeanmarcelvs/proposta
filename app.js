@@ -121,21 +121,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tipoProposta === 'economica') {
             title = '<i class="fas fa-tools"></i> Padrão de Instalação';
             items = [
-                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
+                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio simples' },
                 { icon: 'fa-check-circle', text: 'Cabeamento simples' },
                 { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
                 { icon: 'fa-check-circle', text: 'Conectores simples' },
-                { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária' },
+                { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária de energia, geralmente de alumínio e de bitola inferior ao recomendado' },
             ];
             tagHtml = '<span class="section-tag tag-simple">Simples</span>';
         } else { // Alta Performance
             title = '<i class="fas fa-award"></i> Padrão de Instalação';
             items = [
-                { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio por cabo de cobre, eliminando riscos de superaquecimento no medidor' },
+                { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio da concessionária por ramal de cobre e de bitola adequada ao sistema, reduzindo perdas de geração, riscos de superaquecimento e incêndio no medidor' },
                 { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
                 { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
                 { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
-                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
+                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia gerada, aumenta a segurança contra incêndios e garantem a máxima eficiência do sistema' },
             ];
             tagHtml = '<span class="section-tag tag-premium">Premium</span>';
         }
