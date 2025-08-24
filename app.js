@@ -164,20 +164,20 @@ function renderizarPadraoInstalacao(tipoProposta) {
     if (tipoProposta === 'economica') {
         title = '<i class="fas fa-tools"></i> Padrão de Instalação';
         items = [
-            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
+            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio simples' },
             { icon: 'fa-check-circle', text: 'Cabeamento simples' },
             { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
-            { icon: 'fa-check-circle', text: 'Conectores padrão' },
-            { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária' }, // Adicionado para clareza
+            { icon: 'fa-check-circle', text: 'Conectores simples' },
+            { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária de energia, geralmente de alumínio' }, // Adicionado para clareza
         ];
         tagHtml = '<span class="section-tag tag-simple">Simples</span>';
     } else { // Alta Performance
         title = '<i class="fas fa-award"></i> Padrão de Instalação';
         items = [
             // NOVO ITEM ADICIONADO AQUI
-            { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio por cabo de cobre, eliminando riscos de superaquecimento no medidor' },
             { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
             { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
+            { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio da concessionária de energia por ramal de cobre, reduzindo riscos de superaquecimento nos terminais do medidor, reduzindo a possibilidade de incêndio' },
             { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
             { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
         ];
@@ -253,15 +253,31 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
             blockFeatures();
 
             const backToSearchBtn = document.getElementById('back-to-search-btn');
-            backToSearchBtn.addEventListener('click', () => {
-                proposalDetailsSection.style.display = 'none';
-                proposalHeader.style.display = 'none';
-                expiredProposalSection.style.display = 'none';
-                searchForm.style.display = 'flex';
-                projectIdInput.value = '';
-                searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-                searchButton.disabled = false;
-            });
+backToSearchBtn.addEventListener('click', () => {
+    // --- LÓGICA DE RESET COMPLETO ---
+
+    // 1. Esconde as telas ativas
+    document.getElementById('proposal-details').style.display = 'none';
+    document.getElementById('proposal-header').style.display = 'none';
+    document.getElementById('expired-proposal-section').style.display = 'none';
+
+    // 2. Mostra a tela de busca inicial
+    document.getElementById('search-form').style.display = 'flex';
+
+    // 3. Reseta o campo de input e o botão de busca
+    const projectIdInput = document.getElementById('project-id');
+    const searchButton = document.getElementById('search-button');
+    projectIdInput.value = '';
+    searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+    searchButton.disabled = false;
+
+    // 4. CORREÇÃO: Reseta o tema visual para o padrão "Alta Performance"
+    document.body.classList.remove('theme-economic');
+    const btnAltaPerformance = document.getElementById('btn-alta-performance');
+    const btnEconomica = document.getElementById('btn-economica');
+    if (btnEconomica) btnEconomica.classList.remove('active');
+    if (btnAltaPerformance) btnAltaPerformance.classList.add('active');
+});
 
         } catch (err) {
             console.error("Erro na busca:", err);
