@@ -124,8 +124,17 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .installation-standard-list li { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; color: var(--color-text); }
 .installation-standard-list i { color: var(--color-secondary); font-size: 1.2rem; width: 20px; text-align: center; margin-top: 0.2rem; }
 
-/* --- UTILIDADE: SÍMBOLO DA MOEDA --- */
-.currency-symbol { font-size: 0.6em; vertical-align: super; margin-right: 2px; }
+/* --- UTILIDADES DE SÍMBOLO --- */
+.currency-symbol,
+.unit-symbol {
+    font-size: 0.6em;
+    vertical-align: super;
+    margin-left: 2px; /* Adiciona um pequeno espaço antes da unidade */
+    font-weight: 500; /* Deixa a unidade um pouco mais leve que o número */
+    text-transform: none; /* Garante que não fique em maiúsculas se herdar de algum lugar */
+    letter-spacing: 0;
+}
+
 
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {

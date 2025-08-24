@@ -87,7 +87,6 @@ function renderizarEquipamentos(dados, tipoProposta) {
         ? `<img src="${logoFileName}" alt="Logo do equipamento">`
         : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-    // CORREÇÃO: Simplifica a descrição do inversor, mostrando apenas "Inversor"
     let inversoresHtml = inversores.map(inv => {
         const index = inv.key.split('_').pop();
         const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
@@ -95,7 +94,7 @@ function renderizarEquipamentos(dados, tipoProposta) {
         return `
             <div class="spec-card">
                 <span class="spec-label">Inversor</span>
-                <span class="spec-value">${potencia} W</span>
+                <span class="spec-value">${potencia}<span class="unit-symbol">W</span></span>
                 <span class="spec-label">${qnt} Unidade(s)</span>
             </div>
         `;
@@ -104,7 +103,7 @@ function renderizarEquipamentos(dados, tipoProposta) {
     const modulosHtml = `
         <div class="spec-card">
             <span class="spec-label">Módulos</span>
-            <span class="spec-value">${findVar(dados, 'modulo_potencia', true)} W</span>
+            <span class="spec-value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
             <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
         </div>
     `;
@@ -155,7 +154,7 @@ function renderizarPadraoInstalacao(tipoProposta) {
 
 
 
-// Agora, substitua a função renderizarPadraoInstalacao por esta:
+// No seu app.js, substitua a função renderizarPadraoInstalacao por esta versão atualizada:
 function renderizarPadraoInstalacao(tipoProposta) {
     const installationTitle = document.getElementById('installation-title');
     const installationList = document.getElementById('installation-standard-list');
@@ -164,60 +163,65 @@ function renderizarPadraoInstalacao(tipoProposta) {
 
     if (tipoProposta === 'economica') {
         title = '<i class="fas fa-tools"></i> Padrão de Instalação';
-        // CORREÇÃO: Textos simplificados
         items = [
-            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio e aço inox' },
-            { icon: 'fa-check-circle', text: 'Cabeamento solar simples' },
-            { icon: 'fa-check-circle', text: 'Dispositivos de proteção (DPS) residencial' },
+            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
+            { icon: 'fa-check-circle', text: 'Cabeamento simples' },
+            { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
             { icon: 'fa-check-circle', text: 'Conectores padrão' },
+            { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária' }, // Adicionado para clareza
         ];
-        // CORREÇÃO: Etiqueta "Simples"
         tagHtml = '<span class="section-tag tag-simple">Simples</span>';
     } else { // Alta Performance
         title = '<i class="fas fa-award"></i> Padrão de Instalação';
         items = [
-            { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior' },
-            { icon: 'fa-star', text: 'Cabeamento solar com dupla isolação e alta durabilidade' },
-            { icon: 'fa-star', text: 'DPS de classe superior para máxima proteção contra surtos' },
-            { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli para perdas mínimas' },
-            { icon: 'fa-star', text: 'Organização e acabamento premium do cabeamento' },
+            // NOVO ITEM ADICIONADO AQUI
+            { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio por cabo de cobre, eliminando riscos de superaquecimento no medidor' },
+            { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
+            { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
+            { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
+            { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
         ];
-        // CORREÇÃO: Etiqueta "Premium"
         tagHtml = '<span class="section-tag tag-premium">Premium</span>';
     }
 
     installationTitle.innerHTML = `${title} ${tagHtml}`;
     installationList.innerHTML = items.map(item => `
-        <li><i class="fas ${item.icon}"></i> ${item.text}</li>
+        <li><i class="fas ${item.icon}"></i><span>${item.text}</span></li>
     `).join('');
 }
-    function renderizarProposta(dados, tipoProposta = 'performance') {
-        const clienteNome = document.getElementById('cliente-nome');
-        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-        const dataGeracao = document.getElementById('data-geracao');
-        const geracaoMensal = document.getElementById('geracao-mensal');
-        const potenciaSistema = document.getElementById('potencia-sistema');
-        const tipoInstalacao = document.getElementById('tipo-instalacao');
-        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-        const valorTotal = document.getElementById('valor-total');
-        const proposalValidity = document.getElementById('proposal-validity');
 
-        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
-        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-        geracaoMensal.textContent = `${findVar(dados, 'geracao_mensal', true)} kWh`;
-        potenciaSistema.textContent = `${findVar(dados, 'potencia_sistema', true)} kWp`;
-        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+// Agora, substitua a função renderizarProposta para adicionar a formatação das unidades:
+function renderizarProposta(dados, tipoProposta = 'performance') {
+    const clienteNome = document.getElementById('cliente-nome');
+    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+    const dataGeracao = document.getElementById('data-geracao');
+    const geracaoMensal = document.getElementById('geracao-mensal');
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const tipoInstalacao = document.getElementById('tipo-instalacao');
+    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+    const valorTotal = document.getElementById('valor-total');
+    const proposalValidity = document.getElementById('proposal-validity');
 
-        renderizarEquipamentos(dados, tipoProposta);
-        renderizarPadraoInstalacao(tipoProposta);
-        renderizarFinanciamento(dados);
-    }
+    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+
+    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+    
+    // CORREÇÃO: Adiciona a classe 'unit-symbol' às unidades
+    geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+    
+    valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+
+    renderizarEquipamentos(dados, tipoProposta);
+    renderizarPadraoInstalacao(tipoProposta);
+    renderizarFinanciamento(dados);
+}
 
     // --- Lógica Principal e Eventos ---
     async function handleSearch() {
