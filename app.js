@@ -241,49 +241,90 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
                 return;
             }
 
-            propostaOriginal = proposta;
-            propostaEconomica = JSON.parse(JSON.stringify(proposta));
+            // Dentro da função handleSearch, substitua as duas linhas acima por este bloco:
 
-            searchForm.style.display = 'none';
-            proposalHeader.style.display = 'block';
-            proposalDetailsSection.style.display = 'flex';
-            mainFooter.style.display = 'block';
+propostaOriginal = proposta;
+propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Começa como uma cópia exata
+
+// --- LÓGICA DE CÁLCULO DINÂMICO DA PROPOSTA ECONÔMICA ---
+try {
+    // --- 1. Parâmetros da Lógica de Negócio ---
+    const potenciaMin = 2;    // kWp
+    const potenciaMax = 100;  // kWp
+    const descontoMax = 0.097; // 9.7% para sistemas menores
+    const descontoMin = 0.07;  // 7.0% para sistemas maiores
+
+    // --- 2. Obter Dados da Proposta Original ---
+    const potenciaSistema = parseFloat(findVar(propostaOriginal, 'potencia_sistema'));
+    const precoOriginal = parseFloat(findVar(propostaOriginal, 'preco'));
+
+    if (isNaN(potenciaSistema) || isNaN(precoOriginal)) {
+        throw new Error("Potência do sistema ou preço original inválidos.");
+    }
+
+    // --- 3. Calcular o Percentual de Desconto Dinâmico (Interpolação Linear) ---
+    let percentualDesconto;
+    if (potenciaSistema <= potenciaMin) {
+        percentualDesconto = descontoMax;
+    } else if (potenciaSistema >= potenciaMax) {
+        percentualDesconto = descontoMin;
+    } else {
+        // Calcula a proporção da potência dentro da faixa
+        const proporcao = (potenciaSistema - potenciaMin) / (potenciaMax - potenciaMin);
+        // Interpola o desconto
+        percentualDesconto = descontoMax - proporcao * (descontoMax - descontoMin);
+    }
+
+    // --- 4. Calcular o Novo Preço e o Fator de Redução ---
+    const novoPreco = precoOriginal * (1 - percentualDesconto);
+    const fatorReducao = novoPreco / precoOriginal;
+
+    // --- 5. Atualizar o Preço na Proposta Econômica ---
+    const precoVarEco = propostaEconomica.variables.find(v => v.key === 'preco');
+    if (precoVarEco) {
+        precoVarEco.value = novoPreco.toString();
+        precoVarEco.formattedValue = novoPreco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // --- 6. Recalcular e Atualizar o Payback ---
+    const paybackVarEco = propostaEconomica.variables.find(v => v.key === 'payback');
+    if (paybackVarEco) {
+        // O payback é uma string como "2 anos e 5 meses". Vamos ajustar os meses.
+        const partes = paybackVarEco.value.match(/\d+/g); // Extrai os números
+        if (partes && partes.length > 0) {
+            const anos = parseInt(partes[0], 10) || 0;
+            const meses = parseInt(partes[1], 10) || 0;
+            const totalMesesOriginal = (anos * 12) + meses;
+            const totalMesesNovo = Math.round(totalMesesOriginal * fatorReducao);
             
-            renderizarProposta(propostaOriginal, 'performance');
-            blockFeatures();
-
-            const backToSearchBtn = document.getElementById('back-to-search-btn');
-backToSearchBtn.addEventListener('click', () => {
-    // --- LÓGICA DE RESET COMPLETO ---
-
-    // 1. Esconde as telas ativas
-    document.getElementById('proposal-details').style.display = 'none';
-    document.getElementById('proposal-header').style.display = 'none';
-    document.getElementById('expired-proposal-section').style.display = 'none';
-
-    // 2. Mostra a tela de busca inicial
-    document.getElementById('search-form').style.display = 'flex';
-
-    // 3. Reseta o campo de input e o botão de busca
-    const projectIdInput = document.getElementById('project-id');
-    const searchButton = document.getElementById('search-button');
-    projectIdInput.value = '';
-    searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-    searchButton.disabled = false;
-
-    // 4. CORREÇÃO: Reseta o tema visual para o padrão "Alta Performance"
-    document.body.classList.remove('theme-economic');
-    const btnAltaPerformance = document.getElementById('btn-alta-performance');
-    const btnEconomica = document.getElementById('btn-economica');
-    if (btnEconomica) btnEconomica.classList.remove('active');
-    if (btnAltaPerformance) btnAltaPerformance.classList.add('active');
-});
-
-        } catch (err) {
-            console.error("Erro na busca:", err);
-            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-            searchButton.disabled = false;
+            const novosAnos = Math.floor(totalMesesNovo / 12);
+            const novosMeses = totalMesesNovo % 12;
+            
+            paybackVarEco.value = `${novosAnos} anos e ${novosMeses} meses`;
+            paybackVarEco.formattedValue = paybackVarEco.value;
         }
+    }
+
+    // --- 7. Recalcular e Atualizar TODAS as Parcelas de Financiamento ---
+    const parcelasVarsEco = propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela'));
+    parcelasVarsEco.forEach(parcelaVar => {
+        const valorOriginal = parseFloat(parcelaVar.value);
+        if (!isNaN(valorOriginal)) {
+            const novoValor = valorOriginal * fatorReducao;
+            parcelaVar.value = novoValor.toString();
+            parcelaVar.formattedValue = novoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    });
+
+    console.log(`Proposta Econômica: Potência de ${potenciaSistema}kWp resultou em ${ (percentualDesconto * 100).toFixed(2) }% de desconto.`);
+    console.log(`Novo Preço: ${formatarMoeda(novoPreco)}`);
+
+} catch (calcError) {
+    console.error("Erro ao calcular a Proposta Econômica:", calcError);
+    // Em caso de erro, a proposta econômica permanece uma cópia da original, garantindo que a aplicação não quebre.
+}
+// --- FIM DA LÓGICA DE CÁLCULO ---
+
     }
 
     // --- Inicialização da Página ---
