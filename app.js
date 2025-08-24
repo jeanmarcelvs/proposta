@@ -1,6 +1,40 @@
+import { consultarProposta, notificarVisualizacao } from "./api.js";
 import { consultarProposta } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
+
+// --- Função para Observar a Seção de Investimento ---
+// --- Função para Observar a Seção de Investimento ---
+function observarVisualizacaoDePreco(projectId) {
+    const investmentSection = document.querySelector('.investment-section');
+    if (!investmentSection) return;
+
+    let jaEnviado = false;
+
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !jaEnviado) {
+            jaEnviado = true;
+            
+            console.log("Seção de investimento visível. Notificando backend...");
+
+            // CORREÇÃO: Chama a nova função simplificada
+            notificarVisualizacao(projectId)
+                .then(response => {
+                    console.log('Notificação enviada com sucesso:', response.data);
+                })
+                .catch(error => {
+                    console.error('Falha ao enviar notificação:', error);
+                });
+
+            observer.disconnect();
+        }
+    }, {
+        threshold: 0.5
+    });
+
+    observer.observe(investmentSection);
+}
+
 
     // --- Seletores do DOM ---
     const searchForm = document.getElementById('search-form');
@@ -266,6 +300,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('btn-economica').classList.remove('active');
                 document.getElementById('btn-alta-performance').classList.add('active');
             });
+
+
+		// ... (código que mostra as seções e renderiza a proposta) ...
+		renderizarProposta(propostaOriginal, 'performance');
+		blockFeatures();
+
+		// CORREÇÃO: Inicia o observador passando o ID do projeto e o NOME da proposta
+		observarVisualizacaoDePreco(proposta.project.id, proposta.name);
+
+		const backToSearchBtn = document.getElementById('back-to-search-btn');
+
+
+		// ... (código que mostra as seções e renderiza a proposta) ...
+		renderizarProposta(propostaOriginal, 'performance');
+		blockFeatures();
+
+		// A chamada continua correta, passando apenas o ID do projeto
+		observarVisualizacaoDePreco(proposta.project.id);
+
+		const backToSearchBtn = document.getElementById('back-to-search-btn');
+
+
 
         } catch (err) {
             console.error("Erro na busca:", err);
