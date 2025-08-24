@@ -1,9 +1,8 @@
 import { consultarProposta } from "./api.js";
 
-// A única coisa que faremos é esperar o HTML carregar completamente.
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Seletores do DOM (Agora é seguro pegar todos) ---
+    // --- Seletores do DOM ---
     const searchForm = document.getElementById('search-form');
     const proposalDetailsSection = document.getElementById('proposal-details');
     const expiredProposalSection = document.getElementById('expired-proposal-section');
@@ -69,159 +68,111 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    // No seu app.js, substitua a função renderizarEquipamentos por esta:
-// No seu app.js, substitua a função renderizarEquipamentos por esta:
-function renderizarEquipamentos(dados, tipoProposta) {
-    const equipmentContainer = document.getElementById('equipment-container');
-    const equipmentTitle = document.getElementById('equipment-title');
-    
-    equipmentTitle.innerHTML = tipoProposta === 'economica' 
-        ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
-        : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
+    function renderizarEquipamentos(dados, tipoProposta) {
+        const equipmentContainer = document.getElementById('equipment-container');
+        const equipmentTitle = document.getElementById('equipment-title');
+        
+        equipmentTitle.innerHTML = tipoProposta === 'economica' 
+            ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
+            : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
 
-    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
-    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
-    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
-    
-    let logoHtml = logoFileName 
-        ? `<img src="${logoFileName}" alt="Logo do equipamento">`
-        : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+        const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
+        const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+        const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+        
+        let logoHtml = logoFileName 
+            ? `<img src="${logoFileName}" alt="Logo do equipamento">`
+            : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-    let inversoresHtml = inversores.map(inv => {
-        const index = inv.key.split('_').pop();
-        const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
-        const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-        return `
+        let inversoresHtml = inversores.map(inv => {
+            const index = inv.key.split('_').pop();
+            const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
+            const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
+            return `
+                <div class="spec-card">
+                    <span class="spec-label">Inversor</span>
+                    <span class="spec-value">${potencia} W</span>
+                    <span class="spec-label">${qnt} Unidade(s)</span>
+                </div>
+            `;
+        }).join('');
+
+        const modulosHtml = `
             <div class="spec-card">
-                <span class="spec-label">Inversor</span>
-                <span class="spec-value">${potencia}<span class="unit-symbol">W</span></span>
-                <span class="spec-label">${qnt} Unidade(s)</span>
+                <span class="spec-label">Módulos</span>
+                <span class="spec-value">${findVar(dados, 'modulo_potencia', true)} W</span>
+                <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
             </div>
         `;
-    }).join('');
 
-    const modulosHtml = `
-        <div class="spec-card">
-            <span class="spec-label">Módulos</span>
-            <span class="spec-value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
-            <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
-        </div>
-    `;
-
-    equipmentContainer.innerHTML = `
-        <div class="equipment-logo-wrapper">${logoHtml}</div>
-        ${inversoresHtml}
-        ${modulosHtml}
-    `;
-}
-
-// Adicione esta nova função logo após a função renderizarEquipamentos
-function renderizarPadraoInstalacao(tipoProposta) {
-    const installationTitle = document.getElementById('installation-title');
-    const installationList = document.getElementById('installation-standard-list');
-    
-    let title, items, tagHtml;
-
-    if (tipoProposta === 'economica') {
-        title = '<i class="fas fa-tools"></i> Padrão de Instalação';
-        // Textos simplificados para a proposta econômica
-        items = [
-            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
-            { icon: 'fa-check-circle', text: 'Cabeamento simples' },
-            { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
-            { icon: 'fa-check-circle', text: 'Conectores simples' },
-        ];
-        // Etiqueta "Simples"
-        tagHtml = '<span class="section-tag tag-simple">Simples</span>';
-    } else { // Alta Performance
-        title = '<i class="fas fa-award"></i> Padrão de Instalação';
-        items = [
-            { icon: 'fa-star', text: ' Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
-            { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
-            { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus eletrodomésticos/equipamentos de picos de energia' },
-            { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e evitam o superaquecimento, garantindo a eficiência do seu sistema por muito mais tempo' },
-            
-        ];
-        // Etiqueta "Premium"
-        tagHtml = '<span class="section-tag tag-premium">Premium</span>';
+        equipmentContainer.innerHTML = `
+            <div class="equipment-logo-wrapper">${logoHtml}</div>
+            ${inversoresHtml}
+            ${modulosHtml}
+        `;
     }
 
-    installationTitle.innerHTML = `${title} ${tagHtml}`;
-    installationList.innerHTML = items.map(item => `
-        <li><i class="fas ${item.icon}"></i> ${item.text}</li>
-    `).join('');
-}
+    function renderizarPadraoInstalacao(tipoProposta) {
+        const installationTitle = document.getElementById('installation-title');
+        const installationList = document.getElementById('installation-standard-list');
+        
+        let title, items, tagHtml;
 
+        if (tipoProposta === 'economica') {
+            title = '<i class="fas fa-tools"></i> Padrão de Instalação';
+            items = [
+                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
+                { icon: 'fa-check-circle', text: 'Cabeamento simples' },
+                { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
+                { icon: 'fa-check-circle', text: 'Conectores simples' },
+                { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária' },
+            ];
+            tagHtml = '<span class="section-tag tag-simple">Simples</span>';
+        } else { // Alta Performance
+            title = '<i class="fas fa-award"></i> Padrão de Instalação';
+            items = [
+                { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio por cabo de cobre, eliminando riscos de superaquecimento no medidor' },
+                { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
+                { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
+                { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
+                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
+            ];
+            tagHtml = '<span class="section-tag tag-premium">Premium</span>';
+        }
 
-
-// No seu app.js, substitua a função renderizarPadraoInstalacao por esta versão atualizada:
-function renderizarPadraoInstalacao(tipoProposta) {
-    const installationTitle = document.getElementById('installation-title');
-    const installationList = document.getElementById('installation-standard-list');
-    
-    let title, items, tagHtml;
-
-    if (tipoProposta === 'economica') {
-        title = '<i class="fas fa-tools"></i> Padrão de Instalação';
-        items = [
-            { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio simples' },
-            { icon: 'fa-check-circle', text: 'Cabeamento simples' },
-            { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
-            { icon: 'fa-check-circle', text: 'Conectores simples' },
-            { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária de energia, geralmente de alumínio' }, // Adicionado para clareza
-        ];
-        tagHtml = '<span class="section-tag tag-simple">Simples</span>';
-    } else { // Alta Performance
-        title = '<i class="fas fa-award"></i> Padrão de Instalação';
-        items = [
-            // NOVO ITEM ADICIONADO AQUI
-            { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
-            { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
-            { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio da concessionária de energia por ramal de cobre, reduzindo riscos de superaquecimento nos terminais do medidor, reduzindo a possibilidade de incêndio' },
-            { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
-            { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
-        ];
-        tagHtml = '<span class="section-tag tag-premium">Premium</span>';
+        installationTitle.innerHTML = `${title} ${tagHtml}`;
+        installationList.innerHTML = items.map(item => `
+            <li><i class="fas ${item.icon}"></i><span>${item.text}</span></li>
+        `).join('');
     }
 
-    installationTitle.innerHTML = `${title} ${tagHtml}`;
-    installationList.innerHTML = items.map(item => `
-        <li><i class="fas ${item.icon}"></i><span>${item.text}</span></li>
-    `).join('');
-}
+    function renderizarProposta(dados, tipoProposta = 'performance') {
+        const clienteNome = document.getElementById('cliente-nome');
+        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+        const dataGeracao = document.getElementById('data-geracao');
+        const geracaoMensal = document.getElementById('geracao-mensal');
+        const potenciaSistema = document.getElementById('potencia-sistema');
+        const tipoInstalacao = document.getElementById('tipo-instalacao');
+        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+        const valorTotal = document.getElementById('valor-total');
+        const proposalValidity = document.getElementById('proposal-validity');
 
+        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
-// Agora, substitua a função renderizarProposta para adicionar a formatação das unidades:
-function renderizarProposta(dados, tipoProposta = 'performance') {
-    const clienteNome = document.getElementById('cliente-nome');
-    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-    const dataGeracao = document.getElementById('data-geracao');
-    const geracaoMensal = document.getElementById('geracao-mensal');
-    const potenciaSistema = document.getElementById('potencia-sistema');
-    const tipoInstalacao = document.getElementById('tipo-instalacao');
-    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-    const valorTotal = document.getElementById('valor-total');
-    const proposalValidity = document.getElementById('proposal-validity');
+        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+        geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+        potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
 
-    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
-
-    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-    
-    // CORREÇÃO: Adiciona a classe 'unit-symbol' às unidades
-    geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-    
-    valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
-
-    renderizarEquipamentos(dados, tipoProposta);
-    renderizarPadraoInstalacao(tipoProposta);
-    renderizarFinanciamento(dados);
-}
+        renderizarEquipamentos(dados, tipoProposta);
+        renderizarPadraoInstalacao(tipoProposta);
+        renderizarFinanciamento(dados);
+    }
 
     // --- Lógica Principal e Eventos ---
     async function handleSearch() {
@@ -241,98 +192,91 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
                 return;
             }
 
-            // Dentro da função handleSearch, substitua as duas linhas acima por este bloco:
+            // --- CORREÇÃO: LÓGICA DE CÁLCULO MOVEMOS PARA DENTRO DO TRY ---
+            propostaOriginal = proposta;
+            propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Começa como uma cópia exata
 
-propostaOriginal = proposta;
-propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Começa como uma cópia exata
+            try {
+                const potenciaMin = 2, potenciaMax = 100, descontoMax = 0.097, descontoMin = 0.07;
+                const potenciaSistema = parseFloat(findVar(propostaOriginal, 'potencia_sistema'));
+                const precoOriginal = parseFloat(findVar(propostaOriginal, 'preco'));
 
-// --- LÓGICA DE CÁLCULO DINÂMICO DA PROPOSTA ECONÔMICA ---
-try {
-    // --- 1. Parâmetros da Lógica de Negócio ---
-    const potenciaMin = 2;    // kWp
-    const potenciaMax = 100;  // kWp
-    const descontoMax = 0.097; // 9.7% para sistemas menores
-    const descontoMin = 0.07;  // 7.0% para sistemas maiores
+                if (isNaN(potenciaSistema) || isNaN(precoOriginal)) throw new Error("Dados inválidos para cálculo.");
 
-    // --- 2. Obter Dados da Proposta Original ---
-    const potenciaSistema = parseFloat(findVar(propostaOriginal, 'potencia_sistema'));
-    const precoOriginal = parseFloat(findVar(propostaOriginal, 'preco'));
+                let percentualDesconto;
+                if (potenciaSistema <= potenciaMin) percentualDesconto = descontoMax;
+                else if (potenciaSistema >= potenciaMax) percentualDesconto = descontoMin;
+                else {
+                    const proporcao = (potenciaSistema - potenciaMin) / (potenciaMax - potenciaMin);
+                    percentualDesconto = descontoMax - proporcao * (descontoMax - descontoMin);
+                }
 
-    if (isNaN(potenciaSistema) || isNaN(precoOriginal)) {
-        throw new Error("Potência do sistema ou preço original inválidos.");
-    }
+                const novoPreco = precoOriginal * (1 - percentualDesconto);
+                const fatorReducao = novoPreco / precoOriginal;
 
-    // --- 3. Calcular o Percentual de Desconto Dinâmico (Interpolação Linear) ---
-    let percentualDesconto;
-    if (potenciaSistema <= potenciaMin) {
-        percentualDesconto = descontoMax;
-    } else if (potenciaSistema >= potenciaMax) {
-        percentualDesconto = descontoMin;
-    } else {
-        // Calcula a proporção da potência dentro da faixa
-        const proporcao = (potenciaSistema - potenciaMin) / (potenciaMax - potenciaMin);
-        // Interpola o desconto
-        percentualDesconto = descontoMax - proporcao * (descontoMax - descontoMin);
-    }
+                const precoVarEco = propostaEconomica.variables.find(v => v.key === 'preco');
+                if (precoVarEco) {
+                    precoVarEco.value = novoPreco.toString();
+                    precoVarEco.formattedValue = novoPreco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                }
 
-    // --- 4. Calcular o Novo Preço e o Fator de Redução ---
-    const novoPreco = precoOriginal * (1 - percentualDesconto);
-    const fatorReducao = novoPreco / precoOriginal;
+                const paybackVarEco = propostaEconomica.variables.find(v => v.key === 'payback');
+                if (paybackVarEco) {
+                    const partes = paybackVarEco.value.match(/\d+/g);
+                    if (partes && partes.length > 0) {
+                        const totalMesesOriginal = (parseInt(partes[0], 10) || 0) * 12 + (parseInt(partes[1], 10) || 0);
+                        const totalMesesNovo = Math.round(totalMesesOriginal * fatorReducao);
+                        paybackVarEco.value = `${Math.floor(totalMesesNovo / 12)} anos e ${totalMesesNovo % 12} meses`;
+                        paybackVarEco.formattedValue = paybackVarEco.value;
+                    }
+                }
 
-    // --- 5. Atualizar o Preço na Proposta Econômica ---
-    const precoVarEco = propostaEconomica.variables.find(v => v.key === 'preco');
-    if (precoVarEco) {
-        precoVarEco.value = novoPreco.toString();
-        precoVarEco.formattedValue = novoPreco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
+                propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela')).forEach(parcelaVar => {
+                    const valorOriginal = parseFloat(parcelaVar.value);
+                    if (!isNaN(valorOriginal)) {
+                        const novoValor = valorOriginal * fatorReducao;
+                        parcelaVar.value = novoValor.toString();
+                        parcelaVar.formattedValue = novoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                });
+                console.log(`Proposta Econômica calculada com ${ (percentualDesconto * 100).toFixed(2) }% de desconto.`);
+            } catch (calcError) {
+                console.error("Erro ao calcular Proposta Econômica:", calcError);
+            }
+            // --- FIM DA LÓGICA DE CÁLCULO ---
 
-    // --- 6. Recalcular e Atualizar o Payback ---
-    const paybackVarEco = propostaEconomica.variables.find(v => v.key === 'payback');
-    if (paybackVarEco) {
-        // O payback é uma string como "2 anos e 5 meses". Vamos ajustar os meses.
-        const partes = paybackVarEco.value.match(/\d+/g); // Extrai os números
-        if (partes && partes.length > 0) {
-            const anos = parseInt(partes[0], 10) || 0;
-            const meses = parseInt(partes[1], 10) || 0;
-            const totalMesesOriginal = (anos * 12) + meses;
-            const totalMesesNovo = Math.round(totalMesesOriginal * fatorReducao);
+            searchForm.style.display = 'none';
+            proposalHeader.style.display = 'block';
+            proposalDetailsSection.style.display = 'flex';
+            mainFooter.style.display = 'block';
             
-            const novosAnos = Math.floor(totalMesesNovo / 12);
-            const novosMeses = totalMesesNovo % 12;
-            
-            paybackVarEco.value = `${novosAnos} anos e ${novosMeses} meses`;
-            paybackVarEco.formattedValue = paybackVarEco.value;
+            renderizarProposta(propostaOriginal, 'performance');
+            blockFeatures();
+
+            const backToSearchBtn = document.getElementById('back-to-search-btn');
+            backToSearchBtn.addEventListener('click', () => {
+                proposalDetailsSection.style.display = 'none';
+                proposalHeader.style.display = 'none';
+                expiredProposalSection.style.display = 'none';
+                searchForm.style.display = 'flex';
+                projectIdInput.value = '';
+                searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+                searchButton.disabled = false;
+                document.body.classList.remove('theme-economic');
+                document.getElementById('btn-economica').classList.remove('active');
+                document.getElementById('btn-alta-performance').classList.add('active');
+            });
+
+        } catch (err) {
+            console.error("Erro na busca:", err);
+            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+            searchButton.disabled = false;
         }
-    }
-
-    // --- 7. Recalcular e Atualizar TODAS as Parcelas de Financiamento ---
-    const parcelasVarsEco = propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela'));
-    parcelasVarsEco.forEach(parcelaVar => {
-        const valorOriginal = parseFloat(parcelaVar.value);
-        if (!isNaN(valorOriginal)) {
-            const novoValor = valorOriginal * fatorReducao;
-            parcelaVar.value = novoValor.toString();
-            parcelaVar.formattedValue = novoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-    });
-
-    console.log(`Proposta Econômica: Potência de ${potenciaSistema}kWp resultou em ${ (percentualDesconto * 100).toFixed(2) }% de desconto.`);
-    console.log(`Novo Preço: ${formatarMoeda(novoPreco)}`);
-
-} catch (calcError) {
-    console.error("Erro ao calcular a Proposta Econômica:", calcError);
-    // Em caso de erro, a proposta econômica permanece uma cópia da original, garantindo que a aplicação não quebre.
-}
-// --- FIM DA LÓGICA DE CÁLCULO ---
-
     }
 
     // --- Inicialização da Página ---
-    
-    // Adiciona o listener ao botão de busca principal. Agora é seguro.
     searchButton.addEventListener('click', handleSearch);
 
-    // Cria o cabeçalho dinamicamente
     proposalHeader.innerHTML = `
         <div class="header__container">
             <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
@@ -342,7 +286,6 @@ try {
             </div>
         </div>`;
     
-    // Atribui e adiciona eventos aos botões do cabeçalho
     const btnAltaPerformance = document.getElementById('btn-alta-performance');
     const btnEconomica = document.getElementById('btn-economica');
 
@@ -361,18 +304,13 @@ try {
         if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
     });
 
-    // Adiciona o link do WhatsApp dinamicamente
     const phoneNumber = "5582994255946";
     const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
     document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
 
-    // Configura a visibilidade inicial das seções
-    searchForm.style.display = 'flex';
-
-    // Configura a visibilidade inicial das seções
     searchForm.style.display = 'flex';
     proposalDetailsSection.style.display = 'none';
     expiredProposalSection.style.display = 'none';
     proposalHeader.style.display = 'none';
     mainFooter.style.display = 'block';
-});
+} );
