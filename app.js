@@ -1,8 +1,8 @@
-import { consultarProposta, notificarVisualizacao } from "./api.js";
+import { consultarProposta, registrarEvento } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Seletores do DOM (Declarados uma única vez) ---
+    // --- Seletores do DOM ---
     const searchForm = document.getElementById('search-form');
     const proposalDetailsSection = document.getElementById('proposal-details');
     const expiredProposalSection = document.getElementById('expired-proposal-section');
@@ -10,10 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectIdInput = document.getElementById('project-id');
     const searchButton = document.getElementById('search-button');
     const mainFooter = document.getElementById('main-footer');
-    const backToSearchBtn = document.getElementById('back-to-search-btn'); // Declarado aqui
+    const backToSearchBtn = document.getElementById('back-to-search-btn');
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
+    let priceObserver; // Variável para guardar nosso observador
 
     // --- Mapa de Logos ---
     const logoMap = { 'huawei': 'logo1.png' };
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!variable) return 'N/A';
         return useFormatted && variable.formattedValue ? variable.formattedValue : variable.value;
     };
+    const getTimestamp = () => new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
     // --- Funções de Renderização ---
     function renderizarFinanciamento(dados) {
@@ -175,22 +177,35 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarFinanciamento(dados);
     }
 
-    function observarVisualizacaoDePreco(projectId) {
+    // --- LÓGICA DE TRACKING AVANÇADA ---
+    function criarObservadorDePreco(projectId, tipoProposta) {
+        if (priceObserver) {
+            priceObserver.disconnect();
+        }
+
         const investmentSection = document.querySelector('.investment-section');
         if (!investmentSection) return;
 
-        let jaEnviado = false;
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !jaEnviado) {
-                jaEnviado = true;
-                console.log("Seção de investimento visível. Notificando backend...");
-                notificarVisualizacao(projectId)
-                    .then(response => console.log('Notificação enviada com sucesso:', response.data))
-                    .catch(error => console.error('Falha ao enviar notificação:', error));
-                observer.disconnect();
+        let isVisible = false;
+
+        priceObserver = new IntersectionObserver((entries) => {
+            const entry = entries[0];
+            if (entry.isIntersecting && !isVisible) {
+                isVisible = true;
+                const mensagem = `[${getTimestamp()}] Visualizou Preço (${tipoProposta})`;
+                console.log(mensagem);
+                registrarEvento(projectId, mensagem).catch(console.error);
+            } else if (!entry.isIntersecting && isVisible) {
+                isVisible = false;
+                const mensagem = `[${getTimestamp()}] Saiu da visualização do Preço (${tipoProposta})`;
+                console.log(mensagem);
+                registrarEvento(projectId, mensagem).catch(console.error);
             }
-        }, { threshold: 0.5 });
-        observer.observe(investmentSection);
+        }, {
+            threshold: [0.4, 0.6]
+        });
+
+        priceObserver.observe(investmentSection);
     }
 
     // --- Lógica Principal e Eventos ---
@@ -269,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             renderizarProposta(propostaOriginal, 'performance');
             blockFeatures();
-            observarVisualizacaoDePreco(proposta.project.id);
+            criarObservadorDePreco(proposta.project.id, 'Alta Performance');
 
         } catch (err) {
             console.error("Erro na busca:", err);
@@ -282,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     searchButton.addEventListener('click', handleSearch);
 
     backToSearchBtn.addEventListener('click', () => {
+        if (priceObserver) priceObserver.disconnect();
         proposalDetailsSection.style.display = 'none';
         proposalHeader.style.display = 'none';
         expiredProposalSection.style.display = 'none';
@@ -290,8 +306,10 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
         searchButton.disabled = false;
         document.body.classList.remove('theme-economic');
-        document.getElementById('btn-economica').classList.remove('active');
-        document.getElementById('btn-alta-performance').classList.add('active');
+        const btnAltaPerformance = document.getElementById('btn-alta-performance');
+        const btnEconomica = document.getElementById('btn-economica');
+        if (btnEconomica) btnEconomica.classList.remove('active');
+        if (btnAltaPerformance) btnAltaPerformance.classList.add('active');
     });
 
     proposalHeader.innerHTML = `
@@ -311,14 +329,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('theme-economic');
         btnEconomica.classList.remove('active');
         btnAltaPerformance.classList.add('active');
-        if (propostaOriginal) renderizarProposta(propostaOriginal, 'performance');
+        if (propostaOriginal) {
+            renderizarProposta(propostaOriginal, 'performance');
+            criarObservadorDePreco(propostaOriginal.project.id, 'Alta Performance');
+        }
     });
+
     btnEconomica.addEventListener('click', () => {
         if (btnEconomica.classList.contains('active')) return;
+        
+        const mensagemClique = `[${getTimestamp()}] Clicou em Proposta Econômica`;
+        console.log(mensagemClique);
+        registrarEvento(propostaOriginal.project.id, mensagemClique).catch(console.error);
+
         document.body.classList.add('theme-economic');
         btnAltaPerformance.classList.remove('active');
         btnEconomica.classList.add('active');
-        if (propostaEconomica) renderizarProposta(propostaEconomica, 'economica');
+        if (propostaEconomica) {
+            renderizarProposta(propostaEconomica, 'economica');
+            criarObservadorDePreco(propostaEconomica.project.id, 'Econômica');
+        }
     });
 
     const phoneNumber = "5582994255946";

@@ -34,37 +34,38 @@ module.exports = async (req, res) => {
     const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
     
     try {
-        // CORREÇÃO: O backend agora só precisa do projectId
-        const { projectId } = req.body;
+        // O frontend agora envia o projectId e a MENSAGEM do evento
+        const { projectId, eventMessage } = req.body;
 
-        if (!projectId ) {
-            return res.status(400).json({ error: 'projectId é obrigatório.' });
+        if (!projectId || !eventMessage ) {
+            return res.status(400).json({ error: 'projectId e eventMessage são obrigatórios.' });
         }
 
         const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
         
-        // --- LÓGICA REFINADA ---
-        // 1. Buscar os dados da proposta para obter o nome
-        const proposalsUrl = `${SOLARMARKET_API_URL}/projects/${projectId}/proposals`;
-        const proposalsResponse = await fetch(proposalsUrl, {
+        // --- LÓGICA DE CONCATENAÇÃO ---
+        // 1. Buscar os dados atuais do projeto para obter a descrição existente
+        const projectUrl = `${SOLARMARKET_API_URL}/projects/${projectId}`;
+        const projectResponse = await fetch(projectUrl, {
             headers: { 'Authorization': `Bearer ${accessToken}`, 'accept': 'application/json' }
         });
-        if (!proposalsResponse.ok) throw new Error('Não foi possível buscar a proposta para obter o nome.');
+        if (!projectResponse.ok) throw new Error('Não foi possível buscar o projeto para obter a descrição atual.');
         
-        const proposalsData = await proposalsResponse.json();
-        // A API retorna a proposta mais recente, então podemos pegar o nome dela
-        const proposalName = proposalsData.data?.name;
+        const projectData = await projectResponse.json();
+        const currentDescription = projectData.data?.description || '';
 
-        if (!proposalName) throw new Error('Nome da proposta não encontrado.');
+        // 2. Montar a nova descrição concatenando o evento
+        // Usamos '\n' para criar uma nova linha para cada evento
+        const newDescription = currentDescription 
+            ? `${currentDescription}\n${eventMessage}` 
+            : eventMessage;
 
-        // 2. Montar o payload com a string correta
+        // 3. Montar o payload e enviar a atualização
         const updatePayload = {
-            description: `Cliente Visualizou: ${proposalName}`
+            description: newDescription
         };
 
-        // 3. Enviar a atualização
-        const updateUrl = `${SOLARMARKET_API_URL}/projects/${projectId}`;
-        const updateResponse = await fetch(updateUrl, {
+        const updateResponse = await fetch(projectUrl, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
