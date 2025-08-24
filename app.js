@@ -2,40 +2,7 @@ import { consultarProposta, notificarVisualizacao } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
-// --- Função para Observar a Seção de Investimento ---
-// --- Função para Observar a Seção de Investimento ---
-function observarVisualizacaoDePreco(projectId) {
-    const investmentSection = document.querySelector('.investment-section');
-    if (!investmentSection) return;
-
-    let jaEnviado = false;
-
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !jaEnviado) {
-            jaEnviado = true;
-            
-            console.log("Seção de investimento visível. Notificando backend...");
-
-            // CORREÇÃO: Chama a nova função simplificada
-            notificarVisualizacao(projectId)
-                .then(response => {
-                    console.log('Notificação enviada com sucesso:', response.data);
-                })
-                .catch(error => {
-                    console.error('Falha ao enviar notificação:', error);
-                });
-
-            observer.disconnect();
-        }
-    }, {
-        threshold: 0.5
-    });
-
-    observer.observe(investmentSection);
-}
-
-
-    // --- Seletores do DOM ---
+    // --- Seletores do DOM (Declarados uma única vez) ---
     const searchForm = document.getElementById('search-form');
     const proposalDetailsSection = document.getElementById('proposal-details');
     const expiredProposalSection = document.getElementById('expired-proposal-section');
@@ -43,6 +10,7 @@ function observarVisualizacaoDePreco(projectId) {
     const projectIdInput = document.getElementById('project-id');
     const searchButton = document.getElementById('search-button');
     const mainFooter = document.getElementById('main-footer');
+    const backToSearchBtn = document.getElementById('back-to-search-btn'); // Declarado aqui
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
@@ -124,7 +92,7 @@ function observarVisualizacaoDePreco(projectId) {
             return `
                 <div class="spec-card">
                     <span class="spec-label">Inversor</span>
-                    <span class="spec-value">${potencia} W</span>
+                    <span class="spec-value">${potencia}<span class="unit-symbol">W</span></span>
                     <span class="spec-label">${qnt} Unidade(s)</span>
                 </div>
             `;
@@ -133,7 +101,7 @@ function observarVisualizacaoDePreco(projectId) {
         const modulosHtml = `
             <div class="spec-card">
                 <span class="spec-label">Módulos</span>
-                <span class="spec-value">${findVar(dados, 'modulo_potencia', true)} W</span>
+                <span class="spec-value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
                 <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
             </div>
         `;
@@ -154,21 +122,21 @@ function observarVisualizacaoDePreco(projectId) {
         if (tipoProposta === 'economica') {
             title = '<i class="fas fa-tools"></i> Padrão de Instalação';
             items = [
-                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio simples' },
+                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
                 { icon: 'fa-check-circle', text: 'Cabeamento simples' },
                 { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
-                { icon: 'fa-check-circle', text: 'Conectores simples' },
-                { icon: 'fa-check-circle', text: 'Ramal de conexão mantido conforme padrão da concessionária de energia, geralmente de alumínio e de bitola inferior ao recomendado' },
+                { icon: 'fa-check-circle', text: 'Conectores padrão' },
+                { icon: 'fa-check-circle', text: 'Ramal de conexão (entrada) mantido conforme padrão da concessionária' },
             ];
             tagHtml = '<span class="section-tag tag-simple">Simples</span>';
         } else { // Alta Performance
             title = '<i class="fas fa-award"></i> Padrão de Instalação';
             items = [
-                { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio da concessionária por ramal de cobre e de bitola adequada ao sistema, reduzindo perdas de geração, riscos de superaquecimento e incêndio no medidor' },
+                { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio da concessionária por cabo de cobre, eliminando riscos de superaquecimento e incêndio no seu medidor' },
                 { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
                 { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
                 { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
-                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia gerada, aumenta a segurança contra incêndios e garantem a máxima eficiência do sistema' },
+                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
             ];
             tagHtml = '<span class="section-tag tag-premium">Premium</span>';
         }
@@ -207,6 +175,24 @@ function observarVisualizacaoDePreco(projectId) {
         renderizarFinanciamento(dados);
     }
 
+    function observarVisualizacaoDePreco(projectId) {
+        const investmentSection = document.querySelector('.investment-section');
+        if (!investmentSection) return;
+
+        let jaEnviado = false;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !jaEnviado) {
+                jaEnviado = true;
+                console.log("Seção de investimento visível. Notificando backend...");
+                notificarVisualizacao(projectId)
+                    .then(response => console.log('Notificação enviada com sucesso:', response.data))
+                    .catch(error => console.error('Falha ao enviar notificação:', error));
+                observer.disconnect();
+            }
+        }, { threshold: 0.5 });
+        observer.observe(investmentSection);
+    }
+
     // --- Lógica Principal e Eventos ---
     async function handleSearch() {
         if (!/^[0-9]{1,6}$/.test(projectIdInput.value.trim())) return;
@@ -225,9 +211,8 @@ function observarVisualizacaoDePreco(projectId) {
                 return;
             }
 
-            // --- CORREÇÃO: LÓGICA DE CÁLCULO MOVEMOS PARA DENTRO DO TRY ---
             propostaOriginal = proposta;
-            propostaEconomica = JSON.parse(JSON.stringify(proposta)); // Começa como uma cópia exata
+            propostaEconomica = JSON.parse(JSON.stringify(proposta));
 
             try {
                 const potenciaMin = 2, potenciaMax = 100, descontoMax = 0.097, descontoMin = 0.07;
@@ -276,7 +261,6 @@ function observarVisualizacaoDePreco(projectId) {
             } catch (calcError) {
                 console.error("Erro ao calcular Proposta Econômica:", calcError);
             }
-            // --- FIM DA LÓGICA DE CÁLCULO ---
 
             searchForm.style.display = 'none';
             proposalHeader.style.display = 'block';
@@ -285,42 +269,7 @@ function observarVisualizacaoDePreco(projectId) {
             
             renderizarProposta(propostaOriginal, 'performance');
             blockFeatures();
-
-            const backToSearchBtn = document.getElementById('back-to-search-btn');
-            backToSearchBtn.addEventListener('click', () => {
-                proposalDetailsSection.style.display = 'none';
-                proposalHeader.style.display = 'none';
-                expiredProposalSection.style.display = 'none';
-                searchForm.style.display = 'flex';
-                projectIdInput.value = '';
-                searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-                searchButton.disabled = false;
-                document.body.classList.remove('theme-economic');
-                document.getElementById('btn-economica').classList.remove('active');
-                document.getElementById('btn-alta-performance').classList.add('active');
-            });
-
-
-		// ... (código que mostra as seções e renderiza a proposta) ...
-		renderizarProposta(propostaOriginal, 'performance');
-		blockFeatures();
-
-		// CORREÇÃO: Inicia o observador passando o ID do projeto e o NOME da proposta
-		observarVisualizacaoDePreco(proposta.project.id, proposta.name);
-
-		const backToSearchBtn = document.getElementById('back-to-search-btn');
-
-
-		// ... (código que mostra as seções e renderiza a proposta) ...
-		renderizarProposta(propostaOriginal, 'performance');
-		blockFeatures();
-
-		// A chamada continua correta, passando apenas o ID do projeto
-		observarVisualizacaoDePreco(proposta.project.id);
-
-		const backToSearchBtn = document.getElementById('back-to-search-btn');
-
-
+            observarVisualizacaoDePreco(proposta.project.id);
 
         } catch (err) {
             console.error("Erro na busca:", err);
@@ -329,8 +278,21 @@ function observarVisualizacaoDePreco(projectId) {
         }
     }
 
-    // --- Inicialização da Página ---
+    // --- Inicialização da Página e Eventos ---
     searchButton.addEventListener('click', handleSearch);
+
+    backToSearchBtn.addEventListener('click', () => {
+        proposalDetailsSection.style.display = 'none';
+        proposalHeader.style.display = 'none';
+        expiredProposalSection.style.display = 'none';
+        searchForm.style.display = 'flex';
+        projectIdInput.value = '';
+        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
+        searchButton.disabled = false;
+        document.body.classList.remove('theme-economic');
+        document.getElementById('btn-economica').classList.remove('active');
+        document.getElementById('btn-alta-performance').classList.add('active');
+    });
 
     proposalHeader.innerHTML = `
         <div class="header__container">
