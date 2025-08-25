@@ -258,15 +258,6 @@ a#whatsapp-link:hover i {
     .client-header__subtitle {
         font-size: 1rem;
     }
-
-    /* Espaçamento responsivo para o painel de pesquisa */
-    .search-card__logo-container {
-        margin-bottom: 0.5rem;
-    }
-
-    .search-card__panel input {
-        width: 100%;
-    }
 }
 
 /* --- CORREÇÃO DE COR PARA O NOME DO CLIENTE --- */
@@ -548,17 +539,4 @@ body.theme-economic .header-summary {
 
 body.theme-economic .summary-card:first-child {
     border-right-color: var(--color-border);
-}
-
-/* NOVO: Estilo para o disclaimer do financiamento */
-.financing-disclaimer {
-    margin-top: 2rem;
-    padding: 1rem;
-    font-size: 0.9rem;
-    font-style: italic;
-    color: var(--color-text-light);
-    border-left: 4px solid var(--color-secondary);
-    background-color: var(--color-background);
-    border-radius: var(--border-radius);
-    text-align: left;
 }
