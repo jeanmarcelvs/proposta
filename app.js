@@ -231,17 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
         const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
 
-        const parcelasPerformance = propostaOriginal.variables.filter(v => v.key.startsWith('f_parcela'));
-        const menorParcelaObjP = parcelasPerformance.reduce((prev, curr) => (parseFloat(curr.value) < parseFloat(prev.value) ? curr : prev));
-        const keyPrazoP = menorParcelaObjP.key.replace('parcela', 'prazo');
-        const prazoMenorParcelaP = propostaOriginal.variables.find(v => v.key === keyPrazoP)?.value;
-        const menorParcelaPerformance = parseFloat(menorParcelaObjP.value);
+        const prazosP = propostaOriginal.variables
+            .filter(v => v.key.startsWith('f_prazo_') && !isNaN(parseInt(v.value, 10)))
+            .map(v => parseInt(v.value, 10));
+        const prazoMaxP = Math.max(...prazosP);
 
-        const parcelasEconomica = propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela'));
-        const menorParcelaObjE = parcelasEconomica.reduce((prev, curr) => (parseFloat(curr.value) < parseFloat(prev.value) ? curr : prev));
-        const keyPrazoE = menorParcelaObjE.key.replace('parcela', 'prazo');
-        const prazoMenorParcelaE = propostaEconomica.variables.find(v => v.key === keyPrazoE)?.value;
-        const menorParcelaEconomica = parseFloat(menorParcelaObjE.value);
+        const prazosE = propostaEconomica.variables
+            .filter(v => v.key.startsWith('f_prazo_') && !isNaN(parseInt(v.value, 10)))
+            .map(v => parseInt(v.value, 10));
+        const prazoMaxE = Math.max(...prazosE);
         
         headerSummary.innerHTML = `
             <div id="summary-card-performance" class="summary-card summary-card--premium">
@@ -249,14 +247,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
-                <span class="installment-info">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
+                <span class="installment-info">ou até ${prazoMaxP}x</span>
             </div>
             <div id="summary-card-economica" class="summary-card summary-card--economic">
                 <span class="card-title">Econômica</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
                 </div>
-                <span class="installment-info">ou ${prazoMenorParcelaE}x de ${formatarMoeda(menorParcelaEconomica)}</span>
+                <span class="installment-info">ou até ${prazoMaxE}x</span>
             </div>
         `;
         
