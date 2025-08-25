@@ -122,39 +122,69 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    function renderizarPadraoInstalacao(tipoProposta) {
-        const installationTitle = document.getElementById('installation-title');
-        const installationList = document.getElementById('installation-standard-list');
-        
-        let title, items, tagHtml;
+    // DENTRO DE app.js
 
-        if (tipoProposta === 'economica') {
-            title = '<i class="fas fa-tools"></i> Padrão de Instalação';
-            items = [
-                { icon: 'fa-check-circle', text: 'Estruturas de fixação em alumínio' },
-                { icon: 'fa-check-circle', text: 'Cabeamento simples' },
-                { icon: 'fa-check-circle', text: 'Dispositivos de proteção residencial simples' },
-                { icon: 'fa-check-circle', text: 'Conectores padrão' },
-                { icon: 'fa-check-circle', text: 'Ramal de conexão (entrada) mantido conforme padrão da concessionária' },
-            ];
-            tagHtml = '<span class="section-tag tag-simple">Simples</span>';
-        } else { // Alta Performance
-            title = '<i class="fas fa-award"></i> Padrão de Instalação';
-            items = [
-                { icon: 'fa-bolt', text: 'Substituição do ramal de alumínio da concessionária por cabo de cobre, eliminando riscos de superaquecimento e incêndio no seu medidor' },
-                { icon: 'fa-star', text: 'Estruturas reforçadas com tratamento anticorrosivo superior para resistir ao tempo e às intempéries' },
-                { icon: 'fa-star', text: 'Cabeamento solar específico com dupla isolação, garantindo durabilidade e proteção extra' },
-                { icon: 'fa-star', text: 'DPS (Dispositivo de Proteção contra Surtos) de classe superior, protegendo seus equipamentos de picos de energia' },
-                { icon: 'fa-star', text: 'Conectores MC4 originais Stäubli, que minimizam a perda de energia e garantem a máxima eficiência' },
-            ];
-            tagHtml = '<span class="section-tag tag-premium">Premium</span>';
-        }
+// SUBSTITUA a função renderizarPadraoInstalacao por esta:
+function renderizarPadraoInstalacao(tipoProposta) {
+    const installationTitle = document.getElementById('installation-title');
+    const container = document.getElementById('installation-comparison-container');
+    
+    let title, tagHtml;
+    
+    // Definição dos itens para cada proposta
+    const itensPremium = [
+        { icon: 'fa-bolt', title: 'Ramal de Cobre Seguro', description: 'Substituímos o cabo de alumínio da concessionária por cobre puro, eliminando riscos de superaquecimento e incêndio no seu medidor.' },
+        { icon: 'fa-shield-alt', title: 'Estruturas Super-reforçadas', description: 'Nossas estruturas possuem tratamento anticorrosivo superior para resistir ao tempo e às intempéries, garantindo a longevidade do seu investimento.' },
+        { icon: 'fa-layer-group', title: 'Cabeamento Dupla Isolação', description: 'Utilizamos cabeamento solar específico com dupla camada de proteção, garantindo máxima durabilidade e segurança contra falhas elétricas.' },
+        { icon: 'fa-tachometer-alt', title: 'DPS de Classe Superior', description: 'Instalamos um Dispositivo de Proteção contra Surtos (DPS) de alta performance para proteger seus equipamentos e eletrodomésticos de picos de energia.' },
+        { icon: 'fa-gem', title: 'Conectores MC4 Stäubli', description: 'Usamos conectores MC4 originais da marca suíça Stäubli, que minimizam a perda de energia e garantem a máxima eficiência do sistema por décadas.' },
+    ];
 
-        installationTitle.innerHTML = `${title} ${tagHtml}`;
-        installationList.innerHTML = items.map(item => `
-            <li><i class="fas ${item.icon}"></i><span>${item.text}</span></li>
+    const itensSimples = [
+        { icon: 'fa-check-circle', title: 'Estruturas de Alumínio', description: 'Utilizamos estruturas de fixação padrão em alumínio, adequadas para a instalação.' },
+        { icon: 'fa-check-circle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento simples, seguindo as normas técnicas para segurança.' },
+        { icon: 'fa-check-circle', title: 'Proteção Essencial', description: 'Inclui dispositivos de proteção residencial essenciais para o funcionamento seguro do sistema.' },
+        { icon: 'fa-check-circle', title: 'Conectores Padrão', description: 'Utilizamos conectores padrão de mercado para a interligação dos painéis.' },
+        { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'O ramal de conexão de entrada é mantido conforme o padrão fornecido pela sua concessionária de energia.' },
+    ];
+
+    if (tipoProposta === 'economica') {
+        title = '<i class="fas fa-tools"></i> Padrão de Instalação';
+        tagHtml = '<span class="section-tag tag-simple">Simples</span>';
+        container.innerHTML = itensSimples.map(item => `
+            <div class="comparison-card">
+                <div class="comparison-card__flipper">
+                    <div class="comparison-card__front">
+                        <i class="fas ${item.icon} comparison-card__icon"></i>
+                        <h3 class="comparison-card__title">${item.title}</h3>
+                    </div>
+                    <div class="comparison-card__back">
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else { // Alta Performance
+        title = '<i class="fas fa-award"></i> Padrão de Instalação';
+        tagHtml = '<span class="section-tag tag-premium">Premium</span>';
+        container.innerHTML = itensPremium.map(item => `
+            <div class="comparison-card">
+                <div class="comparison-card__flipper">
+                    <div class="comparison-card__front">
+                        <i class="fas ${item.icon} comparison-card__icon"></i>
+                        <h3 class="comparison-card__title">${item.title}</h3>
+                    </div>
+                    <div class="comparison-card__back">
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            </div>
         `).join('');
     }
+
+    installationTitle.innerHTML = `${title} ${tagHtml}`;
+}
+
 
     function renderizarProposta(dados, tipoProposta = 'performance') {
         const clienteNome = document.getElementById('cliente-nome');

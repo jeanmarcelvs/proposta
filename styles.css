@@ -319,3 +319,68 @@ body.theme-economic .client-header__subtitle {
     font-weight: 600;
 }
 
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- NOVO DESIGN INTERATIVO PARA PADRÃO DE INSTALAÇÃO --- */
+
+.installation-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.comparison-card {
+    background-color: var(--color-background);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    text-align: center;
+    perspective: 1000px; /* Essencial para o efeito 3D */
+}
+
+.comparison-card__flipper {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+    min-height: 150px; /* Garante uma altura mínima consistente */
+}
+
+.comparison-card:hover .comparison-card__flipper {
+    transform: rotateY(180deg); /* O efeito de virar ao passar o mouse */
+}
+
+.comparison-card__front,
+.comparison-card__back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Esconde o lado de trás do elemento */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.comparison-card__back {
+    transform: rotateY(180deg); /* Posiciona o verso do card */
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.comparison-card__icon {
+    font-size: 2.5rem;
+    color: var(--color-secondary);
+    margin-bottom: 1rem;
+}
+
+.comparison-card__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* Estilos específicos para o tema econômico */
+body.theme-economic .comparison-card {
+    background-color: white;
+}
+
