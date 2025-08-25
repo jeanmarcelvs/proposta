@@ -194,32 +194,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const clienteNome = document.getElementById('cliente-nome');
         const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
         const dataGeracao = document.getElementById('data-geracao');
-        const dataLabel = dataGeracao ? dataGeracao.parentElement.querySelector('strong') : null;
+        const dataLabel = dataGeracao.parentElement.querySelector('strong');
         const geracaoMensal = document.getElementById('geracao-mensal');
         const potenciaSistema = document.getElementById('potencia-sistema');
-        const economiaMensal = document.getElementById('economia-mensal');
-        const geracaoAnual = document.getElementById('geracao-anual');
-        const investimentoTotal = document.getElementById('investimento-total');
-        const statusProposta = document.getElementById('status-proposta');
-        const dataValidade = document.getElementById('data-validade');
+        const tipoInstalacao = document.getElementById('tipo-instalacao');
+        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+        const valorTotal = document.getElementById('valor-total');
+        const proposalValidity = document.getElementById('proposal-validity');
+
+        if (dataLabel) dataLabel.textContent = 'Data de Atualização:';
+        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+        
+        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
         clienteNome.textContent = findVar(dados, 'cliente_nome', true);
         clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-        statusProposta.textContent = findVar(dados, 'status', true);
-        dataValidade.textContent = findVar(dados, 'data_validade', true);
-
         geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-        geracaoAnual.innerHTML = `${findVar(dados, 'geracao_anual', true)}<span class="unit-symbol">kWh</span>`;
-        economiaMensal.innerHTML = formatarMoeda(findVar(dados, 'economia_mensal'));
         potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-        
-        investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
 
         renderizarEquipamentos(dados, tipoProposta);
         renderizarPadraoInstalacao(tipoProposta);
         renderizarFinanciamento(dados);
     }
-
 
     function mostrarResumoNoCabecalho() {
         if (summaryWasShown) return;
@@ -276,10 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const summaryCardEconomica = document.getElementById('summary-card-economica');
         
         if (summaryCardPerformance) {
-            summaryCardPerformance.addEventListener('click', () => switchToPerformance());
+            summaryCardPerformance.addEventListener('click', switchToPerformance);
         }
         if (summaryCardEconomica) {
-            summaryCardEconomica.addEventListener('click', () => switchToEconomic());
+            summaryCardEconomica.addEventListener('click', switchToEconomic);
         }
         
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (priceObserver) priceObserver.disconnect();
         if (installationObserver) installationObserver.disconnect();
 
-        const investmentSection = document.getElementById('financing-section');
+        const investmentSection = document.querySelector('.investment-section');
         if (investmentSection) {
             let hasBeenVisible = false;
             priceObserver = new IntersectionObserver((entries) => {
@@ -454,6 +454,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Funções de troca de proposta ---
+    function switchToPerformance() {
+        const btnAltaPerformance = document.getElementById('btn-alta-performance');
+        if (btnAltaPerformance.classList.contains('active')) return;
+        document.body.classList.remove('theme-economic');
+        document.getElementById('btn-economica').classList.remove('active');
+        btnAltaPerformance.classList.add('active');
+        const summaryCardPerformance = document.getElementById('summary-card-performance');
+        const summaryCardEconomica = document.getElementById('summary-card-economica');
+        if (summaryCardPerformance && summaryCardEconomica) {
+            summaryCardEconomica.classList.remove('active-card');
+            summaryCardPerformance.classList.add('active-card');
+        }
+        if (propostaOriginal) {
+            renderizarProposta(propostaOriginal, 'performance');
+            criarObservadores(propostaOriginal.project.id, 'performance');
+        }
+    }
+
+    function switchToEconomic() {
+        const btnEconomica = document.getElementById('btn-economica');
+        if (btnEconomica.classList.contains('active')) return;
+        document.body.classList.add('theme-economic');
+        document.getElementById('btn-alta-performance').classList.remove('active');
+        btnEconomica.classList.add('active');
+        const summaryCardPerformance = document.getElementById('summary-card-performance');
+        const summaryCardEconomica = document.getElementById('summary-card-economica');
+        if (summaryCardPerformance && summaryCardEconomica) {
+            summaryCardPerformance.classList.remove('active-card');
+            summaryCardEconomica.classList.add('active-card');
+        }
+        if (propostaEconomica) {
+            renderizarProposta(propostaEconomica, 'economica');
+            criarObservadores(propostaEconomica.project.id, 'economica');
+        }
+    }
+
     // --- Função de Inicialização e Roteamento ---
     function init() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -486,43 +523,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             <div id="header-summary" class="header-summary" style="display: none;"></div>`;
-
+        
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
-
-        window.switchToPerformance = function() {
-            if (btnAltaPerformance.classList.contains('active')) return;
-            document.body.classList.remove('theme-economic');
-            btnEconomica.classList.remove('active');
-            btnAltaPerformance.classList.add('active');
-            const summaryCardPerformance = document.getElementById('summary-card-performance');
-            const summaryCardEconomica = document.getElementById('summary-card-economica');
-            if (summaryCardPerformance && summaryCardEconomica) {
-                summaryCardEconomica.classList.remove('active-card');
-                summaryCardPerformance.classList.add('active-card');
-            }
-            if (propostaOriginal) {
-                renderizarProposta(propostaOriginal, 'performance');
-                criarObservadores(propostaOriginal.project.id, 'performance');
-            }
-        }
-
-        window.switchToEconomic = function() {
-            if (btnEconomica.classList.contains('active')) return;
-            document.body.classList.add('theme-economic');
-            btnAltaPerformance.classList.remove('active');
-            btnEconomica.classList.add('active');
-            const summaryCardPerformance = document.getElementById('summary-card-performance');
-            const summaryCardEconomica = document.getElementById('summary-card-economica');
-            if (summaryCardPerformance && summaryCardEconomica) {
-                summaryCardPerformance.classList.remove('active-card');
-                summaryCardEconomica.classList.add('active-card');
-            }
-            if (propostaEconomica) {
-                renderizarProposta(propostaEconomica, 'economica');
-                criarObservadores(propostaEconomica.project.id, 'economica');
-            }
-        }
 
         btnAltaPerformance.addEventListener('click', switchToPerformance);
         btnEconomica.addEventListener('click', switchToEconomic);
@@ -532,5 +535,5 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
     }
 
-    init();
+    init( );
 });

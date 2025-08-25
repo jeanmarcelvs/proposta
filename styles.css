@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap' );
+/* --- ARQUIVO styles.css COMPLETO E REFINADO --- */
 
+/* 1. Importação da nova fonte 'Inter' */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' );
+
+/* 2. Novas Paletas de Cores Leves e Sofisticadas */
 :root {
     /* Paleta Premium (Claro e Dourado) - NOVO DESIGN */
     --color-primary: #1a233b; /* Azul marinho fosco para textos e fundos de destaque */
@@ -11,7 +15,7 @@
     --color-border: #E5E7EB; /* Borda cinza clara */
     --shadow-md: 0 10px 30px -15px rgba(30,58,138,0.15);
     --border-radius: 10px;
-    --font-sans: 'Poppins', sans-serif; /* FONTE ATUALIZADA */
+    --font-sans: 'Inter', sans-serif;
     
     /* Variáveis de cores para o card de resumo premium */
     --premium-color-primary: #1a233b;
@@ -37,6 +41,7 @@ body.theme-economic {
     --color-border: #e6ebf1;
 }
 
+/* 3. Estilos Globais com a Nova Fonte */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -49,34 +54,11 @@ body {
 
 .screen { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; }
 
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.9rem 2.2rem; border: none; border-radius: 50px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+/* 4. Estilos dos Componentes Refinados */
+.btn { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1.8rem; border: 1px solid var(--color-secondary); border-radius: 50px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
 .btn--primary { background-color: var(--color-secondary); color: var(--color-card-bg); }
 body.theme-economic .btn--primary { color: white; }
-.btn--primary:hover { background-color: transparent; color: var(--color-secondary); box-shadow: none; border: 2px solid var(--color-secondary); }
-
-/* NOVO: Estilo para o botão "Nova Consulta" */
-.btn--secondary {
-    background-color: transparent;
-    color: var(--color-secondary);
-    border: 2px solid var(--color-secondary);
-    box-shadow: none;
-    padding: 0.8rem 1.8rem;
-}
-
-.btn--secondary:hover {
-    background-color: var(--color-secondary);
-    color: var(--color-card-bg);
-}
-
-body.theme-economic .btn--secondary {
-    color: var(--economic-color-primary);
-    border-color: var(--economic-color-primary);
-}
-
-body.theme-economic .btn--secondary:hover {
-    background-color: var(--economic-color-primary);
-    color: white;
-}
+.btn--primary:hover { background-color: transparent; color: var(--color-secondary); }
 
 .header { position: fixed; top: 0; left: 0; width: 100%; background-color: var(--color-primary); box-shadow: var(--shadow-md); z-index: 1000; display: none; }
 .header__container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0.75rem 2rem; }
@@ -88,19 +70,18 @@ body.theme-economic .header { background-color: #2f5d62; }
 body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5d62, black 15%); border: none; }
 body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2f5d62; }
 
-.search-card { background-color: var(--color-primary); width: 100%; max-width: 500px; text-align: center; border-radius: var(--border-radius); padding: 3rem; box-shadow: var(--shadow-md); }
-.search-card__logo-container { background-color: transparent; padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem; }
+.search-card { background-color: var(--color-card-bg); width: 100%; max-width: 500px; text-align: center; border-radius: var(--border-radius); padding: 3rem; box-shadow: var(--shadow-md); }
+.search-card__logo-container { background-color: var(--color-primary) !important; padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.2); }
 .search-card__logo { height: 60px; display: block; margin: 0 auto; }
-.search-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; color: white; }
-.search-card__subtitle { color: #d1d5db; margin-bottom: 2rem; }
-.search-card__panel input { background-color: var(--color-background); color: var(--color-text); padding: 1rem; border: none; border-radius: 12px; font-size: 1rem; text-align: center; transition: all 0.3s ease; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
-.search-card__panel input:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary), transparent 80%), inset 0 2px 5px rgba(0,0,0,0.1); }
-.search-card__panel .btn--primary { margin-top: 1.5rem; }
-body.theme-economic .search-card { background-color: var(--color-primary); }
-body.theme-economic .search-card__title, body.theme-economic .search-card__subtitle { color: white; }
+.search-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--color-primary); }
+.search-card__subtitle { color: var(--color-text-light); margin-bottom: 2rem; }
+.search-card__panel input { background-color: var(--color-background); color: var(--color-text); padding: 0.9rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 1rem; text-align: center; transition: all 0.3s ease; outline: none; }
+.search-card__panel input:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary), transparent 80%); }
+body.theme-economic .search-card { background-color: var(--color-card-bg); }
+body.theme-economic .search-card__title, body.theme-economic .search-card__subtitle { color: var(--color-text); }
 body.theme-economic .search-card__panel input { background-color: var(--color-background); }
 
-.proposal-details { padding-top: 8rem; padding-bottom: 4rem; }
+.proposal-details { padding-top: 8rem; padding-bottom: 4rem; transition: padding-top 0.5s ease-out; }
 .proposal-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 1.5rem; }
 .proposal-section { background-color: var(--color-card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-md); padding: 1.5rem; }
 .section-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 600; color: var(--color-primary); margin-bottom: 1.5rem; }
@@ -122,8 +103,9 @@ body.theme-economic .metric-value { color: var(--color-primary); }
 .equipment-logo-wrapper { display: flex; justify-content: center; align-items: center; padding: 1rem; background-color: var(--color-background); border-radius: var(--border-radius); min-height: 120px; border: 1px solid var(--color-border); }
 .equipment-logo-wrapper img { max-height: 60px; max-width: 100%; object-fit: contain; }
 .spec-card { background-color: var(--color-card-bg); padding: 1rem; border-radius: var(--border-radius); text-align: center; height: 100%; border: 1px solid var(--color-border); }
-.spec-label { display: block; color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 0.5rem; }
-.spec-value { display: block; color: var(--color-text); font-size: 1.5rem; font-weight: 600; }
+.spec-card__label { color: var(--color-text-light); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.spec-card__value { color: var(--color-text); font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+.spec-card__meta { color: var(--color-secondary); font-size: 1rem; font-weight: 600; }
 
 .financing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
 .financing-option { background-color: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; }
@@ -157,330 +139,63 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .footer-social a { color: #8892b0; transition: color 0.3s ease; }
 .footer-social a:hover { color: var(--color-secondary); }
 
-/* --- NOVA SEÇÃO: PADRÃO DE INSTALAÇÃO --- */
-.installation-standard-list { list-style: none; padding: 0; margin-top: 1rem; }
-.installation-standard-list li { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; color: var(--color-text); }
-.installation-standard-list i { color: var(--color-secondary); font-size: 1.2rem; width: 20px; text-align: center; margin-top: 0.2rem; }
+.installation-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.comparison-card { background-color: var(--color-card-bg); border-radius: var(--border-radius); padding: 1.5rem; border: 1px solid var(--color-border); text-align: center; perspective: 1000px; }
+.comparison-card__flipper { transition: transform 0.6s; transform-style: preserve-3d; position: relative; min-height: 150px; }
+.comparison-card:hover .comparison-card__flipper { transform: rotateY(180deg); }
+.comparison-card__front, .comparison-card__back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.comparison-card__back { transform: rotateY(180deg); font-size: 0.9rem; color: var(--color-text-light); }
+.comparison-card__icon { font-size: 2.5rem; color: var(--color-secondary); margin-bottom: 1rem; }
+.comparison-card__title { font-size: 1.1rem; font-weight: 600; color: var(--color-text); }
+body.theme-economic .comparison-card { background-color: white; }
 
-/* --- UTILIDADES DE SÍMBOLO --- */
-.currency-symbol,
-.unit-symbol {
-    font-size: 0.6em;
-    vertical-align: super;
-    margin-left: 2px;
-    font-weight: 500;
-    text-transform: none;
-    letter-spacing: 0;
-}
+.currency-symbol, .unit-symbol { font-size: 0.6em; vertical-align: super; margin-left: 2px; font-weight: 500; text-transform: none; letter-spacing: 0; }
 
+.section-tag { margin-left: auto; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+.tag-premium { background-color: var(--color-secondary); color: white; }
+.tag-simple { background-color: var(--color-border); color: var(--color-text-light); }
+body.theme-economic .highlight-tag { color: white; }
 
-/* --- RESPONSIVIDADE --- */
-@media (max-width: 768px) {
-    .header__container { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-    .proposal-details { padding-top: 8rem; }
-    .section-content { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-}
+.contact-item { text-decoration: none; color: inherit; }
+a#whatsapp-link { text-decoration: none; color: #8892b0; display: inline-flex; align-items: center; gap: 0.75rem; transition: color 0.3s ease; }
+a#whatsapp-link i { color: var(--color-secondary); transition: color 0.3s ease; }
+a#whatsapp-link:hover { color: var(--color-secondary); }
+a#whatsapp-link:hover i { color: var(--color-primary); }
 
-@media print {
-    body * { display: none !important; }
-}
+.client-header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
+.client-header__subtitle { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.1rem; color: var(--color-text-light); margin-bottom: 0.25rem; }
+.client-header__subtitle i { color: var(--color-secondary); }
+.client-header__title { font-size: 2rem; font-weight: 700; color: var(--color-primary); line-height: 1.2; word-break: break-word; }
 
-/* --- ESTILOS PARA ETIQUETAS DE SEÇÃO E CORREÇÕES --- */
+.spec-card__label { color: var(--color-text-light); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.spec-card__value { color: var(--color-text); font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+.spec-card__meta { color: var(--color-secondary); font-size: 1rem; font-weight: 600; }
 
-.section-tag {
-    margin-left: auto;
-    padding: 0.2rem 0.8rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
+.comparison-card__back em { font-style: italic; color: var(--color-text); background-color: var(--color-background); padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 500; }
 
-.tag-premium {
-    background-color: var(--color-secondary);
-    color: white;
-}
+.back-button-wrapper { margin-top: 1.5rem; text-align: center; }
+.btn--secondary { background-color: transparent; color: var(--color-text-light); border-color: var(--color-border); }
+.btn--secondary:hover { background-color: var(--color-card-bg); color: var(--color-text); border-color: var(--color-text-light); }
+body.theme-economic .btn--secondary { color: var(--color-text-light); border-color: var(--color-border); }
+body.theme-economic .btn--secondary:hover { background-color: var(--color-background); color: var(--color-text); }
 
-.tag-simple {
-    background-color: var(--color-border);
-    color: var(--color-text-light);
-}
+.search-card__message { color: #ffc107; font-weight: 500; margin-bottom: 0; }
+.search-card__panel { display: flex; flex-direction: column; gap: 1.5rem; }
 
-/* CORREÇÃO: Cor da fonte da etiqueta "Equilibrado" no tema econômico */
-body.theme-economic .highlight-tag {
-    color: white;
-}
-
-/* Garante que o link do WhatsApp no rodapé não tenha sublinhado */
-.contact-item {
-    text-decoration: none;
-    color: inherit;
-}
-
-/* --- ESTILO PERSONALIZADO PARA O LINK DO WHATSAPP --- */
-
-a#whatsapp-link {
-    text-decoration: none;
-    color: #8892b0;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: color 0.3s ease;
-}
-
-a#whatsapp-link i {
-    color: var(--color-secondary);
-    transition: color 0.3s ease;
-}
-
-a#whatsapp-link:hover {
-    color: var(--color-secondary);
-}
-
-a#whatsapp-link:hover i {
-    color: var(--color-primary);
-}
-
-/* --- AJUSTES DE CORREÇÃO PARA O TEMA ATUALIZADO --- */
-
-.client-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.client-header__subtitle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-size: 1.1rem;
-    color: var(--color-text-light);
-    margin-bottom: 0.25rem;
-}
-
-.client-header__subtitle i {
-    color: var(--color-secondary);
-}
-
-.client-header__title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    line-height: 1.2;
-    word-break: break-word;
-}
-
-/* --- AJUSTES DE RESPONSIVIDADE PARA O CABEÇALHO DO CLIENTE --- */
-
-@media (max-width: 600px) {
-    .client-header__title {
-        font-size: 1.6rem;
-    }
-
-    .client-header__subtitle {
-        font-size: 1rem;
-    }
-
-    /* Espaçamento responsivo para o painel de pesquisa */
-    .search-card__logo-container {
-        margin-bottom: 0.5rem;
-    }
-
-    .search-card__panel input {
-        width: 100%;
-    }
-}
-
-/* --- CORREÇÃO DE COR PARA O NOME DO CLIENTE --- */
-.client-header__title {
-    color: var(--color-primary); 
-}
-
-body.theme-economic .client-header__title {
-    color: var(--color-primary);
-}
-
-.client-header__subtitle {
-    color: var(--color-text-light);
-}
-
-body.theme-economic .client-header__subtitle {
-    color: var(--color-text-light);
-}
-
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- HIERARQUIA VISUAL NOS CARDS DE EQUIPAMENTO --- */
-
-.spec-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.25rem;
-    background-color: var(--color-card-bg);
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    text-align: center;
-    height: 100%;
-    border: 1px solid var(--color-border);
-}
-
-.spec-card__label {
-    color: var(--color-text-light);
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.spec-card__value {
-    color: var(--color-text);
-    font-size: 1.8rem;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.spec-card__meta {
-    color: var(--color-secondary);
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- NOVO DESIGN INTERATIVO PARA PADRÃO DE INSTALAÇÃO --- */
-
-.installation-comparison {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.comparison-card {
-    background-color: var(--color-card-bg);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    border: 1px solid var(--color-border);
-    text-align: center;
-    perspective: 1000px;
-}
-
-.comparison-card__flipper {
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-    position: relative;
-    min-height: 150px;
-}
-
-.comparison-card:hover .comparison-card__flipper {
-    transform: rotateY(180deg);
-}
-
-.comparison-card__front,
-.comparison-card__back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.comparison-card__back {
-    transform: rotateY(180deg);
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-}
-
-.comparison-card__icon {
-    font-size: 2.5rem;
-    color: var(--color-secondary);
-    margin-bottom: 1rem;
-}
-
-.comparison-card__title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-/* Estilos específicos para o tema econômico */
-body.theme-economic .comparison-card {
-    background-color: white;
-}
-
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- AJUSTES NO BOTÃO "NOVA CONSULTA" --- */
-.proposal-actions {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: flex-end; /* Alinha o conteúdo à direita */
-    width: 100%;
-}
-
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- ESTILO PARA MENSAGEM NA TELA DE BUSCA --- */
-.search-card__message {
-    color: #ffc107;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    min-height: 24px;
-}
-
-.header-fixed {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    padding: 1rem 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease-in-out;
-    z-index: 1000;
-    background-color: var(--color-background);
-}
-
-.header-values {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
-    opacity: 0;
-}
-
-.header-values.visible {
-    max-height: 100px;
-    opacity: 1;
-}
-
-.header-values-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-/* NOVO: Classe para espaçamento dinâmico em telas pequenas */
-.proposal-details.dynamic-spacing {
-    padding-top: 15rem;
-}
-
-@media (max-width: 768px) {
-    /* REMOÇÃO DE CÓDIGO AQUI: A regra antiga foi substituída pela classe dinâmica acima. */
-}
-
-/* --- NOVOS ESTILOS PARA O RESUMO DO CABEÇALHO --- */
+/* 5. Novos Estilos para o Resumo Flutuante */
 .header-summary {
-    display: flex;
+    display: none; /* Começa oculto */
     justify-content: center;
     gap: 1.5rem;
     background-color: var(--color-card-bg);
     padding: 0.75rem 2rem;
     border-top: 1px solid var(--color-border);
     animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .summary-card {
@@ -494,26 +209,28 @@ body.theme-economic .comparison-card {
     width: 100%;
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 0 0 1px transparent; /* Borda transparente inicial para evitar o "salto" */
+    box-shadow: 0 0 0 1px transparent;
 }
 
 .summary-card:hover {
-    background-color: #f0f4f8;
+    background-color: var(--color-background);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* Estilo para o cartão ativo */
+.summary-card:first-child {
+    border-right: 1px solid var(--color-border);
+}
+
 .summary-card.active-card {
     background-color: var(--color-background);
-    box-shadow: inset 0 0 0 2px var(--color-primary); /* Borda fina e sutil usando inset shadow */
+    box-shadow: inset 0 0 0 2px var(--color-primary);
 }
 
-/* Estilo para o cartão ativo no tema econômico */
 body.theme-economic .summary-card.active-card {
-    box-shadow: inset 0 0 0 2px var(--economic-color-primary);
+    box-shadow: inset 0 0 0 2px var(--color-primary);
 }
 
-.card-title {
+.summary-card .card-title {
     font-size: 0.8rem;
     font-weight: 500;
     color: var(--color-text-light);
@@ -521,43 +238,48 @@ body.theme-economic .summary-card.active-card {
     letter-spacing: 0.5px;
 }
 
-/* Estilos específicos para o cartão PREMIUM */
-.summary-card--premium .main-price {
-    color: var(--premium-color-secondary);
+.price-container {
+    display: flex;
+    align-items: baseline;
 }
 
-.summary-card--premium .installment-info {
-    color: var(--premium-color-text);
+.main-price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
-/* Estilos específicos para o cartão ECONÔMICO */
-.summary-card--economic .main-price {
-    color: var(--economic-color-secondary);
-}
-
-.summary-card--economic .installment-info {
-    color: var(--economic-color-text);
-}
-
-
-/* Ajustes para o tema econômico */
-body.theme-economic .header-summary {
-    background-color: white;
-}
-
-body.theme-economic .summary-card:first-child {
-    border-right-color: var(--color-border);
-}
-
-/* NOVO: Estilo para o disclaimer do financiamento */
-.financing-disclaimer {
-    margin-top: 2rem;
-    padding: 1rem;
+.installment-info {
     font-size: 0.9rem;
-    font-style: italic;
     color: var(--color-text-light);
-    border-left: 4px solid var(--color-secondary);
-    background-color: var(--color-background);
-    border-radius: var(--border-radius);
-    text-align: left;
+}
+
+.summary-card--premium .main-price { color: var(--premium-color-secondary); }
+.summary-card--premium .installment-info { color: var(--premium-color-text); }
+.summary-card--economic .main-price { color: var(--economic-color-secondary); }
+.summary-card--economic .installment-info { color: var(--economic-color-text); }
+
+body.theme-economic .header-summary { background-color: white; }
+body.theme-economic .summary-card:first-child { border-right-color: var(--color-border); }
+
+/* 6. Classe para Espaçamento Dinâmico */
+.proposal-details.dynamic-spacing {
+    padding-top: 15rem;
+}
+
+@media (max-width: 768px) {
+    .header__container { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+    .proposal-details { padding-top: 8rem; }
+    .section-content { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .header-summary { flex-direction: column; gap: 0.5rem; padding: 0.5rem 1rem; }
+    .summary-card:first-child { border-right: none; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; }
+    .proposal-details.dynamic-spacing { padding-top: 22rem; }
+}
+
+@media (max-width: 480px) {
+    .proposal-details.dynamic-spacing { padding-top: 24rem; }
+}
+
+@media print {
+    body * { display: none !important; }
 }
