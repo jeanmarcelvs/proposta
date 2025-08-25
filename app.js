@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarProposta(dados, tipoProposta = 'performance') {
     const clienteNome = document.getElementById('cliente-nome');
     const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+    const dataLabel = document.getElementById('data-label'); // Pega o novo elemento
     const dataGeracao = document.getElementById('data-geracao');
     const geracaoMensal = document.getElementById('geracao-mensal');
     const potenciaSistema = document.getElementById('potencia-sistema');
@@ -168,8 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const valorTotal = document.getElementById('valor-total');
     const proposalValidity = document.getElementById('proposal-validity');
 
-    // ALTERAÇÃO: Muda o rótulo da data
-    document.getElementById('data-label').textContent = 'Data de Atualização:';
+    // Agora esta linha funciona, pois o elemento 'data-label' existe
+    dataLabel.textContent = 'Data de Atualização:';
     dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
     
     const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
