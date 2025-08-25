@@ -407,94 +407,6 @@ body.theme-economic .btn--secondary:hover {
     min-height: 24px;
 }
 
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- ESTILOS PARA O RESUMO FLUTUANTE NO CABEÇALHO --- */
-
-.header-summary {
-    background-color: var(--color-card-bg);
-    padding: 0.75rem 2rem;
-    display: none;
-    justify-content: space-around;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    border-top: 1px solid var(--color-border);
-    animation: slideDown 0.5s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.summary-item {
-    text-align: center;
-}
-
-.summary-item__label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--color-text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.summary-item__value {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--color-text);
-}
-
-.summary-item__value--highlight {
-    color: var(--color-secondary);
-}
-
-.summary-item__meta {
-    font-size: 0.8rem;
-    color: var(--color-text-light);
-}
-
-/* Ajustes para o tema econômico */
-body.theme-economic .header-summary {
-    background-color: white;
-    border-top-color: var(--color-border);
-}
-
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- ESTILO PARA A DESCRIÇÃO EM ITÁLICO --- */
-.comparison-card__back em {
-    font-style: italic;
-    color: var(--color-text);
-    background-color: var(--color-background);
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-/* --- ANIMAÇÃO INTERATIVA PARA SMARTPHONES --- */
-@media (max-width: 768px) {
-    .comparison-card.is-in-view .comparison-card__flipper {
-        transform: rotateY(180deg);
-        transition-delay: 0.2s;
-    }
-}
-
-/* --- ESTILO PARA MENSAGEM E MELHORIAS DE ESPAÇAMENTO --- */
-.search-card__message {
-    color: #ffc107;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    min-height: 24px;
-}
-
 .header-fixed {
     position: fixed;
     top: 0;
@@ -532,4 +444,69 @@ body.theme-economic .header-summary {
 
 @media (max-width: 768px) {
     /* REMOÇÃO DE CÓDIGO AQUI: A regra antiga foi substituída pela classe dinâmica acima. */
+}
+
+/* --- NOVOS ESTILOS PARA O RESUMO DO CABEÇALHO --- */
+.header-summary {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    background-color: var(--color-card-bg);
+    padding: 0.75rem 2rem;
+    border-top: 1px solid var(--color-border);
+    animation: slideDown 0.5s ease-out;
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.summary-card:first-child {
+    border-right: 1px solid var(--color-border);
+}
+
+.card-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.main-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    line-height: 1;
+}
+
+.installment-info {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text);
+    line-height: 1;
+}
+
+/* Ajustes para o tema econômico */
+body.theme-economic .header-summary {
+    background-color: white;
+}
+
+body.theme-economic .summary-card:first-child {
+    border-right-color: var(--color-border);
+}
+
+body.theme-economic .main-price {
+    color: var(--color-primary);
+}
+
+body.theme-economic .installment-info {
+    color: var(--color-text);
 }

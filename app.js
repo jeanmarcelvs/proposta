@@ -39,6 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const [integer, decimal] = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).split(',');
         return `<span class="currency-symbol">R$</span>${integer},${decimal}`;
     };
+
+    // NOVO: Função para formatar o valor como inteiro para o cabeçalho
+    const formatarValorInteiro = (valor) => {
+        const num = parseFloat(valor);
+        if (isNaN(num)) return 'N/A';
+        const formatted = Math.trunc(num).toLocaleString('pt-BR');
+        return `<span class="currency-symbol">R$</span>${formatted}`;
+    };
+
     const findVar = (proposta, key, useFormatted = false) => {
         const variable = proposta.variables?.find(v => v.key === key);
         if (!variable) return 'N/A';
@@ -223,32 +232,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
         const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
 
-        // Lógica para a opção "Alta Performance"
         const parcelasPerformance = propostaOriginal.variables.filter(v => v.key.startsWith('f_parcela'));
         const menorParcelaObjP = parcelasPerformance.reduce((prev, curr) => (parseFloat(curr.value) < parseFloat(prev.value) ? curr : prev));
         const keyPrazoP = menorParcelaObjP.key.replace('parcela', 'prazo');
         const prazoMenorParcelaP = propostaOriginal.variables.find(v => v.key === keyPrazoP)?.value;
         const menorParcelaPerformance = parseFloat(menorParcelaObjP.value);
 
-        // Lógica para a opção "Econômica"
         const parcelasEconomica = propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela'));
         const menorParcelaObjE = parcelasEconomica.reduce((prev, curr) => (parseFloat(curr.value) < parseFloat(prev.value) ? curr : prev));
         const keyPrazoE = menorParcelaObjE.key.replace('parcela', 'prazo');
         const prazoMenorParcelaE = propostaEconomica.variables.find(v => v.key === keyPrazoE)?.value;
         const menorParcelaEconomica = parseFloat(menorParcelaObjE.value);
         
+        // NOVO CÓDIGO AQUI: Estrutura HTML aprimorada para o cabeçalho
         headerSummary.innerHTML = `
-            <div class="summary-item">
-                <span class="summary-item__label">Alta Performance</span>
-                <span class="summary-item__value summary-item__value--highlight">${formatarMoeda(precoPerformance)}</span>
-                <span class="summary-item__meta">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
+            <div class="summary-card">
+                <span class="card-title">Alta Performance</span>
+                <div class="price-container">
+                    <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
+                </div>
+                <span class="installment-info">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
             </div>
-            <div class="summary-item">
-                <span class="summary-item__label">Opção Econômica</span>
-                <span class="summary-item__value">${formatarMoeda(precoEconomica)}</span>
-                <span class="summary-item__meta">ou ${prazoMenorParcelaE}x de ${formatarMoeda(menorParcelaEconomica)}</span>
+            <div class="summary-card">
+                <span class="card-title">Opção Econômica</span>
+                <div class="price-container">
+                    <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
+                </div>
+                <span class="installment-info">ou ${prazoMenorParcelaE}x de ${formatarMoeda(menorParcelaEconomica)}</span>
             </div>
         `;
+        
         headerSummary.style.display = 'flex';
         proposalDetailsSection.classList.add('dynamic-spacing');
     }
@@ -311,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (installationCards.length > 0) {
             installationObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
+                    if (entry.is-in-viewis-in-view.is-in-viewInterseceting) {
                         entry.target.classList.add('is-in-view');
                     } else {
                         entry.target.classList.remove('is-in-view');
