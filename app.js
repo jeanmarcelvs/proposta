@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
-    let priceObserver, installationObserver; // Adicionado installationObserver
+    let priceObserver, installationObserver;
     let debounceTimer;
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
     let summaryWasShown = false;
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryWasShown = true;
 
         const headerSummary = document.getElementById('header-summary');
-        const proposalDetailsSection = document.getElementById('proposal-details'); // Novo seletor
+        const proposalDetailsSection = document.getElementById('proposal-details');
 
         const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
         const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
@@ -244,7 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         headerSummary.style.display = 'flex';
-        // ADIÇÃO DE CÓDIGO AQUI: Adiciona a classe para o espaçamento dinâmico
         proposalDetailsSection.classList.add('dynamic-spacing');
     }
 
@@ -323,9 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         searchButton.disabled = true;
         searchMessage.textContent = '';
-        // REMOÇÃO DE CÓDIGO AQUI: Garante que a classe de espaçamento seja removida ao iniciar uma nova busca
         proposalDetailsSection.classList.remove('dynamic-spacing');
-
 
         try {
             const proposta = await consultarProposta(projectId);
@@ -431,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
 
         backToSearchBtn.addEventListener('click', () => {
-            // ADIÇÃO DE CÓDIGO AQUI: Garante que a classe seja removida ao voltar para a página de busca
             proposalDetailsSection.classList.remove('dynamic-spacing');
             window.location.href = window.location.pathname;
         });
@@ -477,7 +473,5 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
     }
 
-    init( );
+    init();
 });
-
-}
