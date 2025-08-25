@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         equipmentTitle.innerHTML = tipoProposta === 'economica' 
             ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
-            : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
+            : '<i class="fas fa-rocket"></i> Equipamentos Premium';
 
         const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
         const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `).join('');
-        } else { // Alta Performance
+        } else { // Alta Performance -> Premium
             title = '<i class="fas fa-award"></i> Padrão de Instalação';
             tagHtml = '<span class="section-tag tag-premium">Premium</span>';
             container.innerHTML = itensPremium.map(item => `
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         headerSummary.innerHTML = `
             <div id="summary-card-performance" class="summary-card">
-                <span class="card-title">Alta Performance</span>
+                <span class="card-title">Premium</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="header__container">
                 <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
                 <div class="header__options">
-                    <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+                    <button id="btn-alta-performance" class="option-button active">Premium</button>
                     <button id="btn-economica" class="option-button">Econômica</button>
                 </div>
             </div>
@@ -487,7 +487,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAltaPerformance.addEventListener('click', switchToPerformance);
         btnEconomica.addEventListener('click', switchToEconomic);
 
-        // Adiciona event listeners aos novos cards de resumo
         const summaryCardPerformance = document.getElementById('summary-card-performance');
         const summaryCardEconomica = document.getElementById('summary-card-economica');
         

@@ -1,21 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' );
 
 :root {
-    /* Paleta Alta Performance (Escuro e Laranja) - RESTAURADA */
-    --color-primary: #0a192f;
-    --color-secondary: #d97706; /* NOVO: Laranja mais escuro e sofisticado (era #ff8c00) */
-    --color-background: #0a192f;
-    --color-card-bg: #112240;
-    --color-text: #ccd6f6;
-    --color-text-light: #8892b0;
-    --color-border: #233554;
-    --shadow-md: 0 10px 30px -15px rgba(2,12,27,0.7);
+    /* Paleta Premium (Claro e Laranja) - NOVO DESIGN */
+    --color-primary: #2c3e50; /* Cinza escuro para textos e fundos de destaque */
+    --color-secondary: #e67e22; /* NOVO: Laranja vibrante para destaque (era #d97706) */
+    --color-background: #f6f9fc; /* Fundo muito claro */
+    --color-card-bg: #ffffff; /* Branco puro para cartões */
+    --color-text: #34495e; /* Cinza escuro para corpo de texto */
+    --color-text-light: #7f8c8d; /* Cinza claro para texto secundário */
+    --color-border: #ecf0f1; /* Borda cinza clara */
+    --shadow-md: 0 10px 30px -15px rgba(44,62,80,0.1);
     --border-radius: 10px;
     --font-sans: 'Inter', sans-serif;
 }
 
 body.theme-economic {
-    /* Paleta Econômica (Branco e Verde) - Contraste Alto */
+    /* Paleta Econômica (Branco e Verde) - Mantida */
     --color-primary: #2f5d62;
     --color-secondary: #5e8b7e;
     --color-background: #f6f9fc;
@@ -38,18 +38,18 @@ body {
 .screen { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; }
 
 .btn { display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1.8rem; border: 1px solid var(--color-secondary); border-radius: 50px; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
-.btn--primary { background-color: var(--color-secondary); color: var(--color-primary); }
+.btn--primary { background-color: var(--color-secondary); color: var(--color-card-bg); }
 body.theme-economic .btn--primary { color: white; }
 .btn--primary:hover { background-color: transparent; color: var(--color-secondary); }
 
-.header { position: fixed; top: 0; left: 0; width: 100%; background-color: #0a192f; box-shadow: var(--shadow-md); z-index: 1000; display: none; }
+.header { position: fixed; top: 0; left: 0; width: 100%; background-color: var(--color-background); box-shadow: var(--shadow-md); z-index: 1000; display: none; }
 .header__container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0.75rem 2rem; }
 .header__logo img { height: 40px; }
-.header__options { display: flex; gap: 0.5rem; background-color: #112240; border-radius: 50px; padding: 0.25rem; }
-.option-button { background: transparent; border: none; border-radius: 20px; padding: 0.5rem 1.2rem; font-weight: 500; cursor: pointer; color: #8892b0; transition: all 0.3s ease; }
-.option-button.active { background-color: var(--color-secondary); color: #0a192f; }
+.header__options { display: flex; gap: 0.5rem; background-color: var(--color-card-bg); border-radius: 50px; padding: 0.25rem; border: 1px solid var(--color-border); }
+.option-button { background: transparent; border: none; border-radius: 20px; padding: 0.5rem 1.2rem; font-weight: 500; cursor: pointer; color: var(--color-text-light); transition: all 0.3s ease; }
+.option-button.active { background-color: var(--color-secondary); color: white; }
 body.theme-economic .header { background-color: #2f5d62; }
-body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5d62, black 15%); }
+body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5d62, black 15%); border: none; }
 body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2f5d62; }
 
 .search-card { background-color: transparent; width: 100%; max-width: 500px; text-align: center; }
@@ -65,7 +65,7 @@ body.theme-economic .search-card__panel input { background-color: var(--color-ba
 .proposal-details { padding-top: 8rem; padding-bottom: 4rem; }
 .proposal-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 1.5rem; }
 .proposal-section { background-color: var(--color-card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-md); padding: 1.5rem; }
-.section-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 600; color: var(--color-text); margin-bottom: 1.5rem; }
+.section-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 600; color: var(--color-primary); margin-bottom: 1.5rem; }
 .section-title i { color: var(--color-secondary); }
 .section-content { display: flex; flex-wrap: wrap; gap: 1rem; }
 .section-content p { color: var(--color-text); margin-bottom: 0.5rem; }
@@ -81,23 +81,23 @@ body.theme-economic .metric-value { color: var(--color-primary); }
 .highlight-footnote strong { color: var(--color-secondary); font-weight: 600; }
 
 .equipment-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
-.equipment-logo-wrapper { display: flex; justify-content: center; align-items: center; padding: 1rem; background-color: var(--color-background); border-radius: var(--border-radius); min-height: 120px; }
+.equipment-logo-wrapper { display: flex; justify-content: center; align-items: center; padding: 1rem; background-color: var(--color-background); border-radius: var(--border-radius); min-height: 120px; border: 1px solid var(--color-border); }
 .equipment-logo-wrapper img { max-height: 60px; max-width: 100%; object-fit: contain; }
-.spec-card { background-color: var(--color-background); padding: 1rem; border-radius: var(--border-radius); text-align: center; height: 100%; }
+.spec-card { background-color: var(--color-card-bg); padding: 1rem; border-radius: var(--border-radius); text-align: center; height: 100%; border: 1px solid var(--color-border); }
 .spec-label { display: block; color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 0.5rem; }
 .spec-value { display: block; color: var(--color-text); font-size: 1.5rem; font-weight: 600; }
 
 .financing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-.financing-option { background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; }
+.financing-option { background-color: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; }
 .financing-option.highlight { border-color: var(--color-secondary); box-shadow: 0 0 15px color-mix(in srgb, var(--color-secondary), transparent 70%); transform: scale(1.05); }
 .financing-option .prazo { font-size: 2rem; font-weight: 700; color: var(--color-text); }
 .financing-option .prazo span { font-size: 1rem; font-weight: 500; }
 .financing-option .valor { font-size: 1.2rem; font-weight: 500; color: var(--color-secondary); }
-.highlight-tag { position: absolute; top: 0; right: 0; background-color: var(--color-secondary); color: var(--color-primary); padding: 0.2rem 0.8rem; font-size: 0.8rem; font-weight: 600; border-bottom-left-radius: var(--border-radius); }
+.highlight-tag { position: absolute; top: 0; right: 0; background-color: var(--color-secondary); color: white; padding: 0.2rem 0.8rem; font-size: 0.8rem; font-weight: 600; border-bottom-left-radius: var(--border-radius); }
 body.theme-economic .financing-option { background-color: white; }
 
-.investment-section { background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 25%)); color: white; }
-.investment-section .section-title, .investment-section .section-title i { color: white; border-bottom-color: rgba(255,255,255,0.2); }
+.investment-section { background-color: var(--color-primary); color: white; }
+.investment-section .section-title, .investment-section .section-title i { color: white; }
 .investment-box { text-align: center; padding: 1rem 0; }
 .investment-label { display: block; font-size: 1rem; font-weight: 500; color: #a8b2d1; }
 .investment-value { display: block; font-size: 3rem; font-weight: 800; color: white; line-height: 1.1; }
@@ -109,7 +109,7 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .validity-banner { text-align: center; padding: 1rem; background-color: var(--color-card-bg); border-left: 5px solid var(--color-secondary); }
 .validity-banner i { color: var(--color-secondary); margin-right: 0.5rem; }
 
-.footer { background-color: #0a192f; color: #8892b0; padding: 2rem; text-align: center; margin-top: 4rem; }
+.footer { background-color: #2c3e50; color: #ecf0f1; padding: 2rem; text-align: center; margin-top: 4rem; }
 .footer-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
 .footer-logo img { height: 50px; }
 .footer-contact { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -160,7 +160,7 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 
 .tag-premium {
     background-color: var(--color-secondary);
-    color: var(--color-primary);
+    color: white;
 }
 
 .tag-simple {
@@ -200,10 +200,10 @@ a#whatsapp-link:hover {
 }
 
 a#whatsapp-link:hover i {
-    color: white;
+    color: var(--color-primary);
 }
 
-/* --- ESTILOS PARA O NOVO CABEÇALHO DO CLIENTE --- */
+/* --- AJUSTES DE CORREÇÃO PARA O TEMA ATUALIZADO --- */
 
 .client-header {
     text-align: center;
@@ -247,9 +247,8 @@ a#whatsapp-link:hover i {
 }
 
 /* --- CORREÇÃO DE COR PARA O NOME DO CLIENTE --- */
-
 .client-header__title {
-    color: white; 
+    color: var(--color-primary); 
 }
 
 body.theme-economic .client-header__title {
@@ -257,7 +256,7 @@ body.theme-economic .client-header__title {
 }
 
 .client-header__subtitle {
-    color: #a8b2d1;
+    color: var(--color-text-light);
 }
 
 body.theme-economic .client-header__subtitle {
@@ -273,11 +272,12 @@ body.theme-economic .client-header__subtitle {
     flex-direction: column;
     justify-content: center;
     gap: 0.25rem;
-    background-color: var(--color-background);
+    background-color: var(--color-card-bg);
     padding: 1rem;
     border-radius: var(--border-radius);
     text-align: center;
     height: 100%;
+    border: 1px solid var(--color-border);
 }
 
 .spec-card__label {
@@ -312,7 +312,7 @@ body.theme-economic .client-header__subtitle {
 }
 
 .comparison-card {
-    background-color: var(--color-background);
+    background-color: var(--color-card-bg);
     border-radius: var(--border-radius);
     padding: 1.5rem;
     border: 1px solid var(--color-border);
