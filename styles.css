@@ -54,30 +54,6 @@ body {
 body.theme-economic .btn--primary { color: white; }
 .btn--primary:hover { background-color: transparent; color: var(--color-secondary); box-shadow: none; border: 2px solid var(--color-secondary); }
 
-/* NOVO: Estilo para o botão "Nova Consulta" */
-.btn--secondary {
-    background-color: transparent;
-    color: var(--color-secondary);
-    border: 2px solid var(--color-secondary);
-    box-shadow: none;
-    padding: 0.8rem 1.8rem;
-}
-
-.btn--secondary:hover {
-    background-color: var(--color-secondary);
-    color: var(--color-card-bg);
-}
-
-body.theme-economic .btn--secondary {
-    color: var(--economic-color-primary);
-    border-color: var(--economic-color-primary);
-}
-
-body.theme-economic .btn--secondary:hover {
-    background-color: var(--economic-color-primary);
-    color: white;
-}
-
 .header { position: fixed; top: 0; left: 0; width: 100%; background-color: var(--color-primary); box-shadow: var(--shadow-md); z-index: 1000; display: none; }
 .header__container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0.75rem 2rem; }
 .header__logo img { height: 40px; }
@@ -416,11 +392,32 @@ body.theme-economic .comparison-card {
 /* DENTRO DE styles.css (adicionar ao final) */
 
 /* --- AJUSTES NO BOTÃO "NOVA CONSULTA" --- */
-.proposal-actions {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: flex-end; /* Alinha o conteúdo à direita */
-    width: 100%;
+
+.back-button-wrapper {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.btn--secondary {
+    background-color: transparent;
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+.btn--secondary:hover {
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+    border-color: var(--color-text-light);
+}
+
+body.theme-economic .btn--secondary {
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+body.theme-economic .btn--secondary:hover {
+    background-color: var(--color-background);
+    color: var(--color-text);
 }
 
 /* DENTRO DE styles.css (adicionar ao final) */
