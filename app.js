@@ -1,3 +1,5 @@
+// --- ARQUIVO app.js COMPLETO E CORRIGIDO ---
+
 import { consultarProposta, atualizarDescricao } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const getTimestamp = () => new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
-    // --- Funções de Renderização ---
+    // --- Funções de Renderização (sem alterações, mantidas como estavam) ---
     function renderizarFinanciamento(dados) {
         const financingOptionsContainer = document.getElementById('financing-options');
         const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
