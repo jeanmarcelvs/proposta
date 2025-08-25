@@ -2,7 +2,7 @@
 
 :root {
     /* Paleta Premium (Claro e Dourado) - NOVO DESIGN */
-    --color-primary: #1E3A8A; /* Azul marinho para textos e fundos de destaque */
+    --color-primary: #1a233b; /* Azul marinho fosco para textos e fundos de destaque */
     --color-secondary: #F59E0B; /* Amarelo-ouro vibrante para destaque */
     --color-background: #F9FAFB; /* Fundo suave, quase branco */
     --color-card-bg: #ffffff; /* Branco puro para cartões */
@@ -14,7 +14,7 @@
     --font-sans: 'Inter', sans-serif;
     
     /* Variáveis de cores para o card de resumo premium */
-    --premium-color-primary: #1E3A8A;
+    --premium-color-primary: #1a233b;
     --premium-color-secondary: #F59E0B;
     --premium-color-text: #1F2937;
     --premium-color-text-light: #6B7280;
@@ -65,7 +65,8 @@ body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5
 body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2f5d62; }
 
 .search-card { background-color: var(--color-card-bg); width: 100%; max-width: 500px; text-align: center; border-radius: var(--border-radius); padding: 3rem; box-shadow: var(--shadow-md); }
-.search-card__logo { height: 60px; margin-bottom: 1.5rem; }
+.search-card__logo-container { background-color: var(--color-primary); padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.2); }
+.search-card__logo { height: 60px; display: block; margin: 0 auto; }
 .search-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--color-primary); }
 .search-card__subtitle { color: var(--color-text-light); margin-bottom: 2rem; }
 .search-card__panel input { background-color: var(--color-background); color: var(--color-text); padding: 0.9rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 1rem; text-align: center; transition: all 0.3s ease; outline: none; }
@@ -494,14 +495,14 @@ body.theme-economic .btn--secondary:hover {
 /* Estilo para o cartão ativo */
 .summary-card.active-card {
     background-color: var(--color-background);
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-primary);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 /* Estilo para o cartão ativo no tema econômico */
 body.theme-economic .summary-card.active-card {
     border-color: var(--economic-color-primary);
-    box-shadow: 0 0 0 2px var(--economic-color-primary);
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
 .card-title {

@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const equipmentTitle = document.getElementById('equipment-title');
         
         equipmentTitle.innerHTML = tipoProposta === 'economica' 
-            ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
+            ? '<i class="fas fa-shield-alt"></i> Econômica' 
             : '<i class="fas fa-rocket"></i> Equipamentos Premium';
 
         const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="installment-info">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
             </div>
             <div id="summary-card-economica" class="summary-card summary-card--economic">
-                <span class="card-title">Opção Econômica</span>
+                <span class="card-title">Econômica</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
                 </div>
@@ -483,8 +483,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('theme-economic');
             btnEconomica.classList.remove('active');
             btnAltaPerformance.classList.add('active');
-            summaryCardEconomica.classList.remove('active-card');
-            summaryCardPerformance.classList.add('active-card');
+            if (summaryCardPerformance && summaryCardEconomica) {
+                summaryCardEconomica.classList.remove('active-card');
+                summaryCardPerformance.classList.add('active-card');
+            }
             if (propostaOriginal) {
                 renderizarProposta(propostaOriginal, 'performance');
                 criarObservadores(propostaOriginal.project.id, 'performance');
@@ -496,8 +498,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.add('theme-economic');
             btnAltaPerformance.classList.remove('active');
             btnEconomica.classList.add('active');
-            summaryCardPerformance.classList.remove('active-card');
-            summaryCardEconomica.classList.add('active-card');
+            if (summaryCardPerformance && summaryCardEconomica) {
+                summaryCardPerformance.classList.remove('active-card');
+                summaryCardEconomica.classList.add('active-card');
+            }
             if (propostaEconomica) {
                 renderizarProposta(propostaEconomica, 'economica');
                 criarObservadores(propostaEconomica.project.id, 'economica');
