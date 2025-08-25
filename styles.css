@@ -12,6 +12,18 @@
     --shadow-md: 0 10px 30px -15px rgba(30,58,138,0.15);
     --border-radius: 10px;
     --font-sans: 'Inter', sans-serif;
+    
+    /* Variáveis de cores para o card de resumo premium */
+    --premium-color-primary: #1E3A8A;
+    --premium-color-secondary: #F59E0B;
+    --premium-color-text: #1F2937;
+    --premium-color-text-light: #6B7280;
+
+    /* Variáveis de cores para o card de resumo econômico */
+    --economic-color-primary: #2f5d62;
+    --economic-color-secondary: #5e8b7e;
+    --economic-color-text: #2f5d62;
+    --economic-color-text-light: #557b75;
 }
 
 body.theme-economic {
@@ -487,19 +499,24 @@ body.theme-economic .btn--secondary:hover {
     letter-spacing: 0.5px;
 }
 
-.main-price {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-secondary);
-    line-height: 1;
+/* Estilos específicos para o cartão PREMIUM */
+.summary-card--premium .main-price {
+    color: var(--premium-color-secondary);
 }
 
-.installment-info {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--color-text);
-    line-height: 1;
+.summary-card--premium .installment-info {
+    color: var(--premium-color-text);
 }
+
+/* Estilos específicos para o cartão ECONÔMICO */
+.summary-card--economic .main-price {
+    color: var(--economic-color-secondary);
+}
+
+.summary-card--economic .installment-info {
+    color: var(--economic-color-text);
+}
+
 
 /* Ajustes para o tema econômico */
 body.theme-economic .header-summary {
@@ -508,12 +525,4 @@ body.theme-economic .header-summary {
 
 body.theme-economic .summary-card:first-child {
     border-right-color: var(--color-border);
-}
-
-body.theme-economic .main-price {
-    color: var(--color-primary);
-}
-
-body.theme-economic .installment-info {
-    color: var(--color-text);
 }

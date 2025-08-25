@@ -244,14 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const menorParcelaEconomica = parseFloat(menorParcelaObjE.value);
         
         headerSummary.innerHTML = `
-            <div id="summary-card-performance" class="summary-card">
+            <div id="summary-card-performance" class="summary-card summary-card--premium">
                 <span class="card-title">Premium</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
                 <span class="installment-info">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
             </div>
-            <div id="summary-card-economica" class="summary-card">
+            <div id="summary-card-economica" class="summary-card summary-card--economic">
                 <span class="card-title">Opção Econômica</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
