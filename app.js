@@ -244,14 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const menorParcelaEconomica = parseFloat(menorParcelaObjE.value);
         
         headerSummary.innerHTML = `
-            <div class="summary-card">
+            <div id="summary-card-performance" class="summary-card">
                 <span class="card-title">Alta Performance</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
                 <span class="installment-info">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
             </div>
-            <div class="summary-card">
+            <div id="summary-card-economica" class="summary-card">
                 <span class="card-title">Opção Econômica</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
@@ -459,11 +459,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div id="header-summary" class="header-summary" style="display: none;"></div>`;
 
-        const headerSummary = document.getElementById('header-summary');
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
 
-        btnAltaPerformance.addEventListener('click', () => {
+        function switchToPerformance() {
             if (btnAltaPerformance.classList.contains('active')) return;
             document.body.classList.remove('theme-economic');
             btnEconomica.classList.remove('active');
@@ -472,9 +471,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderizarProposta(propostaOriginal, 'performance');
                 criarObservadores(propostaOriginal.project.id, 'performance');
             }
-        });
+        }
 
-        btnEconomica.addEventListener('click', () => {
+        function switchToEconomic() {
             if (btnEconomica.classList.contains('active')) return;
             document.body.classList.add('theme-economic');
             btnAltaPerformance.classList.remove('active');
@@ -483,7 +482,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderizarProposta(propostaEconomica, 'economica');
                 criarObservadores(propostaEconomica.project.id, 'economica');
             }
-        });
+        }
+
+        btnAltaPerformance.addEventListener('click', switchToPerformance);
+        btnEconomica.addEventListener('click', switchToEconomic);
+
+        // Adiciona event listeners aos novos cards de resumo
+        const summaryCardPerformance = document.getElementById('summary-card-performance');
+        const summaryCardEconomica = document.getElementById('summary-card-economica');
+        
+        if (summaryCardPerformance && summaryCardEconomica) {
+            summaryCardPerformance.addEventListener('click', switchToPerformance);
+            summaryCardEconomica.addEventListener('click', switchToEconomic);
+        }
+
 
         const phoneNumber = "5582994255946";
         const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
