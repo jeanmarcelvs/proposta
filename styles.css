@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' );
+
 :root {
     /* Paleta Alta Performance (Escuro e Laranja) - RESTAURADA */
     --color-primary: #0a192f;
@@ -40,319 +42,474 @@ body {
 body.theme-economic .btn--primary { color: white; }
 .btn--primary:hover { background-color: transparent; color: var(--color-secondary); }
 
-/* CABEÇALHO APRIMORADO */
-.header { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    background-color: #0a192f; 
-    box-shadow: var(--shadow-md); 
-    z-index: 1000; 
-    display: none;
-    transition: all 0.3s ease;
-}
-
-.header__container { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    max-width: 1200px; 
-    margin: 0 auto; 
-    padding: 0.75rem 2rem; 
-}
-
+.header { position: fixed; top: 0; left: 0; width: 100%; background-color: #0a192f; box-shadow: var(--shadow-md); z-index: 1000; display: none; }
+.header__container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0.75rem 2rem; }
 .header__logo img { height: 40px; }
+.header__options { display: flex; gap: 0.5rem; background-color: #112240; border-radius: 50px; padding: 0.25rem; }
+.option-button { background: transparent; border: none; border-radius: 20px; padding: 0.5rem 1.2rem; font-weight: 500; cursor: pointer; color: #8892b0; transition: all 0.3s ease; }
+.option-button.active { background-color: var(--color-secondary); color: #0a192f; }
+body.theme-economic .header { background-color: #2f5d62; }
+body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5d62, black 15%); }
+body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2f5d62; }
 
-.header__options { 
-    display: flex; 
-    gap: 0.5rem; 
-    background-color: #112240; 
-    border-radius: 50px; 
-    padding: 0.25rem; 
-}
+.search-card { background-color: transparent; width: 100%; max-width: 500px; text-align: center; }
+.search-card__logo { height: 60px; margin-bottom: 1.5rem; }
+.search-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--color-text); }
+.search-card__subtitle { color: var(--color-text-light); margin-bottom: 2rem; }
+.search-card__panel input { background-color: var(--color-card-bg); color: var(--color-text); padding: 0.9rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 1rem; text-align: center; transition: all 0.3s ease; outline: none; }
+.search-card__panel input:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary), transparent 80%); }
+body.theme-economic .search-card { background-color: var(--color-card-bg); }
+body.theme-economic .search-card__title, body.theme-economic .search-card__subtitle { color: var(--color-text); }
+body.theme-economic .search-card__panel input { background-color: var(--color-background); }
 
-.option-button { 
-    background: transparent; 
-    border: none; 
-    border-radius: 20px; 
-    padding: 0.5rem 1.2rem; 
-    font-weight: 500; 
-    cursor: pointer; 
-    color: #8892b0; 
-    transition: all 0.3s ease; 
-}
+.proposal-details { padding-top: 8rem; padding-bottom: 4rem; }
+.proposal-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 1.5rem; }
+.proposal-section { background-color: var(--color-card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-md); padding: 1.5rem; }
+.section-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 600; color: var(--color-text); margin-bottom: 1.5rem; }
+.section-title i { color: var(--color-secondary); }
+.section-content { display: flex; flex-wrap: wrap; gap: 1rem; }
+.section-content p { color: var(--color-text); margin-bottom: 0.5rem; }
+.section-content p strong { color: var(--color-text-light); font-weight: 500; margin-right: 0.5rem; }
+.section-content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.metric-box { text-align: center; padding: 1rem 0.5rem; }
+.metric-label { display: block; color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.metric-value { display: block; color: var(--color-secondary); font-size: 2.2rem; font-weight: 700; line-height: 1.2; }
+body.theme-economic .metric-value { color: var(--color-primary); }
 
-.option-button.active { 
-    background-color: var(--color-secondary); 
-    color: #0a192f; 
-}
+.highlight-footnote-wrapper { border-top: 1px solid var(--color-border); margin-top: 1rem; padding-top: 1rem; }
+.highlight-footnote { text-align: center; font-size: 1.1rem; font-weight: 500; color: var(--color-text); }
+.highlight-footnote strong { color: var(--color-secondary); font-weight: 600; }
 
-/* NOVO DESIGN DO RESUMO COMPARATIVO */
-.header-summary {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, #0a192f 0%, #112240 100%);
-    border-top: 1px solid #233554;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+.equipment-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.equipment-logo-wrapper { display: flex; justify-content: center; align-items: center; padding: 1rem; background-color: var(--color-background); border-radius: var(--border-radius); min-height: 120px; }
+.equipment-logo-wrapper img { max-height: 60px; max-width: 100%; object-fit: contain; }
+.spec-card { background-color: var(--color-background); padding: 1rem; border-radius: var(--border-radius); text-align: center; height: 100%; }
+.spec-label { display: block; color: var(--color-text-light); font-size: 0.9rem; margin-bottom: 0.5rem; }
+.spec-value { display: block; color: var(--color-text); font-size: 1.5rem; font-weight: 600; }
 
-.summary-card {
-    flex: 1;
-    max-width: 400px;
-    background: linear-gradient(135deg, #112240 0%, #1a2b4a 100%);
-    border: 2px solid transparent;
-    border-radius: 16px;
-    padding: 1.5rem;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
+.financing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.financing-option { background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden; }
+.financing-option.highlight { border-color: var(--color-secondary); box-shadow: 0 0 15px color-mix(in srgb, var(--color-secondary), transparent 70%); transform: scale(1.05); }
+.financing-option .prazo { font-size: 2rem; font-weight: 700; color: var(--color-text); }
+.financing-option .prazo span { font-size: 1rem; font-weight: 500; }
+.financing-option .valor { font-size: 1.2rem; font-weight: 500; color: var(--color-secondary); }
+.highlight-tag { position: absolute; top: 0; right: 0; background-color: var(--color-secondary); color: var(--color-primary); padding: 0.2rem 0.8rem; font-size: 0.8rem; font-weight: 600; border-bottom-left-radius: var(--border-radius); }
+body.theme-economic .financing-option { background-color: white; }
 
-.summary-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, var(--color-secondary), #ff8c00);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 14px;
-    z-index: -1;
-}
+.investment-section { background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 25%)); color: white; }
+.investment-section .section-title, .investment-section .section-title i { color: white; border-bottom-color: rgba(255,255,255,0.2); }
+.investment-box { text-align: center; padding: 1rem 0; }
+.investment-label { display: block; font-size: 1rem; font-weight: 500; color: #a8b2d1; }
+.investment-value { display: block; font-size: 3rem; font-weight: 800; color: white; line-height: 1.1; }
+.payment-method { display: flex; justify-content: center; margin-top: 0.5rem; }
+.payment-tag { background-color: var(--color-secondary); color: white; padding: 0.3rem 1rem; border-radius: 50px; font-weight: 700; font-size: 0.9rem; }
+.alternative-payment { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); color: #a8b2d1; }
+body.theme-economic .investment-section { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); }
 
-.summary-card:hover::before {
-    opacity: 0.1;
-}
+.validity-banner { text-align: center; padding: 1rem; background-color: var(--color-card-bg); border-radius: var(--border-radius); border-left: 5px solid var(--color-secondary); }
+.validity-banner i { color: var(--color-secondary); margin-right: 0.5rem; }
 
-.summary-card.active {
-    border-color: var(--color-secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(217, 119, 6, 0.3);
-}
-
-.summary-card.active::before {
-    opacity: 0.15;
-}
-
-.summary-card__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-}
-
-.summary-card__label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--color-text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.summary-card__badge {
-    background: var(--color-secondary);
-    color: #0a192f;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.summary-card__value {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--color-text);
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: baseline;
-    gap: 0.25rem;
-}
-
-.summary-card__currency {
-    font-size: 1.25rem;
-    color: var(--color-secondary);
-    font-weight: 600;
-}
-
-.summary-card__installment {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
-    font-weight: 500;
-}
-
-.summary-card__installment strong {
-    color: var(--color-text);
-    font-weight: 600;
-}
-
-/* Tema Econômico */
-body.theme-economic .header {
-    background-color: #ffffff;
-    box-shadow: 0 2px 20px rgba(47, 93, 98, 0.1);
-}
-
-body.theme-economic .header-summary {
-    background: linear-gradient(135deg, #ffffff 0%, #f6f9fc 100%);
-    border-top: 1px solid #e6ebf1;
-}
-
-body.theme-economic .summary-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
-    border-color: #e6ebf1;
-}
-
-body.theme-economic .summary-card::before {
-    background: linear-gradient(135deg, var(--color-secondary), #4a9b8e);
-}
-
-body.theme-economic .summary-card.active {
-    border-color: var(--color-secondary);
-    box-shadow: 0 8px 25px rgba(94, 139, 126, 0.2);
-}
-
-body.theme-economic .summary-card__badge {
-    background: var(--color-secondary);
-    color: white;
-}
-
-body.theme-economic .summary-card__currency {
-    color: var(--color-secondary);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .header-summary {
-        flex-direction: column;
-        gap: 0.75rem;
-        padding: 1rem;
-    }
-    
-    .summary-card {
-        max-width: 100%;
-        padding: 1.25rem;
-    }
-    
-    .summary-card__value {
-        font-size: 1.5rem;
-    }
-    
-    .header__container {
-        padding: 0.75rem 1rem;
-    }
-}
-
-/* Restante do CSS original continua aqui... */
-.btn--secondary { background-color: transparent; color: var(--color-secondary); }
-.btn--secondary:hover { background-color: var(--color-secondary); color: var(--color-primary); }
-
-.search-card { background-color: var(--color-card-bg); border-radius: var(--border-radius); padding: 3rem; box-shadow: var(--shadow-md); text-align: center; max-width: 500px; width: 100%; }
-.search-card__logo { height: 80px; margin-bottom: 2rem; }
-.search-card__title { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-text); }
-.search-card__subtitle { font-size: 1.1rem; color: var(--color-text-light); margin-bottom: 2rem; line-height: 1.6; }
-.search-card__panel { display: flex; flex-direction: column; gap: 1rem; }
-.search-card__panel input { padding: 1rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 1rem; background-color: var(--color-background); color: var(--color-text); text-align: center; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-.search-card__panel input:focus { outline: none; border-color: var(--color-secondary); }
-.search-card__message { margin-top: 1rem; padding: 0.75rem; border-radius: 8px; font-weight: 500; text-align: center; }
-.search-card__message.error { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-.search-card__message.success { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
-
-.proposal-details { padding-top: 120px; background-color: var(--color-background); min-height: 100vh; }
-.proposal-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-.proposal-section { background-color: var(--color-card-bg); border-radius: var(--border-radius); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-md); }
-.section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--color-text); display: flex; align-items: center; gap: 0.75rem; }
-.section-content { color: var(--color-text-light); line-height: 1.6; }
-.section-content p { margin-bottom: 0.5rem; }
-.section-content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
-
-.client-header { text-align: center; margin-bottom: 1.5rem; }
-.client-header__subtitle { font-size: 0.9rem; color: var(--color-text-light); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
-.client-header__title { font-size: 2rem; font-weight: 700; color: var(--color-secondary); }
-
-.metric-box { background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 8px; padding: 1.5rem; text-align: center; }
-.metric-label { display: block; font-size: 0.9rem; color: var(--color-text-light); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.metric-value { display: block; font-size: 1.5rem; font-weight: 700; color: var(--color-text); }
-.unit-symbol { font-size: 0.8em; color: var(--color-text-light); margin-left: 0.25rem; }
-
-.highlight-footnote-wrapper { margin-top: 1.5rem; text-align: center; }
-.highlight-footnote { background: linear-gradient(135deg, var(--color-secondary), #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.1rem; font-weight: 600; }
-
-.equipment-showcase { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: center; }
-.equipment-logo-wrapper { flex: 0 0 auto; }
-.equipment-logo-wrapper img { height: 60px; max-width: 150px; object-fit: contain; }
-.equipment-logo-wrapper p { font-size: 1.2rem; font-weight: 600; color: var(--color-secondary); }
-.spec-card { background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 8px; padding: 1.25rem; text-align: center; min-width: 180px; }
-.spec-card__label { display: block; font-size: 0.85rem; color: var(--color-text-light); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.spec-card__value { display: block; font-size: 1.3rem; font-weight: 700; color: var(--color-text); margin-bottom: 0.25rem; }
-.spec-card__meta { display: block; font-size: 0.9rem; color: var(--color-text-light); }
-
-.section-tag { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 0.5rem; }
-.tag-premium { background-color: var(--color-secondary); color: #0a192f; }
-.tag-simple { background-color: #6b7280; color: white; }
-
-.installation-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-.comparison-card { perspective: 1000px; height: 200px; }
-.comparison-card__flipper { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
-.comparison-card:hover .comparison-card__flipper { transform: rotateY(180deg); }
-.comparison-card__front, .comparison-card__back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-.comparison-card__front { background-color: var(--color-background); border: 1px solid var(--color-border); }
-.comparison-card__back { background-color: var(--color-secondary); color: #0a192f; transform: rotateY(180deg); }
-.comparison-card__icon { font-size: 2rem; color: var(--color-secondary); margin-bottom: 1rem; }
-.comparison-card__title { font-size: 1.1rem; font-weight: 600; color: var(--color-text); }
-.comparison-card__back p { font-size: 0.9rem; line-height: 1.5; font-weight: 500; }
-
-.financing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
-.financing-option { background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 8px; padding: 1.25rem; text-align: center; position: relative; transition: all 0.3s ease; }
-.financing-option:hover { border-color: var(--color-secondary); }
-.financing-option.highlight { border-color: var(--color-secondary); background: linear-gradient(135deg, var(--color-background), rgba(217, 119, 6, 0.05)); }
-.highlight-tag { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background-color: var(--color-secondary); color: #0a192f; font-size: 0.7rem; font-weight: 600; padding: 0.25rem 0.75rem; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-.prazo { font-size: 1.5rem; font-weight: 700; color: var(--color-text); margin-bottom: 0.5rem; }
-.prazo span { font-size: 1rem; color: var(--color-text-light); margin-left: 0.25rem; }
-.valor { font-size: 1.1rem; font-weight: 600; color: var(--color-secondary); }
-
-.investment-section { text-align: center; }
-.investment-box { background: linear-gradient(135deg, var(--color-background), #1a2b4a); border: 2px solid var(--color-secondary); border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; }
-.investment-label { display: block; font-size: 1rem; color: var(--color-text-light); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.investment-value { display: block; font-size: 2.5rem; font-weight: 800; color: var(--color-text); margin-bottom: 1rem; }
-.currency-symbol { color: var(--color-secondary); margin-right: 0.25rem; }
-.payment-method { margin-top: 1rem; }
-.payment-tag { background-color: var(--color-secondary); color: #0a192f; font-size: 0.9rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-.alternative-payment { display: flex; align-items: center; justify-content: center; gap: 0.75rem; color: var(--color-text-light); font-size: 0.9rem; }
-
-.validity-banner { background: linear-gradient(135deg, #1a2b4a, var(--color-background)); border: 1px solid var(--color-border); border-radius: 8px; padding: 1.5rem; margin-top: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-.validity-banner i { color: var(--color-secondary); font-size: 1.2rem; }
-.validity-banner p { color: var(--color-text-light); margin: 0; }
-.back-button-wrapper { margin-top: 1rem; }
-
-.footer { background-color: #0a192f; padding: 2rem 0; margin-top: 3rem; }
-.footer-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; }
-.footer-logo img { height: 40px; }
-.footer-contact { display: flex; gap: 2rem; }
-.contact-item { display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-light); text-decoration: none; transition: color 0.3s ease; }
-.contact-item:hover { color: var(--color-secondary); }
-.footer-social { display: flex; gap: 1rem; }
-.footer-social a { color: var(--color-text-light); font-size: 1.5rem; transition: color 0.3s ease; }
+.footer { background-color: #0a192f; color: #8892b0; padding: 2rem; text-align: center; margin-top: 4rem; }
+.footer-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+.footer-logo img { height: 50px; }
+.footer-contact { display: flex; flex-direction: column; gap: 0.5rem; }
+.contact-item { display: flex; align-items: center; gap: 0.75rem; }
+.contact-item i { color: var(--color-secondary); }
+.footer-social { display: flex; gap: 1.5rem; font-size: 1.2rem; }
+.footer-social a { color: #8892b0; transition: color 0.3s ease; }
 .footer-social a:hover { color: var(--color-secondary); }
 
-@media (max-width: 768px) {
-    .proposal-details { padding-top: 140px; }
-    .proposal-container { padding: 1rem; }
-    .proposal-section { padding: 1.5rem; }
-    .section-content-grid { grid-template-columns: 1fr; }
-    .equipment-showcase { flex-direction: column; }
-    .financing-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
-    .footer-container { flex-direction: column; text-align: center; }
-    .footer-contact { flex-direction: column; gap: 1rem; }
-    .search-card { padding: 2rem; margin: 1rem; }
-    .client-header__title { font-size: 1.5rem; }
-    .investment-value { font-size: 2rem; }
+/* --- NOVA SEÇÃO: PADRÃO DE INSTALAÇÃO --- */
+.installation-standard-list { list-style: none; padding: 0; margin-top: 1rem; }
+.installation-standard-list li { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; color: var(--color-text); }
+.installation-standard-list i { color: var(--color-secondary); font-size: 1.2rem; width: 20px; text-align: center; margin-top: 0.2rem; }
+
+/* --- UTILIDADES DE SÍMBOLO --- */
+.currency-symbol,
+.unit-symbol {
+    font-size: 0.6em;
+    vertical-align: super;
+    margin-left: 2px; /* Adiciona um pequeno espaço antes da unidade */
+    font-weight: 500; /* Deixa a unidade um pouco mais leve que o número */
+    text-transform: none; /* Garante que não fique em maiúsculas se herdar de algum lugar */
+    letter-spacing: 0;
 }
+
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+    .header__container { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+    .proposal-details { padding-top: 12rem; }
+    .section-content { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
+
+@media print {
+    body * { display: none !important; }
+}
+
+/* --- ESTILOS PARA ETIQUETAS DE SEÇÃO E CORREÇÕES --- */
+
+.section-tag {
+    margin-left: auto; /* Empurra a etiqueta para a direita */
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.tag-premium {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+}
+
+.tag-simple {
+    background-color: var(--color-border);
+    color: var(--color-text-light);
+}
+
+/* CORREÇÃO: Cor da fonte da etiqueta "Equilibrado" no tema econômico */
+body.theme-economic .highlight-tag {
+    color: white; /* Garante que o texto seja branco sobre o fundo verde */
+}
+
+/* Garante que o link do WhatsApp no rodapé não tenha sublinhado */
+.contact-item {
+    text-decoration: none;
+    color: inherit; /* Herda a cor do texto do rodapé */
+}
+
+/* --- ESTILO PERSONALIZADO PARA O LINK DO WHATSAPP --- */
+
+/* Estilo inicial do link */
+a#whatsapp-link {
+    text-decoration: none;
+    color: #8892b0; /* Cor padrão do texto do rodapé */
+    display: inline-flex; /* Necessário para o alinhamento correto */
+    align-items: center;
+    gap: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+/* Estilo do ícone dentro do link */
+a#whatsapp-link i {
+    color: var(--color-secondary); /* Ícone sempre laranja */
+    transition: color 0.3s ease;
+}
+
+/* Efeito HOVER: Inverte as cores */
+a#whatsapp-link:hover {
+    color: var(--color-secondary); /* Texto fica laranja */
+}
+
+a#whatsapp-link:hover i {
+    color: white; /* Ícone fica branco */
+}
+
+/* --- ESTILOS PARA O NOVO CABEÇALHO DO CLIENTE --- */
+
+.client-header {
+    text-align: center; /* Centraliza o texto por padrão */
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.client-header__subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Garante que o ícone e o texto fiquem centralizados */
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.25rem;
+}
+
+.client-header__subtitle i {
+    color: var(--color-secondary);
+}
+
+.client-header__title {
+    font-size: 2rem; /* Tamanho de destaque para o nome */
+    font-weight: 700;
+    color: var(--color-primary);
+    line-height: 1.2;
+    word-break: break-word; /* Garante que nomes muito longos quebrem a linha corretamente */
+}
+
+/* --- AJUSTES DE RESPONSIVIDADE PARA O CABEÇALHO DO CLIENTE --- */
+
+@media (max-width: 600px) {
+    .client-header__title {
+        font-size: 1.6rem; /* Diminui um pouco a fonte em telas pequenas */
+    }
+
+    .client-header__subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* --- CORREÇÃO DE COR PARA O NOME DO CLIENTE --- */
+
+/* 
+  Esta regra garante que, por padrão (Alta Performance), 
+  o nome do cliente seja branco para contrastar com o fundo escuro do card.
+*/
+.client-header__title {
+    color: white; 
+}
+
+/* 
+  Esta regra garante que, quando o tema econômico estiver ativo,
+  o nome do cliente use a cor primária (escura) do tema.
+*/
+body.theme-economic .client-header__title {
+    color: var(--color-primary);
+}
+
+/* 
+  Ajuste no subtítulo para garantir a cor correta em ambos os temas.
+  O ícone já herda a cor secundária, que muda com o tema.
+*/
+.client-header__subtitle {
+    color: #a8b2d1; /* Um cinza-azulado claro que funciona bem em ambos os fundos */
+}
+
+body.theme-economic .client-header__subtitle {
+    color: var(--color-text-light); /* Usa a cor de texto claro do tema econômico */
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- HIERARQUIA VISUAL NOS CARDS DE EQUIPAMENTO --- */
+
+.spec-card {
+    display: flex;
+    flex-direction: column; /* Organiza os itens verticalmente */
+    justify-content: center; /* Centraliza o conteúdo verticalmente */
+    gap: 0.25rem; /* Espaçamento entre os itens */
+    background-color: var(--color-background);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    height: 100%;
+}
+
+/* Estilo para o RÓTULO (ex: "Inversor", "Painel Solar") */
+.spec-card__label {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Estilo para o VALOR PRINCIPAL (ex: "5000 W") */
+.spec-card__value {
+    color: var(--color-text);
+    font-size: 1.8rem; /* Tamanho de destaque */
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Estilo para a INFORMAÇÃO SECUNDÁRIA (ex: "1 Unidade(s)") */
+.spec-card__meta {
+    color: var(--color-secondary); /* Cor de destaque para a quantidade */
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- NOVO DESIGN INTERATIVO PARA PADRÃO DE INSTALAÇÃO --- */
+
+.installation-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.comparison-card {
+    background-color: var(--color-background);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    text-align: center;
+    perspective: 1000px; /* Essencial para o efeito 3D */
+}
+
+.comparison-card__flipper {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+    min-height: 150px; /* Garante uma altura mínima consistente */
+}
+
+.comparison-card:hover .comparison-card__flipper {
+    transform: rotateY(180deg); /* O efeito de virar ao passar o mouse */
+}
+
+.comparison-card__front,
+.comparison-card__back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Esconde o lado de trás do elemento */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.comparison-card__back {
+    transform: rotateY(180deg); /* Posiciona o verso do card */
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+
+.comparison-card__icon {
+    font-size: 2.5rem;
+    color: var(--color-secondary);
+    margin-bottom: 1rem;
+}
+
+.comparison-card__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* Estilos específicos para o tema econômico */
+body.theme-economic .comparison-card {
+    background-color: white;
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- AJUSTES NO BOTÃO "NOVA CONSULTA" --- */
+
+.back-button-wrapper {
+    margin-top: 1.5rem; /* Espaçamento acima do botão */
+    text-align: center; /* Centraliza o botão */
+}
+
+.btn--secondary {
+    background-color: transparent;
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+.btn--secondary:hover {
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+    border-color: var(--color-text-light);
+}
+
+body.theme-economic .btn--secondary {
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+body.theme-economic .btn--secondary:hover {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO PARA MENSAGEM NA TELA DE BUSCA --- */
+.search-card__message {
+    color: #ffc107; /* Um amarelo-âmbar para aviso */
+    font-weight: 500;
+    margin-bottom: 1rem;
+    min-height: 24px; /* Garante que o layout não pule quando a mensagem aparece */
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILOS PARA O RESUMO FLUTUANTE NO CABEÇALHO --- */
+
+.header-summary {
+    background-color: var(--color-card-bg);
+    padding: 0.75rem 2rem;
+    display: none; /* Começa oculto */
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid var(--color-border);
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item__label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-item__value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.summary-item__value--highlight {
+    color: var(--color-secondary);
+}
+
+.summary-item__meta {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+/* Ajustes para o tema econômico */
+body.theme-economic .header-summary {
+    background-color: white;
+    border-top-color: var(--color-border);
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO PARA A DESCRIÇÃO EM ITÁLICO --- */
+.comparison-card__back em {
+    font-style: italic;
+    color: var(--color-text); /* Garante um bom contraste */
+}
+
+/* --- ANIMAÇÃO INTERATIVA PARA SMARTPHONES --- */
+@media (max-width: 768px) {
+    .comparison-card.is-in-view .comparison-card__flipper {
+        transform: rotateY(180deg);
+        transition-delay: 0.2s; /* Um pequeno atraso para o efeito ser mais suave */
+    }
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO REFINADO PARA A DESCRIÇÃO EM ITÁLICO --- */
+.comparison-card__back em {
+    font-style: italic;
+    color: var(--color-text); /* Mantém a cor base do texto */
+    background-color: var(--color-background); /* Adiciona um fundo sutil para destaque */
+    padding: 0.1rem 0.4rem; /* Pequeno espaçamento interno */
+    border-radius: 4px; /* Bordas arredondadas */
+    font-weight: 500; /* Um pouco mais de peso na fonte */
+}
+
