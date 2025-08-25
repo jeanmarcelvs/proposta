@@ -196,16 +196,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
 function renderizarProposta(dados, tipoProposta = 'performance') {
-    // --- Seletores dos elementos que REALMENTE existem no HTML ---
+    // --- Seletores dos elementos ---
     const clienteNome = document.getElementById('cliente-nome');
     const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-    const dataProposta = document.getElementById('data-proposta'); // NOVO SELETOR
+    const dataProposta = document.getElementById('data-proposta');
     
-    const potenciaSistema = document.getElementById('potencia-sistema');
+    // Seletores para "Dados Gerais do Sistema"
     const geracaoMensal = document.getElementById('geracao-mensal');
-    const geracaoAnual = document.getElementById('geracao-anual');
-    const economiaMensal = document.getElementById('economia-mensal');
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const tipoInstalacao = document.getElementById('tipo-instalacao');
     
     const investimentoTotal = document.getElementById('investimento-total');
 
@@ -213,15 +215,13 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     clienteNome.textContent = findVar(dados, 'cliente_nome', true);
     clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
     
-    // CORREÇÃO: Renderiza a data de GERAÇÃO, não de validade
     const dataGeracaoCompleta = findVar(dados, 'data_geracao', true);
-    dataProposta.textContent = dataGeracaoCompleta.split(' ')[0]; // Pega apenas a parte da data
+    dataProposta.textContent = dataGeracaoCompleta.split(' ')[0];
 
-    // Renderiza os dados do sistema
-    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+    // Renderiza os "Dados Gerais do Sistema" na ordem correta
     geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-    geracaoAnual.innerHTML = `${findVar(dados, 'geracao_anual_0', true)}<span class="unit-symbol">kWh</span>`;
-    economiaMensal.innerHTML = `${formatarMoeda(findVar(dados, 'economia_mensal'))}`;
+    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
     
     // Renderiza o investimento
     investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
@@ -231,6 +231,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     renderizarPadraoInstalacao(tipoProposta);
     renderizarFinanciamento(dados);
 }
+
 
 
 
