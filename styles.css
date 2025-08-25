@@ -3,7 +3,7 @@
 :root {
     /* Paleta Alta Performance (Escuro e Laranja) - RESTAURADA */
     --color-primary: #0a192f;
-    --color-secondary: #ff8c00;
+    --color-secondary: #d97706; /* NOVO: Laranja mais escuro e sofisticado (era #ff8c00) */
     --color-background: #0a192f;
     --color-card-bg: #112240;
     --color-text: #ccd6f6;
@@ -499,5 +499,17 @@ body.theme-economic .header-summary {
         transform: rotateY(180deg);
         transition-delay: 0.2s; /* Um pequeno atraso para o efeito ser mais suave */
     }
+}
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO REFINADO PARA A DESCRIÇÃO EM ITÁLICO --- */
+.comparison-card__back em {
+    font-style: italic;
+    color: var(--color-text); /* Mantém a cor base do texto */
+    background-color: var(--color-background); /* Adiciona um fundo sutil para destaque */
+    padding: 0.1rem 0.4rem; /* Pequeno espaçamento interno */
+    border-radius: 4px; /* Bordas arredondadas */
+    font-weight: 500; /* Um pouco mais de peso na fonte */
 }
 

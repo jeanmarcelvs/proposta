@@ -133,16 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
             { icon: 'fa-bolt', title: 'Ramal de Cobre Seguro', description: 'Substituímos o cabo de alumínio da concessionária por cobre puro, eliminando riscos de superaquecimento e incêndio no seu medidor.' },
             { icon: 'fa-shield-alt', title: 'Estruturas Super-reforçadas', description: 'Nossas estruturas possuem tratamento anticorrosivo superior para resistir ao tempo e às intempéries, garantindo a longevidade do seu investimento.' },
             { icon: 'fa-layer-group', title: 'Cabeamento Dupla Isolação', description: 'Utilizamos cabeamento solar específico com dupla camada de proteção, garantindo máxima durabilidade e segurança contra falhas elétricas.' },
-            { icon: 'fa-tachometer-alt', title: 'DPS de Classe Superior', description: 'Instalamos um Dispositivo de Proteção contra Surtos (DPS) de alta performance para proteger seus equipamentos e eletrodomésticos de picos de energia.' },
+            { icon: 'fa-tachometer-alt', title: 'Sistema de Proteção Coordenado', description: 'Instalamos um Sistema de Proteção contra Surtos com coordenação de classes para proteger seus equipamentos e eletrodomésticos de picos de energia.' },
             { icon: 'fa-gem', title: 'Conectores MC4 Stäubli', description: 'Usamos conectores MC4 originais da marca suíça Stäubli, que minimizam a perda de energia e garantem a máxima eficiência do sistema por décadas.' },
         ];
 
         const itensSimples = [
-            { icon: 'fa-exclamation-triangle', title: 'Estruturas de Alumínio', description: 'Utiliza estruturas de fixação padrão em alumínio. <em>(A versão Premium oferece tratamento anticorrosivo superior para maior durabilidade).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento simples. <em>(A versão Premium possui dupla isolação para proteção extra contra falhas).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Proteção Essencial', description: 'Inclui dispositivos de proteção essenciais. <em>(A versão Premium usa DPS de classe superior para proteger todos os seus equipamentos).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Conectores Padrão', description: 'Utiliza conectores padrão de mercado. <em>(A versão Premium usa conectores suíços que evitam perdas e superaquecimento).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Ramal da Concessionária', description: 'Mantém o cabo de entrada da concessionária, geralmente de alumínio, que pode apresentar riscos de superaquecimento a longo prazo.' },
+            { icon: 'fa-exclamation-triangle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação em alumínio simples. <em>(A versão Premium oferece tratamento anticorrosivo superior para maior durabilidade).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Cabeamento Simples', description: 'Instalação com cabeamento simples. <em>(A versão Premium possui dupla isolação para proteção extra contra falhas).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Proteção Simples', description: 'A proteção do sistema dependerá das proteções internas da propriedade do cliente, se existir. <em>(A versão Premium inclui Sistema de Proteção Completo para proteger todos os seus equipamentos).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Conectores Simples', description: 'Utiliza conectores simples. <em>(A versão Premium usa conectores suíços que evitam perdas e superaquecimento, os quais são mais recomendados).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Ramal da Concessionária', description: 'Mantém o cabo antigo de responsabilidade da concessionária, geralmente de alumínio e já fora dos padrões atuais, que pode apresentar riscos de superaquecimento a longo prazo.' },
         ];
 
         if (tipoProposta === 'economica') {
