@@ -241,20 +241,23 @@ document.addEventListener('DOMContentLoaded', () => {
             .map(v => parseInt(v.value, 10));
         const prazoMaxE = Math.max(...prazosE);
         
+        const valorParcelaP = parseFloat(propostaOriginal.variables.find(v => v.key.startsWith('f_parcela_') && v.key.includes(prazoMaxP))?.value) || 0;
+        const valorParcelaE = parseFloat(propostaEconomica.variables.find(v => v.key.startsWith('f_parcela_') && v.key.includes(prazoMaxE))?.value) || 0;
+        
         headerSummary.innerHTML = `
             <div id="summary-card-performance" class="summary-card summary-card--premium">
                 <span class="card-title">Premium</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
-                <span class="installment-info">ou até ${prazoMaxP}x</span>
+                <span class="installment-info">ou até ${prazoMaxP}x de ${formatarMoeda(valorParcelaP)}</span>
             </div>
             <div id="summary-card-economica" class="summary-card summary-card--economic">
                 <span class="card-title">Econômica</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
                 </div>
-                <span class="installment-info">ou até ${prazoMaxE}x</span>
+                <span class="installment-info">ou até ${prazoMaxE}x de ${formatarMoeda(valorParcelaE)}</span>
             </div>
         `;
         
