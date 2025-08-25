@@ -384,3 +384,34 @@ body.theme-economic .comparison-card {
     background-color: white;
 }
 
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- AJUSTES NO BOTÃO "NOVA CONSULTA" --- */
+
+.back-button-wrapper {
+    margin-top: 1.5rem; /* Espaçamento acima do botão */
+    text-align: center; /* Centraliza o botão */
+}
+
+.btn--secondary {
+    background-color: transparent;
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+.btn--secondary:hover {
+    background-color: var(--color-card-bg);
+    color: var(--color-text);
+    border-color: var(--color-text-light);
+}
+
+body.theme-economic .btn--secondary {
+    color: var(--color-text-light);
+    border-color: var(--color-border);
+}
+
+body.theme-economic .btn--secondary:hover {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+

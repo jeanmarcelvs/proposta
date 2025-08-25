@@ -18,8 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let debounceTimer;
     let trackingStatus = {
         viewedPerformance: null,
-        viewedEconomic: null,
-        clickedEconomic: null
+        viewedEconomic: null
     };
     const DESCRIPTION_LIMIT = 100;
 
@@ -69,9 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return diff < best.diff ? { ...current, diff } : best;
         }, { diff: Infinity });
 
+        const ultimaOpcao = opcoes[opcoes.length - 1];
+        const deveDestacar = melhorOpcao.prazo !== ultimaOpcao.prazo;
+
         financingOptionsContainer.innerHTML = opcoes.map(opt => `
-            <div class="financing-option ${opt.prazo === melhorOpcao.prazo ? 'highlight' : ''}">
-                ${opt.prazo === melhorOpcao.prazo ? '<div class="highlight-tag">Equilibrado</div>' : ''}
+            <div class="financing-option ${deveDestacar && opt.prazo === melhorOpcao.prazo ? 'highlight' : ''}">
+                ${deveDestacar && opt.prazo === melhorOpcao.prazo ? '<div class="highlight-tag">Equilibrado</div>' : ''}
                 <div class="prazo">${opt.prazo}<span>x</span></div>
                 <div class="valor">${formatarMoeda(opt.valorParcela)}</div>
             </div>
@@ -122,74 +124,70 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // DENTRO DE app.js
+    function renderizarPadraoInstalacao(tipoProposta) {
+        const installationTitle = document.getElementById('installation-title');
+        const container = document.getElementById('installation-comparison-container');
+        
+        let title, tagHtml;
+        
+        const itensPremium = [
+            { icon: 'fa-bolt', title: 'Ramal de Cobre Seguro', description: 'Substituímos o cabo de alumínio da concessionária por cobre puro, eliminando riscos de superaquecimento e incêndio no seu medidor.' },
+            { icon: 'fa-shield-alt', title: 'Estruturas Super-reforçadas', description: 'Nossas estruturas possuem tratamento anticorrosivo superior para resistir ao tempo e às intempéries, garantindo a longevidade do seu investimento.' },
+            { icon: 'fa-layer-group', title: 'Cabeamento Dupla Isolação', description: 'Utilizamos cabeamento solar específico com dupla camada de proteção, garantindo máxima durabilidade e segurança contra falhas elétricas.' },
+            { icon: 'fa-tachometer-alt', title: 'DPS de Classe Superior', description: 'Instalamos um Dispositivo de Proteção contra Surtos (DPS) de alta performance para proteger seus equipamentos e eletrodomésticos de picos de energia.' },
+            { icon: 'fa-gem', title: 'Conectores MC4 Stäubli', description: 'Usamos conectores MC4 originais da marca suíça Stäubli, que minimizam a perda de energia e garantem a máxima eficiência do sistema por décadas.' },
+        ];
 
-// SUBSTITUA a função renderizarPadraoInstalacao por esta:
-function renderizarPadraoInstalacao(tipoProposta) {
-    const installationTitle = document.getElementById('installation-title');
-    const container = document.getElementById('installation-comparison-container');
-    
-    let title, tagHtml;
-    
-    // Definição dos itens para cada proposta
-    const itensPremium = [
-        { icon: 'fa-bolt', title: 'Ramal de Cobre Seguro', description: 'Substituímos o cabo de alumínio da concessionária por cobre puro, eliminando riscos de superaquecimento e incêndio no seu medidor.' },
-        { icon: 'fa-shield-alt', title: 'Estruturas Super-reforçadas', description: 'Nossas estruturas possuem tratamento anticorrosivo superior para resistir ao tempo e às intempéries, garantindo a longevidade do seu investimento.' },
-        { icon: 'fa-layer-group', title: 'Cabeamento Dupla Isolação', description: 'Utilizamos cabeamento solar específico com dupla camada de proteção, garantindo máxima durabilidade e segurança contra falhas elétricas.' },
-        { icon: 'fa-tachometer-alt', title: 'DPS de Classe Superior', description: 'Instalamos um Dispositivo de Proteção contra Surtos (DPS) de alta performance para proteger seus equipamentos e eletrodomésticos de picos de energia.' },
-        { icon: 'fa-gem', title: 'Conectores MC4 Stäubli', description: 'Usamos conectores MC4 originais da marca suíça Stäubli, que minimizam a perda de energia e garantem a máxima eficiência do sistema por décadas.' },
-    ];
+        const itensSimples = [
+            { icon: 'fa-exclamation-triangle', title: 'Estruturas de Alumínio', description: 'Utiliza estruturas de fixação padrão em alumínio. (A versão Premium oferece tratamento anticorrosivo superior para maior durabilidade).' },
+            { icon: 'fa-exclamation-triangle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento simples. (A versão Premium possui dupla isolação para proteção extra contra falhas).' },
+            { icon: 'fa-exclamation-triangle', title: 'Proteção Essencial', description: 'Inclui dispositivos de proteção essenciais. (A versão Premium usa DPS de classe superior para proteger todos os seus equipamentos).' },
+            { icon: 'fa-exclamation-triangle', title: 'Conectores Padrão', description: 'Utiliza conectores padrão de mercado. (A versão Premium usa conectores suíços que evitam perdas e superaquecimento).' },
+            { icon: 'fa-exclamation-triangle', title: 'Ramal da Concessionária', description: 'Mantém o cabo de entrada da concessionária, geralmente de alumínio, que pode apresentar riscos de superaquecimento a longo prazo.' },
+        ];
 
-    const itensSimples = [
-        { icon: 'fa-check-circle', title: 'Estruturas de Alumínio', description: 'Utilizamos estruturas de fixação padrão em alumínio, adequadas para a instalação.' },
-        { icon: 'fa-check-circle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento simples, seguindo as normas técnicas para segurança.' },
-        { icon: 'fa-check-circle', title: 'Proteção Essencial', description: 'Inclui dispositivos de proteção residencial essenciais para o funcionamento seguro do sistema.' },
-        { icon: 'fa-check-circle', title: 'Conectores Padrão', description: 'Utilizamos conectores padrão de mercado para a interligação dos painéis.' },
-        { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'O ramal de conexão de entrada é mantido conforme o padrão fornecido pela sua concessionária de energia.' },
-    ];
-
-    if (tipoProposta === 'economica') {
-        title = '<i class="fas fa-tools"></i> Padrão de Instalação';
-        tagHtml = '<span class="section-tag tag-simple">Simples</span>';
-        container.innerHTML = itensSimples.map(item => `
-            <div class="comparison-card">
-                <div class="comparison-card__flipper">
-                    <div class="comparison-card__front">
-                        <i class="fas ${item.icon} comparison-card__icon"></i>
-                        <h3 class="comparison-card__title">${item.title}</h3>
-                    </div>
-                    <div class="comparison-card__back">
-                        <p>${item.description}</p>
+        if (tipoProposta === 'economica') {
+            title = '<i class="fas fa-tools"></i> Padrão de Instalação';
+            tagHtml = '<span class="section-tag tag-simple">Simples</span>';
+            container.innerHTML = itensSimples.map(item => `
+                <div class="comparison-card">
+                    <div class="comparison-card__flipper">
+                        <div class="comparison-card__front">
+                            <i class="fas ${item.icon} comparison-card__icon"></i>
+                            <h3 class="comparison-card__title">${item.title}</h3>
+                        </div>
+                        <div class="comparison-card__back">
+                            <p>${item.description}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
-    } else { // Alta Performance
-        title = '<i class="fas fa-award"></i> Padrão de Instalação';
-        tagHtml = '<span class="section-tag tag-premium">Premium</span>';
-        container.innerHTML = itensPremium.map(item => `
-            <div class="comparison-card">
-                <div class="comparison-card__flipper">
-                    <div class="comparison-card__front">
-                        <i class="fas ${item.icon} comparison-card__icon"></i>
-                        <h3 class="comparison-card__title">${item.title}</h3>
-                    </div>
-                    <div class="comparison-card__back">
-                        <p>${item.description}</p>
+            `).join('');
+        } else { // Alta Performance
+            title = '<i class="fas fa-award"></i> Padrão de Instalação';
+            tagHtml = '<span class="section-tag tag-premium">Premium</span>';
+            container.innerHTML = itensPremium.map(item => `
+                <div class="comparison-card">
+                    <div class="comparison-card__flipper">
+                        <div class="comparison-card__front">
+                            <i class="fas ${item.icon} comparison-card__icon"></i>
+                            <h3 class="comparison-card__title">${item.title}</h3>
+                        </div>
+                        <div class="comparison-card__back">
+                            <p>${item.description}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
+
+        installationTitle.innerHTML = `${title} ${tagHtml}`;
     }
-
-    installationTitle.innerHTML = `${title} ${tagHtml}`;
-}
-
 
     function renderizarProposta(dados, tipoProposta = 'performance') {
         const clienteNome = document.getElementById('cliente-nome');
         const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
         const dataGeracao = document.getElementById('data-geracao');
+        const dataLabel = dataGeracao.parentElement.querySelector('strong');
         const geracaoMensal = document.getElementById('geracao-mensal');
         const potenciaSistema = document.getElementById('potencia-sistema');
         const tipoInstalacao = document.getElementById('tipo-instalacao');
@@ -197,12 +195,7 @@ function renderizarPadraoInstalacao(tipoProposta) {
         const valorTotal = document.getElementById('valor-total');
         const proposalValidity = document.getElementById('proposal-validity');
 
-        // --- CORREÇÃO APLICADA AQUI ---
-        // Encontra o elemento pai e, a partir dele, o <strong> para alterar o rótulo.
-        const dataLabel = dataGeracao.parentElement.querySelector('strong');
-        if (dataLabel) {
-            dataLabel.textContent = 'Data de Atualização:';
-        }
+        if (dataLabel) dataLabel.textContent = 'Data de Atualização:';
         dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
         
         const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
@@ -225,9 +218,13 @@ function renderizarPadraoInstalacao(tipoProposta) {
     function registrarEvento(projectId, eventType) {
         const timestamp = getTimestamp();
         
-        if (eventType === 'viewedPerformance') trackingStatus.viewedPerformance = timestamp;
-        if (eventType === 'viewedEconomic') trackingStatus.viewedEconomic = timestamp;
-        if (eventType === 'clickedEconomic') trackingStatus.clickedEconomic = timestamp;
+        if (eventType === 'viewedPerformance') {
+            trackingStatus.viewedPerformance = timestamp;
+        } else if (eventType === 'viewedEconomic') {
+            trackingStatus.viewedEconomic = timestamp;
+        } else {
+            return; 
+        }
 
         let descriptionParts = [];
         if (trackingStatus.viewedPerformance) {
@@ -235,9 +232,6 @@ function renderizarPadraoInstalacao(tipoProposta) {
         }
         if (trackingStatus.viewedEconomic) {
             descriptionParts.push(`Viu Preço E: ${trackingStatus.viewedEconomic.split(', ')[1]}`);
-        }
-        if (trackingStatus.clickedEconomic) {
-            descriptionParts.push(`Clicou Econ: ${trackingStatus.clickedEconomic.split(', ')[1]}`);
         }
 
         let newDescription = descriptionParts.join(' | ');
@@ -266,7 +260,7 @@ function renderizarPadraoInstalacao(tipoProposta) {
         priceObserver = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !hasBeenVisible) {
                 hasBeenVisible = true;
-                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'economica';
+                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
                 registrarEvento(projectId, eventType);
                 priceObserver.unobserve(investmentSection);
             }
@@ -293,7 +287,7 @@ function renderizarPadraoInstalacao(tipoProposta) {
                 return;
             }
 
-            trackingStatus = { viewedPerformance: null, viewedEconomic: null, clickedEconomic: null };
+            trackingStatus = { viewedPerformance: null, viewedEconomic: null };
 
             propostaOriginal = proposta;
             propostaEconomica = JSON.parse(JSON.stringify(proposta));
@@ -408,8 +402,6 @@ function renderizarPadraoInstalacao(tipoProposta) {
     btnEconomica.addEventListener('click', () => {
         if (btnEconomica.classList.contains('active')) return;
         
-        registrarEvento(propostaOriginal.project.id, 'clickedEconomic');
-
         document.body.classList.add('theme-economic');
         btnAltaPerformance.classList.remove('active');
         btnEconomica.classList.add('active');
