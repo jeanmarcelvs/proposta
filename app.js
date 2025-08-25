@@ -89,49 +89,54 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    function renderizarEquipamentos(dados, tipoProposta) {
-        const equipmentContainer = document.getElementById('equipment-container');
-        const equipmentTitle = document.getElementById('equipment-title');
-        
-        equipmentTitle.innerHTML = tipoProposta === 'economica' 
-            ? '<i class="fas fa-shield-alt"></i> Econômica' 
-            : '<i class="fas fa-rocket"></i> Equipamentos Premium';
+    // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
-        const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
-        const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
-        
-        let logoHtml = logoFileName 
-            ? `<img src="${logoFileName}" alt="Logo do equipamento">`
-            : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+function renderizarEquipamentos(dados, tipoProposta) {
+    const equipmentContainer = document.getElementById('equipment-container');
+    const equipmentTitle = document.getElementById('equipment-title');
+    
+    equipmentTitle.innerHTML = tipoProposta === 'economica' 
+        ? '<i class="fas fa-shield-alt"></i> Econômica' 
+        : '<i class="fas fa-rocket"></i> Equipamentos Premium';
 
-        let inversoresHtml = inversores.map(inv => {
-            const index = inv.key.split('_').pop();
-            const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
-            const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-            return `
-                <div class="spec-card">
-                    <span class="spec-card__label">Inversor Solar</span>
-                    <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
-                    <span class="spec-card__meta">${qnt} Unidade(s)</span>
-                </div>
-            `;
-        }).join('');
+    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
+    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+    
+    let logoHtml = logoFileName 
+        ? `<img src="${logoFileName}" alt="Logo do equipamento">`
+        : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-        const modulosHtml = `
+    // CORREÇÃO: Remove "(s)" e "Unidade"
+    let inversoresHtml = inversores.map(inv => {
+        const index = inv.key.split('_').pop();
+        const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
+        const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
+        return `
             <div class="spec-card">
-                <span class="spec-card__label">Painel Solar</span>
-                <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
-                <span class="spec-card__meta">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
+                <span class="spec-card__label">Inversor Solar</span>
+                <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
+                <span class="spec-card__meta">x${qnt}</span>
             </div>
         `;
+    }).join('');
 
-        equipmentContainer.innerHTML = `
-            <div class="equipment-logo-wrapper">${logoHtml}</div>
-            ${inversoresHtml}
-            ${modulosHtml}
-        `;
-    }
+    // CORREÇÃO: Remove "Unidades"
+    const modulosHtml = `
+        <div class="spec-card">
+            <span class="spec-card__label">Painel Solar</span>
+            <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
+            <span class="spec-card__meta">x${findVar(dados, 'modulo_quantidade', true)}</span>
+        </div>
+    `;
+
+    equipmentContainer.innerHTML = `
+        <div class="equipment-logo-wrapper">${logoHtml}</div>
+        ${inversoresHtml}
+        ${modulosHtml}
+    `;
+}
+
 
     function renderizarPadraoInstalacao(tipoProposta) {
         const installationTitle = document.getElementById('installation-title');
