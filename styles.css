@@ -479,7 +479,7 @@ body.theme-economic .btn--secondary:hover {
     border-radius: 8px;
     width: 100%;
     cursor: pointer; /* Torna o cursor um ponteiro */
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
 }
 
 .summary-card:hover {
@@ -489,6 +489,19 @@ body.theme-economic .btn--secondary:hover {
 
 .summary-card:first-child {
     border-right: 1px solid var(--color-border);
+}
+
+/* Estilo para o cartão ativo */
+.summary-card.active-card {
+    background-color: var(--color-background);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* Estilo para o cartão ativo no tema econômico */
+body.theme-economic .summary-card.active-card {
+    border-color: var(--economic-color-primary);
+    box-shadow: 0 0 0 2px var(--economic-color-primary);
 }
 
 .card-title {

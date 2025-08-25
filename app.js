@@ -273,6 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (summaryCardEconomica) {
             summaryCardEconomica.addEventListener('click', switchToEconomic);
         }
+        
+        // Define o estado inicial ativo do card de resumo
+        summaryCardPerformance.classList.add('active-card');
     }
 
     // --- LÓGICA DE TRACKING E ANIMAÇÃO ---
@@ -472,12 +475,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
+        const summaryCardPerformance = document.getElementById('summary-card-performance');
+        const summaryCardEconomica = document.getElementById('summary-card-economica');
 
         window.switchToPerformance = function() {
             if (btnAltaPerformance.classList.contains('active')) return;
             document.body.classList.remove('theme-economic');
             btnEconomica.classList.remove('active');
             btnAltaPerformance.classList.add('active');
+            summaryCardEconomica.classList.remove('active-card');
+            summaryCardPerformance.classList.add('active-card');
             if (propostaOriginal) {
                 renderizarProposta(propostaOriginal, 'performance');
                 criarObservadores(propostaOriginal.project.id, 'performance');
@@ -489,6 +496,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.add('theme-economic');
             btnAltaPerformance.classList.remove('active');
             btnEconomica.classList.add('active');
+            summaryCardPerformance.classList.remove('active-card');
+            summaryCardEconomica.classList.add('active-card');
             if (propostaEconomica) {
                 renderizarProposta(propostaEconomica, 'economica');
                 criarObservadores(propostaEconomica.project.id, 'economica');
