@@ -210,6 +210,8 @@ function renderizarEquipamentos(dados, tipoProposta) {
 
 // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
 function renderizarProposta(dados, tipoProposta = 'performance') {
     // --- Seletores dos elementos ---
     const clienteNome = document.getElementById('cliente-nome');
@@ -221,6 +223,10 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     const tipoInstalacao = document.getElementById('tipo-instalacao');
     
     const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+    
+    // Seletores para as seções reintegradas
+    const investimentoTotal = document.getElementById('investimento-total');
+    const proposalValidity = document.getElementById('proposal-validity');
 
     // --- Renderização dos dados ---
     clienteNome.textContent = findVar(dados, 'cliente_nome', true);
@@ -241,12 +247,17 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     } else {
         contaEnergiaEstimada.innerHTML = '';
     }
+    
+    // Lógica para preencher as seções reintegradas
+    investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
 
     // Chama as outras funções de renderização
     renderizarEquipamentos(dados, tipoProposta);
     renderizarPadraoInstalacao(tipoProposta);
     renderizarFinanciamento(dados);
 }
+
 
 
 
