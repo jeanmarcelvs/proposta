@@ -223,14 +223,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
         const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
 
+        // Lógica para a opção "Alta Performance"
         const parcelasPerformance = propostaOriginal.variables.filter(v => v.key.startsWith('f_parcela'));
-        const menorParcelaPerformance = parcelasPerformance.reduce((min, p) => Math.min(min, parseFloat(p.value)), Infinity);
-        const prazoMenorParcelaP = propostaOriginal.variables.find(v => v.key.replace('prazo', 'parcela') === parcelasPerformance.find(p => parseFloat(p.value) === menorParcelaPerformance)?.key)?.value;
+        const menorParcelaObjP = parcelasPerformance.reduce((prev, curr) => (parseFloat(curr.value) < parseFloat(prev.value) ? curr : prev));
+        const keyPrazoP = menorParcelaObjP.key.replace('parcela', 'prazo');
+        const prazoMenorParcelaP = propostaOriginal.variables.find(v => v.key === keyPrazoP)?.value;
+        const menorParcelaPerformance = parseFloat(menorParcelaObjP.value);
 
+        // Lógica para a opção "Econômica"
         const parcelasEconomica = propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela'));
-        const menorParcelaEconomica = parcelasEconomica.reduce((min, p) => Math.min(min, parseFloat(p.value)), Infinity);
-        const prazoMenorParcelaE = parcelasEconomica.find(v => v.key.replace('prazo', 'parcela') === parcelasEconomica.find(p => parseFloat(p.value) === menorParcelaEconomica)?.key)?.value;
-
+        const menorParcelaObjE = parcelasEconomica.reduce((prev, curr) => (parseFloat(curr.value) < parseFloat(prev.value) ? curr : prev));
+        const keyPrazoE = menorParcelaObjE.key.replace('parcela', 'prazo');
+        const prazoMenorParcelaE = propostaEconomica.variables.find(v => v.key === keyPrazoE)?.value;
+        const menorParcelaEconomica = parseFloat(menorParcelaObjE.value);
+        
         headerSummary.innerHTML = `
             <div class="summary-item">
                 <span class="summary-item__label">Alta Performance</span>
