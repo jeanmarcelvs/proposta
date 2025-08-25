@@ -275,7 +275,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Define o estado inicial ativo do card de resumo
-        summaryCardPerformance.classList.add('active-card');
+        const btnAltaPerformance = document.getElementById('btn-alta-performance');
+        if(btnAltaPerformance.classList.contains('active')) {
+            summaryCardPerformance.classList.add('active-card');
+            summaryCardEconomica.classList.remove('active-card');
+        } else {
+            summaryCardPerformance.classList.remove('active-card');
+            summaryCardEconomica.classList.add('active-card');
+        }
     }
 
     // --- LÓGICA DE TRACKING E ANIMAÇÃO ---
@@ -475,14 +482,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
-        const summaryCardPerformance = document.getElementById('summary-card-performance');
-        const summaryCardEconomica = document.getElementById('summary-card-economica');
 
         window.switchToPerformance = function() {
             if (btnAltaPerformance.classList.contains('active')) return;
             document.body.classList.remove('theme-economic');
             btnEconomica.classList.remove('active');
             btnAltaPerformance.classList.add('active');
+            const summaryCardPerformance = document.getElementById('summary-card-performance');
+            const summaryCardEconomica = document.getElementById('summary-card-economica');
             if (summaryCardPerformance && summaryCardEconomica) {
                 summaryCardEconomica.classList.remove('active-card');
                 summaryCardPerformance.classList.add('active-card');
@@ -498,6 +505,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.add('theme-economic');
             btnAltaPerformance.classList.remove('active');
             btnEconomica.classList.add('active');
+            const summaryCardPerformance = document.getElementById('summary-card-performance');
+            const summaryCardEconomica = document.getElementById('summary-card-economica');
             if (summaryCardPerformance && summaryCardEconomica) {
                 summaryCardPerformance.classList.remove('active-card');
                 summaryCardEconomica.classList.add('active-card');
