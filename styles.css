@@ -485,3 +485,19 @@ body.theme-economic .header-summary {
     border-top-color: var(--color-border);
 }
 
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO PARA A DESCRIÇÃO EM ITÁLICO --- */
+.comparison-card__back em {
+    font-style: italic;
+    color: var(--color-text); /* Garante um bom contraste */
+}
+
+/* --- ANIMAÇÃO INTERATIVA PARA SMARTPHONES --- */
+@media (max-width: 768px) {
+    .comparison-card.is-in-view .comparison-card__flipper {
+        transform: rotateY(180deg);
+        transition-delay: 0.2s; /* Um pequeno atraso para o efeito ser mais suave */
+    }
+}
+

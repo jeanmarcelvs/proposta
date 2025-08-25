@@ -12,14 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainFooter = document.getElementById('main-footer');
     const backToSearchBtn = document.getElementById('back-to-search-btn');
     const searchMessage = document.getElementById('search-message');
-    const headerSummary = document.getElementById('header-summary'); // Novo seletor
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
-    let priceObserver;
+    let priceObserver, installationObserver; // Adicionado installationObserver
     let debounceTimer;
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
-    let summaryWasShown = false; // Nova flag para controlar o resumo
+    let summaryWasShown = false;
     const DESCRIPTION_LIMIT = 100;
 
     // --- Mapa de Logos ---
@@ -139,10 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         const itensSimples = [
-            { icon: 'fa-exclamation-triangle', title: 'Estruturas de Alumínio', description: 'Utiliza estruturas de fixação padrão em alumínio. (A versão Premium oferece tratamento anticorrosivo superior para maior durabilidade).' },
-            { icon: 'fa-exclamation-triangle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento simples. (A versão Premium possui dupla isolação para proteção extra contra falhas).' },
-            { icon: 'fa-exclamation-triangle', title: 'Proteção Essencial', description: 'Inclui dispositivos de proteção essenciais. (A versão Premium usa DPS de classe superior para proteger todos os seus equipamentos).' },
-            { icon: 'fa-exclamation-triangle', title: 'Conectores Padrão', description: 'Utiliza conectores padrão de mercado. (A versão Premium usa conectores suíços que evitam perdas e superaquecimento).' },
+            { icon: 'fa-exclamation-triangle', title: 'Estruturas de Alumínio', description: 'Utiliza estruturas de fixação padrão em alumínio. <em>(A versão Premium oferece tratamento anticorrosivo superior para maior durabilidade).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento simples. <em>(A versão Premium possui dupla isolação para proteção extra contra falhas).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Proteção Essencial', description: 'Inclui dispositivos de proteção essenciais. <em>(A versão Premium usa DPS de classe superior para proteger todos os seus equipamentos).</em>' },
+            { icon: 'fa-exclamation-triangle', title: 'Conectores Padrão', description: 'Utiliza conectores padrão de mercado. <em>(A versão Premium usa conectores suíços que evitam perdas e superaquecimento).</em>' },
             { icon: 'fa-exclamation-triangle', title: 'Ramal da Concessionária', description: 'Mantém o cabo de entrada da concessionária, geralmente de alumínio, que pode apresentar riscos de superaquecimento a longo prazo.' },
         ];
 
@@ -214,11 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarFinanciamento(dados);
     }
 
-    // --- NOVA FUNÇÃO PARA RENDERIZAR O RESUMO NO CABEÇALHO ---
     function mostrarResumoNoCabecalho() {
-        if (summaryWasShown) return; // Só executa uma vez
+        if (summaryWasShown) return;
         summaryWasShown = true;
 
+        const headerSummary = document.getElementById('header-summary');
         const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
         const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
 
@@ -245,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headerSummary.style.display = 'flex';
     }
 
-    // --- LÓGICA DE TRACKING PROFISSIONAL (STATUS E DEBOUNCE) ---
+    // --- LÓGICA DE TRACKING E ANIMAÇÃO ---
     function registrarEvento(projectId, eventType) {
         const timestamp = getTimestamp();
         
@@ -280,25 +279,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2500);
     }
 
-    function criarObservadorDePreco(projectId, tipoProposta) {
+    function criarObservadores(projectId, tipoProposta) {
         if (priceObserver) priceObserver.disconnect();
+        if (installationObserver) installationObserver.disconnect();
 
         const investmentSection = document.querySelector('.investment-section');
-        if (!investmentSection) return;
+        if (investmentSection) {
+            let hasBeenVisible = false;
+            priceObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !hasBeenVisible) {
+                    hasBeenVisible = true;
+                    const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
+                    registrarEvento(projectId, eventType);
+                    mostrarResumoNoCabecalho();
+                    priceObserver.unobserve(investmentSection);
+                }
+            }, { threshold: 0.75 });
+            priceObserver.observe(investmentSection);
+        }
 
-        let hasBeenVisible = false;
-
-        priceObserver = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !hasBeenVisible) {
-                hasBeenVisible = true;
-                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
-                registrarEvento(projectId, eventType);
-                mostrarResumoNoCabecalho(); // Chama a nova função
-                priceObserver.unobserve(investmentSection);
-            }
-        }, { threshold: 0.75 });
-
-        priceObserver.observe(investmentSection);
+        const installationCards = document.querySelectorAll('.comparison-card');
+        if (installationCards.length > 0) {
+            installationObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-in-view');
+                    } else {
+                        entry.target.classList.remove('is-in-view');
+                    }
+                });
+            }, { threshold: 0.6, rootMargin: "-40% 0px -40% 0px" });
+            installationCards.forEach(card => installationObserver.observe(card));
+        }
     }
 
     // --- Lógica Principal e Eventos ---
@@ -321,8 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             trackingStatus = { viewedPerformance: null, viewedEconomic: null };
-            summaryWasShown = false; // Reseta a flag do resumo
-            headerSummary.style.display = 'none'; // Esconde o resumo
+            summaryWasShown = false;
+            document.getElementById('header-summary').style.display = 'none';
 
             propostaOriginal = proposta;
             propostaEconomica = JSON.parse(JSON.stringify(proposta));
@@ -382,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             renderizarProposta(propostaOriginal, 'performance');
             blockFeatures();
-            criarObservadorDePreco(proposta.project.id, 'performance');
+            criarObservadores(proposta.project.id, 'performance');
 
         } catch (err) {
             console.error("Erro na busca:", err);
@@ -424,7 +436,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             <div id="header-summary" class="header-summary" style="display: none;"></div>`;
-        
+
+        const headerSummary = document.getElementById('header-summary');
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
 
@@ -435,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnAltaPerformance.classList.add('active');
             if (propostaOriginal) {
                 renderizarProposta(propostaOriginal, 'performance');
-                criarObservadorDePreco(propostaOriginal.project.id, 'performance');
+                criarObservadores(propostaOriginal.project.id, 'performance');
             }
         });
 
@@ -446,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnEconomica.classList.add('active');
             if (propostaEconomica) {
                 renderizarProposta(propostaEconomica, 'economica');
-                criarObservadorDePreco(propostaEconomica.project.id, 'economica');
+                criarObservadores(propostaEconomica.project.id, 'economica');
             }
         });
 
