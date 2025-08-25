@@ -10,19 +10,19 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <header id="header" class="header">
-  <div class="header-content">
-    <div class="header-proposal-container">
-      <div class="header-proposal">
-        <span class="header-label">PROPOSTA DE ALTA PERFORMANCE</span>
-        <p class="header-value" id="header-value-alta">R$ 0,00</p>
-      </div>
-      <div class="header-proposal">
-        <span class="header-label">PROPOSTA ECONÔMICA</span>
-        <p class="header-value" id="header-value-eco">R$ 0,00</p>
-      </div>
+    <header id="proposal-header" class="header">
+    <!-- O header__container existente -->
+    <div class="header__container">
+        <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+        <div class="header__options">
+            <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+            <button id="btn-economica" class="option-button">Econômica</button>
+        </div>
     </div>
-  </div>
+    <!-- ADICIONE ESTA NOVA DIV ABAIXO -->
+    <div id="header-summary" class="header-summary">
+        <!-- O conteúdo do resumo será gerado aqui pelo app.js -->
+    </div>
 </header>
 
     <main id="search-form" class="screen">
