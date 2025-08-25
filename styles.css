@@ -488,6 +488,10 @@ body.theme-economic .header-summary {
 .comparison-card__back em {
     font-style: italic;
     color: var(--color-text); /* Garante um bom contraste */
+    background-color: var(--color-background); /* Adiciona um fundo sutil para destaque */
+    padding: 0.1rem 0.4rem; /* Pequeno espaçamento interno */
+    border-radius: 4px; /* Bordas arredondadas */
+    font-weight: 500; /* Um pouco mais de peso na fonte */
 }
 
 /* --- ANIMAÇÃO INTERATIVA PARA SMARTPHONES --- */
@@ -498,19 +502,14 @@ body.theme-economic .header-summary {
     }
 }
 
-/* DENTRO DE styles.css (adicionar ao final) */
-
-/* --- ESTILO REFINADO PARA A DESCRIÇÃO EM ITÁLICO --- */
-.comparison-card__back em {
-    font-style: italic;
-    color: var(--color-text); /* Mantém a cor base do texto */
-    background-color: var(--color-background); /* Adiciona um fundo sutil para destaque */
-    padding: 0.1rem 0.4rem; /* Pequeno espaçamento interno */
-    border-radius: 4px; /* Bordas arredondadas */
-    font-weight: 500; /* Um pouco mais de peso na fonte */
+/* --- ESTILO PARA MENSAGEM E MELHORIAS DE ESPAÇAMENTO --- */
+.search-card__message {
+    color: #ffc107; /* Amarelo para aviso */
+    font-weight: 500;
+    margin-bottom: 1rem;
+    min-height: 24px; /* Evita que o layout pule */
 }
 
-/* Adicionei este estilo para resolver o problema de quebra de layout */
 .header-fixed {
     position: fixed;
     top: 0;
@@ -530,7 +529,7 @@ body.theme-economic .header-summary {
 }
 
 .header-values.visible {
-    max-height: 100px; /* Ajuste se o conteúdo for maior */
+    max-height: 100px;
     opacity: 1;
 }
 
@@ -539,4 +538,18 @@ body.theme-economic .header-summary {
     justify-content: space-around;
     align-items: center;
     margin-top: 1rem;
+}
+
+/* NOVO: Ajuste de espaçamento para telas pequenas */
+@media (max-width: 768px) {
+    /* Adiciona padding na parte superior do corpo para evitar que o conteúdo seja coberto pelo cabeçalho */
+    .proposal-details {
+        padding-top: 12rem; /* Aumenta o espaçamento para acomodar o cabeçalho completo no topo */
+    }
+
+    .header-fixed .header-values {
+        /* Garante que o cabeçalho fique mais compacto em telas menores, se necessário */
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
 }
