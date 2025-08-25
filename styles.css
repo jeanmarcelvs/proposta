@@ -323,3 +323,36 @@ body.theme-economic .summary-card:first-child { border-right-color: var(--color-
 @media print {
     body * { display: none !important; }
 }
+
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO REFINADO PARA O AVISO DE FINANCIAMENTO --- */
+
+.financing-disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: var(--color-background);
+    border-radius: var(--border-radius);
+    border-left: 5px solid var(--color-secondary);
+}
+
+.financing-disclaimer i {
+    font-size: 1.2rem;
+    color: var(--color-secondary);
+    margin-top: 0.2rem;
+}
+
+.financing-disclaimer p {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    line-height: 1.6;
+}
+
+.financing-disclaimer p strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
