@@ -129,9 +129,9 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .unit-symbol {
     font-size: 0.6em;
     vertical-align: super;
-    margin-left: 2px; /* Adiciona um pequeno espaço antes da unidade */
-    font-weight: 500; /* Deixa a unidade um pouco mais leve que o número */
-    text-transform: none; /* Garante que não fique em maiúsculas se herdar de algum lugar */
+    margin-left: 2px;
+    font-weight: 500;
+    text-transform: none;
     letter-spacing: 0;
 }
 
@@ -150,7 +150,7 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 /* --- ESTILOS PARA ETIQUETAS DE SEÇÃO E CORREÇÕES --- */
 
 .section-tag {
-    margin-left: auto; /* Empurra a etiqueta para a direita */
+    margin-left: auto;
     padding: 0.2rem 0.8rem;
     border-radius: 50px;
     font-size: 0.8rem;
@@ -170,46 +170,43 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 
 /* CORREÇÃO: Cor da fonte da etiqueta "Equilibrado" no tema econômico */
 body.theme-economic .highlight-tag {
-    color: white; /* Garante que o texto seja branco sobre o fundo verde */
+    color: white;
 }
 
 /* Garante que o link do WhatsApp no rodapé não tenha sublinhado */
 .contact-item {
     text-decoration: none;
-    color: inherit; /* Herda a cor do texto do rodapé */
+    color: inherit;
 }
 
 /* --- ESTILO PERSONALIZADO PARA O LINK DO WHATSAPP --- */
 
-/* Estilo inicial do link */
 a#whatsapp-link {
     text-decoration: none;
-    color: #8892b0; /* Cor padrão do texto do rodapé */
-    display: inline-flex; /* Necessário para o alinhamento correto */
+    color: #8892b0;
+    display: inline-flex;
     align-items: center;
     gap: 0.75rem;
     transition: color 0.3s ease;
 }
 
-/* Estilo do ícone dentro do link */
 a#whatsapp-link i {
-    color: var(--color-secondary); /* Ícone sempre laranja */
+    color: var(--color-secondary);
     transition: color 0.3s ease;
 }
 
-/* Efeito HOVER: Inverte as cores */
 a#whatsapp-link:hover {
-    color: var(--color-secondary); /* Texto fica laranja */
+    color: var(--color-secondary);
 }
 
 a#whatsapp-link:hover i {
-    color: white; /* Ícone fica branco */
+    color: white;
 }
 
 /* --- ESTILOS PARA O NOVO CABEÇALHO DO CLIENTE --- */
 
 .client-header {
-    text-align: center; /* Centraliza o texto por padrão */
+    text-align: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--color-border);
@@ -218,7 +215,7 @@ a#whatsapp-link:hover i {
 .client-header__subtitle {
     display: flex;
     align-items: center;
-    justify-content: center; /* Garante que o ícone e o texto fiquem centralizados */
+    justify-content: center;
     gap: 0.5rem;
     font-size: 1.1rem;
     color: var(--color-text-light);
@@ -230,18 +227,18 @@ a#whatsapp-link:hover i {
 }
 
 .client-header__title {
-    font-size: 2rem; /* Tamanho de destaque para o nome */
+    font-size: 2rem;
     font-weight: 700;
     color: var(--color-primary);
     line-height: 1.2;
-    word-break: break-word; /* Garante que nomes muito longos quebrem a linha corretamente */
+    word-break: break-word;
 }
 
 /* --- AJUSTES DE RESPONSIVIDADE PARA O CABEÇALHO DO CLIENTE --- */
 
 @media (max-width: 600px) {
     .client-header__title {
-        font-size: 1.6rem; /* Diminui um pouco a fonte em telas pequenas */
+        font-size: 1.6rem;
     }
 
     .client-header__subtitle {
@@ -251,29 +248,20 @@ a#whatsapp-link:hover i {
 
 /* --- CORREÇÃO DE COR PARA O NOME DO CLIENTE --- */
 
-/* Esta regra garante que, por padrão (Alta Performance), 
-  o nome do cliente seja branco para contrastar com o fundo escuro do card.
-*/
 .client-header__title {
     color: white; 
 }
 
-/* Esta regra garante que, quando o tema econômico estiver ativo,
-  o nome do cliente use a cor primária (escura) do tema.
-*/
 body.theme-economic .client-header__title {
     color: var(--color-primary);
 }
 
-/* Ajuste no subtítulo para garantir a cor correta em ambos os temas.
-  O ícone já herda a cor secundária, que muda com o tema.
-*/
 .client-header__subtitle {
-    color: #a8b2d1; /* Um cinza-azulado claro que funciona bem em ambos os fundos */
+    color: #a8b2d1;
 }
 
 body.theme-economic .client-header__subtitle {
-    color: var(--color-text-light); /* Usa a cor de texto claro do tema econômico */
+    color: var(--color-text-light);
 }
 
 /* DENTRO DE styles.css (adicionar ao final) */
@@ -282,9 +270,9 @@ body.theme-economic .client-header__subtitle {
 
 .spec-card {
     display: flex;
-    flex-direction: column; /* Organiza os itens verticalmente */
-    justify-content: center; /* Centraliza o conteúdo verticalmente */
-    gap: 0.25rem; /* Espaçamento entre os itens */
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
     background-color: var(--color-background);
     padding: 1rem;
     border-radius: var(--border-radius);
@@ -292,7 +280,6 @@ body.theme-economic .client-header__subtitle {
     height: 100%;
 }
 
-/* Estilo para o RÓTULO (ex: "Inversor", "Painel Solar") */
 .spec-card__label {
     color: var(--color-text-light);
     font-size: 0.9rem;
@@ -301,17 +288,15 @@ body.theme-economic .client-header__subtitle {
     letter-spacing: 0.5px;
 }
 
-/* Estilo para o VALOR PRINCIPAL (ex: "5000 W") */
 .spec-card__value {
     color: var(--color-text);
-    font-size: 1.8rem; /* Tamanho de destaque */
+    font-size: 1.8rem;
     font-weight: 700;
     line-height: 1.2;
 }
 
-/* Estilo para a INFORMAÇÃO SECUNDÁRIA (ex: "1 Unidade(s)") */
 .spec-card__meta {
-    color: var(--color-secondary); /* Cor de destaque para a quantidade */
+    color: var(--color-secondary);
     font-size: 1rem;
     font-weight: 600;
 }
@@ -332,18 +317,18 @@ body.theme-economic .client-header__subtitle {
     padding: 1.5rem;
     border: 1px solid var(--color-border);
     text-align: center;
-    perspective: 1000px; /* Essencial para o efeito 3D */
+    perspective: 1000px;
 }
 
 .comparison-card__flipper {
     transition: transform 0.6s;
     transform-style: preserve-3d;
     position: relative;
-    min-height: 150px; /* Garante uma altura mínima consistente */
+    min-height: 150px;
 }
 
 .comparison-card:hover .comparison-card__flipper {
-    transform: rotateY(180deg); /* O efeito de virar ao passar o mouse */
+    transform: rotateY(180deg);
 }
 
 .comparison-card__front,
@@ -351,7 +336,7 @@ body.theme-economic .client-header__subtitle {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden; /* Esconde o lado de trás do elemento */
+    backface-visibility: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -359,7 +344,7 @@ body.theme-economic .client-header__subtitle {
 }
 
 .comparison-card__back {
-    transform: rotateY(180deg); /* Posiciona o verso do card */
+    transform: rotateY(180deg);
     font-size: 0.9rem;
     color: var(--color-text-light);
 }
@@ -386,8 +371,8 @@ body.theme-economic .comparison-card {
 /* --- AJUSTES NO BOTÃO "NOVA CONSULTA" --- */
 
 .back-button-wrapper {
-    margin-top: 1.5rem; /* Espaçamento acima do botão */
-    text-align: center; /* Centraliza o botão */
+    margin-top: 1.5rem;
+    text-align: center;
 }
 
 .btn--secondary {
@@ -416,10 +401,10 @@ body.theme-economic .btn--secondary:hover {
 
 /* --- ESTILO PARA MENSAGEM NA TELA DE BUSCA --- */
 .search-card__message {
-    color: #ffc107; /* Um amarelo-âmbar para aviso */
+    color: #ffc107;
     font-weight: 500;
     margin-bottom: 1rem;
-    min-height: 24px; /* Garante que o layout não pule quando a mensagem aparece */
+    min-height: 24px;
 }
 
 /* DENTRO DE styles.css (adicionar ao final) */
@@ -429,7 +414,7 @@ body.theme-economic .btn--secondary:hover {
 .header-summary {
     background-color: var(--color-card-bg);
     padding: 0.75rem 2rem;
-    display: none; /* Começa oculto */
+    display: none;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
@@ -487,27 +472,27 @@ body.theme-economic .header-summary {
 /* --- ESTILO PARA A DESCRIÇÃO EM ITÁLICO --- */
 .comparison-card__back em {
     font-style: italic;
-    color: var(--color-text); /* Garante um bom contraste */
-    background-color: var(--color-background); /* Adiciona um fundo sutil para destaque */
-    padding: 0.1rem 0.4rem; /* Pequeno espaçamento interno */
-    border-radius: 4px; /* Bordas arredondadas */
-    font-weight: 500; /* Um pouco mais de peso na fonte */
+    color: var(--color-text);
+    background-color: var(--color-background);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 500;
 }
 
 /* --- ANIMAÇÃO INTERATIVA PARA SMARTPHONES --- */
 @media (max-width: 768px) {
     .comparison-card.is-in-view .comparison-card__flipper {
         transform: rotateY(180deg);
-        transition-delay: 0.2s; /* Um pequeno atraso para o efeito ser mais suave */
+        transition-delay: 0.2s;
     }
 }
 
 /* --- ESTILO PARA MENSAGEM E MELHORIAS DE ESPAÇAMENTO --- */
 .search-card__message {
-    color: #ffc107; /* Amarelo para aviso */
+    color: #ffc107;
     font-weight: 500;
     margin-bottom: 1rem;
-    min-height: 24px; /* Evita que o layout pule */
+    min-height: 24px;
 }
 
 .header-fixed {
@@ -542,13 +527,12 @@ body.theme-economic .header-summary {
 
 /* NOVO: Ajuste de espaçamento para telas pequenas */
 @media (max-width: 768px) {
-    /* Adiciona padding na parte superior do corpo para evitar que o conteúdo seja coberto pelo cabeçalho */
+    /* Ajuste para telas menores */
     .proposal-details {
-        padding-top: 12rem; /* Aumenta o espaçamento para acomodar o cabeçalho completo no topo */
+        padding-top: 15rem; /* Aumenta o espaçamento para acomodar o cabeçalho no topo, evitando sobreposição. */
     }
 
     .header-fixed .header-values {
-        /* Garante que o cabeçalho fique mais compacto em telas menores, se necessário */
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
     }
