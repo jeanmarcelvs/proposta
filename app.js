@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (tipoProposta === 'economica') {
             title = '<i class="fas fa-tools"></i> Padrão de Instalação';
-            tagHtml = '<span class="section-tag tag-simple">Simples</span>';
+            tagHtml = '<span class="section-tag tag-simple">Econômica</span>';
             container.innerHTML = itensSimples.map(item => `
                 <div class="comparison-card">
                     <div class="comparison-card__flipper">
