@@ -183,6 +183,23 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .comparison-card.is-in-view .comparison-card__flipper {
     transform: rotateY(180deg);
 }
+
+/* 
+  REGRA ADICIONAL PARA DESKTOPS (E TELAS MAIORES):
+  A partir de 1024px de largura, a animação só acontece com o HOVER do mouse.
+  Isso cria uma experiência mais interativa e controlada no desktop.
+*/
+@media (min-width: 1024px) {
+    /* Primeiro, resetamos a transformação automática para que ela não aconteça */
+    .comparison-card.is-in-view .comparison-card__flipper {
+        transform: none; /* Desativa o giro automático */
+    }
+
+    /* Agora, ativamos a transformação apenas no hover */
+    .comparison-card:hover .comparison-card__flipper {
+        transform: rotateY(180deg); /* Ativa o giro com o mouse */
+    }
+}
 .comparison-card__front, .comparison-card__back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .comparison-card__back { transform: rotateY(180deg); font-size: 0.9rem; color: var(--color-text-light); }
 .comparison-card__icon { font-size: 2.5rem; color: var(--color-secondary); margin-bottom: 1rem; }
