@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `<span class="currency-symbol">R$</span>${integer},${decimal}`;
     };
 
-    // NOVO: Função para formatar o valor como inteiro para o cabeçalho
     const formatarValorInteiro = (valor) => {
         const num = parseFloat(valor);
         if (isNaN(num)) return 'N/A';
@@ -244,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const prazoMenorParcelaE = propostaEconomica.variables.find(v => v.key === keyPrazoE)?.value;
         const menorParcelaEconomica = parseFloat(menorParcelaObjE.value);
         
-        // NOVO CÓDIGO AQUI: Estrutura HTML aprimorada para o cabeçalho
         headerSummary.innerHTML = `
             <div class="summary-card">
                 <span class="card-title">Alta Performance</span>
@@ -324,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (installationCards.length > 0) {
             installationObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.is-in-viewis-in-view.is-in-viewInterseceting) {
+                    if (entry.isIntersecting) {
                         entry.target.classList.add('is-in-view');
                     } else {
                         entry.target.classList.remove('is-in-view');
