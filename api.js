@@ -8,18 +8,22 @@ export async function consultarProposta(projectId) {
 }
 
 /**
- * Envia um evento de tracking para o backend.
+ * Envia a nova descrição completa do projeto para o backend.
  * @param {string} projectId - O ID do projeto.
- * @param {string} eventMessage - A mensagem do evento a ser registrada.
+ * @param {string} newDescription - A nova descrição completa a ser salva.
  * @returns {Promise<Object>}
  */
-export async function registrarEvento(projectId, eventMessage) {
+export async function atualizarDescricao(projectId, newDescription) {
     const url = '/api/atualizar-projeto';
     const response = await fetch(url, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId, eventMessage })
+        body: JSON.stringify({ projectId, newDescription })
     });
-    if (!response.ok) throw new Error(`Erro ao chamar a API de atualização: ${response.status}`);
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("Erro na API de atualização:", errorBody);
+        throw new Error(`Erro ao chamar a API de atualização: ${response.status}`);
+    }
     return response.json();
 }

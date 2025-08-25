@@ -1,4 +1,4 @@
-import { consultarProposta, registrarEvento } from "./api.js";
+import { consultarProposta, atualizarDescricao } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
-    let priceObserver; // Variável para guardar nosso observador
+    let priceObserver;
+    let debounceTimer; // Timer para o debounce
+    let currentDescription = ''; // Guarda a descrição atual para concatenar
 
     // --- Mapa de Logos ---
     const logoMap = { 'huawei': 'logo1.png' };
@@ -177,33 +179,34 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarFinanciamento(dados);
     }
 
-    // --- LÓGICA DE TRACKING AVANÇADA ---
+    // --- LÓGICA DE TRACKING PROFISSIONAL (DEBOUNCE) ---
+    function registrarEventoComDebounce(projectId, eventMessage) {
+        currentDescription = currentDescription 
+            ? `${currentDescription}\n${eventMessage}` 
+            : eventMessage;
+        
+        clearTimeout(debounceTimer);
+
+        debounceTimer = setTimeout(() => {
+            console.log(`Enviando descrição atualizada para o backend: "${currentDescription}"`);
+            atualizarDescricao(projectId, currentDescription)
+                .then(response => console.log('Descrição atualizada com sucesso:', response.data))
+                .catch(error => console.error('Falha ao atualizar descrição:', error));
+        }, 2000); // Espera 2 segundos de inatividade antes de enviar
+    }
+
     function criarObservadorDePreco(projectId, tipoProposta) {
-        if (priceObserver) {
-            priceObserver.disconnect();
-        }
+        if (priceObserver) priceObserver.disconnect();
 
         const investmentSection = document.querySelector('.investment-section');
         if (!investmentSection) return;
 
-        let isVisible = false;
-
         priceObserver = new IntersectionObserver((entries) => {
-            const entry = entries[0];
-            if (entry.isIntersecting && !isVisible) {
-                isVisible = true;
+            if (entries[0].isIntersecting) {
                 const mensagem = `[${getTimestamp()}] Visualizou Preço (${tipoProposta})`;
-                console.log(mensagem);
-                registrarEvento(projectId, mensagem).catch(console.error);
-            } else if (!entry.isIntersecting && isVisible) {
-                isVisible = false;
-                const mensagem = `[${getTimestamp()}] Saiu da visualização do Preço (${tipoProposta})`;
-                console.log(mensagem);
-                registrarEvento(projectId, mensagem).catch(console.error);
+                registrarEventoComDebounce(projectId, mensagem);
             }
-        }, {
-            threshold: [0.4, 0.6]
-        });
+        }, { threshold: 0.75 });
 
         priceObserver.observe(investmentSection);
     }
@@ -225,6 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 expiredProposalSection.innerHTML = `<div class="search-card"><h1 class="search-card__title">Proposta Expirada</h1><p class="search-card__subtitle">Por favor, solicite uma nova proposta.</p><button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button></div>`;
                 return;
             }
+
+            // Inicia a descrição atual com a do projeto
+            currentDescription = proposta.project.description || '';
 
             propostaOriginal = proposta;
             propostaEconomica = JSON.parse(JSON.stringify(proposta));
@@ -298,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     backToSearchBtn.addEventListener('click', () => {
         if (priceObserver) priceObserver.disconnect();
+        clearTimeout(debounceTimer); // Cancela qualquer envio pendente
         proposalDetailsSection.style.display = 'none';
         proposalHeader.style.display = 'none';
         expiredProposalSection.style.display = 'none';
@@ -339,8 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnEconomica.classList.contains('active')) return;
         
         const mensagemClique = `[${getTimestamp()}] Clicou em Proposta Econômica`;
-        console.log(mensagemClique);
-        registrarEvento(propostaOriginal.project.id, mensagemClique).catch(console.error);
+        registrarEventoComDebounce(propostaOriginal.project.id, mensagemClique);
 
         document.body.classList.add('theme-economic');
         btnAltaPerformance.classList.remove('active');
