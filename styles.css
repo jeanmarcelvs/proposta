@@ -139,7 +139,7 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
     .header__container { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-    .proposal-details { padding-top: 12rem; }
+    .proposal-details { padding-top: 8rem; }
     .section-content { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 }
 
@@ -525,15 +525,11 @@ body.theme-economic .header-summary {
     margin-top: 1rem;
 }
 
-/* NOVO: Ajuste de espaçamento para telas pequenas */
-@media (max-width: 768px) {
-    /* Ajuste para telas menores */
-    .proposal-details {
-        padding-top: 15rem; /* Aumenta o espaçamento para acomodar o cabeçalho no topo, evitando sobreposição. */
-    }
+/* NOVO: Classe para espaçamento dinâmico em telas pequenas */
+.proposal-details.dynamic-spacing {
+    padding-top: 15rem;
+}
 
-    .header-fixed .header-values {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
+@media (max-width: 768px) {
+    /* REMOÇÃO DE CÓDIGO AQUI: A regra antiga foi substituída pela classe dinâmica acima. */
 }
