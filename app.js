@@ -16,13 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let propostaOriginal, propostaEconomica;
     let priceObserver;
     let debounceTimer;
-    // Objeto para guardar os status mais importantes
     let trackingStatus = {
-        viewedPerformance: null, // Guarda o timestamp da última visualização da Alta Performance
-        viewedEconomic: null,    // Guarda o timestamp da última visualização da Econômica
-        clickedEconomic: null   // Guarda o timestamp do clique em Econômica
+        viewedPerformance: null,
+        viewedEconomic: null,
+        clickedEconomic: null
     };
-    const DESCRIPTION_LIMIT = 100; // Limite de caracteres da API
+    const DESCRIPTION_LIMIT = 100;
 
     // --- Mapa de Logos ---
     const logoMap = { 'huawei': 'logo1.png' };
@@ -49,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const getTimestamp = () => new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
-    // --- Funções de Renderização (sem alterações) ---
+    // --- Funções de Renderização ---
     function renderizarFinanciamento(dados) {
         const financingOptionsContainer = document.getElementById('financing-options');
         const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
@@ -80,48 +79,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderizarEquipamentos(dados, tipoProposta) {
-    const equipmentContainer = document.getElementById('equipment-container');
-    const equipmentTitle = document.getElementById('equipment-title');
-    
-    equipmentTitle.innerHTML = tipoProposta === 'economica' 
-        ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
-        : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
+        const equipmentContainer = document.getElementById('equipment-container');
+        const equipmentTitle = document.getElementById('equipment-title');
+        
+        equipmentTitle.innerHTML = tipoProposta === 'economica' 
+            ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
+            : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
 
-    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
-    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
-    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
-    
-    let logoHtml = logoFileName 
-        ? `<img src="${logoFileName}" alt="Logo do equipamento">`
-        : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+        const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
+        const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+        const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+        
+        let logoHtml = logoFileName 
+            ? `<img src="${logoFileName}" alt="Logo do equipamento">`
+            : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-    let inversoresHtml = inversores.map(inv => {
-        const index = inv.key.split('_').pop();
-        const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
-        const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-        return `
+        let inversoresHtml = inversores.map(inv => {
+            const index = inv.key.split('_').pop();
+            const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
+            const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
+            return `
+                <div class="spec-card">
+                    <span class="spec-card__label">Inversor</span>
+                    <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
+                    <span class="spec-card__meta">${qnt} Unidade(s)</span>
+                </div>
+            `;
+        }).join('');
+
+        const modulosHtml = `
             <div class="spec-card">
-                <span class="spec-card__label">Inversor</span>
-                <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
-                <span class="spec-card__meta">${qnt} Unidade(s)</span>
+                <span class="spec-card__label">Painel Solar</span>
+                <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
+                <span class="spec-card__meta">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
             </div>
         `;
-    }).join('');
 
-    const modulosHtml = `
-        <div class="spec-card">
-            <span class="spec-card__label">Painel Solar</span>
-            <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
-            <span class="spec-card__meta">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
-        </div>
-    `;
-
-    equipmentContainer.innerHTML = `
-        <div class="equipment-logo-wrapper">${logoHtml}</div>
-        ${inversoresHtml}
-        ${modulosHtml}
-    `;
-}
+        equipmentContainer.innerHTML = `
+            <div class="equipment-logo-wrapper">${logoHtml}</div>
+            ${inversoresHtml}
+            ${modulosHtml}
+        `;
+    }
 
     function renderizarPadraoInstalacao(tipoProposta) {
         const installationTitle = document.getElementById('installation-title');
@@ -158,50 +157,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderizarProposta(dados, tipoProposta = 'performance') {
-    const clienteNome = document.getElementById('cliente-nome');
-    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-    const dataLabel = document.getElementById('data-label'); // Pega o novo elemento
-    const dataGeracao = document.getElementById('data-geracao');
-    const geracaoMensal = document.getElementById('geracao-mensal');
-    const potenciaSistema = document.getElementById('potencia-sistema');
-    const tipoInstalacao = document.getElementById('tipo-instalacao');
-    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-    const valorTotal = document.getElementById('valor-total');
-    const proposalValidity = document.getElementById('proposal-validity');
+        const clienteNome = document.getElementById('cliente-nome');
+        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+        const dataGeracao = document.getElementById('data-geracao');
+        const geracaoMensal = document.getElementById('geracao-mensal');
+        const potenciaSistema = document.getElementById('potencia-sistema');
+        const tipoInstalacao = document.getElementById('tipo-instalacao');
+        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+        const valorTotal = document.getElementById('valor-total');
+        const proposalValidity = document.getElementById('proposal-validity');
 
-    // Agora esta linha funciona, pois o elemento 'data-label' existe
-    dataLabel.textContent = 'Data de Atualização:';
-    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-    
-    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+        // --- CORREÇÃO APLICADA AQUI ---
+        // Encontra o elemento pai e, a partir dele, o <strong> para alterar o rótulo.
+        const dataLabel = dataGeracao.parentElement.querySelector('strong');
+        if (dataLabel) {
+            dataLabel.textContent = 'Data de Atualização:';
+        }
+        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+        
+        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
-    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-    geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-    valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+        geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+        potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
 
-    renderizarEquipamentos(dados, tipoProposta);
-    renderizarPadraoInstalacao(tipoProposta);
-    renderizarFinanciamento(dados);
-}
+        renderizarEquipamentos(dados, tipoProposta);
+        renderizarPadraoInstalacao(tipoProposta);
+        renderizarFinanciamento(dados);
+    }
 
     // --- LÓGICA DE TRACKING PROFISSIONAL (STATUS E DEBOUNCE) ---
     function registrarEvento(projectId, eventType) {
         const timestamp = getTimestamp();
         
-        // Atualiza o status correspondente com o timestamp mais recente
         if (eventType === 'viewedPerformance') trackingStatus.viewedPerformance = timestamp;
         if (eventType === 'viewedEconomic') trackingStatus.viewedEconomic = timestamp;
         if (eventType === 'clickedEconomic') trackingStatus.clickedEconomic = timestamp;
 
-        // Monta a descrição com base nos status que temos, priorizando os mais importantes
         let descriptionParts = [];
         if (trackingStatus.viewedPerformance) {
-            descriptionParts.push(`Viu Preço P: ${trackingStatus.viewedPerformance.split(', ')[1]}`); // Pega só a hora
+            descriptionParts.push(`Viu Preço P: ${trackingStatus.viewedPerformance.split(', ')[1]}`);
         }
         if (trackingStatus.viewedEconomic) {
             descriptionParts.push(`Viu Preço E: ${trackingStatus.viewedEconomic.split(', ')[1]}`);
@@ -210,22 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
             descriptionParts.push(`Clicou Econ: ${trackingStatus.clickedEconomic.split(', ')[1]}`);
         }
 
-        // Constrói a string final, garantindo que não exceda o limite
         let newDescription = descriptionParts.join(' | ');
         if (newDescription.length > DESCRIPTION_LIMIT) {
             newDescription = newDescription.substring(0, DESCRIPTION_LIMIT);
         }
 
-        // Limpa qualquer timer anterior para aplicar o debounce
         clearTimeout(debounceTimer);
 
-        // Inicia um novo timer para enviar a atualização
         debounceTimer = setTimeout(() => {
             console.log(`Enviando status atualizado: "${newDescription}"`);
             atualizarDescricao(projectId, newDescription)
                 .then(response => console.log('Status atualizado com sucesso:', response.data.description))
                 .catch(error => console.error('Falha ao atualizar status:', error));
-        }, 2500); // Espera 2.5 segundos de inatividade
+        }, 2500);
     }
 
     function criarObservadorDePreco(projectId, tipoProposta) {
@@ -239,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         priceObserver = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !hasBeenVisible) {
                 hasBeenVisible = true;
-                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
+                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'economica';
                 registrarEvento(projectId, eventType);
                 priceObserver.unobserve(investmentSection);
             }
@@ -266,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Reseta o objeto de status para uma nova consulta
             trackingStatus = { viewedPerformance: null, viewedEconomic: null, clickedEconomic: null };
 
             propostaOriginal = proposta;
@@ -374,4 +370,32 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEconomica.classList.remove('active');
         btnAltaPerformance.classList.add('active');
         if (propostaOriginal) {
-            renderizarProposta(proposta
+            renderizarProposta(propostaOriginal, 'performance');
+            criarObservadorDePreco(propostaOriginal.project.id, 'performance');
+        }
+    });
+
+    btnEconomica.addEventListener('click', () => {
+        if (btnEconomica.classList.contains('active')) return;
+        
+        registrarEvento(propostaOriginal.project.id, 'clickedEconomic');
+
+        document.body.classList.add('theme-economic');
+        btnAltaPerformance.classList.remove('active');
+        btnEconomica.classList.add('active');
+        if (propostaEconomica) {
+            renderizarProposta(propostaEconomica, 'economica');
+            criarObservadorDePreco(propostaEconomica.project.id, 'economica');
+        }
+    });
+
+    const phoneNumber = "5582994255946";
+    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+
+    searchForm.style.display = 'flex';
+    proposalDetailsSection.style.display = 'none';
+    expiredProposalSection.style.display = 'none';
+    proposalHeader.style.display = 'none';
+    mainFooter.style.display = 'block';
+} );
