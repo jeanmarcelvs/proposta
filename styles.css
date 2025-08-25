@@ -279,3 +279,43 @@ body.theme-economic .client-header__subtitle {
     color: var(--color-text-light); /* Usa a cor de texto claro do tema econômico */
 }
 
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- HIERARQUIA VISUAL NOS CARDS DE EQUIPAMENTO --- */
+
+.spec-card {
+    display: flex;
+    flex-direction: column; /* Organiza os itens verticalmente */
+    justify-content: center; /* Centraliza o conteúdo verticalmente */
+    gap: 0.25rem; /* Espaçamento entre os itens */
+    background-color: var(--color-background);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    height: 100%;
+}
+
+/* Estilo para o RÓTULO (ex: "Inversor", "Painel Solar") */
+.spec-card__label {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Estilo para o VALOR PRINCIPAL (ex: "5000 W") */
+.spec-card__value {
+    color: var(--color-text);
+    font-size: 1.8rem; /* Tamanho de destaque */
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Estilo para a INFORMAÇÃO SECUNDÁRIA (ex: "1 Unidade(s)") */
+.spec-card__meta {
+    color: var(--color-secondary); /* Cor de destaque para a quantidade */
+    font-size: 1rem;
+    font-weight: 600;
+}
+

@@ -15,8 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
     let priceObserver;
-    let debounceTimer; // Timer para o debounce
-    let currentDescription = ''; // Guarda a descrição atual para concatenar
+    let debounceTimer;
+    // Objeto para guardar os status mais importantes
+    let trackingStatus = {
+        viewedPerformance: null, // Guarda o timestamp da última visualização da Alta Performance
+        viewedEconomic: null,    // Guarda o timestamp da última visualização da Econômica
+        clickedEconomic: null   // Guarda o timestamp do clique em Econômica
+    };
+    const DESCRIPTION_LIMIT = 100; // Limite de caracteres da API
 
     // --- Mapa de Logos ---
     const logoMap = { 'huawei': 'logo1.png' };
@@ -43,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const getTimestamp = () => new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 
-    // --- Funções de Renderização ---
+    // --- Funções de Renderização (sem alterações) ---
     function renderizarFinanciamento(dados) {
         const financingOptionsContainer = document.getElementById('financing-options');
         const todasAsParcelas = dados.variables.filter(v => v.key.startsWith('f_parcela'));
@@ -74,48 +80,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderizarEquipamentos(dados, tipoProposta) {
-        const equipmentContainer = document.getElementById('equipment-container');
-        const equipmentTitle = document.getElementById('equipment-title');
-        
-        equipmentTitle.innerHTML = tipoProposta === 'economica' 
-            ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
-            : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
+    const equipmentContainer = document.getElementById('equipment-container');
+    const equipmentTitle = document.getElementById('equipment-title');
+    
+    equipmentTitle.innerHTML = tipoProposta === 'economica' 
+        ? '<i class="fas fa-shield-alt"></i> Opção Custo-Benefício' 
+        : '<i class="fas fa-rocket"></i> Equipamentos de Ponta';
 
-        const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
-        const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
-        const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
-        
-        let logoHtml = logoFileName 
-            ? `<img src="${logoFileName}" alt="Logo do equipamento">`
-            : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
+    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+    
+    let logoHtml = logoFileName 
+        ? `<img src="${logoFileName}" alt="Logo do equipamento">`
+        : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-        let inversoresHtml = inversores.map(inv => {
-            const index = inv.key.split('_').pop();
-            const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
-            const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-            return `
-                <div class="spec-card">
-                    <span class="spec-label">Inversor</span>
-                    <span class="spec-value">${potencia}<span class="unit-symbol">W</span></span>
-                    <span class="spec-label">${qnt} Unidade(s)</span>
-                </div>
-            `;
-        }).join('');
-
-        const modulosHtml = `
+    let inversoresHtml = inversores.map(inv => {
+        const index = inv.key.split('_').pop();
+        const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
+        const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
+        return `
             <div class="spec-card">
-                <span class="spec-label">Módulos</span>
-                <span class="spec-value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
-                <span class="spec-label">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
+                <span class="spec-card__label">Inversor</span>
+                <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
+                <span class="spec-card__meta">${qnt} Unidade(s)</span>
             </div>
         `;
+    }).join('');
 
-        equipmentContainer.innerHTML = `
-            <div class="equipment-logo-wrapper">${logoHtml}</div>
-            ${inversoresHtml}
-            ${modulosHtml}
-        `;
-    }
+    const modulosHtml = `
+        <div class="spec-card">
+            <span class="spec-card__label">Painel Solar</span>
+            <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
+            <span class="spec-card__meta">${findVar(dados, 'modulo_quantidade', true)} Unidades</span>
+        </div>
+    `;
+
+    equipmentContainer.innerHTML = `
+        <div class="equipment-logo-wrapper">${logoHtml}</div>
+        ${inversoresHtml}
+        ${modulosHtml}
+    `;
+}
 
     function renderizarPadraoInstalacao(tipoProposta) {
         const installationTitle = document.getElementById('installation-title');
@@ -152,47 +158,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderizarProposta(dados, tipoProposta = 'performance') {
-        const clienteNome = document.getElementById('cliente-nome');
-        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-        const dataGeracao = document.getElementById('data-geracao');
-        const geracaoMensal = document.getElementById('geracao-mensal');
-        const potenciaSistema = document.getElementById('potencia-sistema');
-        const tipoInstalacao = document.getElementById('tipo-instalacao');
-        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-        const valorTotal = document.getElementById('valor-total');
-        const proposalValidity = document.getElementById('proposal-validity');
+    const clienteNome = document.getElementById('cliente-nome');
+    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+    const dataGeracao = document.getElementById('data-geracao');
+    const geracaoMensal = document.getElementById('geracao-mensal');
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const tipoInstalacao = document.getElementById('tipo-instalacao');
+    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+    const valorTotal = document.getElementById('valor-total');
+    const proposalValidity = document.getElementById('proposal-validity');
 
-        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+    // ALTERAÇÃO: Muda o rótulo da data
+    document.getElementById('data-label').textContent = 'Data de Atualização:';
+    dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
+    
+    const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
+    contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
 
-        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-        geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-        potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+    geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+    valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
 
-        renderizarEquipamentos(dados, tipoProposta);
-        renderizarPadraoInstalacao(tipoProposta);
-        renderizarFinanciamento(dados);
-    }
+    renderizarEquipamentos(dados, tipoProposta);
+    renderizarPadraoInstalacao(tipoProposta);
+    renderizarFinanciamento(dados);
+}
 
-    // --- LÓGICA DE TRACKING PROFISSIONAL (DEBOUNCE) ---
-    function registrarEventoComDebounce(projectId, eventMessage) {
-        currentDescription = currentDescription 
-            ? `${currentDescription}\n${eventMessage}` 
-            : eventMessage;
+    // --- LÓGICA DE TRACKING PROFISSIONAL (STATUS E DEBOUNCE) ---
+    function registrarEvento(projectId, eventType) {
+        const timestamp = getTimestamp();
         
+        // Atualiza o status correspondente com o timestamp mais recente
+        if (eventType === 'viewedPerformance') trackingStatus.viewedPerformance = timestamp;
+        if (eventType === 'viewedEconomic') trackingStatus.viewedEconomic = timestamp;
+        if (eventType === 'clickedEconomic') trackingStatus.clickedEconomic = timestamp;
+
+        // Monta a descrição com base nos status que temos, priorizando os mais importantes
+        let descriptionParts = [];
+        if (trackingStatus.viewedPerformance) {
+            descriptionParts.push(`Viu Preço P: ${trackingStatus.viewedPerformance.split(', ')[1]}`); // Pega só a hora
+        }
+        if (trackingStatus.viewedEconomic) {
+            descriptionParts.push(`Viu Preço E: ${trackingStatus.viewedEconomic.split(', ')[1]}`);
+        }
+        if (trackingStatus.clickedEconomic) {
+            descriptionParts.push(`Clicou Econ: ${trackingStatus.clickedEconomic.split(', ')[1]}`);
+        }
+
+        // Constrói a string final, garantindo que não exceda o limite
+        let newDescription = descriptionParts.join(' | ');
+        if (newDescription.length > DESCRIPTION_LIMIT) {
+            newDescription = newDescription.substring(0, DESCRIPTION_LIMIT);
+        }
+
+        // Limpa qualquer timer anterior para aplicar o debounce
         clearTimeout(debounceTimer);
 
+        // Inicia um novo timer para enviar a atualização
         debounceTimer = setTimeout(() => {
-            console.log(`Enviando descrição atualizada para o backend: "${currentDescription}"`);
-            atualizarDescricao(projectId, currentDescription)
-                .then(response => console.log('Descrição atualizada com sucesso:', response.data))
-                .catch(error => console.error('Falha ao atualizar descrição:', error));
-        }, 2000); // Espera 2 segundos de inatividade antes de enviar
+            console.log(`Enviando status atualizado: "${newDescription}"`);
+            atualizarDescricao(projectId, newDescription)
+                .then(response => console.log('Status atualizado com sucesso:', response.data.description))
+                .catch(error => console.error('Falha ao atualizar status:', error));
+        }, 2500); // Espera 2.5 segundos de inatividade
     }
 
     function criarObservadorDePreco(projectId, tipoProposta) {
@@ -201,10 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const investmentSection = document.querySelector('.investment-section');
         if (!investmentSection) return;
 
+        let hasBeenVisible = false;
+
         priceObserver = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                const mensagem = `[${getTimestamp()}] Visualizou Preço (${tipoProposta})`;
-                registrarEventoComDebounce(projectId, mensagem);
+            if (entries[0].isIntersecting && !hasBeenVisible) {
+                hasBeenVisible = true;
+                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
+                registrarEvento(projectId, eventType);
+                priceObserver.unobserve(investmentSection);
             }
         }, { threshold: 0.75 });
 
@@ -229,8 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Inicia a descrição atual com a do projeto
-            currentDescription = proposta.project.description || '';
+            // Reseta o objeto de status para uma nova consulta
+            trackingStatus = { viewedPerformance: null, viewedEconomic: null, clickedEconomic: null };
 
             propostaOriginal = proposta;
             propostaEconomica = JSON.parse(JSON.stringify(proposta));
@@ -290,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             renderizarProposta(propostaOriginal, 'performance');
             blockFeatures();
-            criarObservadorDePreco(proposta.project.id, 'Alta Performance');
+            criarObservadorDePreco(proposta.project.id, 'performance');
 
         } catch (err) {
             console.error("Erro na busca:", err);
@@ -304,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     backToSearchBtn.addEventListener('click', () => {
         if (priceObserver) priceObserver.disconnect();
-        clearTimeout(debounceTimer); // Cancela qualquer envio pendente
+        clearTimeout(debounceTimer);
         proposalDetailsSection.style.display = 'none';
         proposalHeader.style.display = 'none';
         expiredProposalSection.style.display = 'none';
@@ -337,33 +373,4 @@ document.addEventListener('DOMContentLoaded', () => {
         btnEconomica.classList.remove('active');
         btnAltaPerformance.classList.add('active');
         if (propostaOriginal) {
-            renderizarProposta(propostaOriginal, 'performance');
-            criarObservadorDePreco(propostaOriginal.project.id, 'Alta Performance');
-        }
-    });
-
-    btnEconomica.addEventListener('click', () => {
-        if (btnEconomica.classList.contains('active')) return;
-        
-        const mensagemClique = `[${getTimestamp()}] Clicou em Proposta Econômica`;
-        registrarEventoComDebounce(propostaOriginal.project.id, mensagemClique);
-
-        document.body.classList.add('theme-economic');
-        btnAltaPerformance.classList.remove('active');
-        btnEconomica.classList.add('active');
-        if (propostaEconomica) {
-            renderizarProposta(propostaEconomica, 'economica');
-            criarObservadorDePreco(propostaEconomica.project.id, 'Econômica');
-        }
-    });
-
-    const phoneNumber = "5582994255946";
-    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
-    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
-
-    searchForm.style.display = 'flex';
-    proposalDetailsSection.style.display = 'none';
-    expiredProposalSection.style.display = 'none';
-    proposalHeader.style.display = 'none';
-    mainFooter.style.display = 'block';
-} );
+            renderizarProposta(proposta
