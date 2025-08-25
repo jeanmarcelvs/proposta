@@ -513,3 +513,53 @@ body.theme-economic .header-summary {
     font-weight: 500; /* Um pouco mais de peso na fonte */
 }
 
+/* Adiciona transição suave para o cabeçalho */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0; /* Oculta o cabeçalho inicialmente */
+  pointer-events: none; /* Desativa interações quando oculto */
+}
+
+/* Exibe o cabeçalho quando a classe "is-active" é adicionada */
+.header.is-active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Estilos para o conteúdo do cabeçalho */
+.header-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--color-card-background);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-proposal-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.header-proposal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.header-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}

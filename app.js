@@ -470,3 +470,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     init( );
 });
+
+// Ativa o cabeçalho quando o usuário rola a página
+window.addEventListener('scroll', () => {
+    const header = document.getElementById('header');
+    const scrollY = window.scrollY;
+
+    // Define a altura após a qual o cabeçalho deve ser exibido.
+    // Você pode ajustar este valor conforme a necessidade.
+    const scrollThreshold = 200;
+
+    if (scrollY > scrollThreshold) {
+        header.classList.add('is-active');
+    } else {
+        header.classList.remove('is-active');
+    }
+});
