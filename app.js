@@ -198,16 +198,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
 function renderizarProposta(dados, tipoProposta = 'performance') {
     // --- Seletores dos elementos ---
     const clienteNome = document.getElementById('cliente-nome');
     const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
     const dataProposta = document.getElementById('data-proposta');
     
-    // Seletores para "Dados Gerais do Sistema"
     const geracaoMensal = document.getElementById('geracao-mensal');
     const potenciaSistema = document.getElementById('potencia-sistema');
     const tipoInstalacao = document.getElementById('tipo-instalacao');
+    
+    // Seletor para o novo elemento de destaque
+    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
     
     const investimentoTotal = document.getElementById('investimento-total');
 
@@ -218,12 +222,20 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     const dataGeracaoCompleta = findVar(dados, 'data_geracao', true);
     dataProposta.textContent = dataGeracaoCompleta.split(' ')[0];
 
-    // Renderiza os "Dados Gerais do Sistema" na ordem correta
     geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
     potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
     tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
     
-    // Renderiza o investimento
+    // Lógica para calcular e renderizar a conta de energia estimada
+    const geracaoValor = parseFloat(findVar(dados, 'geracao_mensal'));
+    const tarifaValor = parseFloat(findVar(dados, 'tarifa_distribuidora'));
+    if (!isNaN(geracaoValor) && !isNaN(tarifaValor)) {
+        const contaAtual = geracaoValor * tarifaValor;
+        contaEnergiaEstimada.innerHTML = `Ideal para contas de energia de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+    } else {
+        contaEnergiaEstimada.innerHTML = ''; // Limpa o campo se não for possível calcular
+    }
+    
     investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
 
     // Chama as outras funções de renderização
@@ -231,6 +243,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     renderizarPadraoInstalacao(tipoProposta);
     renderizarFinanciamento(dados);
 }
+
 
 
 
