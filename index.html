@@ -10,17 +10,27 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <header id="proposal-header" class="header"></header>
+    <header id="proposal-header" class="header">
+    <!-- O header__container existente -->
+    <div class="header__container">
+        <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+        <div class="header__options">
+            <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+            <button id="btn-economica" class="option-button">Econômica</button>
+        </div>
+    </div>
+    <!-- ADICIONE ESTA NOVA DIV ABAIXO -->
+    <div id="header-summary" class="header-summary">
+        <!-- O conteúdo do resumo será gerado aqui pelo app.js -->
+    </div>
+</header>
 
     <main id="search-form" class="screen">
         <div class="search-card">
             <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
             <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
             <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
-            <div class="search-card__panel">
-                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-                <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
-
+            
 <div class="search-card__panel">
     <!-- ADICIONE ESTA DIV -->
     <div id="search-message" class="search-card__message"></div>

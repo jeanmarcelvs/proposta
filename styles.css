@@ -425,3 +425,63 @@ body.theme-economic .btn--secondary:hover {
     min-height: 24px; /* Garante que o layout não pule quando a mensagem aparece */
 }
 
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILOS PARA O RESUMO FLUTUANTE NO CABEÇALHO --- */
+
+.header-summary {
+    background-color: var(--color-card-bg);
+    padding: 0.75rem 2rem;
+    display: none; /* Começa oculto */
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 1px solid var(--color-border);
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item__label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-item__value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.summary-item__value--highlight {
+    color: var(--color-secondary);
+}
+
+.summary-item__meta {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+/* Ajustes para o tema econômico */
+body.theme-economic .header-summary {
+    background-color: white;
+    border-top-color: var(--color-border);
+}
+

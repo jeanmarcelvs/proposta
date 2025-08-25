@@ -11,16 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchButton = document.getElementById('search-button');
     const mainFooter = document.getElementById('main-footer');
     const backToSearchBtn = document.getElementById('back-to-search-btn');
-    const searchMessage = document.getElementById('search-message'); // Novo seletor
+    const searchMessage = document.getElementById('search-message');
+    const headerSummary = document.getElementById('header-summary'); // Novo seletor
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
     let priceObserver;
     let debounceTimer;
-    let trackingStatus = {
-        viewedPerformance: null,
-        viewedEconomic: null
-    };
+    let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
+    let summaryWasShown = false; // Nova flag para controlar o resumo
     const DESCRIPTION_LIMIT = 100;
 
     // --- Mapa de Logos ---
@@ -215,6 +214,37 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarFinanciamento(dados);
     }
 
+    // --- NOVA FUNÇÃO PARA RENDERIZAR O RESUMO NO CABEÇALHO ---
+    function mostrarResumoNoCabecalho() {
+        if (summaryWasShown) return; // Só executa uma vez
+        summaryWasShown = true;
+
+        const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
+        const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
+
+        const parcelasPerformance = propostaOriginal.variables.filter(v => v.key.startsWith('f_parcela'));
+        const menorParcelaPerformance = parcelasPerformance.reduce((min, p) => Math.min(min, parseFloat(p.value)), Infinity);
+        const prazoMenorParcelaP = propostaOriginal.variables.find(v => v.key.replace('prazo', 'parcela') === parcelasPerformance.find(p => parseFloat(p.value) === menorParcelaPerformance)?.key)?.value;
+
+        const parcelasEconomica = propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela'));
+        const menorParcelaEconomica = parcelasEconomica.reduce((min, p) => Math.min(min, parseFloat(p.value)), Infinity);
+        const prazoMenorParcelaE = propostaEconomica.variables.find(v => v.key.replace('prazo', 'parcela') === parcelasEconomica.find(p => parseFloat(p.value) === menorParcelaEconomica)?.key)?.value;
+
+        headerSummary.innerHTML = `
+            <div class="summary-item">
+                <span class="summary-item__label">Alta Performance</span>
+                <span class="summary-item__value summary-item__value--highlight">${formatarMoeda(precoPerformance)}</span>
+                <span class="summary-item__meta">ou ${prazoMenorParcelaP}x de ${formatarMoeda(menorParcelaPerformance)}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-item__label">Opção Econômica</span>
+                <span class="summary-item__value">${formatarMoeda(precoEconomica)}</span>
+                <span class="summary-item__meta">ou ${prazoMenorParcelaE}x de ${formatarMoeda(menorParcelaEconomica)}</span>
+            </div>
+        `;
+        headerSummary.style.display = 'flex';
+    }
+
     // --- LÓGICA DE TRACKING PROFISSIONAL (STATUS E DEBOUNCE) ---
     function registrarEvento(projectId, eventType) {
         const timestamp = getTimestamp();
@@ -263,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hasBeenVisible = true;
                 const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
                 registrarEvento(projectId, eventType);
+                mostrarResumoNoCabecalho(); // Chama a nova função
                 priceObserver.unobserve(investmentSection);
             }
         }, { threshold: 0.75 });
@@ -290,6 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             trackingStatus = { viewedPerformance: null, viewedEconomic: null };
+            summaryWasShown = false; // Reseta a flag do resumo
+            headerSummary.style.display = 'none'; // Esconde o resumo
 
             propostaOriginal = proposta;
             propostaEconomica = JSON.parse(JSON.stringify(proposta));
@@ -355,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Erro na busca:", err);
             searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
             searchButton.disabled = false;
-            searchForm.style.display = 'flex'; // Mostra o formulário de busca novamente
+            searchForm.style.display = 'flex';
             searchMessage.textContent = 'Projeto não encontrado ou inválido. Por favor, verifique o ID.';
         }
     }
@@ -379,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
 
         backToSearchBtn.addEventListener('click', () => {
-            window.location.href = window.location.pathname; // Limpa a URL e recarrega
+            window.location.href = window.location.pathname;
         });
 
         proposalHeader.innerHTML = `
@@ -389,7 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
                     <button id="btn-economica" class="option-button">Econômica</button>
                 </div>
-            </div>`;
+            </div>
+            <div id="header-summary" class="header-summary" style="display: none;"></div>`;
         
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
