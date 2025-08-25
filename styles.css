@@ -180,7 +180,9 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .installation-comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
 .comparison-card { background-color: var(--color-card-bg); border-radius: var(--border-radius); padding: 1.5rem; border: 1px solid var(--color-border); text-align: center; perspective: 1000px; }
 .comparison-card__flipper { transition: transform 0.6s; transform-style: preserve-3d; position: relative; min-height: 150px; }
-.comparison-card:hover .comparison-card__flipper { transform: rotateY(180deg); }
+.comparison-card.is-in-view .comparison-card__flipper {
+    transform: rotateY(180deg);
+}
 .comparison-card__front, .comparison-card__back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .comparison-card__back { transform: rotateY(180deg); font-size: 0.9rem; color: var(--color-text-light); }
 .comparison-card__icon { font-size: 2.5rem; color: var(--color-secondary); margin-bottom: 1rem; }

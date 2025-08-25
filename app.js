@@ -91,6 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
 function renderizarEquipamentos(dados, tipoProposta) {
     const equipmentContainer = document.getElementById('equipment-container');
     const equipmentTitle = document.getElementById('equipment-title');
@@ -107,7 +109,7 @@ function renderizarEquipamentos(dados, tipoProposta) {
         ? `<img src="${logoFileName}" alt="Logo do equipamento">`
         : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
 
-    // CORREÇÃO: Remove "(s)" e "Unidade"
+    // CORREÇÃO: Formata a quantidade como "Qtd: [número]"
     let inversoresHtml = inversores.map(inv => {
         const index = inv.key.split('_').pop();
         const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
@@ -116,17 +118,17 @@ function renderizarEquipamentos(dados, tipoProposta) {
             <div class="spec-card">
                 <span class="spec-card__label">Inversor Solar</span>
                 <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
-                <span class="spec-card__meta">x${qnt}</span>
+                <span class="spec-card__meta">Qtd: ${qnt}</span>
             </div>
         `;
     }).join('');
 
-    // CORREÇÃO: Remove "Unidades"
+    // CORREÇÃO: Formata a quantidade como "Qtd: [número]"
     const modulosHtml = `
         <div class="spec-card">
             <span class="spec-card__label">Painel Solar</span>
             <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
-            <span class="spec-card__meta">x${findVar(dados, 'modulo_quantidade', true)}</span>
+            <span class="spec-card__meta">Qtd: ${findVar(dados, 'modulo_quantidade', true)}</span>
         </div>
     `;
 
@@ -136,6 +138,7 @@ function renderizarEquipamentos(dados, tipoProposta) {
         ${modulosHtml}
     `;
 }
+
 
 
     function renderizarPadraoInstalacao(tipoProposta) {
