@@ -192,36 +192,46 @@ document.addEventListener('DOMContentLoaded', () => {
         installationTitle.innerHTML = `${title} ${tagHtml}`;
     }
 
-    function renderizarProposta(dados, tipoProposta = 'performance') {
-        const clienteNome = document.getElementById('cliente-nome');
-        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-        const dataGeracao = document.getElementById('data-geracao');
-        const dataLabel = dataGeracao.parentElement.querySelector('strong');
-        const geracaoMensal = document.getElementById('geracao-mensal');
-        const potenciaSistema = document.getElementById('potencia-sistema');
-        const tipoInstalacao = document.getElementById('tipo-instalacao');
-        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-        const valorTotal = document.getElementById('valor-total');
-        const proposalValidity = document.getElementById('proposal-validity');
+    // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        if (dataLabel) dataLabel.textContent = 'Data de Atualização:';
-        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-        
-        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+function renderizarProposta(dados, tipoProposta = 'performance') {
+    // --- Seletores dos elementos que REALMENTE existem no HTML ---
+    const clienteNome = document.getElementById('cliente-nome');
+    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+    const statusProposta = document.getElementById('status-proposta');
+    const dataValidade = document.getElementById('data-validade');
+    
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const geracaoMensal = document.getElementById('geracao-mensal');
+    const geracaoAnual = document.getElementById('geracao-anual');
+    const economiaMensal = document.getElementById('economia-mensal');
+    
+    const investimentoTotal = document.getElementById('investimento-total');
 
-        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-        geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-        potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+    // --- Renderização dos dados ---
+    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+    
+    // Renderiza o status e a data de validade
+    statusProposta.textContent = findVar(dados, 'status', true);
+    const expirationDate = new Date(dados.expirationDate);
+    dataValidade.textContent = expirationDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 
-        renderizarEquipamentos(dados, tipoProposta);
-        renderizarPadraoInstalacao(tipoProposta);
-        renderizarFinanciamento(dados);
-    }
+    // Renderiza os dados do sistema
+    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+    geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+    geracaoAnual.innerHTML = `${findVar(dados, 'geracao_anual_0', true)}<span class="unit-symbol">kWh</span>`;
+    economiaMensal.innerHTML = `${formatarMoeda(findVar(dados, 'economia_mensal'))}`;
+    
+    // Renderiza o investimento
+    investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+
+    // Chama as outras funções de renderização
+    renderizarEquipamentos(dados, tipoProposta);
+    renderizarPadraoInstalacao(tipoProposta);
+    renderizarFinanciamento(dados);
+}
+
 
     function mostrarResumoNoCabecalho() {
         if (summaryWasShown) return;
