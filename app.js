@@ -231,18 +231,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const precoPerformance = parseFloat(findVar(propostaOriginal, 'preco'));
         const precoEconomica = parseFloat(findVar(propostaEconomica, 'preco'));
 
-        const prazosP = propostaOriginal.variables
-            .filter(v => v.key.startsWith('f_prazo_') && !isNaN(parseInt(v.value, 10)))
-            .map(v => parseInt(v.value, 10));
-        const prazoMaxP = Math.max(...prazosP);
+        const opcoesPerformance = propostaOriginal.variables
+            .filter(v => v.key.startsWith('f_prazo_'))
+            .map(prazoVar => {
+                const prazo = parseInt(prazoVar.value, 10);
+                const parcelaVar = propostaOriginal.variables.find(v => v.key.includes(`f_parcela_`) && v.key.includes(prazoVar.key.split('_')[2]));
+                const valorParcela = parcelaVar ? parseFloat(parcelaVar.value) : 0;
+                return { prazo, valorParcela };
+            }).sort((a, b) => a.prazo - b.prazo);
 
-        const prazosE = propostaEconomica.variables
-            .filter(v => v.key.startsWith('f_prazo_') && !isNaN(parseInt(v.value, 10)))
-            .map(v => parseInt(v.value, 10));
-        const prazoMaxE = Math.max(...prazosE);
-        
-        const valorParcelaP = parseFloat(propostaOriginal.variables.find(v => v.key.startsWith('f_parcela_') && v.key.includes(prazoMaxP))?.value) || 0;
-        const valorParcelaE = parseFloat(propostaEconomica.variables.find(v => v.key.startsWith('f_parcela_') && v.key.includes(prazoMaxE))?.value) || 0;
+        const opcoesEconomica = propostaEconomica.variables
+            .filter(v => v.key.startsWith('f_prazo_'))
+            .map(prazoVar => {
+                const prazo = parseInt(prazoVar.value, 10);
+                const parcelaVar = propostaEconomica.variables.find(v => v.key.includes(`f_parcela_`) && v.key.includes(prazoVar.key.split('_')[2]));
+                const valorParcela = parcelaVar ? parseFloat(parcelaVar.value) : 0;
+                return { prazo, valorParcela };
+            }).sort((a, b) => a.prazo - b.prazo);
+
+        const ultimaOpcaoP = opcoesPerformance[opcoesPerformance.length - 1];
+        const ultimaOpcaoE = opcoesEconomica[opcoesEconomica.length - 1];
         
         headerSummary.innerHTML = `
             <div id="summary-card-performance" class="summary-card summary-card--premium">
@@ -250,14 +258,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
-                <span class="installment-info">ou até ${prazoMaxP}x de ${formatarMoeda(valorParcelaP)}</span>
+                <span class="installment-info">ou até ${ultimaOpcaoP.prazo}x de ${formatarMoeda(ultimaOpcaoP.valorParcela)}</span>
             </div>
             <div id="summary-card-economica" class="summary-card summary-card--economic">
                 <span class="card-title">Econômica</span>
                 <div class="price-container">
                     <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
                 </div>
-                <span class="installment-info">ou até ${prazoMaxE}x de ${formatarMoeda(valorParcelaE)}</span>
+                <span class="installment-info">ou até ${ultimaOpcaoE.prazo}x de ${formatarMoeda(ultimaOpcaoE.valorParcela)}</span>
             </div>
         `;
         
