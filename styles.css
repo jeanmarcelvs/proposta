@@ -189,35 +189,37 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
   A partir de 1024px de largura, a animação só acontece com o HOVER do mouse.
   Isso cria uma experiência mais interativa e controlada no desktop.
 */
-@media (min-width: 1024px) {
-    /* Primeiro, resetamos a transformação automática para que ela não aconteça */
-    .comparison-card.is-in-view .comparison-card__flipper {
+.comparison-card.is-in-view .comparison-card__flipper {
     transform: rotateY(180deg);
 }
 
 /* 
-  REGRA ADICIONAL PARA DESKTOPS (E TELAS MAIORES):
-  A partir de 1024px de largura, a experiência muda para ser controlada pelo mouse.
+  O clique (classe 'is-flipped') tem prioridade sobre a visualização.
+  Isso permite que o usuário "desvire" um card mesmo que ele esteja na tela.
+*/
+.comparison-card.is-flipped .comparison-card__flipper {
+    transform: none; /* Força o card a voltar ao estado inicial */
+}
+
+/* 
+  COMPORTAMENTO PARA TELAS GRANDES (DESKTOPS - 1024px OU MAIS):
+  A animação é controlada APENAS pelo mouse.
 */
 @media (min-width: 1024px) {
-    /* 
-      1. DESATIVA A ANIMAÇÃO AUTOMÁTICA:
-      Nós forçamos o flipper a voltar à sua posição original (sem rotação),
-      mesmo que a classe 'is-in-view' esteja presente.
-    */
+    /* 1. Desativa a animação automática por scroll */
     .comparison-card.is-in-view .comparison-card__flipper {
-        transform: none; /* Impede o giro automático */
+        transform: none;
     }
 
-    /* 
-      2. ATIVA A ANIMAÇÃO APENAS NO HOVER:
-      Agora, a única regra que pode aplicar a rotação em telas grandes
-      é a interação direta do usuário com o mouse.
-    */
-    .comparison-card:hover .comparison-card__flipper {
-        transform: rotateY(180deg); /* Ativa o giro com o mouse */
+    /* 2. Desativa a animação por clique */
+    .comparison-card.is-flipped .comparison-card__flipper {
+        transform: none;
     }
-}
+
+    /* 3. Ativa a animação APENAS no hover do mouse */
+    .comparison-card:hover .comparison-card__flipper {
+        transform: rotateY(180deg);
+    }
 }
 .comparison-card__front, .comparison-card__back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .comparison-card__back { transform: rotateY(180deg); font-size: 0.9rem; color: var(--color-text-light); }

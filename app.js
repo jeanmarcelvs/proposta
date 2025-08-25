@@ -370,39 +370,54 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
         }, 2500);
     }
 
-    function criarObservadores(projectId, tipoProposta) {
-        if (priceObserver) priceObserver.disconnect();
-        if (installationObserver) installationObserver.disconnect();
+    // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        const investmentSection = document.querySelector('.investment-section');
-        if (investmentSection) {
-            let hasBeenVisible = false;
-            priceObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && !hasBeenVisible) {
-                    hasBeenVisible = true;
-                    const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
-                    registrarEvento(projectId, eventType);
-                    mostrarResumoNoCabecalho();
-                    priceObserver.unobserve(investmentSection);
-                }
-            }, { threshold: 0.75 });
-            priceObserver.observe(investmentSection);
-        }
+function criarObservadores(projectId, tipoProposta) {
+    // Desconecta observadores antigos para evitar duplicação
+    if (priceObserver) priceObserver.disconnect();
+    if (installationObserver) installationObserver.disconnect();
 
-        const installationCards = document.querySelectorAll('.comparison-card');
-        if (installationCards.length > 0) {
-            installationObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-in-view');
-                    } else {
-                        entry.target.classList.remove('is-in-view');
-                    }
-                });
-            }, { threshold: 0.6, rootMargin: "-40% 0px -40% 0px" });
-            installationCards.forEach(card => installationObserver.observe(card));
-        }
+    // Observador para a seção de investimento (preço)
+    const investmentSection = document.querySelector('.investment-section');
+    if (investmentSection) {
+        let hasBeenVisible = false;
+        priceObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !hasBeenVisible) {
+                hasBeenVisible = true;
+                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
+                registrarEvento(projectId, eventType);
+                mostrarResumoNoCabecalho();
+                priceObserver.unobserve(investmentSection);
+            }
+        }, { threshold: 0.75 });
+        priceObserver.observe(investmentSection);
     }
+
+    // Observador para os cards de instalação
+    const installationCards = document.querySelectorAll('.comparison-card');
+    if (installationCards.length > 0) {
+        installationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-in-view');
+                } else {
+                    entry.target.classList.remove('is-in-view');
+                }
+            });
+        }, { threshold: 0.6, rootMargin: "-40% 0px -40% 0px" });
+        
+        installationCards.forEach(card => {
+            installationObserver.observe(card);
+            
+            // ADIÇÃO DA LÓGICA DE CLIQUE
+            card.addEventListener('click', () => {
+                // 'toggle' adiciona a classe se não existir, e remove se já existir.
+                card.classList.toggle('is-flipped');
+            });
+        });
+    }
+}
+
 
     // --- Lógica Principal e Eventos ---
     async function handleSearch(projectId) {
