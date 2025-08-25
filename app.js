@@ -194,12 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
 function renderizarProposta(dados, tipoProposta = 'performance') {
     // --- Seletores dos elementos que REALMENTE existem no HTML ---
     const clienteNome = document.getElementById('cliente-nome');
     const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-    const statusProposta = document.getElementById('status-proposta');
-    const dataValidade = document.getElementById('data-validade');
+    const dataProposta = document.getElementById('data-proposta'); // NOVO SELETOR
     
     const potenciaSistema = document.getElementById('potencia-sistema');
     const geracaoMensal = document.getElementById('geracao-mensal');
@@ -212,10 +213,9 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     clienteNome.textContent = findVar(dados, 'cliente_nome', true);
     clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
     
-    // Renderiza o status e a data de validade
-    statusProposta.textContent = findVar(dados, 'status', true);
-    const expirationDate = new Date(dados.expirationDate);
-    dataValidade.textContent = expirationDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+    // CORREÇÃO: Renderiza a data de GERAÇÃO, não de validade
+    const dataGeracaoCompleta = findVar(dados, 'data_geracao', true);
+    dataProposta.textContent = dataGeracaoCompleta.split(' ')[0]; // Pega apenas a parte da data
 
     // Renderiza os dados do sistema
     potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
@@ -231,6 +231,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     renderizarPadraoInstalacao(tipoProposta);
     renderizarFinanciamento(dados);
 }
+
 
 
     function mostrarResumoNoCabecalho() {
