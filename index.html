@@ -11,19 +11,16 @@
 <body oncontextmenu="return false;">
 
     <header id="proposal-header" class="header">
-    <!-- O header__container existente -->
-    <div class="header__container">
-        <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
-        <div class="header__options">
-            <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
-            <button id="btn-economica" class="option-button">Econômica</button>
+        <div class="header__container">
+            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+            <div class="header__options">
+                <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+                <button id="btn-economica" class="option-button">Econômica</button>
+            </div>
         </div>
-    </div>
-    <!-- ADICIONE ESTA NOVA DIV ABAIXO -->
-    <div id="header-summary" class="header-summary">
-        <!-- O conteúdo do resumo será gerado aqui pelo app.js -->
-    </div>
-</header>
+        <div id="header-summary" class="header-summary" style="display: none;">
+            </div>
+    </header>
 
     <main id="search-form" class="screen">
         <div class="search-card">
@@ -31,134 +28,110 @@
             <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
             <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
             
-<div class="search-card__panel">
-        
-    <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-    <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
-
-<!-- ADICIONE ESTA DIV -->
-    <div id="search-message" class="search-card__message"></div>
-
-</div>
-
+            <div class="search-card__panel">
+                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
+                <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
+                <div id="search-message" class="search-card__message"></div>
             </div>
         </div>
     </main>
 
     <main id="proposal-details" class="screen proposal-details" style="display: none;">
         <div class="proposal-container">
-            
+            <section class="proposal-section">
+                <div class="client-header">
+                    <p class="client-header__subtitle"><i class="fas fa-user"></i> Proposta para</p>
+                    <h2 id="cliente-nome" class="client-header__title"></h2>
+                </div>
+                <div class="section-content">
+                    <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
+                    <p><strong>Status:</strong> <span id="status-proposta"></span></p>
+                    <p><strong>Data de Validade:</strong> <span id="data-validade"></span></p>
+                </div>
+            </section>
 
             <section class="proposal-section">
-    <div class="client-header">
-        <p class="client-header__subtitle"><i class="fas fa-user"></i> Proposta para</p>
-        <h2 id="cliente-nome" class="client-header__title"></h2>
-    </div>
-    <div class="section-content">
-        <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
-        <p><strong>Data:</strong> <span id="data-geracao"></span></p>
-    </div>
-</section>
-
-            <section class="proposal-section">
-                <h2 class="section-title"><i class="fas fa-solar-panel"></i> Detalhes do Sistema</h2>
+                <h3 class="section-title"><i class="fas fa-bolt"></i> Resumo de Geração</h3>
                 <div class="section-content-grid">
                     <div class="metric-box">
-                        <span class="metric-label">Geração Média</span>
-                        <span class="metric-value" id="geracao-mensal"></span>
+                        <span class="metric-label">Potência do Sistema</span>
+                        <span id="potencia-sistema" class="metric-value"></span>
                     </div>
                     <div class="metric-box">
-                        <span class="metric-label">Potência</span>
-                        <span class="metric-value" id="potencia-sistema"></span>
+                        <span class="metric-label">Geração Mensal Média</span>
+                        <span id="geracao-mensal" class="metric-value"></span>
                     </div>
                     <div class="metric-box">
-                        <span class="metric-label">Instalação</span>
-                        <span class="metric-value" id="tipo-instalacao"></span>
+                        <span class="metric-label">Geração Anual Estimada</span>
+                        <span id="geracao-anual" class="metric-value"></span>
                     </div>
-                </div>
-                <div class="highlight-footnote-wrapper">
-                    <p id="conta-energia-estimada" class="highlight-footnote"></p>
+                    <div class="metric-box">
+                        <span class="metric-label">Economia Mensal Média</span>
+                        <span id="economia-mensal" class="metric-value"></span>
+                    </div>
                 </div>
             </section>
 
-            <!-- DENTRO DE index.html -->
-
-<section class="proposal-section">
-    <h2 id="equipment-title" class="section-title"></h2>
-    <!-- SUBSTITUA A DIV ABAIXO -->
-    <div id="equipment-container" class="equipment-showcase">
-        <!-- O conteúdo aqui será gerado dinamicamente pelo app.js 
-             com a nova estrutura de classes. -->
-    </div>
-    <!-- FIM DA SUBSTITUIÇÃO -->
-</section>
-
-
             <section class="proposal-section">
-    <h2 id="installation-title" class="section-title"></h2>
-    <!-- A lista <ul> foi removida e será substituída por este container -->
-    <div id="installation-comparison-container" class="installation-comparison">
-        <!-- O conteúdo comparativo será gerado aqui pelo app.js -->
-    </div>
-</section>
-
-            <section class="proposal-section">
-                <h2 class="section-title"><i class="fas fa-hand-holding-dollar"></i> Opções de Financiamento</h2>
-                <div id="financing-options" class="financing-grid"></div>
+                <h3 id="equipment-title" class="section-title"></h3>
+                <div id="equipment-container" class="equipment-showcase">
+                    </div>
             </section>
 
-            <section class="proposal-section investment-section">
-                <h2 class="section-title"><i class="fas fa-wallet"></i> Seu Investimento</h2>
+            <section class="proposal-section">
+                <h3 id="installation-title" class="section-title"></h3>
+                <div id="installation-comparison-container" class="installation-comparison">
+                    </div>
+            </section>
+
+            <section id="financing-section" class="proposal-section">
+                <h3 class="section-title"><i class="fas fa-handshake"></i> Investimento e Financiamento</h3>
                 <div class="investment-box">
-                    <span class="investment-label">Valor Total do Projeto</span>
-                    <span class="investment-value" id="valor-total"></span>
-                    <div class="payment-method">
-                        <span class="payment-tag">À VISTA</span>
-                    </div>
+                    <span class="investment-label">Investimento Total</span>
+                    <span id="investimento-total" class="investment-value"></span>
+                    <p class="payment-method"><span class="payment-tag">À Vista ou Financiado</span></p>
                 </div>
-                <div class="alternative-payment">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Consulte também as condições para <strong>Cartão de Crédito</strong>.</span>
-                </div>
-            </section>
 
-            <div class="validity-banner">
-    <i class="fas fa-info-circle"></i>
-    <p id="proposal-validity"></p>
-    <!-- BOTÃO MOVIDO PARA CÁ -->
-    <div class="back-button-wrapper">
-        <button id="back-to-search-btn" class="btn btn--secondary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
-    </div>
-</div>
+                <div id="financing-options" class="financing-grid">
+                    </div>
+                
+                <p class="financing-disclaimer">
+                    <strong>Aviso:</strong> Esta é uma simulação de financiamento e os valores podem variar. A aprovação e as condições finais dependem de uma análise de crédito detalhada, que considera fatores como o mercado financeiro, a situação do CPF/CNPJ e o score de crédito do cliente.
+                </p>
+            </section>
+            
+            <section class="proposal-actions">
+                <button id="back-to-search-btn" class="btn btn--secondary">Nova Consulta</button>
+            </section>
         </div>
     </main>
-    
-    <main id="expired-proposal-section" class="screen" style="display: none;"></main>
 
-    <footer id="main-footer" class="footer">
+    <main id="expired-proposal-section" class="screen" style="display: none;">
+        <div class="search-card">
+            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+            <h1 class="search-card__title">Proposta Expirada ou Inválida</h1>
+            <p class="search-card__subtitle">O código informado não corresponde a uma proposta ativa. Verifique o ID e tente novamente, ou entre em contato com nossa equipe.</p>
+            <button id="back-from-expired" class="btn btn--primary"><i class="fas fa-arrow-left"></i> Voltar</button>
+        </div>
+    </main>
+
+    <footer id="main-footer" class="footer" style="display: none;">
         <div class="footer-container">
             <div class="footer-logo">
-                <img src="logo.png" alt="Logo GDIS">
+                <img src="logo.png" alt="Logo da GDIS">
             </div>
             <div class="footer-contact">
-                <a href="#" id="whatsapp-link" class="contact-item" target="_blank">
-    			<i class="fas fa-phone"></i>
-    			<span>(82) 9.9425-5946</span>
-		</a>
-                <div class="contact-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>contato@gdis.com.br</span>
-                </div>
+                <a id="whatsapp-link" href="#" target="_blank"><i class="fab fa-whatsapp"></i> (99) 99999-9999</a>
+                <span class="contact-item"><i class="fa-solid fa-envelope"></i> contato@suaempresa.com.br</span>
             </div>
             <div class="footer-social">
-                <a href="https://www.instagram.com/gdis.solar" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
             </div>
         </div>
     </footer>
-
-    <!-- CHAMADA DOS SCRIPTS - ESSENCIAL PARA O FUNCIONAMENTO -->
-    <script type="module" src="api.js" defer></script>
-    <script type="module" src="app.js" defer></script>
-
+    
+    <script type="module" src="app.js"></script>
 </body>
 </html>

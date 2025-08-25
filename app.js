@@ -194,32 +194,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const clienteNome = document.getElementById('cliente-nome');
         const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
         const dataGeracao = document.getElementById('data-geracao');
-        const dataLabel = dataGeracao.parentElement.querySelector('strong');
+        const dataLabel = dataGeracao ? dataGeracao.parentElement.querySelector('strong') : null;
         const geracaoMensal = document.getElementById('geracao-mensal');
         const potenciaSistema = document.getElementById('potencia-sistema');
-        const tipoInstalacao = document.getElementById('tipo-instalacao');
-        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-        const valorTotal = document.getElementById('valor-total');
-        const proposalValidity = document.getElementById('proposal-validity');
-
-        if (dataLabel) dataLabel.textContent = 'Data de Atualização:';
-        dataGeracao.textContent = findVar(dados, 'data_geracao', true).split(' ')[0];
-        
-        const contaAtual = (parseFloat(findVar(dados, 'geracao_mensal')) || 0) * (parseFloat(findVar(dados, 'tarifa_distribuidora')) || 0);
-        contaEnergiaEstimada.innerHTML = `Ideal para contas de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+        const economiaMensal = document.getElementById('economia-mensal');
+        const geracaoAnual = document.getElementById('geracao-anual');
+        const investimentoTotal = document.getElementById('investimento-total');
+        const statusProposta = document.getElementById('status-proposta');
+        const dataValidade = document.getElementById('data-validade');
 
         clienteNome.textContent = findVar(dados, 'cliente_nome', true);
         clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+        statusProposta.textContent = findVar(dados, 'status', true);
+        dataValidade.textContent = findVar(dados, 'data_validade', true);
+
         geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+        geracaoAnual.innerHTML = `${findVar(dados, 'geracao_anual', true)}<span class="unit-symbol">kWh</span>`;
+        economiaMensal.innerHTML = formatarMoeda(findVar(dados, 'economia_mensal'));
         potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-        valorTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-        proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+        
+        investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
 
         renderizarEquipamentos(dados, tipoProposta);
         renderizarPadraoInstalacao(tipoProposta);
         renderizarFinanciamento(dados);
     }
+
 
     function mostrarResumoNoCabecalho() {
         if (summaryWasShown) return;
@@ -272,18 +272,16 @@ document.addEventListener('DOMContentLoaded', () => {
         headerSummary.style.display = 'flex';
         proposalDetailsSection.classList.add('dynamic-spacing');
 
-        // Adiciona os listeners de clique aos novos elementos criados
         const summaryCardPerformance = document.getElementById('summary-card-performance');
         const summaryCardEconomica = document.getElementById('summary-card-economica');
         
         if (summaryCardPerformance) {
-            summaryCardPerformance.addEventListener('click', switchToPerformance);
+            summaryCardPerformance.addEventListener('click', () => switchToPerformance());
         }
         if (summaryCardEconomica) {
-            summaryCardEconomica.addEventListener('click', switchToEconomic);
+            summaryCardEconomica.addEventListener('click', () => switchToEconomic());
         }
         
-        // Define o estado inicial ativo do card de resumo
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         if(btnAltaPerformance.classList.contains('active')) {
             summaryCardPerformance.classList.add('active-card');
@@ -333,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (priceObserver) priceObserver.disconnect();
         if (installationObserver) installationObserver.disconnect();
 
-        const investmentSection = document.querySelector('.investment-section');
+        const investmentSection = document.getElementById('financing-section');
         if (investmentSection) {
             let hasBeenVisible = false;
             priceObserver = new IntersectionObserver((entries) => {
