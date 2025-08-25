@@ -249,7 +249,40 @@ a#whatsapp-link:hover i { color: var(--color-primary); }
 .spec-card__value { color: var(--color-text); font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
 .spec-card__meta { color: var(--color-secondary); font-size: 1rem; font-weight: 600; }
 
-.comparison-card__back em { font-style: italic; color: var(--color-text); background-color: var(--color-background); padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 500; }
+.comparison-card__back em {
+    /* 1. Estrutura do "box de upgrade" */
+    display: block; /* Faz o destaque ocupar sua própria linha */
+    margin-top: 0.75rem; /* Adiciona espaço acima do destaque */
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    
+    /* 2. Estilo do texto dentro do box */
+    font-style: normal; /* Remove o itálico para uma aparência mais limpa */
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-text-light);
+    
+    /* 3. Adiciona um ícone de "upgrade" */
+    position: relative;
+    padding-left: 2.5rem; /* Abre espaço para o ícone */
+}
+
+/* 4. Estilo do ícone de "upgrade" (uma estrela) */
+.comparison-card__back em::before {
+    content: '\f005'; /* Código do ícone de estrela do Font Awesome */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--color-secondary); /* Usa a cor de destaque do tema */
+    
+    /* Posicionamento do ícone */
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+}
 
 .back-button-wrapper { margin-top: 1.5rem; text-align: center; }
 .btn--secondary { background-color: transparent; color: var(--color-text-light); border-color: var(--color-border); }
