@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchButton = document.getElementById('search-button');
     const mainFooter = document.getElementById('main-footer');
     const backToSearchBtn = document.getElementById('back-to-search-btn');
+    const searchMessage = document.getElementById('search-message'); // Novo seletor
 
     // --- Variáveis de Estado ---
     let propostaOriginal, propostaEconomica;
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
             return `
                 <div class="spec-card">
-                    <span class="spec-card__label">Inversor</span>
+                    <span class="spec-card__label">Inversor Solar</span>
                     <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
                     <span class="spec-card__meta">${qnt} Unidade(s)</span>
                 </div>
@@ -270,13 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Lógica Principal e Eventos ---
-    async function handleSearch() {
-        if (!/^[0-9]{1,6}$/.test(projectIdInput.value.trim())) return;
+    async function handleSearch(projectId) {
+        if (!projectId) return;
         searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         searchButton.disabled = true;
+        searchMessage.textContent = '';
 
         try {
-            const proposta = await consultarProposta(projectIdInput.value.trim());
+            const proposta = await consultarProposta(projectId);
             if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
 
             const expirationDate = new Date(proposta.expirationDate);
@@ -353,71 +355,71 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Erro na busca:", err);
             searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
             searchButton.disabled = false;
+            searchForm.style.display = 'flex'; // Mostra o formulário de busca novamente
+            searchMessage.textContent = 'Projeto não encontrado ou inválido. Por favor, verifique o ID.';
         }
     }
 
-    // --- Inicialização da Página e Eventos ---
-    searchButton.addEventListener('click', handleSearch);
+    // --- Função de Inicialização e Roteamento ---
+    function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectIdFromUrl = urlParams.get('projectId');
 
-    backToSearchBtn.addEventListener('click', () => {
-        if (priceObserver) priceObserver.disconnect();
-        clearTimeout(debounceTimer);
-        proposalDetailsSection.style.display = 'none';
-        proposalHeader.style.display = 'none';
-        expiredProposalSection.style.display = 'none';
-        searchForm.style.display = 'flex';
-        projectIdInput.value = '';
-        searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-        searchButton.disabled = false;
-        document.body.classList.remove('theme-economic');
+        if (projectIdFromUrl) {
+            projectIdInput.value = projectIdFromUrl;
+            handleSearch(projectIdFromUrl);
+        } else {
+            searchForm.style.display = 'flex';
+            proposalDetailsSection.style.display = 'none';
+            expiredProposalSection.style.display = 'none';
+            proposalHeader.style.display = 'none';
+            mainFooter.style.display = 'block';
+        }
+
+        searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
+
+        backToSearchBtn.addEventListener('click', () => {
+            window.location.href = window.location.pathname; // Limpa a URL e recarrega
+        });
+
+        proposalHeader.innerHTML = `
+            <div class="header__container">
+                <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+                <div class="header__options">
+                    <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+                    <button id="btn-economica" class="option-button">Econômica</button>
+                </div>
+            </div>`;
+        
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
-        if (btnEconomica) btnEconomica.classList.remove('active');
-        if (btnAltaPerformance) btnAltaPerformance.classList.add('active');
-    });
 
-    proposalHeader.innerHTML = `
-        <div class="header__container">
-            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
-            <div class="header__options">
-                <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
-                <button id="btn-economica" class="option-button">Econômica</button>
-            </div>
-        </div>`;
-    
-    const btnAltaPerformance = document.getElementById('btn-alta-performance');
-    const btnEconomica = document.getElementById('btn-economica');
+        btnAltaPerformance.addEventListener('click', () => {
+            if (btnAltaPerformance.classList.contains('active')) return;
+            document.body.classList.remove('theme-economic');
+            btnEconomica.classList.remove('active');
+            btnAltaPerformance.classList.add('active');
+            if (propostaOriginal) {
+                renderizarProposta(propostaOriginal, 'performance');
+                criarObservadorDePreco(propostaOriginal.project.id, 'performance');
+            }
+        });
 
-    btnAltaPerformance.addEventListener('click', () => {
-        if (btnAltaPerformance.classList.contains('active')) return;
-        document.body.classList.remove('theme-economic');
-        btnEconomica.classList.remove('active');
-        btnAltaPerformance.classList.add('active');
-        if (propostaOriginal) {
-            renderizarProposta(propostaOriginal, 'performance');
-            criarObservadorDePreco(propostaOriginal.project.id, 'performance');
-        }
-    });
+        btnEconomica.addEventListener('click', () => {
+            if (btnEconomica.classList.contains('active')) return;
+            document.body.classList.add('theme-economic');
+            btnAltaPerformance.classList.remove('active');
+            btnEconomica.classList.add('active');
+            if (propostaEconomica) {
+                renderizarProposta(propostaEconomica, 'economica');
+                criarObservadorDePreco(propostaEconomica.project.id, 'economica');
+            }
+        });
 
-    btnEconomica.addEventListener('click', () => {
-        if (btnEconomica.classList.contains('active')) return;
-        
-        document.body.classList.add('theme-economic');
-        btnAltaPerformance.classList.remove('active');
-        btnEconomica.classList.add('active');
-        if (propostaEconomica) {
-            renderizarProposta(propostaEconomica, 'economica');
-            criarObservadorDePreco(propostaEconomica.project.id, 'economica');
-        }
-    });
+        const phoneNumber = "5582994255946";
+        const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+        document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+    }
 
-    const phoneNumber = "5582994255946";
-    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
-    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
-
-    searchForm.style.display = 'flex';
-    proposalDetailsSection.style.display = 'none';
-    expiredProposalSection.style.display = 'none';
-    proposalHeader.style.display = 'none';
-    mainFooter.style.display = 'block';
-} );
+    init( );
+});

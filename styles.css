@@ -415,3 +415,13 @@ body.theme-economic .btn--secondary:hover {
     color: var(--color-text);
 }
 
+/* DENTRO DE styles.css (adicionar ao final) */
+
+/* --- ESTILO PARA MENSAGEM NA TELA DE BUSCA --- */
+.search-card__message {
+    color: #ffc107; /* Um amarelo-âmbar para aviso */
+    font-weight: 500;
+    margin-bottom: 1rem;
+    min-height: 24px; /* Garante que o layout não pule quando a mensagem aparece */
+}
+
