@@ -262,6 +262,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         headerSummary.style.display = 'flex';
         proposalDetailsSection.classList.add('dynamic-spacing');
+
+        // Adiciona os listeners de clique aos novos elementos criados
+        const summaryCardPerformance = document.getElementById('summary-card-performance');
+        const summaryCardEconomica = document.getElementById('summary-card-economica');
+        
+        if (summaryCardPerformance) {
+            summaryCardPerformance.addEventListener('click', switchToPerformance);
+        }
+        if (summaryCardEconomica) {
+            summaryCardEconomica.addEventListener('click', switchToEconomic);
+        }
     }
 
     // --- LÓGICA DE TRACKING E ANIMAÇÃO ---
@@ -462,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
         const btnEconomica = document.getElementById('btn-economica');
 
-        function switchToPerformance() {
+        window.switchToPerformance = function() {
             if (btnAltaPerformance.classList.contains('active')) return;
             document.body.classList.remove('theme-economic');
             btnEconomica.classList.remove('active');
@@ -473,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        function switchToEconomic() {
+        window.switchToEconomic = function() {
             if (btnEconomica.classList.contains('active')) return;
             document.body.classList.add('theme-economic');
             btnAltaPerformance.classList.remove('active');
@@ -486,15 +497,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnAltaPerformance.addEventListener('click', switchToPerformance);
         btnEconomica.addEventListener('click', switchToEconomic);
-
-        const summaryCardPerformance = document.getElementById('summary-card-performance');
-        const summaryCardEconomica = document.getElementById('summary-card-economica');
-        
-        if (summaryCardPerformance && summaryCardEconomica) {
-            summaryCardPerformance.addEventListener('click', switchToPerformance);
-            summaryCardEconomica.addEventListener('click', switchToEconomic);
-        }
-
 
         const phoneNumber = "5582994255946";
         const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
