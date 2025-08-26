@@ -13,17 +13,25 @@ export async function consultarProposta(projectId) {
  * @param {string} newDescription - A nova descrição completa a ser salva.
  * @returns {Promise<Object>}
  */
-export async function atualizarDescricao(projectId, newDescription) {
-    const url = '/api/atualizar-projeto';
-    const response = await fetch(url, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId, newDescription })
-    });
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Erro na API de atualização:", errorBody);
-        throw new Error(`Erro ao chamar a API de atualização: ${response.status}`);
+async function updateProjectDescription(projectId, description) {
+    try {
+        const response = await fetch('/api/atualizar-projeto', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ projectId, description })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('Descrição do projeto atualizada com sucesso:', result);
+        return result;
+    } catch (error) {
+        console.error('Falha ao atualizar a descrição do projeto:', error);
+        throw error;
     }
-    return response.json();
 }
