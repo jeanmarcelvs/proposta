@@ -202,7 +202,8 @@ export function processarDadosProposta(dadosBrutos) {
         geracaoMensal: geracaoMensal.value,
         inversor: encontrarItemPorCategoria('Inversor'),
         modulos: encontrarItemPorCategoria('Módulo'),
-        tipoInstalacao: encontrarItemPorChave(dadosGerais, 'vc_tipo_de_estrutura').value,
+        // CORREÇÃO: Busca o tipo de instalação diretamente do objeto principal
+        tipoInstalacao: dadosBrutos.variables?.find(v => v.key === 'vc_tipo_de_estrutura')?.formattedValue || 'N/A',
 
         // Dados financeiros
         consumoMedio: consumoMedio.value,
