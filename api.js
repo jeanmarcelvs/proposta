@@ -8,7 +8,7 @@ export async function consultarProposta(projectId) {
 }
 
 /**
- * Envia a nova descrição completa do projeto para o backend.
+ * Envia a nova descrição completa do projeto para o backend.----
  * @param {string} projectId - O ID do projeto.
  * @param {string} newDescription - A nova descrição completa a ser salva.
  * @returns {Promise<Object>}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Proposta de Energia Solar | GDIS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="/gdisFavicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body oncontextmenu="return false;">
+
+    <header id="proposal-header" class="header">
+        <div class="header__container">
+            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+            <div class="header__options">
+                <button id="btn-alta-performance" class="option-button active">Alta Performance</button>
+                <button id="btn-economica" class="option-button">Econômica</button>
+            </div>
+        </div>
+        <div id="header-summary" class="header-summary" style="display: none;">
+            </div>
+    </header>
+
+    <main id="search-form" class="screen">
+    <div class="animated-background">
+        <div class="floating-elements">
+            <i class="fas fa-bolt float-element element-1"></i>
+            <i class="fas fa-solar-panel float-element element-2"></i>
+            <i class="fas fa-leaf float-element element-3"></i>
+            <i class="fas fa-industry float-element element-4"></i>
+            <i class="fas fa-plug float-element element-5"></i>
+        </div>
+    </div>
+    <div class="search-card">
+        <div class="card-shine"></div>
+        <div class="search-card__logo-container">
+            <div class="logo-glow"></div>
+            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+        </div>
+        <div class="search-card__panel">
+            <div class="search-card__title">
+                <span class="title-main">Proposta de Energia</span>
+                <span class="title-accent">Solar GDIS</span>
+            </div>
+            <p class="search-card__subtitle">Digite o ID da sua proposta para visualizá-la.</p>
+            <div class="input-container">
+                <input type="text" id="project-id" placeholder="ID da Proposta" maxlength="15">
+                <p id="search-message" class="search-card__message"></p>
+            </div>
+            <button id="search-button" class="btn btn--primary">
+                <i class="fas fa-search"></i>
+                Buscar Proposta
+            </button>
+        </div>
+    </div>
+    </main>
+
+    <main id="proposal-details" class="screen proposal-details"></main>
+
+    <main id="expired-proposal-section" class="screen" style="display: none;">
+    <div class="search-card">
+        <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+        <h1 class="search-card__title">Proposta Expirada ou Inválida</h1>
+        <p class="search-card__subtitle">O código informado não corresponde a uma proposta ativa. Verifique o ID e tente novamente, ou entre em contato com nossa equipe.</p>
+        <button id="back-to-search-btn" class="btn btn--primary"><i class="fas fa-arrow-left"></i> Voltar</button>
+    </div>
+</main>
+
+    <footer id="main-footer" class="footer" style="display: none;">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo.png" alt="Logo da GDIS">
+            </div>
+            <div class="footer-contact">
+    <a id="whatsapp-link" href="#" class="contact-item" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        <span>(82) 99425-5946</span>
+    </a>
+    <div class="contact-item">
+        <i class="fas fa-envelope"></i>
+        <span>gdis.solar@gmail.com</span>
+    </div>
+</div>
+            <div class="footer-social">
+    <a href="https://www.instagram.com/gdis_solar/" target="_blank"><i class="fab fa-instagram"></i></a>
+</div>
+        </div>
+    </footer>
+    <script src="app.js" type="module"></script>
+    <script src="api.js" type="module"></script>
+</body>
+</html>
