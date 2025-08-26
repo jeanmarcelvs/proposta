@@ -63,6 +63,9 @@ export function processarDadosProposta(dadosBrutos) {
 
     /**
      * CORREÇÃO FINAL: Agrupa todos os dados de financiamento de forma robusta.
+     * A função agora usa um mapa temporário para garantir que todos os dados
+     * relacionados a uma mesma parcela sejam agrupados corretamente,
+     * independentemente da ordem em que aparecem no JSON.
      * @param {Array} dados - O array de dados financeiros.
      * @returns {Array} Um array de objetos de planos de financiamento.
      */
@@ -71,6 +74,8 @@ export function processarDadosProposta(dadosBrutos) {
         
         // Primeiro, popula o mapa com todos os dados de financiamento
         dados.forEach(dado => {
+            // A chave para a solução está aqui. A regex busca chaves
+            // que começam com 'f_', seguidas por um descritor, e um número
             const match = dado.key.match(/^f_(.+)_(\d+)$/);
             if (match) {
                 const tipo = match[1];
@@ -86,7 +91,7 @@ export function processarDadosProposta(dadosBrutos) {
             }
         });
 
-        // Converte o mapa em um array, ordenando pelos índices
+        // Converte o mapa em um array, ordenando pelos índices para a ordem correta
         const planos = Array.from(planosMap.keys())
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
             .map(indice => {
