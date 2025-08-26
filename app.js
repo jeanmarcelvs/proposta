@@ -89,49 +89,57 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    function renderizarEquipamentos(dados, tipoProposta) {
-        const equipmentContainer = document.getElementById('equipment-container');
-        const equipmentTitle = document.getElementById('equipment-title');
-        
-        equipmentTitle.innerHTML = tipoProposta === 'economica' 
-            ? '<i class="fas fa-shield-alt"></i> Econômica' 
-            : '<i class="fas fa-rocket"></i> Equipamentos Premium';
+    // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
-        const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
-        const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
-        
-        let logoHtml = logoFileName 
-            ? `<img src="${logoFileName}" alt="Logo do equipamento">`
-            : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        let inversoresHtml = inversores.map(inv => {
-            const index = inv.key.split('_').pop();
-            const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
-            const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
-            return `
-                <div class="spec-card">
-                    <span class="spec-card__label">Inversor Solar</span>
-                    <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
-                    <span class="spec-card__meta">Qtd: ${qnt}</span>
-                </div>
-            `;
-        }).join('');
+function renderizarEquipamentos(dados, tipoProposta) {
+    const equipmentContainer = document.getElementById('equipment-container');
+    const equipmentTitle = document.getElementById('equipment-title');
+    
+    equipmentTitle.innerHTML = tipoProposta === 'economica' 
+        ? '<i class="fas fa-shield-alt"></i> Econômica' 
+        : '<i class="fas fa-rocket"></i> Equipamentos Premium';
 
-        const modulosHtml = `
+    const inversores = dados.variables.filter(v => v.key.startsWith('inversor_modelo_') && v.value);
+    const fabricante = findVar(dados, 'inversor_fabricante').toLowerCase().split(' ')[0];
+    const logoFileName = tipoProposta === 'economica' ? 'logo2.png' : logoMap[fabricante];
+    
+    let logoHtml = logoFileName 
+        ? `<img src="${logoFileName}" alt="Logo do equipamento">`
+        : `<p><strong>${findVar(dados, 'inversor_fabricante', true)}</strong></p>`;
+
+    // CORREÇÃO: Formata a quantidade como "Qtd: [número]"
+    let inversoresHtml = inversores.map(inv => {
+        const index = inv.key.split('_').pop();
+        const qnt = findVar(dados, `inversor_quantidade_${index}`, true);
+        const potencia = findVar(dados, `inversor_potencia_nominal_${index}`, true);
+        return `
             <div class="spec-card">
-                <span class="spec-card__label">Painel Solar</span>
-                <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
-                <span class="spec-card__meta">Qtd: ${findVar(dados, 'modulo_quantidade', true)}</span>
+                <span class="spec-card__label">Inversor Solar</span>
+                <span class="spec-card__value">${potencia}<span class="unit-symbol">W</span></span>
+                <span class="spec-card__meta">Qtd: ${qnt}</span>
             </div>
         `;
+    }).join('');
 
-        equipmentContainer.innerHTML = `
-            <div class="equipment-logo-wrapper">${logoHtml}</div>
-            ${inversoresHtml}
-            ${modulosHtml}
-        `;
-    }
+    // CORREÇÃO: Formata a quantidade como "Qtd: [número]"
+    const modulosHtml = `
+        <div class="spec-card">
+            <span class="spec-card__label">Painel Solar</span>
+            <span class="spec-card__value">${findVar(dados, 'modulo_potencia', true)}<span class="unit-symbol">W</span></span>
+            <span class="spec-card__meta">Qtd: ${findVar(dados, 'modulo_quantidade', true)}</span>
+        </div>
+    `;
+
+    equipmentContainer.innerHTML = `
+        <div class="equipment-logo-wrapper">${logoHtml}</div>
+        ${inversoresHtml}
+        ${modulosHtml}
+    `;
+}
+
+
 
     function renderizarPadraoInstalacao(tipoProposta) {
         const installationTitle = document.getElementById('installation-title');
@@ -148,12 +156,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         const itensSimples = [
-            { icon: 'fa-check-circle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação simples em alumínio.' },
-            { icon: 'fa-check-circle', title: 'Cabeamento Simples', description: 'Instalação com cabeamento solar simples para sistemas residenciais.' },
-            { icon: 'fa-check-circle', title: 'Proteção Simples', description: 'Utiliza dispositivos de proteção simples para a segurança do sistema.' },
-            { icon: 'fa-check-circle', title: 'Conectores Simples', description: 'Utiliza conectores simples do tipo MC4.' },
-            { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'Mantém o ramal de conexão existente, de responsabilidade da concessionária.' },
-        ];
+    { icon: 'fa-check-circle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação simples em alumínio.' },
+    { icon: 'fa-check-circle', title: 'Cabeamento Simples', description: 'Instalação com cabeamento solar simples para sistemas residenciais.' },
+    { icon: 'fa-check-circle', title: 'Proteção Simples', description: 'Utiliza dispositivos de proteção simples para a segurança do sistema.' },
+    { icon: 'fa-check-circle', title: 'Conectores Simples', description: 'Utiliza conectores simples do tipo MC4.' },
+    { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'Mantém o ramal de conexão existente, de responsabilidade da concessionária.' },
+];
 
         if (tipoProposta === 'economica') {
             title = '<i class="fas fa-tools"></i> Padrão de Instalação';
@@ -171,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `).join('');
-        } else {
+        } else { // Alta Performance -> Premium
             title = '<i class="fas fa-award"></i> Padrão de Instalação';
             tagHtml = '<span class="section-tag tag-premium">Premium</span>';
             container.innerHTML = itensPremium.map(item => `
@@ -192,48 +200,69 @@ document.addEventListener('DOMContentLoaded', () => {
         installationTitle.innerHTML = `${title} ${tagHtml}`;
     }
 
-    function renderizarProposta(dados, tipoProposta = 'performance') {
-        const clienteNome = document.getElementById('cliente-nome');
-        const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
-        const dataProposta = document.getElementById('data-proposta');
-        const geracaoMensal = document.getElementById('geracao-mensal');
-        const potenciaSistema = document.getElementById('potencia-sistema');
-        const tipoInstalacao = document.getElementById('tipo-instalacao');
-        const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
-        
-        const investimentoTotal = document.getElementById('investimento-total');
-        const proposalValidity = document.getElementById('proposal-validity');
+    // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        clienteNome.textContent = findVar(dados, 'cliente_nome', true);
-        clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
-        
-        const dataGeracaoCompleta = findVar(dados, 'data_geracao', true);
-        dataProposta.textContent = dataGeracaoCompleta.split(' ')[0];
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
-        potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
-        tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
-        
-        const geracaoValor = parseFloat(findVar(dados, 'geracao_mensal'));
-        const tarifaValor = parseFloat(findVar(dados, 'tarifa_distribuidora'));
-        if (!isNaN(geracaoValor) && !isNaN(tarifaValor)) {
-            const contaAtual = geracaoValor * tarifaValor;
-            contaEnergiaEstimada.innerHTML = `Ideal para contas de energia de até <strong>${formatarMoeda(contaAtual)}</strong>`;
-        } else {
-            contaEnergiaEstimada.innerHTML = '';
-        }
-        
-        if (investimentoTotal) {
-            investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
-        }
-        if (proposalValidity) {
-            proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
-        }
-        
-        renderizarEquipamentos(dados, tipoProposta);
-        renderizarPadraoInstalacao(tipoProposta);
-        renderizarFinanciamento(dados);
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
+// DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
+
+function renderizarProposta(dados, tipoProposta = 'performance') {
+    // --- Seletores dos elementos ---
+    const clienteNome = document.getElementById('cliente-nome');
+    const clienteCidadeUf = document.getElementById('cliente-cidade-uf');
+    const dataProposta = document.getElementById('data-proposta');
+    
+    const geracaoMensal = document.getElementById('geracao-mensal');
+    const potenciaSistema = document.getElementById('potencia-sistema');
+    const tipoInstalacao = document.getElementById('tipo-instalacao');
+    
+    const contaEnergiaEstimada = document.getElementById('conta-energia-estimada');
+    
+    // Seletores para as seções reintegradas
+    const investimentoTotal = document.getElementById('investimento-total');
+    const proposalValidity = document.getElementById('proposal-validity');
+
+    // --- Renderização dos dados ---
+    clienteNome.textContent = findVar(dados, 'cliente_nome', true);
+    clienteCidadeUf.textContent = `${findVar(dados, 'cidade', true)} - ${findVar(dados, 'estado', true)}`;
+    
+    const dataGeracaoCompleta = findVar(dados, 'data_geracao', true);
+    dataProposta.textContent = dataGeracaoCompleta.split(' ')[0];
+
+    geracaoMensal.innerHTML = `${findVar(dados, 'geracao_mensal', true)}<span class="unit-symbol">kWh</span>`;
+    potenciaSistema.innerHTML = `${findVar(dados, 'potencia_sistema', true)}<span class="unit-symbol">kWp</span>`;
+    tipoInstalacao.textContent = findVar(dados, 'vc_tipo_de_estrutura', true);
+    
+    const geracaoValor = parseFloat(findVar(dados, 'geracao_mensal'));
+    const tarifaValor = parseFloat(findVar(dados, 'tarifa_distribuidora'));
+    if (!isNaN(geracaoValor) && !isNaN(tarifaValor)) {
+        const contaAtual = geracaoValor * tarifaValor;
+        contaEnergiaEstimada.innerHTML = `Ideal para contas de energia de até <strong>${formatarMoeda(contaAtual)}</strong>`;
+    } else {
+        contaEnergiaEstimada.innerHTML = '';
     }
+    
+    // Lógica para preencher as seções reintegradas
+    investimentoTotal.innerHTML = formatarMoeda(findVar(dados, 'preco'));
+    proposalValidity.innerHTML = `Esta proposta é exclusiva para você e válida por <strong>3 dias</strong>, sujeita à disponibilidade de estoque.`;
+
+    // Chama as outras funções de renderização
+    renderizarEquipamentos(dados, tipoProposta);
+    renderizarPadraoInstalacao(tipoProposta);
+    renderizarFinanciamento(dados);
+}
+
+
+
+
+
+
 
     function mostrarResumoNoCabecalho() {
         if (summaryWasShown) return;
@@ -266,29 +295,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const ultimaOpcaoP = opcoesPerformance[opcoesPerformance.length - 1];
         const ultimaOpcaoE = opcoesEconomica[opcoesEconomica.length - 1];
         
-        if (headerSummary) {
-            headerSummary.innerHTML = `
-                <div id="summary-card-performance" class="summary-card summary-card--premium">
-                    <span class="card-title">Premium</span>
-                    <div class="price-container">
-                        <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
-                    </div>
-                    <span class="installment-info">ou até ${ultimaOpcaoP.prazo}x de ${formatarMoeda(ultimaOpcaoP.valorParcela)}</span>
+        headerSummary.innerHTML = `
+            <div id="summary-card-performance" class="summary-card summary-card--premium">
+                <span class="card-title">Premium</span>
+                <div class="price-container">
+                    <span class="main-price">${formatarValorInteiro(precoPerformance)}</span>
                 </div>
-                <div id="summary-card-economica" class="summary-card summary-card--economic">
-                    <span class="card-title">Econômica</span>
-                    <div class="price-container">
-                        <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
-                    </div>
-                    <span class="installment-info">ou até ${ultimaOpcaoE.prazo}x de ${formatarMoeda(ultimaOpcaoE.valorParcela)}</span>
+                <span class="installment-info">ou até ${ultimaOpcaoP.prazo}x de ${formatarMoeda(ultimaOpcaoP.valorParcela)}</span>
+            </div>
+            <div id="summary-card-economica" class="summary-card summary-card--economic">
+                <span class="card-title">Econômica</span>
+                <div class="price-container">
+                    <span class="main-price">${formatarValorInteiro(precoEconomica)}</span>
                 </div>
-            `;
-            headerSummary.style.display = 'flex';
-        }
+                <span class="installment-info">ou até ${ultimaOpcaoE.prazo}x de ${formatarMoeda(ultimaOpcaoE.valorParcela)}</span>
+            </div>
+        `;
         
-        if (proposalDetailsSection) {
-            proposalDetailsSection.classList.add('dynamic-spacing');
-        }
+        headerSummary.style.display = 'flex';
+        proposalDetailsSection.classList.add('dynamic-spacing');
 
         const summaryCardPerformance = document.getElementById('summary-card-performance');
         const summaryCardEconomica = document.getElementById('summary-card-economica');
@@ -301,12 +326,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
-        if(btnAltaPerformance && btnAltaPerformance.classList.contains('active')) {
-            if (summaryCardPerformance) summaryCardPerformance.classList.add('active-card');
-            if (summaryCardEconomica) summaryCardEconomica.classList.remove('active-card');
+        if(btnAltaPerformance.classList.contains('active')) {
+            summaryCardPerformance.classList.add('active-card');
+            summaryCardEconomica.classList.remove('active-card');
         } else {
-            if (summaryCardPerformance) summaryCardPerformance.classList.remove('active-card');
-            if (summaryCardEconomica) summaryCardEconomica.classList.add('active-card');
+            summaryCardPerformance.classList.remove('active-card');
+            summaryCardEconomica.classList.add('active-card');
         }
     }
 
@@ -331,12 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let newDescription = descriptionParts.map(part => {
-            const [tipo, dataHora] = part.split(': ');
-            const [data, hora] = dataHora.split(', ');
-            const dataCurta = data.substring(0, 5);
-            const horaCurta = hora.substring(0, 5);
-            return `${tipo.replace('Preço ', '')}: ${dataCurta} ${horaCurta}`;
-        }).join(' | ');
+    // Ex: Transforma "Viu Preço P: 25/08/2025, 10:30:00" em "Viu P: 25/08 10:30"
+    const [tipo, dataHora] = part.split(': ');
+    const [data, hora] = dataHora.split(', ');
+    const dataCurta = data.substring(0, 5); // Pega DD/MM
+    const horaCurta = hora.substring(0, 5); // Pega HH:MM
+    return `${tipo.replace('Preço ', '')}: ${dataCurta} ${horaCurta}`;
+}).join(' | ');
 
         if (newDescription.length > DESCRIPTION_LIMIT) {
             newDescription = newDescription.substring(0, DESCRIPTION_LIMIT);
@@ -352,49 +378,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2500);
     }
 
-    function criarObservadores(projectId, tipoProposta) {
-        const investmentSection = document.querySelector('.investment-section');
-        if (investmentSection) {
-            let hasBeenVisible = false;
-            priceObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && !hasBeenVisible) {
-                    hasBeenVisible = true;
-                    const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
-                    registrarEvento(projectId, eventType);
-                    
-                    mostrarResumoNoCabecalho(); 
-                    
-                    priceObserver.unobserve(investmentSection);
-                }
-            }, { threshold: 0.75 });
-            priceObserver.observe(investmentSection);
-        }
+    // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
-        if (priceObserver) priceObserver.disconnect();
-        if (installationObserver) installationObserver.disconnect();
+function criarObservadores(projectId, tipoProposta) {
 
-        const installationCards = document.querySelectorAll('.comparison-card');
-        if (installationCards.length > 0) {
-            installationObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-in-view');
-                    } else {
-                        entry.target.classList.remove('is-in-view');
-                    }
-                });
-            }, { threshold: 0.6, rootMargin: "-40% 0px -40% 0px" });
-            
-            installationCards.forEach(card => {
-                installationObserver.observe(card);
+const investmentSection = document.querySelector('.investment-section');
+    if (investmentSection) {
+        let hasBeenVisible = false;
+        priceObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !hasBeenVisible) {
+                hasBeenVisible = true;
+                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
+                registrarEvento(projectId, eventType);
                 
-                card.addEventListener('click', () => {
-                    card.classList.toggle('is-flipped');
-                });
-            });
-        }
+                // ADICIONE ESTA LINHA DE VOLTA - ESTA É A CORREÇÃO PRINCIPAL
+                mostrarResumoNoCabecalho(); 
+                
+                priceObserver.unobserve(investmentSection);
+            }
+        }, { threshold: 0.75 });
+        priceObserver.observe(investmentSection);
     }
 
+
+    // Desconecta observadores antigos para evitar duplicação
+    if (priceObserver) priceObserver.disconnect();
+    if (installationObserver) installationObserver.disconnect();
+
+    // Observador para a seção de investimento (preço)
+
+    // Observador para os cards de instalação
+    const installationCards = document.querySelectorAll('.comparison-card');
+    if (installationCards.length > 0) {
+        installationObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-in-view');
+                } else {
+                    entry.target.classList.remove('is-in-view');
+                }
+            });
+        }, { threshold: 0.6, rootMargin: "-40% 0px -40% 0px" });
+        
+        installationCards.forEach(card => {
+            installationObserver.observe(card);
+            
+            // ADIÇÃO DA LÓGICA DE CLIQUE
+            card.addEventListener('click', () => {
+                // 'toggle' adiciona a classe se não existir, e remove se já existir.
+                card.classList.toggle('is-flipped');
+            });
+        });
+    }
+}
+
+
+    // --- Lógica Principal e Eventos ---
     async function handleSearch(projectId) {
         if (!projectId) return;
         searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
@@ -487,13 +526,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Funções de troca de proposta ---
     function switchToPerformance() {
         const btnAltaPerformance = document.getElementById('btn-alta-performance');
-        if (btnAltaPerformance && btnAltaPerformance.classList.contains('active')) return;
+        if (btnAltaPerformance.classList.contains('active')) return;
         document.body.classList.remove('theme-economic');
-        const btnEconomica = document.getElementById('btn-economica');
-        if (btnEconomica) btnEconomica.classList.remove('active');
-        if (btnAltaPerformance) btnAltaPerformance.classList.add('active');
+        document.getElementById('btn-economica').classList.remove('active');
+        btnAltaPerformance.classList.add('active');
         const summaryCardPerformance = document.getElementById('summary-card-performance');
         const summaryCardEconomica = document.getElementById('summary-card-economica');
         if (summaryCardPerformance && summaryCardEconomica) {
@@ -508,11 +547,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchToEconomic() {
         const btnEconomica = document.getElementById('btn-economica');
-        if (btnEconomica && btnEconomica.classList.contains('active')) return;
+        if (btnEconomica.classList.contains('active')) return;
         document.body.classList.add('theme-economic');
-        const btnAltaPerformance = document.getElementById('btn-alta-performance');
-        if (btnAltaPerformance) btnAltaPerformance.classList.remove('active');
-        if (btnEconomica) btnEconomica.classList.add('active');
+        document.getElementById('btn-alta-performance').classList.remove('active');
+        btnEconomica.classList.add('active');
         const summaryCardPerformance = document.getElementById('summary-card-performance');
         const summaryCardEconomica = document.getElementById('summary-card-economica');
         if (summaryCardPerformance && summaryCardEconomica) {
@@ -525,64 +563,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Função de Inicialização e Roteamento ---
     function init() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const projectIdFromUrl = urlParams.get('projectId');
-    
-        const investmentSection = document.querySelector('.investment-section');
-    
-        if (projectIdFromUrl) {
-            projectIdInput.value = projectIdFromUrl;
-            handleSearch(projectIdFromUrl);
-        } else {
-            if (searchForm) searchForm.style.display = 'flex';
-            if (proposalDetailsSection) proposalDetailsSection.style.display = 'none';
-            if (expiredProposalSection) expiredProposalSection.style.display = 'none';
-            if (proposalHeader) proposalHeader.style.display = 'none';
-            if (mainFooter) mainFooter.style.display = 'block';
-        }
-    
-        if (searchButton) {
-            searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
-        }
-    
-        if (backToSearchBtn) {
-            backToSearchBtn.addEventListener('click', () => {
-                if (proposalDetailsSection) proposalDetailsSection.classList.remove('dynamic-spacing');
-                window.location.href = window.location.pathname;
-            });
-        }
-    
-        if (proposalHeader) {
-            proposalHeader.innerHTML = `
-                <div class="header__container">
-                    <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
-                    <div class="header__options">
-                        <button id="btn-alta-performance" class="option-button active">Premium</button>
-                        <button id="btn-economica" class="option-button">Econômica</button>
-                    </div>
-                </div>
-                <div id="header-summary" class="header-summary" style="display: none;"></div>`;
-        }
-    
-        const btnAltaPerformance = document.getElementById('btn-alta-performance');
-        const btnEconomica = document.getElementById('btn-economica');
-    
-        if (btnAltaPerformance) {
-            btnAltaPerformance.addEventListener('click', switchToPerformance);
-        }
-        if (btnEconomica) {
-            btnEconomica.addEventListener('click', switchToEconomic);
-        }
-    
-        const phoneNumber = "5582994255946";
-        const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
-        const whatsappLink = document.getElementById('whatsapp-link');
-        
-        if (whatsappLink) {
-            whatsappLink.href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
-        }
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectIdFromUrl = urlParams.get('projectId');
+
+    // --- CORREÇÃO APLICADA AQUI ---
+    // A variável 'investmentSection' agora é declarada APENAS UMA VEZ.
+    const investmentSection = document.querySelector('.investment-section');
+
+    if (projectIdFromUrl) {
+        projectIdInput.value = projectIdFromUrl;
+        handleSearch(projectIdFromUrl);
+    } else {
+        searchForm.style.display = 'flex';
+        proposalDetailsSection.style.display = 'none';
+        expiredProposalSection.style.display = 'none';
+        proposalHeader.style.display = 'none';
+        mainFooter.style.display = 'block';
     }
 
-    init();
+    searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
+
+    backToSearchBtn.addEventListener('click', () => {
+        proposalDetailsSection.classList.remove('dynamic-spacing');
+        window.location.href = window.location.pathname;
+    });
+
+    proposalHeader.innerHTML = `
+        <div class="header__container">
+            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+            <div class="header__options">
+                <button id="btn-alta-performance" class="option-button active">Premium</button>
+                <button id="btn-economica" class="option-button">Econômica</button>
+            </div>
+        </div>
+        <div id="header-summary" class="header-summary" style="display: none;"></div>`;
+    
+    const btnAltaPerformance = document.getElementById('btn-alta-performance');
+    const btnEconomica = document.getElementById('btn-economica');
+
+    btnAltaPerformance.addEventListener('click', switchToPerformance);
+    btnEconomica.addEventListener('click', switchToEconomic);
+
+    const phoneNumber = "5582994255946";
+    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+
+    // A lógica do IntersectionObserver foi movida para a função criarObservadores,
+    // então não há mais declaração duplicada aqui.
+}
+
+    init( );
 });
