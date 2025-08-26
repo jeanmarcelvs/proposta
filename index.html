@@ -24,16 +24,20 @@
 
     <main id="search-form" class="screen">
         <div class="search-card">
-            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
-            <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
-            <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
-            
-            <div class="search-card__panel">
-                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-                <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
-                <div id="search-message" class="search-card__message"></div>
-            </div>
-        </div>
+    <!-- NOVO: Contêiner para a logo com fundo escuro -->
+    <div class="search-card__logo-container">
+        <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+    </div>
+    
+    <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
+    <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
+    
+    <div class="search-card__panel">
+        <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
+        <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
+        <div id="search-message" class="search-card__message"></div>
+    </div>
+</div>
     </main>
 
     <main id="proposal-details" class="screen proposal-details" style="display: none;">

@@ -71,8 +71,8 @@ body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5
 body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2f5d62; }
 
 .search-card {
-    background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 25%));
-    color: white; /* Garante que o texto do título e subtítulo fique branco */
+    /* 1. Fundo claro para o card principal, criando o efeito "leve" */
+    background-color: var(--color-card-bg);
     width: 100%;
     max-width: 500px;
     text-align: center;
@@ -81,17 +81,47 @@ body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2
     box-shadow: var(--shadow-md);
 }
 
-.search-card .search-card__title,
-.search-card .search-card__subtitle {
-    color: white;
+/* 2. Contêiner da logo com o fundo escuro e gradiente */
+.search-card__logo-container {
+    background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 25%));
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.2); /* Sombra interna sutil */
 }
 
-.search-card__logo-container { background-color: var(--color-primary) !important; padding: 1.5rem; border-radius: var(--border-radius); margin-bottom: 1.5rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.2); }
-.search-card__logo { height: 60px; display: block; margin: 0 auto; }
-.search-card__title { font-size: 1.8rem; margin-bottom: 0.5rem; color: var(--color-primary); }
-.search-card__subtitle { color: var(--color-text-light); margin-bottom: 2rem; }
-.search-card__panel input { background-color: var(--color-background); color: var(--color-text); padding: 0.9rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 1rem; text-align: center; transition: all 0.3s ease; outline: none; }
-.search-card__panel input:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-secondary), transparent 80%); }
+.search-card__logo {
+    height: 60px;
+    display: block; /* Garante que a margem automática funcione */
+    margin: 0 auto; /* Centraliza a logo dentro do contêiner */
+}
+
+/* 3. Estilos para os textos, garantindo que usem as cores do tema */
+.search-card__title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.search-card__subtitle {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+}
+
+/* 4. Ajuste no espaçamento do painel de input/botão */
+.search-card__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espaçamento consistente */
+}
+
+.search-card__message {
+    color: #ffc107; /* Cor de aviso/alerta */
+    font-weight: 500;
+    margin-bottom: 0; /* Remove margem extra */
+    min-height: 24px; /* Garante que o layout não "pule" quando a mensagem aparece */
+}
+
 body.theme-economic .search-card { background-color: var(--color-card-bg); }
 body.theme-economic .search-card__title, body.theme-economic .search-card__subtitle { color: var(--color-text); }
 body.theme-economic .search-card__panel input { background-color: var(--color-background); }
