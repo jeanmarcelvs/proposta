@@ -510,6 +510,8 @@ function criarObservadores(projectId, tipoProposta) {
             blockFeatures();
             criarObservadores(proposta.project.id, 'performance');
 
+	    window.scrollTo({ top: 0, behavior: 'smooth' });
+
         } catch (err) {
             console.error("Erro na busca:", err);
             searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
@@ -578,10 +580,12 @@ function criarObservadores(projectId, tipoProposta) {
 
     searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
 
-    backToSearchBtn.addEventListener('click', () => {
-        proposalDetailsSection.classList.remove('dynamic-spacing');
-        window.location.href = window.location.pathname;
-    });
+    // Listener para o botão "Nova Consulta"
+backToSearchBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    proposalDetailsSection.classList.remove('dynamic-spacing');
+    window.location.href = window.location.pathname;
+});
 
     proposalHeader.innerHTML = `
         <div class="header__container">
