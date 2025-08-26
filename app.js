@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const proposalDetailsSection = document.getElementById('proposal-details');
     const logoPath = 'logo.png';
+    // O HTML é construído diretamente para o elemento <main>
     let htmlContent = `
         <div class="proposal-header">
             <h1>Proposta de Energia Solar</h1>
