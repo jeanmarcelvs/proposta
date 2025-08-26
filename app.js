@@ -501,6 +501,8 @@ function criarObservadores(projectId, tipoProposta) {
                 console.error("Erro ao calcular Proposta Econômica:", calcError);
             }
 
+	    window.scrollTo({ top: 0, behavior: 'smooth' });
+
             searchForm.style.display = 'none';
             proposalHeader.style.display = 'block';
             proposalDetailsSection.style.display = 'flex';
@@ -509,8 +511,6 @@ function criarObservadores(projectId, tipoProposta) {
             renderizarProposta(propostaOriginal, 'performance');
             blockFeatures();
             criarObservadores(proposta.project.id, 'performance');
-
-	    window.scrollTo({ top: 0, behavior: 'smooth' });
 
         } catch (err) {
             console.error("Erro na busca:", err);
