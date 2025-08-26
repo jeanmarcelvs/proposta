@@ -381,6 +381,26 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
 function criarObservadores(projectId, tipoProposta) {
+
+const investmentSection = document.querySelector('.investment-section');
+    if (investmentSection) {
+        let hasBeenVisible = false;
+        priceObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !hasBeenVisible) {
+                hasBeenVisible = true;
+                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
+                registrarEvento(projectId, eventType);
+                
+                // ADICIONE ESTA LINHA DE VOLTA - ESTA É A CORREÇÃO PRINCIPAL
+                mostrarResumoNoCabecalho(); 
+                
+                priceObserver.unobserve(investmentSection);
+            }
+        }, { threshold: 0.75 });
+        priceObserver.observe(investmentSection);
+    }
+
+
     // Desconecta observadores antigos para evitar duplicação
     if (priceObserver) priceObserver.disconnect();
     if (installationObserver) installationObserver.disconnect();
