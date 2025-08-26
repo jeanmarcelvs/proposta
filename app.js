@@ -381,8 +381,12 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
 function criarObservadores(projectId, tipoProposta) {
+    // Desconecta observadores antigos para evitar duplicação
+    if (priceObserver) priceObserver.disconnect();
+    if (installationObserver) installationObserver.disconnect();
 
-const investmentSection = document.querySelector('.investment-section');
+    // Observador para a seção de investimento (preço)
+    const investmentSection = document.querySelector('.investment-section');
     if (investmentSection) {
         let hasBeenVisible = false;
         priceObserver = new IntersectionObserver((entries) => {
@@ -391,22 +395,14 @@ const investmentSection = document.querySelector('.investment-section');
                 const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
                 registrarEvento(projectId, eventType);
                 
-                // ADICIONE ESTA LINHA DE VOLTA - ESTA É A CORREÇÃO PRINCIPAL
                 mostrarResumoNoCabecalho(); 
                 
                 priceObserver.unobserve(investmentSection);
             }
-        }, { threshold: 0.75 });
+        }, { threshold: 0.25 });
         priceObserver.observe(investmentSection);
     }
-
-
-    // Desconecta observadores antigos para evitar duplicação
-    if (priceObserver) priceObserver.disconnect();
-    if (installationObserver) installationObserver.disconnect();
-
-    // Observador para a seção de investimento (preço)
-
+    
     // Observador para os cards de instalação
     const installationCards = document.querySelectorAll('.comparison-card');
     if (installationCards.length > 0) {
@@ -425,7 +421,6 @@ const investmentSection = document.querySelector('.investment-section');
             
             // ADIÇÃO DA LÓGICA DE CLIQUE
             card.addEventListener('click', () => {
-                // 'toggle' adiciona a classe se não existir, e remove se já existir.
                 card.classList.toggle('is-flipped');
             });
         });
