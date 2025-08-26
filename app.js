@@ -18,8 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchMessage = document.getElementById('search-message');
 
     // --- Variáveis de Estado ---
-    let propostaOriginal; // Agora a API retorna apenas uma proposta.
-    let priceObserver, installationObserver;
+    let propostaOriginal; // A API retorna apenas uma proposta, então uma variável é suficiente.
     let debounceTimer;
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
     let summaryWasShown = false;
@@ -196,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        // Re-adiciona o listener do botão "Nova Consulta"
+        // Adiciona o listener para o botão de voltar após a renderização
         document.getElementById('back-to-search-btn').addEventListener('click', () => {
             window.location.href = window.location.pathname;
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -205,4 +204,82 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lógica Principal ---
     async function handleSearch() {
-        searchMessage.textContent = 'Buscando proposta...
+        searchMessage.textContent = 'Buscando proposta...';
+        searchButton.disabled = true;
+
+        const projectId = projectIdInput.value.trim();
+        if (!projectId) {
+            searchMessage.textContent = 'Por favor, insira o ID da proposta.';
+            searchButton.disabled = false;
+            return;
+        }
+
+        try {
+            const data = await consultarProposta(projectId);
+            
+            // Mapeia a nova estrutura da API para a estrutura que o frontend espera
+            const proposta = {
+                // Informações do cliente
+                nome_cliente: data.name,
+                localizacao: data.project.name, // Usando o nome do projeto como localização
+                
+                // Dados de resumo (mantidos como placeholders pois não estão na API)
+                expirationDate: data.expirationDate,
+                potencia_sistema: 12000,
+                geracao_media_mensal: 1600,
+                reducao_conta_percentual: 95,
+                consumo_medio_mensal: 1500,
+                
+                // Informações do inversor e módulo
+                inversor: findItemByCategory(data, 'Inversor'),
+                modulos: findItemByCategory(data, 'Módulo'),
+                
+                // Informações de financiamento (mantidas como placeholders)
+                plano_financiamento: {
+                    valor_total: 55000,
+                    entrada: 5000,
+                    parcelas: 60,
+                    valor_parcela: 1000
+                }
+            };
+            
+            const today = new Date();
+            const expirationDate = new Date(proposta.expirationDate);
+
+            if (expirationDate < today) {
+                searchForm.style.display = 'none';
+                expiredProposalSection.style.display = 'flex';
+                mainFooter.style.display = 'block';
+            } else {
+                renderizarProposta(proposta);
+                proposalHeader.style.display = 'block';
+                searchForm.style.display = 'none';
+                expiredProposalSection.style.display = 'none';
+                proposalDetailsSection.style.display = 'flex';
+                mainFooter.style.display = 'block';
+                document.body.classList.remove('theme-economic');
+            }
+        } catch (error) {
+            console.error('Erro na busca:', error);
+            searchForm.style.display = 'none';
+            expiredProposalSection.style.display = 'flex';
+            mainFooter.style.display = 'block';
+        } finally {
+            searchButton.disabled = false;
+        }
+    }
+
+    // --- Event Listeners ---
+    searchButton.addEventListener('click', handleSearch);
+    projectIdInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSearch();
+    });
+
+    // Lógica para o link do WhatsApp
+    const phoneNumber = "5582994255946";
+    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+    const whatsappLink = document.getElementById('whatsapp-link');
+    if (whatsappLink) {
+        whatsappLink.href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+    }
+});
