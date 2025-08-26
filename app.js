@@ -397,7 +397,7 @@ function criarObservadores(projectId, tipoProposta) {
                 
                 priceObserver.unobserve(investmentSection);
             }
-        }, { threshold: 0.25 });
+        }, { threshold: 0.4 });
         priceObserver.observe(investmentSection);
     }
     
