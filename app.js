@@ -406,20 +406,6 @@ const investmentSection = document.querySelector('.investment-section');
     if (installationObserver) installationObserver.disconnect();
 
     // Observador para a seção de investimento (preço)
-    const investmentSection = document.querySelector('.investment-section');
-    if (investmentSection) {
-        let hasBeenVisible = false;
-        priceObserver = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !hasBeenVisible) {
-                hasBeenVisible = true;
-                const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
-                registrarEvento(projectId, eventType);
-                mostrarResumoNoCabecalho();
-                priceObserver.unobserve(investmentSection);
-            }
-        }, { threshold: 0.75 });
-        priceObserver.observe(investmentSection);
-    }
 
     // Observador para os cards de instalação
     const installationCards = document.querySelectorAll('.comparison-card');
