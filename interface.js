@@ -28,6 +28,24 @@ const secaoValorTotal = document.getElementById('secao-valor-total');
 const secaoValidade = document.getElementById('secao-validade');
 
 // ######################################################################
+// FUNÇÃO AUXILIAR PARA FORMATAR VALORES NUMÉRICOS E TRATAR N/A
+// ######################################################################
+function formatarValorNumerico(valor, prefixo = '') {
+    // Se o valor for 'N/A' ou null/undefined, retorna a string 'N/A'
+    if (valor === 'N/A' || valor === null || valor === undefined) {
+        return 'N/A';
+    }
+    // Converte a vírgula para ponto se necessário e formata o número
+    const numero = parseFloat(String(valor).replace(',', '.'));
+    if (isNaN(numero)) {
+        return 'N/A';
+    }
+    // Retorna o valor formatado com o prefixo
+    return `${prefixo} ${numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+
+// ######################################################################
 // 2. LÓGICA DE GERENCIAMENTO DE TELA
 // ######################################################################
 /**
@@ -120,8 +138,8 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 2: Dados Gerais do Sistema
     secaoDadosGerais.innerHTML = `
         <h3 class="secao__titulo">Dados Gerais do Sistema</h3>
-        <p>Geração Média Mensal: ${dadosProposta.geracaoMensal} kWh</p>
-        <p>Potência do Sistema: ${dadosProposta.potenciaSistema} kWp</p>
+        <p>Geração Média Mensal: ${formatarValorNumerico(dadosProposta.geracaoMensal)} kWh</p>
+        <p>Potência do Sistema: ${formatarValorNumerico(dadosProposta.potenciaSistema)} kWp</p>
         <p>Ideal para contas de até: <span class="destaque">R$ ${dados.valorContaIdeal}</span></p>
         <p>Tipo de Instalação: ${dadosProposta.tipoInstalacao}</p>
     `;
