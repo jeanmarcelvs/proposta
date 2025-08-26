@@ -337,6 +337,7 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
 
     // --- LÓGICA DE TRACKING E ANIMAÇÃO ---
     // Registra eventos específicos (e.g., visualizações de propostas)
+// Registra eventos específicos (e.g., visualizações de propostas)
 async function registrarEvento(projectId, eventType) {
     let trackingStatus = JSON.parse(localStorage.getItem('trackingStatus')) || {};
     trackingStatus[eventType] = new Date().toLocaleString('pt-BR');
@@ -367,7 +368,7 @@ async function registrarEvento(projectId, eventType) {
     // Agora, faça a chamada para a API
     if (newDescription) {
         try {
-            await updateProjectDescription(projectId, newDescription);
+            await atualizarDescricao(projectId, newDescription); // AQUI ESTÁ A CORREÇÃO
         } catch (error) {
             console.error("Falha ao atualizar a descrição do projeto:", error);
             // Considerar uma estratégia de retry ou notificação aqui
