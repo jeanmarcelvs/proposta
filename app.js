@@ -435,94 +435,31 @@ const investmentSection = document.querySelector('.investment-section');
 
     // --- Lógica Principal e Eventos ---
     async function handleSearch(projectId) {
-        if (!projectId) return;
-        searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        searchButton.disabled = true;
-        searchMessage.textContent = '';
-        proposalDetailsSection.classList.remove('dynamic-spacing');
+        if (!projectId) {
+            showMessage("Por favor, digite o ID da proposta.", 'error');
+            return;
+        }
 
         try {
-            const proposta = await consultarProposta(projectId);
-            if (!proposta || !proposta.id) throw new Error('Proposta não encontrada.');
+            showLoading(true);
+            const data = await consultarProposta(projectId);
 
-            const expirationDate = new Date(proposta.expirationDate);
-            if (expirationDate < new Date()) {
-                searchForm.style.display = 'none';
-                expiredProposalSection.style.display = 'flex';
-                expiredProposalSection.innerHTML = `<div class="search-card"><h1 class="search-card__title">Proposta Expirada</h1><p class="search-card__subtitle">Por favor, solicite uma nova proposta.</p><button class="btn btn--primary" onclick="location.reload()">Nova Consulta</button></div>`;
-                return;
+            if (!data || !data.proposta || !data.proposta.variables) {
+                throw new Error('ID da proposta inválido ou expirado.');
             }
 
-            trackingStatus = { viewedPerformance: null, viewedEconomic: null };
-            summaryWasShown = false;
-            document.getElementById('header-summary').style.display = 'none';
+            propostaOriginal = data.proposta;
+            propostaEconomica = data.proposta_economica || null;
 
-            propostaOriginal = proposta;
-            propostaEconomica = JSON.parse(JSON.stringify(proposta));
+            renderProposal(propostaOriginal);
+            searchMessage.innerHTML = '';
+            showScreen('proposal-details');
 
-            try {
-                const potenciaMin = 2, potenciaMax = 100, descontoMax = 0.097, descontoMin = 0.07;
-                const potenciaSistema = parseFloat(findVar(propostaOriginal, 'potencia_sistema'));
-                const precoOriginal = parseFloat(findVar(propostaOriginal, 'preco'));
-
-                if (isNaN(potenciaSistema) || isNaN(precoOriginal)) throw new Error("Dados inválidos para cálculo.");
-
-                let percentualDesconto;
-                if (potenciaSistema <= potenciaMin) percentualDesconto = descontoMax;
-                else if (potenciaSistema >= potenciaMax) percentualDesconto = descontoMin;
-                else {
-                    const proporcao = (potenciaSistema - potenciaMin) / (potenciaMax - potenciaMin);
-                    percentualDesconto = descontoMax - proporcao * (descontoMax - descontoMin);
-                }
-
-                const novoPreco = precoOriginal * (1 - percentualDesconto);
-                const fatorReducao = novoPreco / precoOriginal;
-
-                const precoVarEco = propostaEconomica.variables.find(v => v.key === 'preco');
-                if (precoVarEco) {
-                    precoVarEco.value = novoPreco.toString();
-                    precoVarEco.formattedValue = novoPreco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                }
-
-                const paybackVarEco = propostaEconomica.variables.find(v => v.key === 'payback');
-                if (paybackVarEco) {
-                    const partes = paybackVarEco.value.match(/\d+/g);
-                    if (partes && partes.length > 0) {
-                        const totalMesesOriginal = (parseInt(partes[0], 10) || 0) * 12 + (parseInt(partes[1], 10) || 0);
-                        const totalMesesNovo = Math.round(totalMesesOriginal * fatorReducao);
-                        paybackVarEco.value = `${Math.floor(totalMesesNovo / 12)} anos e ${totalMesesNovo % 12} meses`;
-                        paybackVarEco.formattedValue = paybackVarEco.value;
-                    }
-                }
-
-                propostaEconomica.variables.filter(v => v.key.startsWith('f_parcela')).forEach(parcelaVar => {
-                    const valorOriginal = parseFloat(parcelaVar.value);
-                    if (!isNaN(valorOriginal)) {
-                        const novoValor = valorOriginal * fatorReducao;
-                        parcelaVar.value = novoValor.toString();
-                        parcelaVar.formattedValue = novoValor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    }
-                });
-                console.log(`Proposta Econômica calculada com ${ (percentualDesconto * 100).toFixed(2) }% de desconto.`);
-            } catch (calcError) {
-                console.error("Erro ao calcular Proposta Econômica:", calcError);
-            }
-
-            searchForm.style.display = 'none';
-            proposalHeader.style.display = 'block';
-            proposalDetailsSection.style.display = 'flex';
-            mainFooter.style.display = 'block';
-            
-            renderizarProposta(propostaOriginal, 'performance');
-            blockFeatures();
-            criarObservadores(proposta.project.id, 'performance');
-
-        } catch (err) {
-            console.error("Erro na busca:", err);
-            searchButton.innerHTML = '<i class="fas fa-arrow-right"></i> Visualizar Proposta';
-            searchButton.disabled = false;
-            searchForm.style.display = 'flex';
-            searchMessage.textContent = 'Projeto não encontrado ou inválido. Por favor, verifique o ID.';
+        } catch (error) {
+            console.error("Erro na busca da proposta:", error);
+            showScreen('expired-proposal-section');
+        } finally {
+            showLoading(false);
         }
     }
 
@@ -586,20 +523,14 @@ const investmentSection = document.querySelector('.investment-section');
     searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
 
     backToSearchBtn.addEventListener('click', () => {
-        proposalDetailsSection.classList.remove('dynamic-spacing');
-        window.location.href = window.location.pathname;
-    });
+    lastEventTime = 0;
+    proposalDetailsSection.classList.remove('dynamic-spacing');
+    window.location.href = window.location.pathname;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 
     proposalHeader.innerHTML = `
-        <div class="header__container">
-            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
-            <div class="header__options">
-                <button id="btn-alta-performance" class="option-button active">Premium</button>
-                <button id="btn-economica" class="option-button">Econômica</button>
-            </div>
-        </div>
-        <div id="header-summary" class="header-summary" style="display: none;"></div>`;
-    
+        
     const btnAltaPerformance = document.getElementById('btn-alta-performance');
     const btnEconomica = document.getElementById('btn-economica');
 
