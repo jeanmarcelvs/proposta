@@ -18,13 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchMessage = document.getElementById('search-message');
 
     // --- Variáveis de Estado ---
-    let propostaOriginal, propostaEconomica;
+    let propostaOriginal; // Agora a API retorna apenas uma proposta.
     let priceObserver, installationObserver;
     let debounceTimer;
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
     let summaryWasShown = false;
     const DESCRIPTION_LIMIT = 100;
-    let lastEventTime = 0; // Adicione esta linha para rastrear o último registro
+    let lastEventTime = 0;
 
     // --- Mapa de Logos ---
     const logoMap = {
@@ -34,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'byd': 'assets/logos/byd-logo.png',
         'phb': 'assets/logos/phb-logo.png',
         'gdis-premium': 'assets/logos/gdis-premium.png',
-        'gdis-economico': 'assets/logos/gdis-economico.png'
+        'gdis-economico': 'assets/logos/gdis-economico.png',
+        'trina': 'assets/logos/trina-solar.png', // Adicionado logo Trina
+        'auxsol': 'assets/logos/auxsol.png'     // Adicionado logo Auxsol
     };
 
     // --- Funções de Segurança ---
@@ -64,6 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof potencia !== 'number') return potencia;
         return `${(potencia / 1000).toFixed(2).replace('.', ',')} kWp`;
     }
+    
+    // Funções auxiliares para extrair dados da nova API
+    function findItemByCategory(data, category) {
+        const item = data.pricingTable.find(item => item.category === category);
+        const nameParts = item.item.split(' ');
+        const manufacturer = nameParts.length > 1 ? nameParts[0].toLowerCase() : 'default';
+        return {
+            fabricante: manufacturer,
+            modelo: item.item,
+            quantidade: item.qnt,
+            descricao: `Detalhes do produto ${item.item}.` // Placeholder
+        };
+    }
+    
+    function findTotalValue(data) {
+        let total = 0;
+        data.pricingTable.forEach(item => {
+            if (item.salesValue) {
+                total += item.salesValue;
+            } else if (item.totalCost) {
+                total += item.totalCost;
+            }
+        });
+        return total;
+    }
+
 
     // --- Funções de Renderização de UI ---
     function renderizarProposta(proposta) {
@@ -109,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="comparison-card fadeInUp" style="animation-delay: 0.5s;">
                     <div class="comparison-card__flipper">
                         <div class="comparison-card__front">
-                            <img src="${logoMap[proposta.inversor.fabricante.toLowerCase()] || 'assets/logos/default-inversor.png'}" alt="Logo do Inversor" class="comparison-card__logo">
+                            <img src="${logoMap[proposta.inversor.fabricante] || 'assets/logos/default-inversor.png'}" alt="Logo do Inversor" class="comparison-card__logo">
                             <h3>Inversor</h3>
                             <p>${proposta.inversor.modelo}</p>
                             <span class="info-box">Clique para saber mais</span>
@@ -122,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="comparison-card fadeInUp" style="animation-delay: 0.6s;">
                     <div class="comparison-card__flipper">
                         <div class="comparison-card__front">
-                            <img src="${logoMap[proposta.modulos.fabricante.toLowerCase()] || 'assets/logos/default-modulo.png'}" alt="Logo do Módulo" class="comparison-card__logo">
+                            <img src="${logoMap[proposta.modulos.fabricante] || 'assets/logos/default-modulo.png'}" alt="Logo do Módulo" class="comparison-card__logo">
                             <h3>Módulos</h3>
                             <p>${proposta.modulos.quantidade}x ${proposta.modulos.modelo}</p>
                             <span class="info-box">Clique para saber mais</span>
@@ -177,6 +205,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+        
+        // Re-adiciona o listener do botão "Nova Consulta"
+        document.getElementById('back-to-search-btn').addEventListener('click', () => {
+            window.location.href = window.location.pathname;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     }
 
     // --- Lógica Principal ---
@@ -193,31 +227,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const data = await consultarProposta(projectId);
-            propostaOriginal = data.proposta_premium;
-            propostaEconomica = data.proposta_economica;
-
-            // NOVA LÓGICA DE EXIBIÇÃO
-            if (propostaOriginal && propostaEconomica) {
-                const today = new Date();
-                const expirationDate = new Date(propostaOriginal.expirationDate);
-
-                if (expirationDate < today) {
-                    searchForm.style.display = 'none';
-                    expiredProposalSection.style.display = 'flex';
-                    mainFooter.style.display = 'block';
-                } else {
-                    renderizarProposta(propostaOriginal);
-                    proposalHeader.style.display = 'block';
-                    searchForm.style.display = 'none';
-                    expiredProposalSection.style.display = 'none';
-                    proposalDetailsSection.style.display = 'flex';
-                    mainFooter.style.display = 'block';
-                    document.body.classList.remove('theme-economic');
+            
+            // Mapeia a nova estrutura da API para a estrutura que o frontend espera
+            const proposta = {
+                // Informações do cliente
+                nome_cliente: data.name,
+                localizacao: data.project.name, // Usando o nome do projeto como localização
+                
+                // Dados de resumo (mantidos como placeholders pois não estão na API)
+                expirationDate: data.expirationDate,
+                potencia_sistema: 12000,
+                geracao_media_mensal: 1600,
+                reducao_conta_percentual: 95,
+                consumo_medio_mensal: 1500,
+                
+                // Informações do inversor e módulo
+                inversor: findItemByCategory(data, 'Inversor'),
+                modulos: findItemByCategory(data, 'Módulo'),
+                
+                // Informações de financiamento (mantidas como placeholders)
+                plano_financiamento: {
+                    valor_total: 55000,
+                    entrada: 5000,
+                    parcelas: 60,
+                    valor_parcela: 1000
                 }
+            };
+            
+            const today = new Date();
+            const expirationDate = new Date(proposta.expirationDate);
+
+            if (expirationDate < today) {
+                searchForm.style.display = 'none';
+                expiredProposalSection.style.display = 'flex';
+                mainFooter.style.display = 'block';
             } else {
-                 searchForm.style.display = 'none';
-                 expiredProposalSection.style.display = 'flex';
-                 mainFooter.style.display = 'block';
+                renderizarProposta(proposta);
+                proposalHeader.style.display = 'block';
+                searchForm.style.display = 'none';
+                expiredProposalSection.style.display = 'none';
+                proposalDetailsSection.style.display = 'flex';
+                mainFooter.style.display = 'block';
+                document.body.classList.remove('theme-economic');
             }
         } catch (error) {
             console.error('Erro na busca:', error);
@@ -229,39 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function switchToEconomic() {
-        document.body.classList.add('theme-economic');
-        document.getElementById('btn-economica').classList.add('active');
-        document.getElementById('btn-alta-performance').classList.remove('active');
-        renderizarProposta(propostaEconomica);
-    }
-
-    function switchToPerformance() {
-        document.body.classList.remove('theme-economic');
-        document.getElementById('btn-alta-performance').classList.add('active');
-        document.getElementById('btn-economica').classList.remove('active');
-        renderizarProposta(propostaOriginal);
-    }
-
     // --- Event Listeners ---
     searchButton.addEventListener('click', handleSearch);
     projectIdInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSearch();
     });
-    backToSearchBtn.addEventListener('click', () => {
-        lastEventTime = 0;
-        proposalDetailsSection.classList.remove('dynamic-spacing');
-        window.location.href = window.location.pathname;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
     
-    // CORRIGIDO: O código de inicialização do cabeçalho e dos botões foi movido para dentro do DOMContentLoaded
-    const btnAltaPerformance = document.getElementById('btn-alta-performance');
-    const btnEconomica = document.getElementById('btn-economica');
-    if(btnAltaPerformance && btnEconomica) {
-        btnAltaPerformance.addEventListener('click', switchToPerformance);
-        btnEconomica.addEventListener('click', switchToEconomic);
-    }
+    // NOTA: A lógica para os botões "Alta Performance" e "Econômica"
+    // foi removida pois a API não fornece essas opções.
 
     const phoneNumber = "5582994255946";
     const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
