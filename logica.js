@@ -62,7 +62,7 @@ export function processarDadosProposta(dadosBrutos) {
     }
 
     /**
-     * CORREÇÃO: Agrupa todos os dados de financiamento de forma robusta.
+     * CORREÇÃO FINAL: Agrupa todos os dados de financiamento de forma robusta.
      * @param {Array} dados - O array de dados financeiros.
      * @returns {Array} Um array de objetos de planos de financiamento.
      */
