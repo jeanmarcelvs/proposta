@@ -525,8 +525,8 @@ body.theme-economic .summary-card:first-child { border-right-color: var(--color-
 .proposal-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 2rem;
-    margin-bottom: 2rem; /* Define a mesma margem para o rodapé */
+    margin-top: 1.5rem;   /* Reduz o espaço acima do botão */
+    margin-bottom: 1.5rem;/* Reduz o espaço abaixo do botão */
     padding: 0;
     background-color: transparent;
     box-shadow: none;
@@ -1010,3 +1010,42 @@ body.theme-economic .enhanced-button:hover {
     box-shadow: 0 12px 35px rgba(94, 139, 126, 0.35);
 }
 
+/* --- Melhoria do design do painel de pesquisa --- */
+
+/* Estilo para o contêiner principal do card */
+.search-card {
+    /* Adiciona padding interno para afastar o conteúdo das bordas */
+    padding: 2rem; 
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+}
+
+/* Estilo para o contêiner do logo com o fundo azul */
+.search-card__logo-container {
+    background-color: var(--primary-color);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    margin: -2rem -2rem 1.5rem -2rem; /* Negativo para preencher as bordas do card */
+    padding: 3rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo para a logo dentro do contêiner */
+.search-card__logo {
+    max-width: 150px; /* Tamanho da logo */
+}
+
+/* Estilo para o título da tela de pesquisa */
+.search-card__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+}
