@@ -68,19 +68,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderizarProposta(proposta) {
-    console.log("Renderizando proposta com os dados:", proposta);
+        console.log("Renderizando proposta com os dados:", proposta);
+        const proposalDetailsSection = document.getElementById('proposal-details');
 
-    const proposalDetailsSection = document.getElementById('proposal-details');
-    const logoPath = 'logo.png';
-    // O HTML é construído diretamente para o elemento <main>
-    let htmlContent = `
-        <div class="proposal-header">
-            <h1>Proposta de Energia Solar</h1>
-            <p>Detalhes técnicos, benefícios e valores para o seu projeto.</p>
-        </div>
+        // Formata a data de criação para exibição
+        const dataCriacao = new Date(proposta.createdAt).toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
 
-        <section class="details-grid fadeIn" style="animation-delay: 0.2s;">
-            <div class="details-card fadeInUp" style="animation-delay: 0.3s;">
+        // HTML aprimorado para a seção de cabeçalho
+        let htmlContent = `
+            <div class="proposal-header">
+                <h1 class="fadeIn" style="animation-delay: 0.2s;">
+                    Proposta para
+                    <br>
+                    <span class="client-name">${proposta.nome_cliente}</span>
+                </h1>
+                <p class="fadeIn" style="animation-delay: 0.3s;">
+                    <strong>Localização:</strong> ${proposta.localizacao} | <strong>Data da Proposta:</strong> ${dataCriacao}
+                </p>
+            </div>
+        `;
+
+        // Adicione o restante do seu HTML aqui
+        htmlContent += `
+        <section class="details-grid fadeIn" style="animation-delay: 0.4s;">
+            <div class="details-card fadeInUp" style="animation-delay: 0.5s;">
                 <h2>Resumo do Projeto</h2>
                 <ul class="details-list">
                     <li><i class="fas fa-check-circle"></i> Potência do Sistema: <strong>${formatarPotencia(proposta.potencia_sistema)}</strong></li>
@@ -88,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <li><i class="fas fa-check-circle"></i> Redução na Conta de Energia: <strong>~${proposta.reducao_conta_percentual}%</strong></li>
                 </ul>
             </div>
-            <div class="details-card fadeInUp" style="animation-delay: 0.4s;">
+            <div class="details-card fadeInUp" style="animation-delay: 0.6s;">
                 <h2>Dados do Cliente</h2>
                 <ul class="details-list">
                     <li><i class="fas fa-user"></i> Nome: <strong>${proposta.nome_cliente}</strong></li>
@@ -97,80 +112,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
             </div>
         </section>
+        
+... // O restante do seu código permanece igual
+        `;
 
-        <section class="installation-comparison fadeIn" style="animation-delay: 0.5s;">
-            <h2 class="section-title slideInLeft">Equipamentos</h2>
-            <div class="comparison-card fadeInUp" style="animation-delay: 0.6s;">
-                <div class="comparison-card__flipper">
-                    <div class="comparison-card__front">
-                        <img src="${logoPath}" alt="Logo do Inversor" class="comparison-card__logo">
-                        <h3>Inversor</h3>
-                        <p>${proposta.inversor.modelo}</p>
-                        <span class="info-box">Clique para saber mais</span>
-                    </div>
-                    <div class="comparison-card__back">
-                        <p>${proposta.inversor.descricao}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="comparison-card fadeInUp" style="animation-delay: 0.7s;">
-                <div class="comparison-card__flipper">
-                    <div class="comparison-card__front">
-                        <img src="${logoPath}" alt="Logo do Módulo" class="comparison-card__logo">
-                        <h3>Módulos</h3>
-                        <p>${proposta.modulos.quantidade}x ${proposta.modulos.modelo}</p>
-                        <span class="info-box">Clique para saber mais</span>
-                    </div>
-                    <div class="comparison-card__back">
-                        <p>${proposta.modulos.descricao}</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        // Atribui o novo conteúdo à seção de detalhes da proposta
+        proposalDetailsSection.innerHTML = htmlContent;
 
-        <section class="accordion-container fadeIn" style="animation-delay: 0.8s;">
-            <h2 class="section-title slideInLeft">Plano de Financiamento</h2>
-            <div class="accordion-item fadeInUp" style="animation-delay: 0.9s;">
-                <button class="accordion-button">
-                    Opções de Financiamento
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div class="accordion-content">
-                    <h3>Plano Padrão</h3>
-                    <p>Valor Total: <strong>${formatarValor(proposta.plano_financiamento.valor_total)}</strong></p>
-                    <p>Entrada: <strong>${formatarValor(proposta.plano_financiamento.entrada)}</strong></p>
-                    <p>Parcelas: <strong>${proposta.plano_financiamento.parcelas}x</strong> de <strong>${formatarValor(proposta.plano_financiamento.valor_parcela)}</strong></p>
-                </div>
-            </div>
-        </section>
-
-        <div style="text-align: center; margin-top: 2rem;">
-            <button id="back-to-search-btn" class="btn btn--primary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
-        </div>
-    `;
-
-    proposalDetailsSection.innerHTML = htmlContent;
-
-    document.querySelectorAll('.comparison-card').forEach(card => {
-        card.addEventListener('click', () => card.classList.toggle('is-in-view'));
-    });
-    document.querySelectorAll('.accordion-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const content = button.nextElementSibling;
-            button.classList.toggle('active');
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-            } else {
-                content.style.display = 'block';
-            }
+        // Adiciona os event listeners
+        document.querySelectorAll('.comparison-card').forEach(card => {
+            card.addEventListener('click', () => card.classList.toggle('is-in-view'));
         });
-    });
-
-    document.getElementById('back-to-search-btn').addEventListener('click', () => {
-        window.location.href = window.location.pathname;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                button.classList.toggle('active');
+                content.style.display = content.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    }
 
     // --- Lógica Principal ---
     async function handleSearch() {
@@ -185,34 +145,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const data = await consultarProposta(projectId);
-            console.log("Dados recebidos da API:", data);
+        const data = await consultarProposta(projectId);
+        console.log("Dados recebidos da API:", data);
 
-            // Dados fixos para o cliente conforme o JSON, mas pode ser dinâmico no futuro.
-            const cliente = {
-                nome: data.name,
-                localizacao: data.project.name
-            };
+        const proposta = {
+            nome_cliente: data.name,
+            localizacao: data.project.name,
+            expirationDate: data.expirationDate,
+            createdAt: data.createdAt, // Adicione esta linha
+            potencia_sistema: 12000,
+            geracao_media_mensal: 1600,
+            reducao_conta_percentual: 95,
+            consumo_medio_mensal: 1500,
+            inversor: findItemByCategory(data, 'Inversor'),
+            modulos: findItemByCategory(data, 'Módulo'),
+            plano_financiamento: {
+                valor_total: 55000,
+                entrada: 5000,
+                parcelas: 60,
+                valor_parcela: 1000
+            }
+        };
 
-            const proposta = {
-                nome_cliente: cliente.nome,
-                localizacao: cliente.localizacao,
-                expirationDate: data.expirationDate,
-                potencia_sistema: 12000,
-                geracao_media_mensal: 1600,
-                reducao_conta_percentual: 95,
-                consumo_medio_mensal: 1500,
-                inversor: findItemByCategory(data, 'Inversor'),
-                modulos: findItemByCategory(data, 'Módulo'),
-                plano_financiamento: {
-                    valor_total: 55000,
-                    entrada: 5000,
-                    parcelas: 60,
-                    valor_parcela: 1000
-                }
-            };
-
-            console.log("Dados da proposta mapeados:", proposta);
+        console.log("Dados da proposta mapeados:", proposta);
 
             const today = new Date();
             const expirationDate = new Date(proposta.expirationDate);

@@ -832,3 +832,45 @@ a#whatsapp-link:hover, a#whatsapp-link:hover i {
     .proposal-details { border-radius: 0; }
     .footer-container { text-align: left; align-items: flex-start; }
 }
+
+/* Estilos para o Cabeçalho da Proposta */
+.proposal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.proposal-header h1 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.proposal-header .client-name {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+    line-height: 1.2;
+    background: var(--color-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.proposal-header p {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Responsividade para o cabeçalho */
+@media (max-width: 768px) {
+    .proposal-header h1 {
+        font-size: 2rem;
+    }
+    .proposal-header .client-name {
+        font-size: 2.5rem;
+    }
+}
