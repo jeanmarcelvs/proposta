@@ -138,9 +138,9 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 2: Dados Gerais do Sistema
     secaoDadosGerais.innerHTML = `
         <h3 class="secao__titulo">Dados Gerais do Sistema</h3>
-        <p>Geração Média Mensal: ${dadosProposta.geracaoMensal === 'N/A' ? 'N/A' : dadosProposta.geracaoMensal + ' kWh'}</p>
-        <p>Potência do Sistema: ${dadosProposta.potenciaSistema === 'N/A' ? 'N/A' : dadosProposta.potenciaSistema + ' kWp'}</p>
-        <p>Ideal para contas de até: <span class="destaque">R$ ${dados.valorContaIdeal}</span></p>
+        <p>Geração Média Mensal: ${formatarValorNumerico(dadosProposta.geracaoMensal)} kWh</p>
+        <p>Potência do Sistema: ${formatarValorNumerico(dadosProposta.potenciaSistema)} kWp</p>
+        <p>Ideal para contas de até: <span class="destaque">${formatarValorNumerico(dados.valorContaIdeal, 'R$')}</span></p>
         <p>Tipo de Instalação: ${dadosProposta.tipoInstalacao}</p>
     `;
 
@@ -162,7 +162,7 @@ function renderizarProposta(dadosProposta, tipo) {
         htmlPlanos += `
             <div class="card-financiamento ${classeDestaque}">
                 <h4 class="card-financiamento__titulo">${plano.prazo} meses</h4>
-                <p class="card-financiamento__valor">R$ ${plano.parcela}</p>
+                <p class="card-financiamento__valor">${formatarValorNumerico(plano.parcela, 'R$')}</p>
                 ${isEquilibrio ? '<span class="etiqueta-equilibrio">Parcela de Equilíbrio</span>' : ''}
             </div>
         `;
@@ -181,7 +181,7 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 5: Valor Total do Projeto
     secaoValorTotal.innerHTML = `
         <h3 class="secao__titulo">Valor Total do Projeto</h3>
-        <p class="valor-total-destaque">R$ ${dados.precoTotalVenda}</p>
+        <p class="valor-total-destaque">${formatarValorNumerico(dados.precoTotalVenda, 'R$')}</p>
         <p class="secao__observacao">
             *Valor à vista. Consulte opção de pagamento no cartão de crédito.
         </p>
@@ -190,86 +190,4 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 6: Validade da Proposta - Agora não exibe a data, mas a lógica já foi aplicada
     secaoValidade.innerHTML = `
         <h3 class="secao__titulo">Validade da Proposta</h3>
-        <p class="secao__texto">Esta proposta é válida até o dia: <span class="destaque">${dataExpiracao}</span>.</p>
-    `;
-    
-    // Atualiza o resumo do cabeçalho.
-    renderizarCabecalhoDinamico(dadosProposta.planosFinanciamento, dadosProposta.propostaEconomica.planosFinanciamento);
-}
-
-// ######################################################################
-// 5. LÓGICA DO CABEÇALHO DINÂMICO E SCROLL
-// ######################################################################
-function renderizarCabecalhoDinamico(planosPremium, planosEconomica) {
-    const menorParcelaPremium = planosPremium[0]?.parcela || 'N/A';
-    const menorParcelaEconomica = planosEconomica[0]?.parcela || 'N/A';
-    
-    cabecalhoProposta.innerHTML = `
-        <img src="logo.png" alt="Logo da Empresa" class="cabecalho-proposta__logo">
-        <nav class="botoes-tipo-proposta">
-            <button id="botao-premium" class="botoes-tipo-proposta__botao botoes-tipo-proposta__botao--ativo">Premium</button>
-            <button id="botao-economica" class="botoes-tipo-proposta__botao">Econômica</button>
-        </nav>
-        <div id="resumo-propostas" class="resumo-propostas">
-            <span class="resumo-propostas__item resumo-propostas__item--premium">Proposta Premium: R$ ${menorParcelaPremium}</span>
-            <span class="resumo-propostas__item resumo-propostas__item--economica">Proposta Econômica: R$ ${menorParcelaEconomica}</span>
-        </div>
-    `;
-
-    const resumoPropostas = document.getElementById('resumo-propostas');
-    const secaoValorTotal = document.getElementById('secao-valor-total');
-    
-    window.addEventListener('scroll', () => {
-        const rect = secaoValorTotal.getBoundingClientRect();
-        const alturaViewport = window.innerHeight;
-        
-        if (rect.top <= alturaViewport * 0.4) {
-            resumoPropostas.classList.add('resumo-propostas--visivel');
-        } else {
-            resumoPropostas.classList.remove('resumo-propostas--visivel');
-        }
-    });
-
-    const novoBotaoPremium = document.getElementById('botao-premium');
-    const novoBotaoEconomica = document.getElementById('botao-economica');
-
-    if (novoBotaoPremium) {
-        novoBotaoPremium.addEventListener('click', () => {
-            tipoPropostaAtual = 'premium';
-            renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
-            novoBotaoPremium.classList.add('botoes-tipo-proposta__botao--ativo');
-            novoBotaoEconomica.classList.remove('botoes-tipo-proposta__botao--ativo');
-        });
-    }
-
-    if (novoBotaoEconomica) {
-        novoBotaoEconomica.addEventListener('click', () => {
-            tipoPropostaAtual = 'economica';
-            renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
-            novoBotaoEconomica.classList.add('botoes-tipo-proposta__botao--ativo');
-            novoBotaoPremium.classList.remove('botoes-tipo-proposta__botao--ativo');
-        });
-    }
-}
-
-// ######################################################################
-// 6. INICIALIZAÇÃO DA APLICAÇÃO
-// ######################################################################
-document.addEventListener('DOMContentLoaded', () => {
-    window.scrollTo(0, 0);
-    criarTelaInicial();
-    
-    // Adicionando um listener genérico para os botões de voltar
-    document.body.addEventListener('click', (event) => {
-        if (event.target.id === 'botao-voltar' || event.target.id === 'botao-voltar-expirada') {
-            alternarVisualizacaoPagina('inicial');
-            // Limpa os containers para evitar lixo de renderizações antigas
-            secaoDadosCliente.innerHTML = '';
-            secaoDadosGerais.innerHTML = '';
-            secaoInstalacao.innerHTML = '';
-            secaoFinanciamento.innerHTML = '';
-            secaoValorTotal.innerHTML = '';
-            secaoValidade.innerHTML = '';
-        }
-    });
-});
+        <p class="secao__texto">Esta proposta é válida até o
