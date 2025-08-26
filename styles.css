@@ -71,29 +71,45 @@ body.theme-economic .header__options { background-color: color-mix(in srgb, #2f5
 body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2f5d62; }
 
 .search-card {
-    /* 1. Fundo claro para o card principal, criando o efeito "leve" */
-    background-color: var(--color-card-bg);
-    width: 100%;
+    /* Mantenha o padding para o espaçamento interno */
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra mais pronunciada e elegante */
+    background-color: var(--card-bg);
     max-width: 500px;
+    width: 90%;
     text-align: center;
-    border-radius: var(--border-radius);
-    padding: 3rem;
-    box-shadow: var(--shadow-md);
+    /* Adiciona uma transição para suavizar possíveis mudanças de estado */
+    transition: all 0.3s ease;
 }
 
-/* 2. Contêiner da logo com o fundo escuro e gradiente */
+
+/* Estilo para o contêiner do logo com o fundo azul */
 .search-card__logo-container {
-    background: linear-gradient(135deg, var(--color-primary), color-mix(in srgb, var(--color-primary), black 25%));
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    margin-bottom: 1.5rem;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.2); /* Sombra interna sutil */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    margin: -2rem -2rem 1.5rem -2rem;
+    padding: 3rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Efeito fosco (opcional, pode ser ajustado) */
+    position: relative;
+    overflow: hidden; /* Para garantir que o pseudo-elemento não vaze */
 }
 
-.search-card__logo {
-    height: 60px;
-    display: block; /* Garante que a margem automática funcione */
-    margin: 0 auto; /* Centraliza a logo dentro do contêiner */
+/* Adiciona um gradiente sutil de textura para o efeito fosco */
+.search-card__logo-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.05) 100%);
+    opacity: 0.8; /* Ajuste a opacidade para controlar o "fosco" */
+    pointer-events: none; /* Garante que o pseudo-elemento não interfira com interações */
 }
 
 /* 3. Estilos para os textos, garantindo que usem as cores do tema */
@@ -525,8 +541,8 @@ body.theme-economic .summary-card:first-child { border-right-color: var(--color-
 .proposal-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 0.5rem;   /* Espaço acima do botão */
-    margin-bottom: 0.5rem;/* Espaço abaixo do botão */
+    margin-top: 0;   /* Espaço acima do botão */
+    margin-bottom: 0;/* Espaço abaixo do botão */
     padding: 0;
     background-color: transparent;
     box-shadow: none;
@@ -1014,26 +1030,44 @@ body.theme-economic .enhanced-button:hover {
 
 /* Estilo para o contêiner principal do card */
 .search-card {
-    /* Adiciona padding interno para afastar o conteúdo das bordas */
+    /* Mantenha o padding para o espaçamento interno */
     padding: 2rem; 
     border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra mais pronunciada e elegante */
     background-color: var(--card-bg);
     max-width: 500px;
     width: 90%;
     text-align: center;
+    /* Adiciona uma transição para suavizar possíveis mudanças de estado */
+    transition: all 0.3s ease; 
 }
 
 /* Estilo para o contêiner do logo com o fundo azul */
 .search-card__logo-container {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-    margin: -2rem -2rem 1.5rem -2rem; /* Negativo para preencher as bordas do card */
+    margin: -2rem -2rem 1.5rem -2rem;
     padding: 3rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Efeito fosco (opcional, pode ser ajustado) */
+    position: relative;
+    overflow: hidden; /* Para garantir que o pseudo-elemento não vaze */
+}
+
+/* Adiciona um gradiente sutil de textura para o efeito fosco */
+.search-card__logo-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.05) 100%);
+    opacity: 0.8; /* Ajuste a opacidade para controlar o "fosco" */
+    pointer-events: none; /* Garante que o pseudo-elemento não interfira com interações */
 }
 
 /* Estilo para a logo dentro do contêiner */

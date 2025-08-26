@@ -4,6 +4,8 @@ import { consultarProposta, atualizarDescricao } from "./api.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    window.scrollTo(0, 0);
+
     // --- Seletores do DOM ---
     const searchForm = document.getElementById('search-form');
     const proposalDetailsSection = document.getElementById('proposal-details');
@@ -22,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
     let summaryWasShown = false;
     const DESCRIPTION_LIMIT = 100;
+    let lastEventTime = 0; // Adicione esta linha para rastrear o último registro
 
     // --- Mapa de Logos ---
     const logoMap = { 'huawei': 'logo1.png' };
@@ -388,16 +391,21 @@ function criarObservadores(projectId, tipoProposta) {
     if (investmentSection) {
         let hasBeenVisible = false;
         priceObserver = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !hasBeenVisible) {
-                hasBeenVisible = true;
+            const entry = entries[0];
+            const now = Date.now();
+
+            // Verifica se a seção está visível e se um minuto se passou desde a última atualização
+            if (entry.isIntersecting && (now - lastEventTime >= 60000)) {
+                
                 const eventType = tipoProposta === 'performance' ? 'viewedPerformance' : 'viewedEconomic';
                 registrarEvento(projectId, eventType);
                 
-                mostrarResumoNoCabecalho(); 
+                // Atualiza o tempo do último evento registrado
+                lastEventTime = now;
                 
-                priceObserver.unobserve(investmentSection);
+                mostrarResumoNoCabecalho(); 
             }
-        }, { threshold: 0.6 });
+        }, { threshold: 0.75 });
         priceObserver.observe(investmentSection);
     }
     
@@ -501,9 +509,7 @@ function criarObservadores(projectId, tipoProposta) {
                 console.error("Erro ao calcular Proposta Econômica:", calcError);
             }
 
-	    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            searchForm.style.display = 'none';
+	    searchForm.style.display = 'none';
             proposalHeader.style.display = 'block';
             proposalDetailsSection.style.display = 'flex';
             mainFooter.style.display = 'block';
@@ -582,6 +588,7 @@ function criarObservadores(projectId, tipoProposta) {
 
     // Listener para o botão "Nova Consulta"
 backToSearchBtn.addEventListener('click', () => {
+    lastEventTime = 0;
     proposalDetailsSection.classList.remove('dynamic-spacing');
     window.location.href = window.location.pathname;
     window.scrollTo({ top: 0, behavior: 'smooth' });
