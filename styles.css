@@ -167,7 +167,13 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
 .validity-banner { text-align: center; padding: 1rem; background-color: var(--color-card-bg); border-left: 5px solid var(--color-secondary); }
 .validity-banner i { color: var(--color-secondary); margin-right: 0.5rem; }
 
-.footer { background-color: var(--color-primary); color: #d1d5db; padding: 2rem; text-align: center; margin-top: 4rem; }
+.footer {
+    background-color: var(--color-primary);
+    color: #d1d5db;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 2rem; /* VALOR REDUZIDO */
+}
 .footer-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
 .footer-logo img { height: 50px; }
 .footer-contact { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -237,8 +243,13 @@ body.theme-economic .highlight-tag { color: white; }
 .contact-item { text-decoration: none; color: inherit; }
 a#whatsapp-link { text-decoration: none; color: #8892b0; display: inline-flex; align-items: center; gap: 0.75rem; transition: color 0.3s ease; }
 a#whatsapp-link i { color: var(--color-secondary); transition: color 0.3s ease; }
-a#whatsapp-link:hover { color: var(--color-secondary); }
-a#whatsapp-link:hover i { color: var(--color-primary); }
+a#whatsapp-link:hover {
+    color: var(--color-secondary); /* Texto fica laranja */
+}
+
+a#whatsapp-link:hover i {
+    color: white; /* Ícone fica branco */
+}
 
 .client-header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
 .client-header__subtitle { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.1rem; color: var(--color-text-light); margin-bottom: 0.25rem; }
