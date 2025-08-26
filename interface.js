@@ -138,8 +138,8 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 2: Dados Gerais do Sistema
     secaoDadosGerais.innerHTML = `
         <h3 class="secao__titulo">Dados Gerais do Sistema</h3>
-        <p>Geração Média Mensal: ${formatarValorNumerico(dadosProposta.geracaoMensal)} kWh</p>
-        <p>Potência do Sistema: ${formatarValorNumerico(dadosProposta.potenciaSistema)} kWp</p>
+        <p>Geração Média Mensal: ${dadosProposta.geracaoMensal} kWh</p>
+        <p>Potência do Sistema: ${dadosProposta.potenciaSistema} kWp</p>
         <p>Ideal para contas de até: <span class="destaque">R$ ${dados.valorContaIdeal}</span></p>
         <p>Tipo de Instalação: ${dadosProposta.tipoInstalacao}</p>
     `;
