@@ -23,40 +23,71 @@
     </header>
 
     <main id="search-form" class="screen">
+    <!-- Fundo animado com elementos flutuantes -->
     <div class="animated-background">
         <div class="floating-elements">
-            <i class="fab fa-solar-panel"></i>
-            <i class="fab fa-solar-panel"></i>
-            <i class="fab fa-solar-panel"></i>
-            <i class="fab fa-solar-panel"></i>
+            <div class="float-element element-1"><i class="fas fa-solar-panel"></i></div>
+            <div class="float-element element-2"><i class="fas fa-sun"></i></div>
+            <div class="float-element element-3"><i class="fas fa-leaf"></i></div>
+            <div class="float-element element-4"><i class="fas fa-bolt"></i></div>
+            <div class="float-element element-5"><i class="fas fa-home"></i></div>
         </div>
     </div>
 
-    <div class="enhanced-card">
-        <div class="enhanced-logo">
+    <div class="search-card enhanced-card">
+        <!-- Efeito de brilho superior -->
+        <div class="card-shine"></div>
+        
+        <!-- Logo com design aprimorado -->
+        <div class="search-card__logo-container enhanced-logo">
+            <div class="logo-glow"></div>
             <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
         </div>
         
-        <div class="enhanced-text-content">
-            <h1 class="enhanced-title">Proposta de Instalação</h1>
-            <h2 class="enhanced-subtitle">Energia Solar Fotovoltaica</h2>
-        </div>
-        <p class="enhanced-paragraph">
-            Para visualizar a sua proposta, por favor, insira o ID único que lhe foi fornecido.
-        </p>
+        <!-- Título redesenhado -->
+        <h1 class="search-card__title enhanced-title">
+            <span class="title-main">Acesse sua Proposta</span>
+            <span class="title-accent">Personalizada</span>
+        </h1>
         
-        <form id="search-form" class="enhanced-panel">
+                
+        <!-- Painel de input redesenhado -->
+        <div class="search-card__panel enhanced-panel">
             <div class="input-container">
-                <i class="fas fa-barcode input-icon"></i>
-                <input type="text" id="project-id" placeholder="Digite o ID da proposta" maxlength="10">
+                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
+                <div class="input-highlight"></div>
             </div>
-            <button type="submit" id="search-button" class="btn enhanced-button">
+            <button type="button" id="search-button" class="btn btn--primary enhanced-button">
                 <span class="button-content">
-                    <i class="fas fa-arrow-right"></i> Visualizar Proposta
+                    <i class="fas fa-search"></i> 
+                    Visualizar Proposta
                 </span>
+                <div class="button-effect"></div>
             </button>
-            <p id="search-message" class="enhanced-message"></p>
-        </form>
+            <div id="search-message" class="search-card__message"></div>
+        </div>
+
+        <!-- Elementos decorativos -->
+        <div class="decorative-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
+    </div>
+
+    <!-- Informações da empresa -->
+    <div class="company-stats">
+        <div class="stat-item">
+            <i class="fas fa-handshake"></i>
+            <span>Consultoria Especializada</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-award"></i>
+            <span>Certificação INMETRO</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-award"></i>
+            <span>Certificação HUAWEI</span>
+        </div>
     </div>
 </main>
 
@@ -185,7 +216,7 @@
         </div>
     </footer>
     
-    <script src="api.js" type="module"></script>
-    <script src="app.js" type="module"></script>
+    <script type="module" src="api.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
