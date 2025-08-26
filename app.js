@@ -579,47 +579,54 @@ const investmentSection = document.querySelector('.investment-section');
 
     // --- Função de Inicialização e Roteamento ---
     function init() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const projectIdFromUrl = urlParams.get('projectId');
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectIdFromUrl = urlParams.get('projectId');
 
-        if (projectIdFromUrl) {
-            projectIdInput.value = projectIdFromUrl;
-            handleSearch(projectIdFromUrl);
-        } else {
-            searchForm.style.display = 'flex';
-            proposalDetailsSection.style.display = 'none';
-            expiredProposalSection.style.display = 'none';
-            proposalHeader.style.display = 'none';
-            mainFooter.style.display = 'block';
-        }
+    // --- CORREÇÃO APLICADA AQUI ---
+    // A variável 'investmentSection' agora é declarada APENAS UMA VEZ.
+    const investmentSection = document.querySelector('.investment-section');
 
-        searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
-
-        backToSearchBtn.addEventListener('click', () => {
-            proposalDetailsSection.classList.remove('dynamic-spacing');
-            window.location.href = window.location.pathname;
-        });
-
-        proposalHeader.innerHTML = `
-            <div class="header__container">
-                <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
-                <div class="header__options">
-                    <button id="btn-alta-performance" class="option-button active">Premium</button>
-                    <button id="btn-economica" class="option-button">Econômica</button>
-                </div>
-            </div>
-            <div id="header-summary" class="header-summary" style="display: none;"></div>`;
-        
-        const btnAltaPerformance = document.getElementById('btn-alta-performance');
-        const btnEconomica = document.getElementById('btn-economica');
-
-        btnAltaPerformance.addEventListener('click', switchToPerformance);
-        btnEconomica.addEventListener('click', switchToEconomic);
-
-        const phoneNumber = "5582994255946";
-        const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
-        document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+    if (projectIdFromUrl) {
+        projectIdInput.value = projectIdFromUrl;
+        handleSearch(projectIdFromUrl);
+    } else {
+        searchForm.style.display = 'flex';
+        proposalDetailsSection.style.display = 'none';
+        expiredProposalSection.style.display = 'none';
+        proposalHeader.style.display = 'none';
+        mainFooter.style.display = 'block';
     }
+
+    searchButton.addEventListener('click', () => handleSearch(projectIdInput.value.trim()));
+
+    backToSearchBtn.addEventListener('click', () => {
+        proposalDetailsSection.classList.remove('dynamic-spacing');
+        window.location.href = window.location.pathname;
+    });
+
+    proposalHeader.innerHTML = `
+        <div class="header__container">
+            <div class="header__logo"><img src="logo.png" alt="Logo da GDIS"></div>
+            <div class="header__options">
+                <button id="btn-alta-performance" class="option-button active">Premium</button>
+                <button id="btn-economica" class="option-button">Econômica</button>
+            </div>
+        </div>
+        <div id="header-summary" class="header-summary" style="display: none;"></div>`;
+    
+    const btnAltaPerformance = document.getElementById('btn-alta-performance');
+    const btnEconomica = document.getElementById('btn-economica');
+
+    btnAltaPerformance.addEventListener('click', switchToPerformance);
+    btnEconomica.addEventListener('click', switchToEconomic);
+
+    const phoneNumber = "5582994255946";
+    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+
+    // A lógica do IntersectionObserver foi movida para a função criarObservadores,
+    // então não há mais declaração duplicada aqui.
+}
 
     init( );
 });
