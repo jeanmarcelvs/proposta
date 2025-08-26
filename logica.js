@@ -62,31 +62,40 @@ export function processarDadosProposta(dadosBrutos) {
     }
 
     /**
-     * Agrupa dados de financiamento que possuem chaves incrementais.
+     * NOVO: Agrupa todos os dados de financiamento de forma robusta.
      * @param {Array} dados - O array de dados financeiros.
      * @returns {Array} Um array de objetos de planos de financiamento.
      */
     function agruparPlanosDeFinanciamento(dados) {
-        const planos = [];
-        let i = 1;
-        while (true) {
-            const nomeFinanciamento = encontrarItemPorChave(dados, `f_nome_${i}`);
-            const prazoFinanciamento = encontrarItemPorChave(dados, `f_prazo_${i}`);
-            const parcelaFinanciamento = encontrarItemPorChave(dados, `f_parcela_${i}`);
-            
-            // Se não houver dados para o próximo plano, pare.
-            if (parcelaFinanciamento.value === 'N/A') break;
-            
-            const plano = {
-                nome: nomeFinanciamento.value,
-                entrada: encontrarItemPorChave(dados, `f_entrada_${i}`).value,
-                valorTotal: encontrarItemPorChave(dados, `f_valor_${i}`).value,
-                prazo: prazoFinanciamento.value,
-                parcela: parcelaFinanciamento.value,
+        const planosMap = new Map();
+        dados.forEach(dado => {
+            const match = dado.key.match(/^f_(.+)_(\d+)$/);
+            if (match) {
+                const tipo = match[1];
+                const indice = match[2];
+                if (!planosMap.has(indice)) {
+                    planosMap.set(indice, {});
+                }
+                const plano = planosMap.get(indice);
+                plano[tipo] = {
+                    value: dado.formattedValue !== null ? dado.formattedValue : 'N/A',
+                    rawValue: dado.value !== null ? parseFloat(String(dado.value).replace(',', '.')) : null,
+                };
+            }
+        });
+
+        const planos = Array.from(planosMap.keys()).sort((a, b) => a - b).map(indice => {
+            const plano = planosMap.get(indice);
+            return {
+                nome: plano.nome?.value || 'N/A',
+                entrada: plano.entrada?.value || 'N/A',
+                valorTotal: plano.valor?.value || 'N/A',
+                prazo: plano.prazo?.value || 'N/A',
+                parcela: plano.parcela?.value || 'N/A',
+                prazoRawValue: plano.prazo?.rawValue,
+                parcelaRawValue: plano.parcela?.rawValue,
             };
-            planos.push(plano);
-            i++;
-        }
+        });
         return planos;
     }
 
@@ -113,12 +122,15 @@ export function processarDadosProposta(dadosBrutos) {
         const precoEconomico = precoPremium * (1 - fatorReducao);
 
         const planosEconomicos = planosPremium.map(plano => {
-            const parcelaOriginal = parseFloat(String(plano.parcela).replace('.', '').replace(',', '.'));
+            const parcelaOriginal = plano.parcelaRawValue;
+            if (isNaN(parcelaOriginal)) return { ...plano, valorTotal: 'N/A', parcela: 'N/A' };
             const parcelaEconomica = parcelaOriginal * (1 - fatorReducao);
             return {
                 ...plano,
                 valorTotal: precoEconomico.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
                 parcela: parcelaEconomica.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                prazoRawValue: plano.prazoRawValue,
+                parcelaRawValue: parcelaEconomica,
             };
         });
 
@@ -144,7 +156,7 @@ export function processarDadosProposta(dadosBrutos) {
         let menorDiferenca = Infinity;
 
         planos.forEach(plano => {
-            const valorParcela = parseFloat(String(plano.parcela).replace('.', '').replace(',', '.'));
+            const valorParcela = plano.parcelaRawValue;
             if (isNaN(valorParcela)) return;
 
             const diferenca = Math.abs(valorParcela - valorIdealParcela);
@@ -185,6 +197,8 @@ export function processarDadosProposta(dadosBrutos) {
     const geracaoMensal = encontrarItemPorChave(dadosSistema, 'geracao_mensal');
     const precoTotalVenda = encontrarItemPorChave(dadosFinanceiro, 'preco');
     const consumoMedio = encontrarItemPorChave(dadosGerais, 'consumo_medio');
+    
+    const planosFinanciamento = agruparPlanosDeFinanciamento(dadosFinanceiro);
 
     const localizacao = (cidadeCliente !== 'N/A' || estadoCliente !== 'N/A') ?
         [cidadeCliente, estadoCliente].filter(item => item !== 'N/A').join(', ') : 'Localização não disponível';
@@ -209,10 +223,10 @@ export function processarDadosProposta(dadosBrutos) {
         consumoMedio: consumoMedio.value,
         precoTotalVenda: precoTotalVenda.value,
         payback: encontrarItemPorChave(dadosFinanceiro, 'payback').value,
-        planosFinanciamento: agruparPlanosDeFinanciamento(dadosFinanceiro),
+        planosFinanciamento: planosFinanciamento,
 
         // Lógica de Negócio: Calcula a versão Econômica da proposta
-        propostaEconomica: calcularPropostaEconomica(potenciaSistema.rawValue, precoTotalVenda.rawValue, agruparPlanosDeFinanciamento(dadosFinanceiro))
+        propostaEconomica: calcularPropostaEconomica(potenciaSistema.rawValue, precoTotalVenda.rawValue, planosFinanciamento)
     };
 
     // Identifica a parcela de equilíbrio para a proposta Premium
