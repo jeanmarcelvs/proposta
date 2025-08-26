@@ -13,9 +13,11 @@ const propostaApresentacaoContainer = document.getElementById('proposta-apresent
 const cabecalhoProposta = document.getElementById('cabecalho-proposta');
 const mensagemPropostaExpirada = document.getElementById('mensagem-proposta-expirada');
 
+// Seletores dos botões
 const botaoPremium = document.getElementById('botao-premium');
 const botaoEconomica = document.getElementById('botao-economica');
 const botaoVoltar = document.getElementById('botao-voltar');
+const botaoVoltarExpirada = document.getElementById('botao-voltar-expirada'); // NOVO BOTÃO
 
 // Containers para injetar o conteúdo
 const secaoDadosCliente = document.getElementById('secao-dados-cliente');
@@ -213,19 +215,23 @@ function renderizarCabecalhoDinamico(planosPremium, planosEconomica) {
     const novoBotaoPremium = document.getElementById('botao-premium');
     const novoBotaoEconomica = document.getElementById('botao-economica');
 
-    novoBotaoPremium.addEventListener('click', () => {
-        tipoPropostaAtual = 'premium';
-        renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
-        novoBotaoPremium.classList.add('botoes-tipo-proposta__botao--ativo');
-        novoBotaoEconomica.classList.remove('botoes-tipo-proposta__botao--ativo');
-    });
+    if (novoBotaoPremium) {
+        novoBotaoPremium.addEventListener('click', () => {
+            tipoPropostaAtual = 'premium';
+            renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
+            novoBotaoPremium.classList.add('botoes-tipo-proposta__botao--ativo');
+            novoBotaoEconomica.classList.remove('botoes-tipo-proposta__botao--ativo');
+        });
+    }
 
-    novoBotaoEconomica.addEventListener('click', () => {
-        tipoPropostaAtual = 'economica';
-        renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
-        novoBotaoEconomica.classList.add('botoes-tipo-proposta__botao--ativo');
-        novoBotaoPremium.classList.remove('botoes-tipo-proposta__botao--ativo');
-    });
+    if (novoBotaoEconomica) {
+        novoBotaoEconomica.addEventListener('click', () => {
+            tipoPropostaAtual = 'economica';
+            renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
+            novoBotaoEconomica.classList.add('botoes-tipo-proposta__botao--ativo');
+            novoBotaoPremium.classList.remove('botoes-tipo-proposta__botao--ativo');
+        });
+    }
 }
 
 // ######################################################################
@@ -234,14 +240,18 @@ function renderizarCabecalhoDinamico(planosPremium, planosEconomica) {
 document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo(0, 0);
     criarTelaInicial();
-    botaoVoltar.addEventListener('click', () => {
-        alternarVisualizacaoPagina('inicial');
-        // Limpa os containers para evitar lixo de renderizações antigas
-        secaoDadosCliente.innerHTML = '';
-        secaoDadosGerais.innerHTML = '';
-        secaoInstalacao.innerHTML = '';
-        secaoFinanciamento.innerHTML = '';
-        secaoValorTotal.innerHTML = '';
-        secaoValidade.innerHTML = '';
+    
+    // Adicionando um listener genérico para os botões de voltar
+    document.body.addEventListener('click', (event) => {
+        if (event.target.id === 'botao-voltar' || event.target.id === 'botao-voltar-expirada') {
+            alternarVisualizacaoPagina('inicial');
+            // Limpa os containers para evitar lixo de renderizações antigas
+            secaoDadosCliente.innerHTML = '';
+            secaoDadosGerais.innerHTML = '';
+            secaoInstalacao.innerHTML = '';
+            secaoFinanciamento.innerHTML = '';
+            secaoValorTotal.innerHTML = '';
+            secaoValidade.innerHTML = '';
+        }
     });
 });
