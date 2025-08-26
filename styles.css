@@ -1026,199 +1026,33 @@ body.theme-economic .enhanced-button:hover {
     box-shadow: 0 12px 35px rgba(94, 139, 126, 0.35);
 }
 
-/* --- Melhoria do design do painel de pesquisa --- */
-
-/* Estilo para o contêiner principal do card */
-.search-card {
-    /* Mantenha o padding para o espaçamento interno */
-    padding: 2rem; 
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra mais pronunciada e elegante */
-    background-color: var(--card-bg);
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    /* Adiciona uma transição para suavizar possíveis mudanças de estado */
-    transition: all 0.3s ease; 
-}
-
-/* Estilo para o contêiner do logo com o fundo azul */
-.search-card__logo-container {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    margin: -2rem -2rem 1.5rem -2rem;
-    padding: 3rem 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* Efeito fosco (opcional, pode ser ajustado) */
-    position: relative;
-    overflow: hidden; /* Para garantir que o pseudo-elemento não vaze */
-}
-
-/* Adiciona um gradiente sutil de textura para o efeito fosco */
-.search-card__logo-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.05) 100%);
-    opacity: 0.8; /* Ajuste a opacidade para controlar o "fosco" */
-    pointer-events: none; /* Garante que o pseudo-elemento não interfira com interações */
-}
-
-/* Estilo para a logo dentro do contêiner */
-.search-card__logo {
-    max-width: 150px; /* Tamanho da logo */
-}
-
-/* Estilo para o título da tela de pesquisa */
-.search-card__title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 1.5rem;
-    margin-top: 0;
-}
-
-/* Efeito ao passar o mouse sobre qualquer .contact-item */
-.contact-item:hover,
-.contact-item:hover i,
-.contact-item:hover span {
-    color: white !important;
-}
-
-/* ==================================== */
-/* 🎨 Painel de Pesquisa Elegante */
-/* ==================================== */
-
-.search-card {
-    background-color: var(--color-card-bg); /* Fundo branco ou claro */
-    border-radius: 16px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 90%;
-    margin: 4rem auto;
-    padding: 0; /* Remove padding do container principal */
-    overflow: hidden; /* Garante que os cantos arredondados funcionem */
-}
-
-.search-card__logo-container {
-    /* Gradiente sutil e fundo azul elegante */
-    background: linear-gradient(135deg, var(--color-primary) 0%, #0c1a3b 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 3rem 0; /* Espaçamento interno para a logo */
-    position: relative;
-}
-
-.search-card__logo-container img {
-    max-width: 150px;
-    height: auto;
-}
-
-.search-card__content {
-    padding: 2rem;
-    text-align: center;
-}
-
-.search-card__title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--color-text);
-    margin-bottom: 0.5rem;
-}
-
-.search-card__subtitle {
-    font-size: 1rem;
-    color: var(--color-text-light);
-    margin-bottom: 2rem;
-}
-
-.search-card__input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.search-card__input-group .fas {
-    position: absolute;
-    left: 15px;
-    color: var(--color-text-light);
-    font-size: 1.1rem;
-}
-
-#project-id-input {
-    width: 100%;
-    padding: 1rem 1rem 1rem 45px; /* Padding ajustado para o ícone */
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background-color: var(--color-background);
-    color: var(--color-text);
-    font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-#project-id-input:focus {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    outline: none;
-}
-
-.search-card__button {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: white;
-    background-color: var(--color-secondary);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.search-card__button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
-
-.search-card__message {
-    color: #ff4d4f;
-    font-size: 0.9rem;
-    margin-top: 1rem;
-}
-
-/* Garante que o painel fique centralizado verticalmente */
-.screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    box-sizing: border-box;
-}
-
 /* ================================================= */
-/* 🎨 Painel de Pesquisa Elegante e Refinado */
+/* 🎨 PAINEL DE PESQUISA REFORMULADO (design elegante) */
 /* ================================================= */
 
-/* Estilo para o container principal */
+/* Estilo para o contêiner principal do painel */
 .search-card {
-    background-color: var(--color-card-bg);
+    background-color: var(--color-card-bg); /* Fundo do painel */
     border-radius: 16px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     max-width: 500px;
     width: 90%;
     margin: 4rem auto;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden; /* Garante que os cantos arredondados funcionem */
+    position: relative; /* Para posicionar elementos internos */
+    z-index: 2; /* Garante que o painel fique sobre o fundo animado */
+}
+
+/* Efeito de brilho superior */
+.card-shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0, rgba(255, 255, 255, 0.15), transparent 70%);
+    pointer-events: none;
 }
 
 /* Container da logo com fundo em gradiente */
@@ -1233,12 +1067,22 @@ body.theme-economic .enhanced-button:hover {
     border-top-right-radius: 16px;
 }
 
-.search-card__logo {
-    max-width: 150px;
-    height: auto;
+/* Efeito de brilho da logo */
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    height: 150px;
+    background-color: var(--color-secondary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(50px);
+    opacity: 0.3;
+    animation: pulse 4s infinite ease-in-out;
 }
 
-/* Estilo para o conteúdo do painel */
+/* Estilos para o conteúdo e textos */
 .search-card__content {
     padding: 2rem;
     text-align: center;
@@ -1257,11 +1101,37 @@ body.theme-economic .enhanced-button:hover {
     margin-bottom: 2rem;
 }
 
-/* Estilo para o campo de entrada (input) */
+.title-main {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.title-accent {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-secondary);
+}
+
+/* Estilos para o painel de input e botão */
+.search-card__panel {
+    padding: 0 2rem 2rem; /* Espaçamento para o painel */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 #project-id-input {
     width: 100%;
     padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
     border: 1px solid var(--color-border);
     border-radius: 8px;
     background-color: var(--color-background);
@@ -1276,7 +1146,6 @@ body.theme-economic .enhanced-button:hover {
     outline: none;
 }
 
-/* Estilo para o botão de pesquisa */
 .btn--primary {
     width: 100%;
     padding: 1rem;
@@ -1296,19 +1165,77 @@ body.theme-economic .enhanced-button:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
-/* Estilo para a mensagem de erro */
-.search-card__message {
-    color: #ff4d4f;
-    font-size: 0.9rem;
-    margin-top: 1rem;
+/* Outros elementos decorativos */
+.decorative-shapes {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.shape-1 {
+    width: 150px;
+    height: 150px;
+    bottom: -75px;
+    left: -75px;
+}
+.shape-2 {
+    width: 200px;
+    height: 200px;
+    top: -100px;
+    right: -100px;
 }
 
-/* Garante que o painel fique centralizado verticalmente */
-.screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    box-sizing: border-box;
+.search-card__message {
+    color: #ffc107;
+    font-weight: 500;
+    margin-top: 0;
+}
+
+/* Animações de fundo (Ícones Flutuantes) */
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0; /* Garante que fique no fundo */
+    background: linear-gradient(135deg, #f6f9fc, #eef3f7);
+}
+
+/* Correção para os símbolos de fundo */
+.floating-elements {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.float-element {
+    position: absolute;
+    font-size: 2rem;
+    color: rgba(26, 35, 59, 0.1); /* Cor transparente do azul marinho */
+    animation: float 15s infinite ease-in-out;
+}
+.element-1 { top: 10%; left: 20%; animation-delay: 0s; }
+.element-2 { top: 30%; left: 80%; animation-delay: 3s; }
+.element-3 { top: 60%; left: 10%; animation-delay: 6s; }
+.element-4 { top: 80%; left: 50%; animation-delay: 9s; }
+.element-5 { top: 40%; left: 60%; animation-delay: 12s; }
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+    50% { transform: translateY(-20px) rotate(10deg); opacity: 0.5; }
+    100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
