@@ -324,11 +324,11 @@ body.theme-economic .highlight-tag { color: white; }
 a#whatsapp-link { text-decoration: none; color: #8892b0; display: inline-flex; align-items: center; gap: 0.75rem; transition: color 0.3s ease; }
 a#whatsapp-link i { color: var(--color-secondary); transition: color 0.3s ease; }
 a#whatsapp-link:hover {
-    color: var(--color-secondary); /* Texto fica laranja */
+    color: white; /* Cor do texto fica branco */
 }
 
 a#whatsapp-link:hover i {
-    color: white; /* Ícone fica branco */
+    color: white; /* Cor do ícone também fica branco */
 }
 
 .client-header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border); }
@@ -1048,4 +1048,11 @@ body.theme-economic .enhanced-button:hover {
     color: var(--text-color);
     margin-bottom: 1.5rem;
     margin-top: 0;
+}
+
+/* Efeito ao passar o mouse sobre qualquer .contact-item */
+.contact-item:hover,
+.contact-item:hover i,
+.contact-item:hover span {
+    color: white !important;
 }
