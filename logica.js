@@ -137,13 +137,16 @@ export function processarDadosProposta(dadosBrutos) {
     const cidadeCliente = encontrarItemPorChave(dadosCliente, 'cliente_cidade').value;
     const estadoCliente = encontrarItemPorChave(dadosCliente, 'cliente_estado').value;
 
+    // Função auxiliar para converter valores para número, tratando o 'N/A'
+    function converterParaNumero(valor) {
+        return (valor === 'N/A' || valor === undefined) ? 0 : parseFloat(String(valor).replace(',', '.'));
+    }
+
     const propostaPadronizada = {
         // Dados do cliente e datas
         idProjeto: dadosBrutos.id || 'N/A',
-        // CORREÇÃO: Utiliza o valor do JSON para o nome e a localização
         nomeCliente: nomeCliente || 'Nome do cliente não disponível',
         localizacao: `${cidadeCliente}, ${estadoCliente}` || 'Localização não disponível',
-        // CORREÇÃO: Utiliza o 'generatedAt' para a data da proposta e 'expirationDate' para a validade
         dataCriacao: dadosBrutos.generatedAt || 'N/A',
         dataExpiracao: dadosBrutos.expirationDate || 'N/A',
         
@@ -152,7 +155,6 @@ export function processarDadosProposta(dadosBrutos) {
         geracaoMensal: encontrarItemPorChave(dadosSistema, 'geracao_mensal').value,
         inversor: encontrarItemPorCategoria('Inversor'),
         modulos: encontrarItemPorCategoria('Módulo'),
-        // NOVO: Adiciona a informação do tipo de instalação
         tipoInstalacao: encontrarItemPorChave(dadosGerais, 'vc_tipo_de_estrutura').value,
 
         // Dados financeiros
@@ -166,13 +168,15 @@ export function processarDadosProposta(dadosBrutos) {
     };
 
     // Preenche os dados da proposta Econômica
-    const potenciaKw = parseFloat(String(propostaPadronizada.potenciaSistema).replace(',', '.'));
-    const precoPremium = parseFloat(String(propostaPadronizada.precoTotalVenda).replace(',', '.'));
+    // CORREÇÃO: Utiliza a nova função 'converterParaNumero' para evitar NaN
+    const potenciaKw = converterParaNumero(propostaPadronizada.potenciaSistema);
+    const precoPremium = converterParaNumero(propostaPadronizada.precoTotalVenda);
     const planosPremium = propostaPadronizada.planosFinanciamento;
     propostaPadronizada.propostaEconomica = calcularPropostaEconomica(potenciaKw, precoPremium, planosPremium);
 
     // Identifica a parcela de equilíbrio para a proposta Premium
-    const consumoMedioNum = parseFloat(String(propostaPadronizada.consumoMedio).replace(',', '.'));
+    // CORREÇÃO: Utiliza a nova função 'converterParaNumero'
+    const consumoMedioNum = converterParaNumero(propostaPadronizada.consumoMedio);
     propostaPadronizada.parcelaEquilibrioPremium = encontrarParcelaEquilibrio(planosPremium, consumoMedioNum);
 
     // Identifica a parcela de equilíbrio para a proposta Econômica
@@ -180,7 +184,8 @@ export function processarDadosProposta(dadosBrutos) {
     propostaPadronizada.propostaEconomica.parcelaEquilibrio = encontrarParcelaEquilibrio(planosEconomica, consumoMedioNum);
 
     // Adiciona o valor ideal da conta ao objeto da proposta
-    propostaPadronizada.valorContaIdeal = calcularValorContaIdeal(propostaPadronizada.geracaoMensal);
+    // CORREÇÃO: Utiliza a nova função 'converterParaNumero'
+    propostaPadronizada.valorContaIdeal = calcularValorContaIdeal(converterParaNumero(propostaPadronizada.geracaoMensal));
     
     // Adiciona o valor ideal da conta também à proposta econômica, pois não muda
     propostaPadronizada.propostaEconomica.valorContaIdeal = propostaPadronizada.valorContaIdeal;
