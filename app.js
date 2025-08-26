@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
     let summaryWasShown = false;
     const DESCRIPTION_LIMIT = 100;
-    let lastEventTime = 0; // Adicione esta linha para rastrear o último registro
+    let lastEventTime = 0;
 
     // --- Mapa de Logos ---
     const logoMap = {
@@ -196,7 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
             propostaOriginal = data.proposta_premium;
             propostaEconomica = data.proposta_economica;
 
-            if (propostaOriginal && propostaEconomica) {
+            // Apenas exibe a tela de expirada se a API retornar uma data de expiração
+            // que já passou. O erro é capturado no catch.
+            const today = new Date();
+            const expirationDate = new Date(propostaOriginal.expirationDate);
+
+            if (expirationDate < today) {
+                searchForm.style.display = 'none';
+                expiredProposalSection.style.display = 'flex';
+                mainFooter.style.display = 'block';
+            } else if (propostaOriginal && propostaEconomica) {
                 renderizarProposta(propostaOriginal);
                 proposalHeader.style.display = 'block';
                 searchForm.style.display = 'none';
@@ -205,14 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainFooter.style.display = 'block';
                 document.body.classList.remove('theme-economic');
             } else {
-                searchForm.style.display = 'none';
-                expiredProposalSection.style.display = 'flex';
-                mainFooter.style.display = 'block';
+                 searchForm.style.display = 'none';
+                 expiredProposalSection.style.display = 'flex';
+                 mainFooter.style.display = 'block';
             }
         } catch (error) {
             console.error('Erro na busca:', error);
-            searchMessage.textContent = 'Erro ao buscar a proposta. Tente novamente.';
-            searchButton.disabled = false;
             searchForm.style.display = 'none';
             expiredProposalSection.style.display = 'flex';
             mainFooter.style.display = 'block';
