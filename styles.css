@@ -443,18 +443,11 @@ body.theme-economic .summary-card:first-child { border-right-color: var(--color-
 /* --- ESTILOS PARA A SEÇÃO DE AÇÕES (BOTÃO NOVA CONSULTA) --- */
 
 .proposal-actions {
-    /* 1. Alinha o conteúdo (o botão) à direita */
     display: flex;
     justify-content: flex-end;
-    
-    /* 2. Adiciona o espaçamento correto acima e abaixo */
-    margin-top: 2rem; /* Aumenta o espaço DEPOIS da seção de validade */
-    margin-bottom: 2rem; /* Diminui o espaço ANTES do rodapé */
-    
-    /* 3. Remove o padding padrão para não interferir no alinhamento */
+    margin-top: 2rem;
+    margin-bottom: 0; /* Zera o espaço abaixo do botão */
     padding: 0;
-    
-    /* 4. Remove qualquer estilo de fundo ou borda que possa ter herdado */
     background-color: transparent;
     box-shadow: none;
     border: none;

@@ -156,11 +156,11 @@ function renderizarEquipamentos(dados, tipoProposta) {
         ];
 
         const itensSimples = [
-    { icon: 'fa-check-circle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação padrão em alumínio.' },
-    { icon: 'fa-check-circle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento solar padrão para sistemas residenciais.' },
-    { icon: 'fa-check-circle', title: 'Proteção Essencial', description: 'Utiliza dispositivos de proteção essenciais para a segurança do sistema.' },
-    { icon: 'fa-check-circle', title: 'Conectores Padrão', description: 'Utiliza conectores padrão do tipo MC4.' },
-    { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'Mantém o ramal de conexão existente, conforme padrão da concessionária de energia.' },
+    { icon: 'fa-check-circle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação simples em alumínio.' },
+    { icon: 'fa-check-circle', title: 'Cabeamento Simples', description: 'Instalação com cabeamento solar simples para sistemas residenciais.' },
+    { icon: 'fa-check-circle', title: 'Proteção Simples', description: 'Utiliza dispositivos de proteção simples para a segurança do sistema.' },
+    { icon: 'fa-check-circle', title: 'Conectores Simples', description: 'Utiliza conectores simples do tipo MC4.' },
+    { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'Mantém o ramal de conexão existente, de responsabilidade da concessionária.' },
 ];
 
         if (tipoProposta === 'economica') {
@@ -355,7 +355,15 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
             descriptionParts.push(`Viu Preço E: ${trackingStatus.viewedEconomic.split(', ')[1]}`);
         }
 
-        let newDescription = descriptionParts.join(' | ');
+        let newDescription = descriptionParts.map(part => {
+    // Ex: Transforma "Viu Preço P: 25/08/2025, 10:30:00" em "Viu P: 25/08 10:30"
+    const [tipo, dataHora] = part.split(': ');
+    const [data, hora] = dataHora.split(', ');
+    const dataCurta = data.substring(0, 5); // Pega DD/MM
+    const horaCurta = hora.substring(0, 5); // Pega HH:MM
+    return `${tipo.replace('Preço ', '')}: ${dataCurta} ${horaCurta}`;
+}).join(' | ');
+
         if (newDescription.length > DESCRIPTION_LIMIT) {
             newDescription = newDescription.substring(0, DESCRIPTION_LIMIT);
         }
