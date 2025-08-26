@@ -62,12 +62,14 @@ export function processarDadosProposta(dadosBrutos) {
     }
 
     /**
-     * NOVO: Agrupa todos os dados de financiamento de forma robusta.
+     * CORREÇÃO: Agrupa todos os dados de financiamento de forma robusta.
      * @param {Array} dados - O array de dados financeiros.
      * @returns {Array} Um array de objetos de planos de financiamento.
      */
     function agruparPlanosDeFinanciamento(dados) {
         const planosMap = new Map();
+        
+        // Primeiro, popula o mapa com todos os dados de financiamento
         dados.forEach(dado => {
             const match = dado.key.match(/^f_(.+)_(\d+)$/);
             if (match) {
@@ -84,18 +86,22 @@ export function processarDadosProposta(dadosBrutos) {
             }
         });
 
-        const planos = Array.from(planosMap.keys()).sort((a, b) => a - b).map(indice => {
-            const plano = planosMap.get(indice);
-            return {
-                nome: plano.nome?.value || 'N/A',
-                entrada: plano.entrada?.value || 'N/A',
-                valorTotal: plano.valor?.value || 'N/A',
-                prazo: plano.prazo?.value || 'N/A',
-                parcela: plano.parcela?.value || 'N/A',
-                prazoRawValue: plano.prazo?.rawValue,
-                parcelaRawValue: plano.parcela?.rawValue,
-            };
-        });
+        // Converte o mapa em um array, ordenando pelos índices
+        const planos = Array.from(planosMap.keys())
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+            .map(indice => {
+                const plano = planosMap.get(indice);
+                return {
+                    nome: plano.nome?.value || 'N/A',
+                    entrada: plano.entrada?.value || 'N/A',
+                    valorTotal: plano.valor?.value || 'N/A',
+                    prazo: plano.prazo?.value || 'N/A',
+                    parcela: plano.parcela?.value || 'N/A',
+                    prazoRawValue: plano.prazo?.rawValue,
+                    parcelaRawValue: plano.parcela?.rawValue,
+                };
+            });
+            
         return planos;
     }
 
