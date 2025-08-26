@@ -18,20 +18,24 @@
     --font-sans: 'Inter', sans-serif;
 
     /* Variáveis de cores para o tema econômico */
-    --economic-color-primary: #2f5d62;
-    --economic-color-secondary: #5e8b7e;
-    --economic-color-text: #f0f4f8; /* Branco fosco */
-    --economic-color-text-light: #94a3b8; /* Cinza claro */
+    /* NOVA PALETA ECONÔMICA CLARA E MODERNA */
+    --economic-color-primary: #4a5568; /* Cinza-azulado escuro */
+    --economic-color-secondary: #63b3ed; /* Azul celeste moderno */
+    --economic-color-background: #f0f4f8; /* Fundo azul claro */
+    --economic-color-card-bg: #ffffff; /* Branco para os cartões */
+    --economic-color-text: #2d3748; /* Texto cinza escuro */
+    --economic-color-text-light: #718096; /* Texto secundário cinza claro */
+    --economic-color-border: #e2e8f0; /* Borda azul clara */
 }
 
 body.theme-economic {
-    --color-primary: #2f5d62;
-    --color-secondary: #5e8b7e;
-    --color-background: #0d1222;
-    --color-card-bg: #1a233b;
-    --color-text: #f0f4f8;
-    --color-text-light: #94a3b8;
-    --color-border: #334155;
+    --color-primary: var(--economic-color-primary);
+    --color-secondary: var(--economic-color-secondary);
+    --color-background: var(--economic-color-background);
+    --color-card-bg: var(--economic-color-card-bg);
+    --color-text: var(--economic-color-text);
+    --color-text-light: var(--economic-color-text-light);
+    --color-border: var(--economic-color-border);
 }
 
 /* 3. Estilos Globais com a Nova Fonte */
@@ -44,7 +48,8 @@ body {
     background-color: var(--color-background);
     color: var(--color-text);
     transition: background-color 0.4s ease;
-    -webkit-user-select: none; user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
     overflow-x: hidden;
 }
 
@@ -139,17 +144,17 @@ body.theme-economic .btn--primary {
 }
 
 body.theme-economic .header {
-    background-color: #2f5d62;
+    background-color: var(--economic-color-primary);
 }
 
 body.theme-economic .header__options {
-    background-color: color-mix(in srgb, #2f5d62, black 15%);
+    background-color: color-mix(in srgb, var(--economic-color-primary), black 15%);
     border: none;
 }
 
 body.theme-economic .option-button.active {
     background-color: #f6f9fc;
-    color: #2f5d62;
+    color: var(--economic-color-primary);
 }
 
 .header-summary {
@@ -458,7 +463,7 @@ body.theme-economic .option-button.active {
 }
 
 body.theme-economic .proposal-details {
-    background-color: var(--color-card-bg);
+    background-color: var(--economic-color-card-bg);
 }
 
 .proposal-header {
@@ -581,6 +586,10 @@ body.theme-economic .proposal-details {
     transform-style: preserve-3d;
     position: relative;
     min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .comparison-card.is-in-view .comparison-card__flipper {
@@ -608,10 +617,10 @@ body.theme-economic .proposal-details {
     line-height: 1.6;
 }
 
-.comparison-card__icon {
-    font-size: 3rem;
+.comparison-card__logo {
+    max-width: 100px;
+    height: auto;
     margin-bottom: 1rem;
-    color: var(--color-secondary);
 }
 
 .comparison-card h3 {
@@ -719,7 +728,7 @@ body.theme-economic .proposal-details {
     color: #d1d5db;
     padding: 2rem;
     text-align: center;
-    margin-top: 1.5rem; /* VALOR REDUZIDO */
+    margin-top: 1.5rem;
 }
 .footer-container {
     display: flex;
