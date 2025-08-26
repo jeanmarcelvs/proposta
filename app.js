@@ -1,4 +1,4 @@
-// --- ARQUIVO app.js COMPLETO E CORRIGIDO ---
+// --- ARQUIVO app.js COMPLETO E CORRIGIDO -----
 
 import { consultarProposta, atualizarDescricao } from "./api.js";
 
