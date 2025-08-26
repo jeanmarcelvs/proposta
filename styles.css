@@ -212,8 +212,40 @@ body.theme-economic .financing-option { background-color: white; }
 .alternative-payment { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); color: #d1d5db; }
 body.theme-economic .investment-section { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); }
 
-.validity-banner { text-align: center; padding: 1rem; background-color: var(--color-card-bg); border-left: 5px solid var(--color-secondary); }
-.validity-banner i { color: var(--color-secondary); margin-right: 0.5rem; }
+/* --- ESTILOS PARA A SEÇÃO DE VALIDADE DA PROPOSTA --- */
+
+.validity-banner {
+    display: flex; /* Permite alinhamento do ícone e do texto */
+    align-items: center; /* Centraliza os itens verticalmente */
+    gap: 1.5rem; /* Adiciona um bom espaçamento entre o ícone e o texto */
+    margin: 2rem 0; /* Espaçamento vertical para separar a seção */
+    padding: 1.5rem; /* Preenchimento interno para o conteúdo não ficar "colado" nas bordas */
+    background-color: var(--card-bg-light); /* Fundo claro para o card */
+    border: 1px solid var(--border-color); /* Borda sutil para dar acabamento */
+    border-radius: 12px; /* Bordas arredondadas para um visual moderno */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra suave para profundidade */
+}
+
+/* Estilo para o ícone de informação */
+.validity-banner .fas {
+    font-size: 2rem; /* Aumenta o tamanho do ícone */
+    color: var(--primary-color); /* Usa a cor principal para o ícone */
+    min-width: 2rem; /* Garante que o ícone mantenha o espaçamento, mesmo se for pequeno */
+}
+
+/* Estilo para o texto de validade */
+.validity-banner p {
+    margin: 0; /* Remove a margem padrão do parágrafo */
+    font-size: 1rem;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+/* Garante que o texto em negrito (strong) se destaque */
+.validity-banner p strong {
+    font-weight: 700;
+    color: var(--accent-color);
+}
 
 .footer {
     background-color: var(--color-primary);
@@ -494,11 +526,33 @@ body.theme-economic .summary-card:first-child { border-right-color: var(--color-
     display: flex;
     justify-content: flex-end;
     margin-top: 2rem;
-    margin-bottom: 0; /* Zera o espaço abaixo do botão */
+    margin-bottom: 2rem; /* Define a mesma margem para o rodapé */
     padding: 0;
     background-color: transparent;
     box-shadow: none;
     border: none;
+}
+
+.nova-consulta-btn {
+    /* Estilo do botão base */
+    background-color: var(--primary-color); /* Usa a cor principal da sua paleta */
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: 8px; /* Bordas levemente arredondadas */
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave para profundidade */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+/* Efeito de Hover/Ativo para interação */
+.nova-consulta-btn:hover {
+    background-color: var(--secondary-color); /* Muda para a cor secundária ao passar o mouse */
+    transform: translateY(-2px); /* Eleva o botão sutilmente */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
 }
 
 /* ========================================
