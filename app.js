@@ -527,6 +527,13 @@ const investmentSection = document.querySelector('.investment-section');
     proposalDetailsSection.classList.remove('dynamic-spacing');
     window.location.href = window.location.pathname;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const phoneNumber = "5582994255946";
+    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
+    const whatsappLink = document.getElementById('whatsapp-link');
+    if (whatsappLink) {
+        whatsappLink.href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+    }
 });
 
     proposalHeader.innerHTML = `
@@ -537,9 +544,7 @@ const investmentSection = document.querySelector('.investment-section');
     btnAltaPerformance.addEventListener('click', switchToPerformance);
     btnEconomica.addEventListener('click', switchToEconomic);
 
-    const phoneNumber = "5582994255946";
-    const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
-    document.getElementById('whatsapp-link').href = `https://wa.me/${phoneNumber}?text=${whatsappMessage}`;
+    
 
     // A lógica do IntersectionObserver foi movida para a função criarObservadores,
     // então não há mais declaração duplicada aqui.
