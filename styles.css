@@ -95,6 +95,7 @@ body.theme-economic .option-button.active { background-color: #f6f9fc; color: #2
     display: block;
     margin: 0 auto;
 }
+
 /* 3. Estilos para os textos, garantindo que usem as cores do tema */
 .search-card__title {
     font-size: 1.8rem;

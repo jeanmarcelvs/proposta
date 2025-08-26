@@ -13,6 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchButton = document.getElementById('search-button');
     const mainFooter = document.getElementById('main-footer');
     const backToSearchBtn = document.getElementById('back-to-search-btn');
+if (backToSearchBtn) {
+        backToSearchBtn.addEventListener('click', () => {
+            expiredProposalSection.style.display = 'none';
+            searchForm.style.display = 'flex';
+        });
+    }
     const searchMessage = document.getElementById('search-message');
 
     // --- Variáveis de Estado ---
