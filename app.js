@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof potencia !== 'number') return potencia;
         return `${(potencia / 1000).toFixed(2).replace('.', ',')} kWp`;
     }
-    
+
     function findItemByCategory(data, category) {
         const item = data.pricingTable.find(item => item.category === category);
         if (!item) {
@@ -66,17 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
             descricao: `Detalhes do produto ${item.item}.`
         };
     }
-    
+
     function renderizarProposta(proposta) {
         console.log("Renderizando proposta com os dados:", proposta);
-        
+
         const logoPath = 'logo.png';
         let htmlContent = `
             <div class="proposal-header">
                 <h1>Proposta de Energia Solar</h1>
                 <p>Detalhes técnicos, benefícios e valores para o seu projeto.</p>
             </div>
-            
+
             <section class="details-grid fadeIn">
                 <div class="details-card fadeInUp" style="animation-delay: 0.2s;">
                     <h2>Resumo do Projeto</h2>
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </section>
-        
+
             <section class="accordion-container fadeIn" style="animation-delay: 0.7s;">
                 <h2 class="section-title slideInLeft">Plano de Financiamento</h2>
                 <div class="accordion-item fadeInUp" style="animation-delay: 0.8s;">
@@ -141,12 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </section>
-        
+
             <div style="text-align: center; margin-top: 2rem;">
                 <button id="back-to-search-btn" class="btn btn--primary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
             </div>
         `;
-        
+
         proposalDetailsSection.innerHTML = htmlContent;
 
         document.querySelectorAll('.comparison-card').forEach(card => {
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-        
+
         document.getElementById('back-to-search-btn').addEventListener('click', () => {
             window.location.href = window.location.pathname;
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -185,10 +185,16 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const data = await consultarProposta(projectId);
             console.log("Dados recebidos da API:", data);
-            
+
+            // Dados fixos para o cliente conforme o JSON, mas pode ser dinâmico no futuro.
+            const cliente = {
+                nome: data.name,
+                localizacao: data.project.name
+            };
+
             const proposta = {
-                nome_cliente: data.name,
-                localizacao: data.project.name,
+                nome_cliente: cliente.nome,
+                localizacao: cliente.localizacao,
                 expirationDate: data.expirationDate,
                 potencia_sistema: 12000,
                 geracao_media_mensal: 1600,
@@ -203,9 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     valor_parcela: 1000
                 }
             };
-            
+
             console.log("Dados da proposta mapeados:", proposta);
-            
+
             const today = new Date();
             const expirationDate = new Date(proposta.expirationDate);
 
