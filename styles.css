@@ -433,9 +433,9 @@ body.theme-economic .option-button.active {
     background: linear-gradient(135deg, color-mix(in srgb, var(--color-secondary), transparent 80%), transparent);
 }
 
-/* OUTRAS SEÇÕES (INTACTAS) */
-
-/* 5. Estilos para o painel de proposta */
+/* ================================================= */
+/* 5. ESTILOS DO PAINEL DE PROPOSTA (REVISADO) */
+/* ================================================= */
 #proposal-section {
     display: none;
     min-height: 100vh;
@@ -513,6 +513,7 @@ body.theme-economic .proposal-details {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
+    margin-bottom: 2rem; /* ADICIONADO: Espaçamento entre as seções */
 }
 
 .details-card {
@@ -562,7 +563,8 @@ body.theme-economic .proposal-details {
 .installation-comparison {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
+    gap: 1.5rem; /* Ajustado */
+    margin-bottom: 2rem; /* ADICIONADO: Espaçamento entre as seções */
 }
 
 .comparison-card {
@@ -618,7 +620,7 @@ body.theme-economic .proposal-details {
 }
 
 .comparison-card__logo {
-    max-width: 100px;
+    max-width: 100px; /* CORRIGIDO: Redimensiona as logos de forma consistente */
     height: auto;
     margin-bottom: 1rem;
 }
@@ -672,6 +674,10 @@ body.theme-economic .proposal-details {
     border-bottom: 2px solid var(--color-secondary);
     padding-bottom: 0.5rem;
     display: inline-block;
+}
+
+.accordion-container {
+    margin-bottom: 2rem; /* ADICIONADO: Espaçamento entre as seções */
 }
 
 .accordion-item {

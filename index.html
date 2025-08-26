@@ -23,167 +23,42 @@
     </header>
 
     <main id="search-form" class="screen">
-    <!-- Fundo animado com elementos flutuantes -->
     <div class="animated-background">
         <div class="floating-elements">
-            <div class="float-element element-1"><i class="fas fa-solar-panel"></i></div>
-            <div class="float-element element-2"><i class="fas fa-sun"></i></div>
-            <div class="float-element element-3"><i class="fas fa-leaf"></i></div>
-            <div class="float-element element-4"><i class="fas fa-bolt"></i></div>
-            <div class="float-element element-5"><i class="fas fa-home"></i></div>
+            <i class="fas fa-bolt float-element element-1"></i>
+            <i class="fas fa-solar-panel float-element element-2"></i>
+            <i class="fas fa-leaf float-element element-3"></i>
+            <i class="fas fa-industry float-element element-4"></i>
+            <i class="fas fa-plug float-element element-5"></i>
         </div>
     </div>
-
-    <div class="search-card enhanced-card">
-        <!-- Efeito de brilho superior -->
+    <div class="search-card">
         <div class="card-shine"></div>
-        
-        <!-- Logo com design aprimorado -->
-        <div class="search-card__logo-container enhanced-logo">
+        <div class="search-card__logo-container">
             <div class="logo-glow"></div>
             <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
         </div>
-        
-        <!-- Título redesenhado -->
-        <h1 class="search-card__title enhanced-title">
-            <span class="title-main">Acesse sua Proposta</span>
-            <span class="title-accent">Personalizada</span>
-        </h1>
-        
-                
-        <!-- Painel de input redesenhado -->
-        <div class="search-card__panel enhanced-panel">
-            <div class="input-container">
-                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-                <div class="input-highlight"></div>
+        <div class="search-card__panel">
+            <div class="search-card__title">
+                <span class="title-main">Proposta de Energia</span>
+                <span class="title-accent">Solar GDIS</span>
             </div>
-            <button type="button" id="search-button" class="btn btn--primary enhanced-button">
-                <span class="button-content">
-                    <i class="fas fa-search"></i> 
-                    Visualizar Proposta
-                </span>
-                <div class="button-effect"></div>
+            <p class="search-card__subtitle">Digite o ID da sua proposta para visualizá-la.</p>
+            <div class="input-container">
+                <input type="text" id="project-id" placeholder="ID da Proposta" maxlength="15">
+                <p id="search-message" class="search-card__message"></p>
+            </div>
+            <button id="search-button" class="btn btn--primary">
+                <i class="fas fa-search"></i>
+                Buscar Proposta
             </button>
-            <div id="search-message" class="search-card__message"></div>
-        </div>
-
-        <!-- Elementos decorativos -->
-        <div class="decorative-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
         </div>
     </div>
+    </main>
 
-    <!-- Informações da empresa -->
-    <div class="company-stats">
-        <div class="stat-item">
-            <i class="fas fa-handshake"></i>
-            <span>Consultoria Especializada</span>
-        </div>
-        <div class="stat-item">
-            <i class="fas fa-award"></i>
-            <span>Certificação INMETRO</span>
-        </div>
-        <div class="stat-item">
-            <i class="fas fa-award"></i>
-            <span>Certificação HUAWEI</span>
-        </div>
-    </div>
-</main>
-
-
-    <main id="proposal-details" class="screen proposal-details" style="display: none;">
-        <div class="proposal-container">
-            <section class="proposal-section">
-                <div class="client-header">
-                    <p class="client-header__subtitle"><i class="fas fa-user"></i> Proposta para</p>
-                    <h2 id="cliente-nome" class="client-header__title"></h2>
-                </div>
-                <div class="section-content">
-                    <p><strong>Localidade:</strong> <span id="cliente-cidade-uf"></span></p>
-                    <p><strong>Data:</strong> <span id="data-proposta"></span></p>
-                </div>
-            </section>
-
-            <!-- SUBSTITUA A SEÇÃO ANTIGA "Resumo de Geração" POR ESTA -->
-<section class="proposal-section">
-    <h3 class="section-title"><i class="fas fa-solar-panel"></i> Dados Gerais do Sistema</h3>
-    <div class="section-content-grid">
-        <div class="metric-box">
-            <span class="metric-label">Geração Mensal Média</span>
-            <span id="geracao-mensal" class="metric-value"></span>
-        </div>
-        <div class="metric-box">
-            <span class="metric-label">Potência do Sistema</span>
-            <span id="potencia-sistema" class="metric-value"></span>
-        </div>
-        <div class="metric-box">
-            <span class="metric-label">Tipo de Instalação</span>
-            <span id="tipo-instalacao" class="metric-value"></span>
-        </div>
-    </div>
-    <div class="highlight-footnote-wrapper">
-        <p id="conta-energia-estimada" class="highlight-footnote"></p>
-    </div>
-</section>
-
-
-            <section class="proposal-section">
-                <h3 id="equipment-title" class="section-title"></h3>
-                <div id="equipment-container" class="equipment-showcase">
-                    </div>
-            </section>
-
-            <section class="proposal-section">
-                <h3 id="installation-title" class="section-title"></h3>
-                <div id="installation-comparison-container" class="installation-comparison">
-                    </div>
-            </section>
-
-            <!-- DENTRO DE index.html, SUBSTITUA A SEÇÃO ANTIGA -->
-
-<section id="financing-section" class="proposal-section">
-    <h3 class="section-title"><i class="fas fa-handshake"></i> Simulação de Financiamento</h3>
-    
-    <div id="financing-options" class="financing-grid">
-        <!-- As opções de financiamento serão geradas aqui pelo app.js -->
-    </div>
-    
-    <!-- NOVO: Aviso com design refinado -->
-    <div class="financing-disclaimer">
-        <i class="fas fa-info-circle"></i>
-        <p>
-            <strong>Aviso:</strong> Esta é uma simulação e os valores podem variar. A aprovação e as condições finais dependem de uma análise de crédito detalhada, que considera fatores como o mercado financeiro, a situação do CPF/CNPJ e o score de crédito do cliente.
-        </p>
-    </div>
-</section>
-
-<section class="proposal-section investment-section">
-    <h3 class="section-title"><i class="fas fa-wallet"></i> Seu Investimento</h3>
-    <div class="investment-box">
-        <span class="investment-label">Valor Total do Projeto</span>
-        <span id="investimento-total" class="investment-value"></span>
-        <div class="payment-method">
-            <span class="payment-tag">À VISTA</span>
-        </div>
-    </div>
-    <div class="alternative-payment">
-        <i class="fas fa-credit-card"></i>
-        <span>Consulte também as condições para <strong>Cartão de Crédito</strong>.</span>
-    </div>
-</section>
-
-<!-- 2. SEÇÃO DE VALIDADE DA PROPOSTA -->
-<div class="validity-banner">
-    <i class="fas fa-info-circle"></i>
-    <p id="proposal-validity"></p>
-</div>
-
-            
-            <section class="proposal-actions">
-                <button id="back-to-search-btn" class="btn btn--secondary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
-            </section>
-        </div>
+    <main id="proposal-section">
+        <div id="proposal-details" class="screen">
+            </div>
     </main>
 
     <main id="expired-proposal-section" class="screen" style="display: none;">
@@ -211,12 +86,11 @@
     </div>
 </div>
             <div class="footer-social">
-    <a href="https://www.instagram.com/gdis.solar" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.instagram.com/gdis_solar/" target="_blank"><i class="fab fa-instagram"></i></a>
 </div>
         </div>
     </footer>
-    
-    <script type="module" src="api.js"></script>
-    <script type="module" src="app.js"></script>
+    <script src="app.js" type="module"></script>
+    <script src="api.js" type="module"></script>
 </body>
 </html>
