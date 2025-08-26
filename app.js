@@ -156,12 +156,12 @@ function renderizarEquipamentos(dados, tipoProposta) {
         ];
 
         const itensSimples = [
-            { icon: 'fa-exclamation-triangle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação em alumínio simples. <em>(A versão Premium oferece tratamento anticorrosivo superior para maior durabilidade).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Cabeamento Simples', description: 'Instalação com cabeamento simples. <em>(A versão Premium possui dupla isolação para proteção extra contra falhas).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Proteção Simples', description: 'A proteção do sistema dependerá das proteções internas da propriedade do cliente, se existir. <em>(A versão Premium inclui Sistema de Proteção Completo para proteger todos os seus equipamentos).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Conectores Simples', description: 'Utiliza conectores simples. <em>(A versão Premium usa conectores suíços que evitam perdas e superaquecimento, os quais são mais recomendados).</em>' },
-            { icon: 'fa-exclamation-triangle', title: 'Ramal da Concessionária', description: 'Mantém o cabo antigo de responsabilidade da concessionária, geralmente de alumínio e já fora dos padrões atuais, que pode apresentar riscos de superaquecimento a longo prazo.' },
-        ];
+    { icon: 'fa-check-circle', title: 'Estruturas Simples', description: 'Utiliza estruturas de fixação padrão em alumínio.' },
+    { icon: 'fa-check-circle', title: 'Cabeamento Padrão', description: 'Instalação com cabeamento solar padrão para sistemas residenciais.' },
+    { icon: 'fa-check-circle', title: 'Proteção Essencial', description: 'Utiliza dispositivos de proteção essenciais para a segurança do sistema.' },
+    { icon: 'fa-check-circle', title: 'Conectores Padrão', description: 'Utiliza conectores padrão do tipo MC4.' },
+    { icon: 'fa-check-circle', title: 'Ramal da Concessionária', description: 'Mantém o ramal de conexão existente, conforme padrão da concessionária de energia.' },
+];
 
         if (tipoProposta === 'economica') {
             title = '<i class="fas fa-tools"></i> Padrão de Instalação';
