@@ -23,22 +23,94 @@
     </header>
 
     <main id="search-form" class="screen">
-        <div class="search-card">
-    <!-- NOVO: Contêiner para a logo com fundo escuro -->
-    <div class="search-card__logo-container">
-        <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+    <!-- Fundo animado com elementos flutuantes -->
+    <div class="animated-background">
+        <div class="floating-elements">
+            <div class="float-element element-1"><i class="fas fa-solar-panel"></i></div>
+            <div class="float-element element-2"><i class="fas fa-sun"></i></div>
+            <div class="float-element element-3"><i class="fas fa-leaf"></i></div>
+            <div class="float-element element-4"><i class="fas fa-bolt"></i></div>
+            <div class="float-element element-5"><i class="fas fa-home"></i></div>
+        </div>
     </div>
-    
-    <h1 class="search-card__title">Acesse sua Proposta Personalizada</h1>
-    <p class="search-card__subtitle">Digite o ID do projeto para ver os detalhes da sua oferta.</p>
-    
-    <div class="search-card__panel">
-        <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
-        <button type="button" id="search-button" class="btn btn--primary"><i class="fas fa-arrow-right"></i> Visualizar Proposta</button>
-        <div id="search-message" class="search-card__message"></div>
+
+    <div class="search-card enhanced-card">
+        <!-- Efeito de brilho superior -->
+        <div class="card-shine"></div>
+        
+        <!-- Logo com design aprimorado -->
+        <div class="search-card__logo-container enhanced-logo">
+            <div class="logo-glow"></div>
+            <img src="logo.png" alt="Logo da GDIS" class="search-card__logo">
+        </div>
+        
+        <!-- Título redesenhado -->
+        <h1 class="search-card__title enhanced-title">
+            <span class="title-main">Acesse sua Proposta</span>
+            <span class="title-accent">Personalizada</span>
+        </h1>
+        
+        <!-- Subtítulo melhorado -->
+        <p class="search-card__subtitle enhanced-subtitle">
+            Digite o ID do projeto para descobrir todos os detalhes da sua solução em energia solar
+        </p>
+        
+        <!-- Badges de confiança -->
+        <div class="trust-badges">
+            <div class="badge">
+                <i class="fas fa-shield-check"></i>
+                <span>Seguro</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-clock"></i>
+                <span>Rápido</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-chart-line"></i>
+                <span>Detalhado</span>
+            </div>
+        </div>
+        
+        <!-- Painel de input redesenhado -->
+        <div class="search-card__panel enhanced-panel">
+            <div class="input-container">
+                <input type="text" id="project-id" placeholder="ID do Projeto" maxlength="6" required>
+                <div class="input-highlight"></div>
+            </div>
+            <button type="button" id="search-button" class="btn btn--primary enhanced-button">
+                <span class="button-content">
+                    <i class="fas fa-search"></i> 
+                    Visualizar Proposta
+                </span>
+                <div class="button-effect"></div>
+            </button>
+            <div id="search-message" class="search-card__message"></div>
+        </div>
+
+        <!-- Elementos decorativos -->
+        <div class="decorative-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
     </div>
-</div>
-    </main>
+
+    <!-- Informações da empresa -->
+    <div class="company-stats">
+        <div class="stat-item">
+            <i class="fas fa-users"></i>
+            <span>+1000 famílias atendidas</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-award"></i>
+            <span>Certificação INMETRO</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-handshake"></i>
+            <span>Garantia de 25 anos</span>
+        </div>
+    </div>
+</main>
+
 
     <main id="proposal-details" class="screen proposal-details" style="display: none;">
         <div class="proposal-container">
