@@ -336,47 +336,44 @@ function renderizarProposta(dados, tipoProposta = 'performance') {
     }
 
     // --- LÓGICA DE TRACKING E ANIMAÇÃO ---
-    function registrarEvento(projectId, eventType) {
-        const timestamp = getTimestamp();
-        
-        if (eventType === 'viewedPerformance') {
-            trackingStatus.viewedPerformance = timestamp;
-        } else if (eventType === 'viewedEconomic') {
-            trackingStatus.viewedEconomic = timestamp;
-        } else {
-            return; 
-        }
+    // Registra eventos específicos (e.g., visualizações de propostas)
+async function registrarEvento(projectId, eventType) {
+    let trackingStatus = JSON.parse(localStorage.getItem('trackingStatus')) || {};
+    trackingStatus[eventType] = new Date().toLocaleString('pt-BR');
+    localStorage.setItem('trackingStatus', JSON.stringify(trackingStatus));
 
-        let descriptionParts = [];
-        if (trackingStatus.viewedPerformance) {
-            descriptionParts.push(`Viu Preço P: ${trackingStatus.viewedPerformance.split(', ')[1]}`);
-        }
-        if (trackingStatus.viewedEconomic) {
-            descriptionParts.push(`Viu Preço E: ${trackingStatus.viewedEconomic.split(', ')[1]}`);
-        }
-
-        let newDescription = descriptionParts.map(part => {
-    // Ex: Transforma "Viu Preço P: 25/08/2025, 10:30:00" em "Viu P: 25/08 10:30"
-    const [tipo, dataHora] = part.split(': ');
-    const [data, hora] = dataHora.split(', ');
-    const dataCurta = data.substring(0, 5); // Pega DD/MM
-    const horaCurta = hora.substring(0, 5); // Pega HH:MM
-    return `${tipo.replace('Preço ', '')}: ${dataCurta} ${horaCurta}`;
-}).join(' | ');
-
-        if (newDescription.length > DESCRIPTION_LIMIT) {
-            newDescription = newDescription.substring(0, DESCRIPTION_LIMIT);
-        }
-
-        clearTimeout(debounceTimer);
-
-        debounceTimer = setTimeout(() => {
-            console.log(`Enviando status atualizado: "${newDescription}"`);
-            atualizarDescricao(projectId, newDescription)
-                .then(response => console.log('Status atualizado com sucesso:', response.data.description))
-                .catch(error => console.error('Falha ao atualizar status:', error));
-        }, 2500);
+    // Formata a nova descrição
+    let newDescription = [];
+    
+    // Processa a proposta "Premium" se tiver sido visualizada
+    if (trackingStatus.viewedPerformance) {
+        const [data, hora] = trackingStatus.viewedPerformance.split(', ');
+        const dataCurta = data.substring(0, 5); // Pega DD/MM
+        const horaCurta = hora.substring(0, 5); // Pega HH:MM
+        newDescription.push(`Viu P: ${dataCurta} ${horaCurta}`);
     }
+
+    // Processa a proposta "Econômica" se tiver sido visualizada
+    if (trackingStatus.viewedEconomic) {
+        const [data, hora] = trackingStatus.viewedEconomic.split(', ');
+        const dataCurta = data.substring(0, 5); // Pega DD/MM
+        const horaCurta = hora.substring(0, 5); // Pega HH:MM
+        newDescription.push(`Viu E: ${dataCurta} ${horaCurta}`);
+    }
+    
+    // Converte o array para uma string
+    newDescription = newDescription.join(' | ');
+
+    // Agora, faça a chamada para a API
+    if (newDescription) {
+        try {
+            await updateProjectDescription(projectId, newDescription);
+        } catch (error) {
+            console.error("Falha ao atualizar a descrição do projeto:", error);
+            // Considerar uma estratégia de retry ou notificação aqui
+        }
+    }
+}
 
     // DENTRO DE app.js, SUBSTITUA A FUNÇÃO INTEIRA
 
