@@ -218,7 +218,7 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
     display: flex; /* Permite alinhamento do ícone e do texto */
     align-items: center; /* Centraliza os itens verticalmente */
     gap: 1.5rem; /* Adiciona um bom espaçamento entre o ícone e o texto */
-    margin: 2rem 0; /* Espaçamento vertical para separar a seção */
+    margin: 1.5rem 0; /* Espaçamento vertical para separar a seção */
     padding: 1.5rem; /* Preenchimento interno para o conteúdo não ficar "colado" nas bordas */
     background-color: var(--card-bg-light); /* Fundo claro para o card */
     border: 1px solid var(--border-color); /* Borda sutil para dar acabamento */
@@ -252,7 +252,7 @@ body.theme-economic .investment-section { background: linear-gradient(135deg, va
     color: #d1d5db;
     padding: 2rem;
     text-align: center;
-    margin-top: 2rem; /* VALOR REDUZIDO */
+    margin-top: 1.5rem; /* VALOR REDUZIDO */
 }
 .footer-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
 .footer-logo img { height: 50px; }
@@ -525,8 +525,8 @@ body.theme-economic .summary-card:first-child { border-right-color: var(--color-
 .proposal-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 1.5rem;   /* Reduz o espaço acima do botão */
-    margin-bottom: 1.5rem;/* Reduz o espaço abaixo do botão */
+    margin-top: 0.5rem;   /* Espaço acima do botão */
+    margin-bottom: 0.5rem;/* Espaço abaixo do botão */
     padding: 0;
     background-color: transparent;
     box-shadow: none;

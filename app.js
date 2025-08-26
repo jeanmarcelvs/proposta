@@ -397,7 +397,7 @@ function criarObservadores(projectId, tipoProposta) {
                 
                 priceObserver.unobserve(investmentSection);
             }
-        }, { threshold: 0.4 });
+        }, { threshold: 0.6 });
         priceObserver.observe(investmentSection);
     }
     
@@ -582,9 +582,9 @@ function criarObservadores(projectId, tipoProposta) {
 
     // Listener para o botão "Nova Consulta"
 backToSearchBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     proposalDetailsSection.classList.remove('dynamic-spacing');
     window.location.href = window.location.pathname;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
     proposalHeader.innerHTML = `
