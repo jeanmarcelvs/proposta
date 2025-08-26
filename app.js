@@ -16,13 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainFooter = document.getElementById('main-footer');
     const searchMessage = document.getElementById('search-message');
 
-    // --- Variáveis de Estado ---
-    let debounceTimer;
-    let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
-    let summaryWasShown = false;
-    const DESCRIPTION_LIMIT = 100;
-    let lastEventTime = 0;
-
     // --- Funções de Segurança ---
     function blockFeatures() {
         document.addEventListener('keydown', (e) => {
@@ -51,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${(potencia / 1000).toFixed(2).replace('.', ',')} kWp`;
     }
     
-    // Funções auxiliares para extrair dados da nova API
     function findItemByCategory(data, category) {
         const item = data.pricingTable.find(item => item.category === category);
         if (!item) {
@@ -69,43 +61,25 @@ document.addEventListener('DOMContentLoaded', () => {
             fabricante: manufacturer,
             modelo: item.item,
             quantidade: item.qnt,
-            descricao: `Detalhes do produto ${item.item}.` // Placeholder
+            descricao: `Detalhes do produto ${item.item}.`
         };
     }
     
-    function findTotalValue(data) {
-        let total = 0;
-        data.pricingTable.forEach(item => {
-            if (item.salesValue) {
-                total += item.salesValue;
-            } else if (item.totalCost) {
-                total += item.totalCost;
-            }
-        });
-        return total;
-    }
-
-
-    // --- Funções de Renderização de UI ---
     function renderizarProposta(proposta) {
         console.log("Renderizando proposta com os dados:", proposta);
         
-        let htmlContent = '';
-        
         // Caminho do logo padrão
         const logoPath = 'logo.png';
+        let htmlContent = '';
 
-        // 1. Título e cabeçalho da proposta
+        // O elemento pai <div class="proposal-details"> já existe no HTML.
+        // O conteúdo será injetado diretamente nele.
         htmlContent += `
-            <div class="proposal-details fadeInUp">
-                <div class="proposal-header">
-                    <h1>Proposta de Energia Solar</h1>
-                    <p>Detalhes técnicos, benefícios e valores para o seu projeto.</p>
-                </div>
-            `;
-
-        // 2. Seção de Resumo e Dados do Cliente
-        htmlContent += `
+            <div class="proposal-header">
+                <h1>Proposta de Energia Solar</h1>
+                <p>Detalhes técnicos, benefícios e valores para o seu projeto.</p>
+            </div>
+            
             <section class="details-grid fadeIn">
                 <div class="details-card fadeInUp" style="animation-delay: 0.2s;">
                     <h2>Resumo do Projeto</h2>
@@ -124,10 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </ul>
                 </div>
             </section>
-        `;
 
-        // 3. Seção de Equipamentos (Cards de Comparação)
-        htmlContent += `
             <section class="installation-comparison fadeIn" style="animation-delay: 0.4s;">
                 <h2 class="section-title slideInLeft">Equipamentos</h2>
                 <div class="comparison-card fadeInUp" style="animation-delay: 0.5s;">
@@ -157,10 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </section>
-        `;
         
-        // 4. Seção de Financiamento (Acordeão)
-        htmlContent += `
             <section class="accordion-container fadeIn" style="animation-delay: 0.7s;">
                 <h2 class="section-title slideInLeft">Plano de Financiamento</h2>
                 <div class="accordion-item fadeInUp" style="animation-delay: 0.8s;">
@@ -176,14 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             </section>
+        
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="back-to-search-btn" class="btn btn--primary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
+            </div>
         `;
-
-        // 5. Botão "Nova Consulta" no final da página
-        htmlContent += `<div style="text-align: center; margin-top: 2rem;">
-            <button id="back-to-search-btn" class="btn btn--primary"><i class="fas fa-arrow-left"></i> Nova Consulta</button>
-        </div>`;
-
-
+        
         proposalDetailsSection.innerHTML = htmlContent;
 
         // Adiciona os event listeners depois que o HTML é renderizado
@@ -202,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        // Adiciona o listener para o botão de voltar após a renderização
         document.getElementById('back-to-search-btn').addEventListener('click', () => {
             window.location.href = window.location.pathname;
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -225,24 +190,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await consultarProposta(projectId);
             console.log("Dados recebidos da API:", data);
             
-            // Mapeia a nova estrutura da API para a estrutura que o frontend espera
             const proposta = {
-                // Informações do cliente
                 nome_cliente: data.name,
-                localizacao: data.project.name, // Usando o nome do projeto como localização
-                
-                // Dados de resumo (mantidos como placeholders pois não estão na API)
+                localizacao: data.project.name,
                 expirationDate: data.expirationDate,
                 potencia_sistema: 12000,
                 geracao_media_mensal: 1600,
                 reducao_conta_percentual: 95,
                 consumo_medio_mensal: 1500,
-                
-                // Informações do inversor e módulo
                 inversor: findItemByCategory(data, 'Inversor'),
                 modulos: findItemByCategory(data, 'Módulo'),
-                
-                // Informações de financiamento (mantidas como placeholders)
                 plano_financiamento: {
                     valor_total: 55000,
                     entrada: 5000,
@@ -250,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     valor_parcela: 1000
                 }
             };
-
+            
             console.log("Dados da proposta mapeados:", proposta);
             
             const today = new Date();
@@ -284,6 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
     projectIdInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSearch();
     });
+
+    // Removemos os event listeners para os botões 'performance' e 'econômica'
+    // pois a lógica da API foi simplificada e eles não são mais necessários.
 
     const phoneNumber = "5582994255946";
     const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
