@@ -1204,3 +1204,111 @@ body.theme-economic .enhanced-button:hover {
     padding: 2rem;
     box-sizing: border-box;
 }
+
+/* ================================================= */
+/* 🎨 Painel de Pesquisa Elegante e Refinado */
+/* ================================================= */
+
+/* Estilo para o container principal */
+.search-card {
+    background-color: var(--color-card-bg);
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 90%;
+    margin: 4rem auto;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Container da logo com fundo em gradiente */
+.search-card__logo-container {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #0c1a3b 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 0;
+    position: relative;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.search-card__logo {
+    max-width: 150px;
+    height: auto;
+}
+
+/* Estilo para o conteúdo do painel */
+.search-card__content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.search-card__title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+}
+
+.search-card__subtitle {
+    font-size: 1rem;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+}
+
+/* Estilo para o campo de entrada (input) */
+#project-id-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#project-id-input:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    outline: none;
+}
+
+/* Estilo para o botão de pesquisa */
+.btn--primary {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--color-secondary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Estilo para a mensagem de erro */
+.search-card__message {
+    color: #ff4d4f;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* Garante que o painel fique centralizado verticalmente */
+.screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
+}
