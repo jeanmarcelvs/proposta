@@ -30,18 +30,18 @@ const secaoValidade = document.getElementById('secao-validade');
 // ######################################################################
 // FUNÇÃO AUXILIAR PARA FORMATAR VALORES NUMÉRICOS E TRATAR N/A
 // ######################################################################
-function formatarValorNumerico(valor, prefixo = '') {
-    // Se o valor for 'N/A' ou null/undefined, retorna a string 'N/A'
+/**
+ * Formata um valor com um prefixo e sufixo, tratando 'N/A'
+ * @param {string} valor - O valor já formatado para exibição.
+ * @param {string} [prefixo=''] - O prefixo a ser adicionado.
+ * @param {string} [sufixo=''] - O sufixo a ser adicionado.
+ * @returns {string} O valor formatado ou 'N/A'.
+ */
+function formatarValorParaExibicao(valor, prefixo = '', sufixo = '') {
     if (valor === 'N/A' || valor === null || valor === undefined) {
         return 'N/A';
     }
-    // Converte a vírgula para ponto se necessário e formata o número
-    const numero = parseFloat(String(valor).replace(',', '.'));
-    if (isNaN(numero)) {
-        return 'N/A';
-    }
-    // Retorna o valor formatado com o prefixo
-    return `${prefixo} ${numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${prefixo} ${valor} ${sufixo}`.trim();
 }
 
 
@@ -138,9 +138,9 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 2: Dados Gerais do Sistema
     secaoDadosGerais.innerHTML = `
         <h3 class="secao__titulo">Dados Gerais do Sistema</h3>
-        <p>Geração Média Mensal: ${dadosProposta.geracaoMensal !== 'N/A' ? dadosProposta.geracaoMensal + ' kWh' : 'N/A'}</p>
-        <p>Potência do Sistema: ${dadosProposta.potenciaSistema !== 'N/A' ? dadosProposta.potenciaSistema + ' kWp' : 'N/A'}</p>
-        <p>Ideal para contas de até: <span class="destaque">R$ ${dados.valorContaIdeal}</span></p>
+        <p>Geração Média Mensal: ${formatarValorParaExibicao(dadosProposta.geracaoMensal, '', 'kWh')}</p>
+        <p>Potência do Sistema: ${formatarValorParaExibicao(dadosProposta.potenciaSistema, '', 'kWp')}</p>
+        <p>Ideal para contas de até: <span class="destaque">${formatarValorParaExibicao(dados.valorContaIdeal, 'R$')}</span></p>
         <p>Tipo de Instalação: ${dadosProposta.tipoInstalacao}</p>
     `;
 
@@ -155,18 +155,23 @@ function renderizarProposta(dadosProposta, tipo) {
     const prazoEquilibrio = dados.parcelaEquilibrio;
     
     let htmlPlanos = '';
-    planos.forEach(plano => {
-        const isEquilibrio = plano.prazo == prazoEquilibrio;
-        const classeDestaque = isEquilibrio ? 'card-financiamento--equilibrio' : '';
+    if (planos.length > 0) {
+        planos.forEach(plano => {
+            const isEquilibrio = plano.prazo == prazoEquilibrio;
+            const classeDestaque = isEquilibrio ? 'card-financiamento--equilibrio' : '';
 
-        htmlPlanos += `
-            <div class="card-financiamento ${classeDestaque}">
-                <h4 class="card-financiamento__titulo">${plano.prazo} meses</h4>
-                <p class="card-financiamento__valor">R$ ${plano.parcela}</p>
-                ${isEquilibrio ? '<span class="etiqueta-equilibrio">Parcela de Equilíbrio</span>' : ''}
-            </div>
-        `;
-    });
+            htmlPlanos += `
+                <div class="card-financiamento ${classeDestaque}">
+                    <h4 class="card-financiamento__titulo">${plano.prazo} meses</h4>
+                    <p class="card-financiamento__valor">${formatarValorParaExibicao(plano.parcela, 'R$')}</p>
+                    ${isEquilibrio ? '<span class="etiqueta-equilibrio">Parcela de Equilíbrio</span>' : ''}
+                </div>
+            `;
+        });
+    } else {
+        htmlPlanos = '<p>Não há simulações de financiamento disponíveis.</p>';
+    }
+
     secaoFinanciamento.innerHTML = `
         <h3 class="secao__titulo">Simulação de Financiamento</h3>
         <div class="container-cards-financiamento">
@@ -181,7 +186,7 @@ function renderizarProposta(dadosProposta, tipo) {
     // Seção 5: Valor Total do Projeto
     secaoValorTotal.innerHTML = `
         <h3 class="secao__titulo">Valor Total do Projeto</h3>
-        <p class="valor-total-destaque">R$ ${dados.precoTotalVenda}</p>
+        <p class="valor-total-destaque">${formatarValorParaExibicao(dados.precoTotalVenda, 'R$')}</p>
         <p class="secao__observacao">
             *Valor à vista. Consulte opção de pagamento no cartão de crédito.
         </p>
@@ -211,8 +216,8 @@ function renderizarCabecalhoDinamico(planosPremium, planosEconomica) {
             <button id="botao-economica" class="botoes-tipo-proposta__botao">Econômica</button>
         </nav>
         <div id="resumo-propostas" class="resumo-propostas">
-            <span class="resumo-propostas__item resumo-propostas__item--premium">Proposta Premium: R$ ${menorParcelaPremium}</span>
-            <span class="resumo-propostas__item resumo-propostas__item--economica">Proposta Econômica: R$ ${menorParcelaEconomica}</span>
+            <span class="resumo-propostas__item resumo-propostas__item--premium">Proposta Premium: ${formatarValorParaExibicao(menorParcelaPremium, 'R$')}</span>
+            <span class="resumo-propostas__item resumo-propostas__item--economica">Proposta Econômica: ${formatarValorParaExibicao(menorParcelaEconomica, 'R$')}</span>
         </div>
     `;
 
