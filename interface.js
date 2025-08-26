@@ -1,5 +1,5 @@
 import { consultarProposta } from './api.js';
-import { processarDadosProposta } from './logica.js';
+import { processarDadosProposta, verificarPropostaExpirada } from './logica.js';
 
 // Variável para armazenar a proposta processada
 let dadosPropostaProcessada = null;
@@ -11,6 +11,7 @@ let tipoPropostaAtual = 'premium';
 const telaInicialContainer = document.getElementById('tela-inicial-container');
 const propostaApresentacaoContainer = document.getElementById('proposta-apresentacao-container');
 const cabecalhoProposta = document.getElementById('cabecalho-proposta');
+const mensagemPropostaExpirada = document.getElementById('mensagem-proposta-expirada');
 
 const botaoPremium = document.getElementById('botao-premium');
 const botaoEconomica = document.getElementById('botao-economica');
@@ -29,15 +30,19 @@ const secaoValidade = document.getElementById('secao-validade');
 // ######################################################################
 /**
  * Alterna a visibilidade das seções da página.
- * @param {boolean} mostrarProposta - Se `true`, mostra a página da proposta; se `false`, mostra a tela inicial.
+ * @param {string} tipo - 'inicial', 'proposta' ou 'expirada'.
  */
-function alternarVisualizacaoPagina(mostrarProposta) {
-    if (mostrarProposta) {
-        telaInicialContainer.style.display = 'none';
-        propostaApresentacaoContainer.style.display = 'block';
-    } else {
+function alternarVisualizacaoPagina(tipo) {
+    telaInicialContainer.style.display = 'none';
+    propostaApresentacaoContainer.style.display = 'none';
+    mensagemPropostaExpirada.style.display = 'none';
+
+    if (tipo === 'inicial') {
         telaInicialContainer.style.display = 'block';
-        propostaApresentacaoContainer.style.display = 'none';
+    } else if (tipo === 'proposta') {
+        propostaApresentacaoContainer.style.display = 'block';
+    } else if (tipo === 'expirada') {
+        mensagemPropostaExpirada.style.display = 'block';
     }
 }
 
@@ -65,10 +70,17 @@ function criarTelaInicial() {
         if (projectId) {
             try {
                 const dadosBrutos = await consultarProposta(projectId);
-                dadosPropostaProcessada = processarDadosProposta(dadosBrutos);
                 
-                alternarVisualizacaoPagina(true);
-                renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
+                // === LÓGICA DE VALIDAÇÃO DA PROPOSTA ===
+                const expirada = verificarPropostaExpirada(dadosBrutos.expirationDate);
+                
+                if (expirada) {
+                    alternarVisualizacaoPagina('expirada');
+                } else {
+                    dadosPropostaProcessada = processarDadosProposta(dadosBrutos);
+                    alternarVisualizacaoPagina('proposta');
+                    renderizarProposta(dadosPropostaProcessada, tipoPropostaAtual);
+                }
                 
             } catch (erro) {
                 alert('Erro ao buscar a proposta. Verifique o ID do projeto.');
@@ -91,12 +103,16 @@ function criarTelaInicial() {
 function renderizarProposta(dadosProposta, tipo) {
     // Define qual conjunto de dados usar para renderizar
     const dados = tipo === 'premium' ? dadosProposta : dadosProposta.propostaEconomica;
+    
+    // Formata as datas para exibir apenas a parte da data
+    const dataCriacao = new Date(dadosProposta.dataCriacao).toLocaleDateString('pt-BR');
+    const dataExpiracao = new Date(dadosProposta.dataExpiracao).toLocaleDateString('pt-BR');
 
     // Seção 1: Dados do Cliente
     secaoDadosCliente.innerHTML = `
         <h2 class="nome-cliente-destaque">${dadosProposta.nomeCliente}</h2>
         <p>Localidade: ${dadosProposta.localizacao}</p>
-        <p>Data da Proposta: ${dadosProposta.dataCriacao}</p>
+        <p>Data da Proposta: ${dataCriacao}</p>
     `;
 
     // Seção 2: Dados Gerais do Sistema
@@ -105,7 +121,7 @@ function renderizarProposta(dadosProposta, tipo) {
         <p>Geração Média Mensal: ${dadosProposta.geracaoMensal} kWh</p>
         <p>Potência do Sistema: ${dadosProposta.potenciaSistema} kWp</p>
         <p>Ideal para contas de até: <span class="destaque">R$ ${dados.valorContaIdeal}</span></p>
-        <p>Tipo de Instalação: Telhado ou Solo (precisa de dados do JSON)</p>
+        <p>Tipo de Instalação: ${dadosProposta.tipoInstalacao}</p>
     `;
 
     // Seção 3: Dados da Instalação
@@ -151,10 +167,10 @@ function renderizarProposta(dadosProposta, tipo) {
         </p>
     `;
 
-    // Seção 6: Validade da Proposta
+    // Seção 6: Validade da Proposta - Agora não exibe a data, mas a lógica já foi aplicada
     secaoValidade.innerHTML = `
         <h3 class="secao__titulo">Validade da Proposta</h3>
-        <p class="secao__texto">Esta proposta tem validade de 3 dias corridos ou enquanto durar o estoque.</p>
+        <p class="secao__texto">Esta proposta é válida até o dia: <span class="destaque">${dataExpiracao}</span>.</p>
     `;
     
     // Atualiza o resumo do cabeçalho.
@@ -219,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo(0, 0);
     criarTelaInicial();
     botaoVoltar.addEventListener('click', () => {
-        alternarVisualizacaoPagina(false);
+        alternarVisualizacaoPagina('inicial');
         // Limpa os containers para evitar lixo de renderizações antigas
         secaoDadosCliente.innerHTML = '';
         secaoDadosGerais.innerHTML = '';

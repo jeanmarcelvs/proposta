@@ -10,6 +10,7 @@ export function processarDadosProposta(dadosBrutos) {
     const dadosSistema = dadosBrutos.data?.find(d => d.topic === "Sistema Solar")?.items || [];
     const dadosFinanceiro = dadosBrutos.data?.find(d => d.topic === "Financeiro")?.items || [];
     const dadosGerais = dadosBrutos.data?.find(d => d.topic === "Dados gerais")?.items || [];
+    const dadosCliente = dadosBrutos.data?.find(d => d.topic === "Cliente")?.items || [];
     
     // ######################################################################
     // FUNÇÕES AUXILIARES
@@ -132,12 +133,18 @@ export function processarDadosProposta(dadosBrutos) {
     // ######################################################################
     // CRIAÇÃO DO OBJETO FINAL PADRONIZADO
     // ######################################################################
+    const nomeCliente = encontrarItemPorChave(dadosCliente, 'cliente_nome').value;
+    const cidadeCliente = encontrarItemPorChave(dadosCliente, 'cliente_cidade').value;
+    const estadoCliente = encontrarItemPorChave(dadosCliente, 'cliente_estado').value;
+
     const propostaPadronizada = {
         // Dados do cliente e datas
         idProjeto: dadosBrutos.id || 'N/A',
-        nomeCliente: dadosBrutos.name || 'Nome do cliente não disponível',
-        localizacao: dadosBrutos.project?.name || 'Localização não disponível',
-        dataCriacao: dadosBrutos.createdAt || 'N/A',
+        // CORREÇÃO: Utiliza o valor do JSON para o nome e a localização
+        nomeCliente: nomeCliente || 'Nome do cliente não disponível',
+        localizacao: `${cidadeCliente}, ${estadoCliente}` || 'Localização não disponível',
+        // CORREÇÃO: Utiliza o 'generatedAt' para a data da proposta e 'expirationDate' para a validade
+        dataCriacao: dadosBrutos.generatedAt || 'N/A',
         dataExpiracao: dadosBrutos.expirationDate || 'N/A',
         
         // Dados do sistema solar
@@ -145,6 +152,8 @@ export function processarDadosProposta(dadosBrutos) {
         geracaoMensal: encontrarItemPorChave(dadosSistema, 'geracao_mensal').value,
         inversor: encontrarItemPorCategoria('Inversor'),
         modulos: encontrarItemPorCategoria('Módulo'),
+        // NOVO: Adiciona a informação do tipo de instalação
+        tipoInstalacao: encontrarItemPorChave(dadosGerais, 'vc_tipo_de_estrutura').value,
 
         // Dados financeiros
         consumoMedio: encontrarItemPorChave(dadosGerais, 'consumo_medio').value,
@@ -177,4 +186,18 @@ export function processarDadosProposta(dadosBrutos) {
     propostaPadronizada.propostaEconomica.valorContaIdeal = propostaPadronizada.valorContaIdeal;
 
     return propostaPadronizada;
+}
+
+/**
+ * Função para verificar se a proposta expirou.
+ * @param {string} dataExpiracao - A data de expiração da proposta (ISO 8601).
+ * @returns {boolean} `true` se a proposta expirou, `false` caso contrário.
+ */
+export function verificarPropostaExpirada(dataExpiracao) {
+    if (!dataExpiracao) {
+        return true; // Considera expirada se a data não existir
+    }
+    const dataAtual = new Date();
+    const dataValidade = new Date(dataExpiracao);
+    return dataAtual > dataValidade;
 }
