@@ -14,11 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectIdInput = document.getElementById('project-id');
     const searchButton = document.getElementById('search-button');
     const mainFooter = document.getElementById('main-footer');
-    const backToSearchBtn = document.getElementById('back-to-search-btn');
     const searchMessage = document.getElementById('search-message');
 
     // --- Variáveis de Estado ---
-    let propostaOriginal; // A API retorna apenas uma proposta, então uma variável é suficiente.
     let debounceTimer;
     let trackingStatus = { viewedPerformance: null, viewedEconomic: null };
     let summaryWasShown = false;
@@ -56,6 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Funções auxiliares para extrair dados da nova API
     function findItemByCategory(data, category) {
         const item = data.pricingTable.find(item => item.category === category);
+        if (!item) {
+            console.error(`Item com a categoria '${category}' não encontrado na tabela de preços.`);
+            return {
+                fabricante: 'N/A',
+                modelo: 'Não encontrado',
+                quantidade: 0,
+                descricao: `Detalhes do produto não disponíveis.`
+            };
+        }
         const nameParts = item.item.split(' ');
         const manufacturer = nameParts.length > 1 ? nameParts[0].toLowerCase() : 'default';
         return {
@@ -81,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funções de Renderização de UI ---
     function renderizarProposta(proposta) {
-        console.log("Renderizando proposta:", proposta);
+        console.log("Renderizando proposta com os dados:", proposta);
         
         let htmlContent = '';
         
@@ -216,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const data = await consultarProposta(projectId);
+            console.log("Dados recebidos da API:", data);
             
             // Mapeia a nova estrutura da API para a estrutura que o frontend espera
             const proposta = {
@@ -242,6 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     valor_parcela: 1000
                 }
             };
+
+            console.log("Dados da proposta mapeados:", proposta);
             
             const today = new Date();
             const expirationDate = new Date(proposta.expirationDate);
@@ -275,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') handleSearch();
     });
 
-    // Lógica para o link do WhatsApp
     const phoneNumber = "5582994255946";
     const whatsappMessage = encodeURIComponent("Olá! Gostaria de mais informações sobre a proposta.");
     const whatsappLink = document.getElementById('whatsapp-link');
