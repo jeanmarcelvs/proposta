@@ -44,6 +44,7 @@ module.exports = async (req, res) => {
 
         const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
         
+        // A URL correta que você demonstrou.
         const updateUrl = `${SOLARMARKET_API_URL}/projects/${projectId}`;
         const updatePayload = { description: newDescription };
 

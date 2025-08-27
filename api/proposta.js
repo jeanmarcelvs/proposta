@@ -50,6 +50,8 @@ module.exports = async (req, res) => {
 
     try {
         const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
+
+        // CORREÇÃO: Usando a URL correta que você identificou.
         const propostaUrl = `${SOLARMARKET_API_URL}/projects/${projectId}/proposals`;
         
         const propostaResponse = await fetch(propostaUrl, {
@@ -68,8 +70,7 @@ module.exports = async (req, res) => {
 
         const propostasData = await propostaResponse.json();
         
-        // CORREÇÃO: Verifica se é um array e retorna o primeiro item, se existir.
-        if (Array.isArray(propostasData) && propostasData.length > 0) {
+        if (propostasData && propostasData.length > 0) {
             res.status(200).json(propostasData[0]);
         } else {
             res.status(404).json({ error: 'Proposta não encontrada para o projeto especificado.' });
