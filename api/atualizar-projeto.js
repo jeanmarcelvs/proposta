@@ -1,7 +1,7 @@
 // Arquivo: api/atualizar-projeto.js
 
 const fetch = require('node-fetch');
-const { getAccessToken } = require('./auth'); // O caminho foi ajustado para a mesma pasta
+const { getAccessToken } = require('./auth'); // O caminho foi ajustado e usa require()
 
 module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
@@ -22,7 +22,6 @@ module.exports = async (req, res) => {
     const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
     
     try {
-        // O backend agora recebe a descrição COMPLETA do frontend
         const { projectId, newDescription } = req.body;
 
         if (!projectId || !newDescription ) {

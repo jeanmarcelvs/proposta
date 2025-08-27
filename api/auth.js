@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
  * @returns {Promise<string>} O token de acesso.
  * @throws {Error} Se a autenticação falhar.
  */
-export async function getAccessToken(longLivedToken, apiUrl) {
+async function getAccessToken(longLivedToken, apiUrl) {
     const authUrl = `${apiUrl}/auth/signin`;
     
     const authResponse = await fetch(authUrl, {
@@ -28,3 +28,5 @@ export async function getAccessToken(longLivedToken, apiUrl) {
     const authData = await authResponse.json();
     return authData.access_token;
 }
+
+module.exports = { getAccessToken };

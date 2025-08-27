@@ -4,7 +4,7 @@
  * Ela consulta a API da SolarMarket para obter propostas de projetos.
  */
 const fetch = require('node-fetch');
-const { getAccessToken } = require('./auth'); // O caminho foi ajustado para a mesma pasta
+const { getAccessToken } = require('./auth'); // O caminho foi ajustado e usa require()
 
 module.exports = async (req, res) => {
     // Define os cabeçalhos para resposta JSON e CORS
