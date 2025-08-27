@@ -79,17 +79,15 @@ export function processarDadosProposta(dadosBrutos) {
                 const indice = matchPrazo[1];
                 if (!planosMap.has(indice)) planosMap.set(indice, {});
                 planosMap.get(indice).prazo = {
-                    value: dado.formattedValue,
-                    rawValue: dado.value
+                    value: dado.formattedValue !== null ? dado.formattedValue : 'N/A',
+                    rawValue: dado.value !== null ? parseFloat(String(dado.value).replace(',', '.')) : null,
                 };
-            }
-            
-            if (matchParcela) {
+            } else if (matchParcela) {
                 const indice = matchParcela[1];
                 if (!planosMap.has(indice)) planosMap.set(indice, {});
                 planosMap.get(indice).parcela = {
-                    value: dado.formattedValue,
-                    rawValue: dado.value
+                    value: dado.formattedValue !== null ? dado.formattedValue : 'N/A',
+                    rawValue: dado.value !== null ? parseFloat(String(dado.value).replace(',', '.')) : null,
                 };
             }
         });
@@ -99,10 +97,8 @@ export function processarDadosProposta(dadosBrutos) {
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
             .map(indice => {
                 const plano = planosMap.get(indice);
+                // Garante que o objeto plano tenha todas as propriedades, mesmo que alguma esteja faltando no JSON
                 return {
-                    nome: plano.nome?.value || 'Financiamento',
-                    entrada: plano.entrada?.value || 'N/A',
-                    valorTotal: plano.valor?.value || 'N/A',
                     prazo: plano.prazo?.value || 'N/A',
                     parcela: plano.parcela?.value || 'N/A',
                     prazoRawValue: plano.prazo?.rawValue,
