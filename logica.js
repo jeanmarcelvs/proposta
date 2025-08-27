@@ -62,39 +62,45 @@ export function processarDadosProposta(dadosBrutos) {
     }
 
     /**
-     * CORREÇÃO ROBUSTA E FINAL: Agrupa todos os dados de financiamento de forma precisa.
-     * Adicionei console.log para ajudar na depuração.
+     * CORREÇÃO FINAL E ROBUSTA: Agrupa todos os dados de financiamento de forma precisa.
+     * A lógica agora coleta todas as chaves de prazo e parcela e as agrupa pelo índice.
      * @param {Array} dados - O array de dados financeiros.
      * @returns {Array} Um array de objetos de planos de financiamento.
      */
     function agruparPlanosDeFinanciamento(dados) {
-        console.log('--- Iniciando agrupamento de planos de financiamento ---');
         const planosMap = new Map();
-        
+
+        // Itera sobre os dados para encontrar e agrupar as informações de prazo e parcela
         dados.forEach(dado => {
-            const match = dado.key.match(/^f_(.+)_(\d+)$/);
-            if (match) {
-                const tipo = match[1];
-                const indice = match[2];
-                if (!planosMap.has(indice)) {
-                    planosMap.set(indice, {});
-                }
-                const plano = planosMap.get(indice);
-                plano[tipo] = {
-                    value: dado.formattedValue !== null ? dado.formattedValue : 'N/A',
-                    rawValue: dado.value !== null ? parseFloat(String(dado.value).replace(',', '.')) : null,
+            const matchPrazo = dado.key.match(/^f_prazo_(\d+)$/);
+            const matchParcela = dado.key.match(/^f_parcela_(\d+)$/);
+            
+            if (matchPrazo) {
+                const indice = matchPrazo[1];
+                if (!planosMap.has(indice)) planosMap.set(indice, {});
+                planosMap.get(indice).prazo = {
+                    value: dado.formattedValue,
+                    rawValue: dado.value
+                };
+            }
+            
+            if (matchParcela) {
+                const indice = matchParcela[1];
+                if (!planosMap.has(indice)) planosMap.set(indice, {});
+                planosMap.get(indice).parcela = {
+                    value: dado.formattedValue,
+                    rawValue: dado.value
                 };
             }
         });
-        
-        console.log('Plano de financiamento encontrados (Mapa):', planosMap);
 
+        // Converte o mapa em um array e ordena os planos pelos seus índices numéricos
         const planos = Array.from(planosMap.keys())
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
             .map(indice => {
                 const plano = planosMap.get(indice);
                 return {
-                    nome: plano.nome?.value || 'N/A',
+                    nome: plano.nome?.value || 'Financiamento',
                     entrada: plano.entrada?.value || 'N/A',
                     valorTotal: plano.valor?.value || 'N/A',
                     prazo: plano.prazo?.value || 'N/A',
@@ -104,9 +110,6 @@ export function processarDadosProposta(dadosBrutos) {
                 };
             });
             
-        console.log('Planos de financiamento agrupados (Array):', planos);
-        console.log('--- Agrupamento de planos finalizado ---');
-        
         return planos;
     }
 
