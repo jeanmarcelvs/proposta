@@ -1,6 +1,7 @@
 // Arquivo: api/atualizar-projeto.js
 const fetch = require('node-fetch');
 
+// Função para obter um token de acesso de curta duração, embutida para garantir compatibilidade.
 async function getAccessToken(longLivedToken, apiUrl) {
     const authUrl = `${apiUrl}/auth/signin`;
     const authResponse = await fetch(authUrl, {
@@ -17,6 +18,7 @@ async function getAccessToken(longLivedToken, apiUrl) {
 }
 
 module.exports = async (req, res) => {
+    // Configurações de cabeçalho para permitir a comunicação com seu site.
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');

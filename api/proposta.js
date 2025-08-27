@@ -1,11 +1,11 @@
 /**
  * Arquivo: api/proposta.js
  * Vercel Serverless Function para consultar a API da SolarMarket.
- * Usa node-fetch, pois a biblioteca @api/solarmarket não é encontrada no Vercel.
+ * Usa node-fetch com a URL correta para obter a proposta.
  */
 const fetch = require('node-fetch');
 
-// Função para obter um token de acesso de curta duração, embutida para garantir compatibilidade.
+// Função para obter um token de acesso de curta duração.
 async function getAccessToken(longLivedToken, apiUrl) {
     const authUrl = `${apiUrl}/auth/signin`;
     const authResponse = await fetch(authUrl, {
@@ -25,6 +25,7 @@ async function getAccessToken(longLivedToken, apiUrl) {
 }
 
 module.exports = async (req, res) => {
+    // Configurações de cabeçalho para permitir a comunicação com seu site.
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -50,7 +51,8 @@ module.exports = async (req, res) => {
     try {
         const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
 
-        const propostaUrl = `${SOLARMARKET_API_URL}/proposals?projectId=${projectId}`;
+        // CORREÇÃO: Usando a URL correta que você identificou.
+        const propostaUrl = `${SOLARMARKET_API_URL}/projects/${projectId}/proposals`;
         
         const propostaResponse = await fetch(propostaUrl, {
             method: 'GET',
