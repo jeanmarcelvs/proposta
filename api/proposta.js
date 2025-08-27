@@ -1,12 +1,11 @@
 /**
  * Arquivo: api/proposta.js
- * Esta é uma Vercel Serverless Function que roda no backend.
- * Ela consulta a API da SolarMarket para obter propostas de projetos.
+ * Esta é uma Vercel Serverless Function que consulta a API da SolarMarket.
  */
-const fetch = require('node-fetch');
-const { getAccessToken } = require('./auth');
+import solarmarket from '@api/solarmarket';
+import fetch from 'node-fetch';
 
-module.exports = async (req, res) => {
+export default async function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -31,7 +30,9 @@ module.exports = async (req, res) => {
     const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
 
     try {
-        const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
+        // Usa a biblioteca solarmarket para obter o token de acesso
+        const authResponse = await solarmarket.autenticarUsuario({ token: longLivedToken });
+        const accessToken = authResponse.data.access_token;
 
         const propostaUrl = `${SOLARMARKET_API_URL}/proposals?projectId=${projectId}`;
         const propostaResponse = await fetch(propostaUrl, {
@@ -54,11 +55,10 @@ module.exports = async (req, res) => {
             res.status(200).json(propostasData.data);
         } else {
             res.status(404).json({ error: 'Proposta não encontrada para o projeto especificado.' });
-            return;
         }
 
     } catch (err) {
         console.error('Erro na função serverless:', err.message);
         res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
-};
+}

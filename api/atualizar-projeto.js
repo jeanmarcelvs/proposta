@@ -1,9 +1,8 @@
 // Arquivo: api/atualizar-projeto.js
+import solarmarket from '@api/solarmarket';
+import fetch from 'node-fetch';
 
-const fetch = require('node-fetch');
-const { getAccessToken } = require('./auth');
-
-module.exports = async (req, res) => {
+export default async function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
@@ -28,7 +27,8 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'projectId e newDescription são obrigatórios.' });
         }
 
-        const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
+        const authResponse = await solarmarket.autenticarUsuario({ token: longLivedToken });
+        const accessToken = authResponse.data.access_token;
         
         const updateUrl = `${SOLARMARKET_API_URL}/projects/${projectId}`;
         const updatePayload = { description: newDescription };
@@ -55,4 +55,4 @@ module.exports = async (req, res) => {
         console.error('Erro na função serverless (atualizar-projeto):', err.message);
         res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
-};
+}
