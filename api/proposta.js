@@ -1,52 +1,20 @@
 /**
  * Arquivo: api/proposta.js
- * Esta é uma Vercel Serverless Function que roda no backend.
- * Ela consulta a API da SolarMarket para obter propostas de projetos.
+ * Esta é uma Vercel Serverless Function que consulta a API da SolarMarket.
  */
-const fetch = require('node-fetch');
+import solarmarket from '@api/solarmarket';
 
-/**
- * Função para obter um token de acesso de curta duração a partir de um token de longa duração.
- * @param {string} longLivedToken - O token de longa duração da SolarMarket.
- * @param {string} apiUrl - A URL base da API da SolarMarket.
- * @returns {Promise<string>} O token de acesso.
- * @throws {Error} Se a autenticação falhar.
- */
-async function getAccessToken(longLivedToken, apiUrl) {
-    const authUrl = `${apiUrl}/auth/signin`;
-    
-    const authResponse = await fetch(authUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'accept': 'application/json'
-        },
-        body: JSON.stringify({ token: longLivedToken })
-    });
-
-    if (!authResponse.ok) {
-        const errorText = await authResponse.text();
-        throw new Error(`Erro ao obter token de acesso: ${authResponse.status} - ${errorText}`);
-    }
-
-    const authData = await authResponse.json();
-    return authData.access_token;
-}
-
-module.exports = async (req, res) => {
-    // Define os cabeçalhos para resposta JSON e CORS
+export default async function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Manipula a requisição OPTIONS para preflight CORS
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
     }
 
-    // Garante que apenas o método GET seja permitido
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Método não permitido. Use GET.' });
     }
@@ -57,38 +25,24 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Parâmetro projectId é obrigatório.' });
     }
 
-    const longLivedToken = process.env.SOLARMARKET_TOKEN;
-    const SOLARMARKET_API_URL = 'https://business.solarmarket.com.br/api/v2';
-
     try {
-        const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
+        // Usa a biblioteca solarmarket para obter a proposta
+        const propostaResponse = await solarmarket.consultarPropostas({ projectId });
 
-        const propostaUrl = `${SOLARMARKET_API_URL}/proposals?projectId=${projectId}`;
-        const propostaResponse = await fetch(propostaUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'accept': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        });
-
-        if (!propostaResponse.ok) {
-            const propostaErrorText = await propostaResponse.text();
-            throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${propostaErrorText}`);
+        if (propostaResponse.status !== 200) {
+            throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${propostaResponse.statusText}`);
         }
 
-        const propostasData = await propostaResponse.json();
+        const propostasData = propostaResponse.data;
         
         if (propostasData && propostasData.data) {
             res.status(200).json(propostasData.data);
         } else {
             res.status(404).json({ error: 'Proposta não encontrada para o projeto especificado.' });
-            return;
         }
 
     } catch (err) {
         console.error('Erro na função serverless:', err.message);
         res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
-};
+}
