@@ -29,6 +29,8 @@ export default async function (req, res) {
         // Usa a biblioteca solarmarket para obter a proposta
         const propostaResponse = await solarmarket.consultarPropostas({ projectId });
 
+        // A API da SolarMarket já trata a autenticação internamente.
+        // Acessamos os dados da resposta diretamente.
         if (propostaResponse.status !== 200) {
             throw new Error(`Erro ao consultar proposta: ${propostaResponse.status} - ${propostaResponse.statusText}`);
         }
