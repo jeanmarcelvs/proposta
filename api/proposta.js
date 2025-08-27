@@ -5,7 +5,7 @@
  */
 const fetch = require('node-fetch');
 
-// Função para obter um token de acesso de curta duração.
+// Função para obter um token de acesso de curta duração, embutida para garantir compatibilidade.
 async function getAccessToken(longLivedToken, apiUrl) {
     const authUrl = `${apiUrl}/auth/signin`;
     const authResponse = await fetch(authUrl, {
@@ -50,8 +50,6 @@ module.exports = async (req, res) => {
     try {
         const accessToken = await getAccessToken(longLivedToken, SOLARMARKET_API_URL);
 
-        // A URL correta é a que gerou sucesso em seu teste local.
-        // O endpoint é `proposals`, e não `listarPropostaAtiva`.
         const propostaUrl = `${SOLARMARKET_API_URL}/proposals?projectId=${projectId}`;
         
         const propostaResponse = await fetch(propostaUrl, {
