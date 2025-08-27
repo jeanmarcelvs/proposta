@@ -1,7 +1,7 @@
 // Arquivo: api/atualizar-projeto.js
 
 const fetch = require('node-fetch');
-const { getAccessToken } = require('./auth'); // O caminho foi ajustado e usa require()
+const { getAccessToken } = require('./auth');
 
 module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
