@@ -23,7 +23,6 @@ export default async function (req, res) {
             return res.status(400).json({ error: 'projectId e newDescription são obrigatórios.' });
         }
         
-        // Usa a biblioteca solarmarket para atualizar o projeto
         const updateResponse = await solarmarket.atualizarProjeto(projectId, {
             description: newDescription
         });
