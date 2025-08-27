@@ -62,17 +62,15 @@ export function processarDadosProposta(dadosBrutos) {
     }
 
     /**
-     * CORREÇÃO FINAL E ROBUSTA: Agrupa todos os dados de financiamento.
-     * A função agora usa um loop simples e um mapa temporário para garantir que todos os dados
-     * relacionados a uma mesma parcela sejam agrupados corretamente,
-     * independentemente da ordem em que aparecem no JSON.
+     * CORREÇÃO ROBUSTA E FINAL: Agrupa todos os dados de financiamento de forma precisa.
+     * Adicionei console.log para ajudar na depuração.
      * @param {Array} dados - O array de dados financeiros.
      * @returns {Array} Um array de objetos de planos de financiamento.
      */
     function agruparPlanosDeFinanciamento(dados) {
+        console.log('--- Iniciando agrupamento de planos de financiamento ---');
         const planosMap = new Map();
         
-        // Primeiro, popula o mapa com todos os dados de financiamento
         dados.forEach(dado => {
             const match = dado.key.match(/^f_(.+)_(\d+)$/);
             if (match) {
@@ -88,8 +86,9 @@ export function processarDadosProposta(dadosBrutos) {
                 };
             }
         });
+        
+        console.log('Plano de financiamento encontrados (Mapa):', planosMap);
 
-        // Converte o mapa em um array, ordenando pelos índices para a ordem correta
         const planos = Array.from(planosMap.keys())
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
             .map(indice => {
@@ -105,6 +104,9 @@ export function processarDadosProposta(dadosBrutos) {
                 };
             });
             
+        console.log('Planos de financiamento agrupados (Array):', planos);
+        console.log('--- Agrupamento de planos finalizado ---');
+        
         return planos;
     }
 
