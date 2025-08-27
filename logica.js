@@ -3,6 +3,14 @@
  * Responsável por toda a lógica de negócio e processamento dos dados da proposta.
  */
 
+// Valores de configuração para a lógica de negócio
+const CONFIG = {
+    REDUCAO_MIN: 0.10,
+    REDUCAO_MAX: 0.20,
+    FAIXA_POTENCIA_MAX: 10,
+    TARIFA_PADRAO_KWH: 0.90
+};
+
 /**
  * Função para processar os dados brutos da API e criar um objeto padronizado.
  * @param {object} dadosBrutos - O objeto JSON recebido diretamente da API.
@@ -26,228 +34,135 @@ export function processarDadosProposta(dadosBrutos) {
      * Prioriza 'formattedValue' para exibição.
      * @param {Array} arrayDeDados - O array de objetos.
      * @param {string} chave - A chave a ser buscada.
-     * @returns {object} Um objeto com o valor e o valor bruto.
+     * @returns {object} Um objeto com o valor e a unidade, ou um objeto vazio se não encontrado.
      */
-    function encontrarItemPorChave(arrayDeDados, chave) {
-        const item = arrayDeDados.find(dado => dado.key === chave);
-        if (!item) {
-            return { value: 'N/A', rawValue: null };
-        }
-        // Prioriza o valor já formatado para a exibição
-        const valorFormatado = item.formattedValue !== null ? item.formattedValue : 'N/A';
-        // Usa o valor bruto para os cálculos internos
-        const valorBruto = item.value !== null ? parseFloat(String(item.value).replace(',', '.')) : null;
-
-        return {
-            value: valorFormatado,
-            rawValue: valorBruto
-        };
-    }
-
-    /**
-     * Encontra um item na tabela de preços por 'category'.
-     * @param {string} category - A categoria a ser buscada.
-     * @returns {object} Um objeto com fabricante, modelo e quantidade.
-     */
-    function encontrarItemPorCategoria(category) {
-        const item = pricingTable.find(item => item.category === category);
-        if (!item) {
-            return { fabricante: 'Não especificado', modelo: 'Não encontrado', quantidade: 0 };
-        }
-        return {
-            fabricante: item.item.split(' ')[0],
-            modelo: item.item,
-            quantidade: item.qnt
-        };
-    }
-
-    /**
-     * CORREÇÃO FINAL E ROBUSTA: Agrupa todos os dados de financiamento de forma precisa.
-     * A lógica agora coleta todas as chaves de prazo e parcela e as agrupa pelo índice.
-     * @param {Array} dados - O array de dados financeiros.
-     * @returns {Array} Um array de objetos de planos de financiamento.
-     */
-    function agruparPlanosDeFinanciamento(dados) {
-        const planosMap = new Map();
-
-        // Itera sobre os dados para encontrar e agrupar as informações de prazo e parcela
-        dados.forEach(dado => {
-            const matchPrazo = dado.key.match(/^f_prazo_(\d+)$/);
-            const matchParcela = dado.key.match(/^f_parcela_(\d+)$/);
-            
-            if (matchPrazo) {
-                const indice = matchPrazo[1];
-                if (!planosMap.has(indice)) planosMap.set(indice, {});
-                planosMap.get(indice).prazo = {
-                    value: dado.formattedValue !== null ? dado.formattedValue : 'N/A',
-                    rawValue: dado.value !== null ? parseFloat(String(dado.value).replace(',', '.')) : null,
-                };
-            } else if (matchParcela) {
-                const indice = matchParcela[1];
-                if (!planosMap.has(indice)) planosMap.set(indice, {});
-                planosMap.get(indice).parcela = {
-                    value: dado.formattedValue !== null ? dado.formattedValue : 'N/A',
-                    rawValue: dado.value !== null ? parseFloat(String(dado.value).replace(',', '.')) : null,
-                };
-            }
-        });
-
-        // Converte o mapa em um array e ordena os planos pelos seus índices numéricos
-        const planos = Array.from(planosMap.keys())
-            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-            .map(indice => {
-                const plano = planosMap.get(indice);
-                // Garante que o objeto plano tenha todas as propriedades, mesmo que alguma esteja faltando no JSON
-                return {
-                    prazo: plano.prazo?.value || 'N/A',
-                    parcela: plano.parcela?.value || 'N/A',
-                    prazoRawValue: plano.prazo?.rawValue,
-                    parcelaRawValue: plano.parcela?.rawValue,
-                };
-            });
-            
-        return planos;
-    }
-
-    /**
-     * Lógica de Negócio: Calcula os valores para a Proposta Econômica.
-     * @param {number} potenciaKw - Potência do sistema em kWp.
-     * @param {number} precoPremium - O preço total da proposta Premium (valor numérico).
-     * @param {Array} planosPremium - Os planos de financiamento da proposta Premium.
-     * @returns {object} Um objeto com os dados calculados para a proposta Econômica.
-     */
-    function calcularPropostaEconomica(potenciaKw, precoPremium, planosPremium) {
-        if (isNaN(potenciaKw) || isNaN(precoPremium)) {
+    const buscarValor = (arrayDeDados, chave) => {
+        const item = arrayDeDados.find(d => d.key === chave);
+        if (item) {
             return {
-                precoTotalVenda: 'N/A',
-                planosFinanciamento: [],
+                value: item.value,
+                rawValue: item.rawValue,
+                formattedValue: item.formattedValue,
+                unit: item.unit
             };
         }
-        const REDUCAO_MIN = 0.079;
-        const REDUCAO_MAX = 0.098;
-        const FAIXA_POTENCIA_MAX = 100;
+        return {};
+    };
 
-        const fatorReducao = REDUCAO_MIN + (REDUCAO_MAX - REDUCAO_MIN) * (1 - Math.min(potenciaKw / FAIXA_POTENCIA_MAX, 1));
-        
-        const precoEconomico = precoPremium * (1 - fatorReducao);
+    /**
+     * Calcula o valor da conta de energia ideal com o sistema.
+     * @param {number} geracaoMensal - A geração mensal do sistema em kWh.
+     * @returns {number} O valor ideal da conta em Reais.
+     */
+    const calcularValorContaIdeal = (geracaoMensal) => {
+        const energiaInjetada = geracaoMensal * 0.95; // Estimativa de perdas
+        const saldoEnergia = Math.max(0, energiaInjetada - geracaoMensal);
+        return saldoEnergia * CONFIG.TARIFA_PADRAO_KWH;
+    };
 
-        const planosEconomicos = planosPremium.map(plano => {
-            const parcelaOriginal = plano.parcelaRawValue;
-            if (isNaN(parcelaOriginal)) return { ...plano, valorTotal: 'N/A', parcela: 'N/A' };
-            const parcelaEconomica = parcelaOriginal * (1 - fatorReducao);
-            return {
-                ...plano,
-                valorTotal: precoEconomico.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                parcela: parcelaEconomica.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-                prazoRawValue: plano.prazoRawValue,
-                parcelaRawValue: parcelaEconomica,
-            };
-        });
+    /**
+     * Calcula a proposta econômica com base em preços reduzidos.
+     * @param {number} potenciaSistema - A potência do sistema em kWp.
+     * @param {number} precoTotalVenda - O preço total de venda da proposta premium.
+     * @param {array} planosFinanciamento - Os planos de financiamento da proposta premium.
+     * @returns {object} Um novo objeto de proposta econômica.
+     */
+    const calcularPropostaEconomica = (potenciaSistema, precoTotalVenda, planosFinanciamento) => {
+        let reducao = CONFIG.REDUCAO_MIN;
+        if (potenciaSistema > CONFIG.FAIXA_POTENCIA_MAX) {
+            reducao = CONFIG.REDUCAO_MAX;
+        }
+
+        const novoPrecoTotal = precoTotalVenda * (1 - reducao);
+        const novosPlanos = planosFinanciamento.map(plano => ({
+            ...plano,
+            totalFinanciado: novoPrecoTotal,
+            valorParcela: (novoPrecoTotal * (plano.taxaJuros / 100) / (1 - Math.pow(1 + (plano.taxaJuros / 100), -plano.prazo)))
+        }));
 
         return {
-            precoTotalVenda: precoEconomico.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-            planosFinanciamento: planosEconomicos,
+            precoTotalVenda: {
+                rawValue: novoPrecoTotal,
+                formattedValue: `R$ ${novoPrecoTotal.toFixed(2).replace('.', ',')}`
+            },
+            planosFinanciamento: novosPlanos
         };
-    }
-    
+    };
+
     /**
-     * Lógica de Negócio: Identifica a Parcela de Equilíbrio.
+     * Encontra a parcela de equilíbrio entre a conta de luz e o financiamento.
      * @param {Array} planos - O array de planos de financiamento.
-     * @param {number} consumoMedio - O consumo médio mensal do cliente.
-     * @returns {string|null} O prazo (prazo) do plano de equilíbrio ou `null` se não encontrar.
+     * @param {number} consumoMedio - O consumo médio mensal em kWh.
+     * @returns {object|null} O plano de financiamento com a parcela mais próxima do valor da conta, ou null.
      */
-    function encontrarParcelaEquilibrio(planos, consumoMedio) {
-        if (typeof consumoMedio !== 'number' || isNaN(consumoMedio)) {
-            return null;
-        }
-        const valorIdealParcela = consumoMedio * (1 - 0.35);
+    const encontrarParcelaEquilibrio = (planos, consumoMedio) => {
+        // A conta de luz sem o sistema é o consumo médio * a tarifa padrão
+        const valorContaSemSistema = consumoMedio * CONFIG.TARIFA_PADRAO_KWH;
 
+        // Encontra o plano cuja parcela é mais próxima do valor da conta
         let melhorPlano = null;
         let menorDiferenca = Infinity;
 
-        planos.forEach(plano => {
-            const valorParcela = plano.parcelaRawValue;
-            if (isNaN(valorParcela)) return;
-
-            const diferenca = Math.abs(valorParcela - valorIdealParcela);
-
+        for (const plano of planos) {
+            const diferenca = Math.abs(plano.valorParcela - valorContaSemSistema);
             if (diferenca < menorDiferenca) {
                 menorDiferenca = diferenca;
                 melhorPlano = plano;
-            } else if (diferenca === menorDiferenca && plano.prazo < melhorPlano.prazo) {
-                melhorPlano = plano;
             }
-        });
-        
-        return melhorPlano ? melhorPlano.prazo : null;
-    }
-
-    /**
-     * Lógica de Negócio: Calcula o valor da conta ideal.
-     * @param {string} geracaoMensalStr - Geração média mensal em kWh como string.
-     * @returns {string} Valor da conta formatado em Reais, ou 'N/A'.
-     */
-    function calcularValorContaIdeal(geracaoMensalStr) {
-        const TARIFA_FIXA = 1.18;
-        const geracaoNumerica = parseFloat(String(geracaoMensalStr).replace('.', '').replace(',', '.'));
-        if (isNaN(geracaoNumerica)) {
-            return 'N/A';
         }
-        const valorConta = geracaoNumerica * TARIFA_FIXA;
-        return valorConta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+        return melhorPlano;
+    };
 
     // ######################################################################
-    // CRIAÇÃO DO OBJETO FINAL PADRONIZADO
+    // 3. EXTRAÇÃO E FORMATAÇÃO DOS DADOS DA API
     // ######################################################################
-    const nomeCliente = encontrarItemPorChave(dadosCliente, 'cliente_nome').value;
-    const cidadeCliente = encontrarItemPorChave(dadosCliente, 'cliente_cidade').value;
-    const estadoCliente = encontrarItemPorChave(dadosCliente, 'cliente_estado').value;
-    const potenciaSistema = encontrarItemPorChave(dadosSistema, 'potencia_sistema');
-    const geracaoMensal = encontrarItemPorChave(dadosSistema, 'geracao_mensal');
-    const precoTotalVenda = encontrarItemPorChave(dadosFinanceiro, 'preco');
-    const consumoMedio = encontrarItemPorChave(dadosGerais, 'consumo_medio');
+
+    const nomeCliente = buscarValor(dadosCliente, 'clientName').formattedValue || 'Não Informado';
+    const cpfCnpj = buscarValor(dadosCliente, 'clientCpfCnpj').formattedValue || 'Não Informado';
+    const enderecoCliente = buscarValor(dadosCliente, 'clientAddress').formattedValue || 'Não Informado';
+    const potenciaSistema = buscarValor(dadosSistema, 'systemPower');
+    const geracaoMensal = buscarValor(dadosSistema, 'monthlyGeneration');
+    const consumoMedio = buscarValor(dadosGerais, 'monthlyAverageConsumption');
+    const precoTotalVenda = buscarValor(dadosFinanceiro, 'totalSalePrice');
+    const validadeProposta = buscarValor(dadosGerais, 'proposalValidity');
+    const planosFinanciamento = pricingTable.find(p => p.topic === 'Financiamento')?.data || [];
+
+    // ######################################################################
+    // 4. ESTRUTURAÇÃO DO OBJETO FINAL (PROPOSTA PADRONIZADA)
+    // ######################################################################
     
-    const planosFinanciamento = agruparPlanosDeFinanciamento(dadosFinanceiro);
-
-    const localizacao = (cidadeCliente !== 'N/A' || estadoCliente !== 'N/A') ?
-        [cidadeCliente, estadoCliente].filter(item => item !== 'N/A').join(', ') : 'Localização não disponível';
-
+    // Esta é a nossa proposta 'Premium'
     const propostaPadronizada = {
-        // Dados do cliente e datas
-        idProjeto: dadosBrutos.id || 'N/A',
-        nomeCliente: nomeCliente || 'Nome do cliente não disponível',
-        localizacao: localizacao,
-        dataCriacao: dadosBrutos.generatedAt || 'N/A',
-        dataExpiracao: dadosBrutos.expirationDate || 'N/A',
-        
-        // Dados do sistema solar
-        potenciaSistema: potenciaSistema.value,
-        geracaoMensal: geracaoMensal.value,
-        inversor: encontrarItemPorCategoria('Inversor'),
-        modulos: encontrarItemPorCategoria('Módulo'),
-        // CORREÇÃO: Busca o tipo de instalação diretamente do objeto principal
-        tipoInstalacao: dadosBrutos.variables?.find(v => v.key === 'vc_tipo_de_estrutura')?.formattedValue || 'N/A',
-
-        // Dados financeiros
-        consumoMedio: consumoMedio.value,
-        precoTotalVenda: precoTotalVenda.value,
-        payback: encontrarItemPorChave(dadosFinanceiro, 'payback').value,
-        planosFinanciamento: planosFinanciamento,
-
-        // Lógica de Negócio: Calcula a versão Econômica da proposta
+        cliente: {
+            nome: nomeCliente,
+            cpfCnpj: cpfCnpj,
+            endereco: enderecoCliente
+        },
+        sistema: {
+            potencia: potenciaSistema.formattedValue,
+            geracaoMensal: geracaoMensal.formattedValue,
+            consumoMedio: consumoMedio.formattedValue
+        },
+        financiamento: {
+            precoTotalVenda: precoTotalVenda.formattedValue,
+            planosFinanciamento: planosFinanciamento
+        },
+        dataValidade: validadeProposta.formattedValue,
+        // ######################################################################
+        // ADICIONA A PROPOSTA ECONÔMICA GERADA
+        // ######################################################################
         propostaEconomica: calcularPropostaEconomica(potenciaSistema.rawValue, precoTotalVenda.rawValue, planosFinanciamento)
     };
 
     // Identifica a parcela de equilíbrio para a proposta Premium
-    propostaPadronizada.parcelaEquilibrioPremium = encontrarParcelaEquilibrio(propostaPadronizada.planosFinanciamento, consumoMedio.rawValue);
+    propostaPadronizada.parcelaEquilibrioPremium = encontrarParcelaEquilibrio(propostaPadronizada.financiamento.planosFinanciamento, consumoMedio.rawValue);
 
     // Identifica a parcela de equilíbrio para a proposta Econômica
     const planosEconomica = propostaPadronizada.propostaEconomica.planosFinanciamento;
     propostaPadronizada.propostaEconomica.parcelaEquilibrio = encontrarParcelaEquilibrio(planosEconomica, consumoMedio.rawValue);
 
     // Adiciona o valor ideal da conta ao objeto da proposta
-    propostaPadronizada.valorContaIdeal = calcularValorContaIdeal(geracaoMensal.value);
+    propostaPadronizada.valorContaIdeal = calcularValorContaIdeal(geracaoMensal.rawValue);
     
     // Adiciona o valor ideal da conta também à proposta econômica, pois não muda
     propostaPadronizada.propostaEconomica.valorContaIdeal = propostaPadronizada.valorContaIdeal;
@@ -262,9 +177,11 @@ export function processarDadosProposta(dadosBrutos) {
  */
 export function verificarPropostaExpirada(dataExpiracao) {
     if (!dataExpiracao) {
-        return true; // Considera expirada se a data não existir
+        return true; // Considera como expirada se a data não for fornecida.
     }
+    const dataExpiracaoObj = new Date(dataExpiracao);
     const dataAtual = new Date();
-    const dataValidade = new Date(dataExpiracao);
-    return dataAtual > dataValidade;
+    dataAtual.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas a data
+
+    return dataAtual > dataExpiracaoObj;
 }

@@ -1,18 +1,7 @@
 // Arquivo: api/atualizar-projeto.js
 
 const fetch = require('node-fetch');
-
-async function getAccessToken(longLivedToken, apiUrl) {
-    const authUrl = `${apiUrl}/auth/signin`;
-    const authResponse = await fetch(authUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
-        body: JSON.stringify({ token: longLivedToken })
-    });
-    if (!authResponse.ok) throw new Error(`Erro ao obter token: ${authResponse.status}`);
-    const authData = await authResponse.json();
-    return authData.access_token;
-}
+const { getAccessToken } = require('./auth'); // O caminho foi ajustado para a mesma pasta
 
 module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
@@ -65,6 +54,6 @@ module.exports = async (req, res) => {
 
     } catch (err) {
         console.error('Erro na função serverless (atualizar-projeto):', err.message);
-        res.status(500).json({ error: 'Erro ao processar a requisição de atualização.', details: err.message });
+        res.status(500).json({ error: 'Erro ao processar a requisição.', details: err.message });
     }
 };
