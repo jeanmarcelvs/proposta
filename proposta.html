@@ -12,6 +12,8 @@
 
 <body>
 
+    
+
     <main>
         <header>
             <div class="logo-container">
@@ -24,15 +26,46 @@
         </header>
 
         <section id="secao-resumo">
-            <div class="valor-resumo">
-                <span id="valor-resumo-premium" class="texto-valor-resumo"></span>
-            </div>
-            <div class="valor-resumo">
-                <span id="valor-resumo-acessivel" class="texto-valor-resumo"></span>
-            </div>
             <div id="secao-cliente">
-                <span id="nome-cliente" class="nome-cliente"></span>
-                <p id="local-proposta" class="local-proposta"></p>
+                <h2 id="nome-cliente" class="nome-cliente"></h2>
+                <p class="local-proposta">
+                    <span id="local-cliente"></span> | <span id="data-proposta"></span>
+                </p>
+            </div>
+        </section>
+
+        <section id="secao-sistema" class="secao-principal">
+            <h2 class="titulo-secao">Sistema Proposto</h2>
+            <div class="cards-container">
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span id="geracao-media" class="valor-card"></span>
+                        <span id="unidade-geracao" class="unidade-card">kWh/mês</span>
+                        <p class="legenda-card">Geração média</p>
+                    </div>
+                </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-house-chimney"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <p id="instalacao-paineis" class="texto-card"></p>
+                        <p class="legenda-card">Instalação de Painéis</p>
+                    </div>
+                </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span class="unidade-card">R$</span>
+                        <span id="ideal-para" class="valor-card"></span>
+                        <p class="legenda-card">Ideal para contas de até</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -40,18 +73,26 @@
             <h2 class="titulo-secao">Equipamentos</h2>
             <div class="conteudo-equipamentos">
                 <div class="imagem-equipamentos">
-                    <img id="imagem-marca" src="" alt="">
+                    <img id="imagem-marca" src="" alt="Imagem da marca do equipamento">
                 </div>
-                <div id="lista-equipamentos" class="lista-equipamentos">
+                <div class="lista-equipamentos">
+                    <div class="item-equipamento">
+                        <span class="quantidade-equipamento" id="quantidade-inversor"></span>
+                        <p class="descricao-equipamento">Inversor <span id="descricao-inversor"></span></p>
                     </div>
+                    <div class="item-equipamento">
+                        <span class="quantidade-equipamento" id="quantidade-painel"></span>
+                        <p class="descricao-equipamento">Módulo Solar <span id="descricao-painel"></span></p>
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="secao-instalacao" class="secao-principal">
-            <h2 class="titulo-secao">Instalação</h2>
+            <h2 class="titulo-secao">Padrão de Instalação</h2>
             <div class="conteudo-instalacao">
                 <div class="imagem-instalacao">
-                    <img id="imagem-instalacao" src="" alt="">
+                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação">
                 </div>
                 <div id="detalhes-instalacao" class="detalhes-instalacao">
                     </div>
@@ -59,24 +100,44 @@
         </section>
 
         <section id="secao-financiamento" class="secao-principal">
-            <h2 class="titulo-secao">Financiamento</h2>
+            <h2 class="titulo-secao">Valores e Condições</h2>
             <div class="valores-container">
                 <div class="card-valores card-total">
-                    <p class="legenda-valores">Total da Proposta</p>
-                    <span id="valor-total-proposta" class="valor-total-proposta"></span>
-                    <p id="etiqueta-proposta-dinamica" class="etiqueta-proposta-dinamica"></p>
+                    <p class="legenda-valores">Valor total <br>
+                        (Proposta <span class="etiqueta-proposta-dinamica">Premium</span>):</p>
+                    <p class="valor-total-proposta">R$ <span id="valor-total"></span></p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Entrada</p>
-                    <span id="valor-entrada" class="valor-parcela-proposta"></span>
+                    <p class="legenda-valores">Em 12x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-12"></span></p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Valor da Parcela</p>
-                    <span id="valor-parcela" class="valor-parcela-proposta"></span>
+                    <p class="legenda-valores">Em 24x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-24"></span></p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Parcelas</p>
-                    <span id="valor-parcelas" class="valor-parcela-proposta"></span>
+                    <p class="legenda-valores">Em 36x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-36"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 48x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-48"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 60x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-60"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 72x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-72"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 84x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-84"></span></p>
+                </div>
+                <div class="card-investimento card-payback">
+                    <p class="legenda-investimento">Seu investimento se paga em:</p>
+                    <p class="valor-investimento"><span id="payback"></span></p>
                 </div>
             </div>
             <div id="secao-observacao" class="secao-observacao-financiamento">
@@ -106,22 +167,13 @@
             <a href="mailto:gdis.solar@gmail.com" class="footer-contact-item">
                 <i class="fas fa-envelope"></i> gdis.solar@gmail.com
             </a>
-            <a href="https://www.instagram.com/gdis_solar" target="_blank" class="footer-contact-item">
-                <i class="fab fa-instagram"></i> gdis_solar
-            </a>
-            <a href="https://www.gdis.com.br" target="_blank" class="footer-contact-item">
-                <i class="fas fa-globe"></i> gdis.com.br
+            <a href="https://www.instagram.com/gdis.solar/" target="_blank" class="footer-contact-item">
+                <i class="fab fa-instagram"></i> @gdis.solar
             </a>
         </div>
-        <p class="footer-copyright">&copy; <span id="ano-atual"></span> GDIS Solar. Todos os direitos reservados.</p>
     </footer>
 
-    <script src="js/propostaController.js" type="module"></script>
-    <script src="js/model.js" type="module"></script>
-    <script src="js/api.js" type="module"></script>
-    <script>
-        document.getElementById('ano-atual').textContent = new Date().getFullYear();
-    </script>
+    <script type="module" src="js/propostaController.js"></script>
 
 </body>
 
