@@ -54,12 +54,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             const propostaData = resposta.proposta;
             localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
+            // PONTO DE DEBUG 1: VERIFICA SE OS DADOS FORAM RECEBIDOS CORRETAMENTE
+            console.log("DEBUG: Conteúdo de propostaData:", propostaData);
+
             document.body.classList.add('theme-premium');
+
+            // PONTO DE DEBUG 2: ANTES DE CADA CHAMADA DE FUNÇÃO DE PREENCHIMENTO
+            console.log("DEBUG: Chamando preencherDadosProposta...");
             preencherDadosProposta(propostaData.premium);
+
+            console.log("DEBUG: Chamando atualizarImagemEquipamentos...");
             atualizarImagemEquipamentos(propostaData, 'premium');
+
+            console.log("DEBUG: Chamando atualizarEtiquetasDinamicas...");
             atualizarEtiquetasDinamicas('premium');
+
+            console.log("DEBUG: Chamando atualizarImagemInstalacao...");
             atualizarImagemInstalacao(propostaData, 'premium');
+
+            console.log("DEBUG: Chamando preencherDetalhesInstalacao...");
             preencherDetalhesInstalacao(propostaData.premium);
+
             console.log("DEBUG: Preenchimento inicial concluído.");
 
             // SOMENTE ESCONDE O OVERLAY SE O SUCESSO FOR CONFIRMADO
