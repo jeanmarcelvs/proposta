@@ -389,18 +389,34 @@ header {
 /* Seção de Equipamentos */
 .conteudo-equipamentos {
   display: flex;
+  flex-direction: column; /* Padrão para mobile */
   align-items: center;
   gap: 2rem;
 }
 
+@media (min-width: 992px) {
+  .conteudo-equipamentos {
+    flex-direction: row; /* Layout horizontal em telas maiores */
+    justify-content: center;
+  }
+}
+
 .imagem-equipamentos {
   flex-shrink: 0;
+  width: 100%;
+  max-width: 350px;
 }
 
 .imagem-equipamentos img {
-  max-width: 250px;
+  width: 100%;
   height: auto;
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px var(--cor-sombra);
+  transition: transform 0.3s ease;
+}
+
+.imagem-equipamentos img:hover {
+  transform: scale(1.02);
 }
 
 .lista-equipamentos {
@@ -410,69 +426,64 @@ header {
   gap: 1.5rem;
 }
 
-/* NOVO: Estilos para o novo layout de equipamento */
 .item-equipamento {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 12px;
-  background-color: var(--cor-fundo);
+  background-color: var(--cor-cartao-fundo);
   border: 1px solid var(--cor-borda);
-  box-shadow: 0 2px 8px var(--cor-sombra);
+  box-shadow: 0 4px 12px var(--cor-sombra);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .item-equipamento:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px var(--cor-sombra);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px var(--cor-sombra);
 }
 
 .icone-equipamento {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: var(--cor-primaria);
   flex-shrink: 0;
+  width: 40px; /* Garante que o ícone tenha um espaço fixo */
+  text-align: center;
 }
 
 .detalhes-item {
+  flex-grow: 1;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  align-items: baseline; /* Alinha a base da fonte para um visual mais limpo */
+  gap: 1.25rem;
 }
 
-/* NOVO: Estilo para o container de quantidade e unidade */
 .quantidade-e-unidade {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
+  gap: 5px;
   line-height: 1;
   flex-shrink: 0;
 }
 
-/* NOVO: Destaque sutil para a quantidade */
 .quantidade-equipamento {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: var(--cor-primaria);
-  text-shadow: 0 0 5px rgba(180, 107, 63, 0.5); /* Sombra sutil para destaque */
-}
-
-/* NOVO: Estilo para a unidade de potência */
-.watts-unidade {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--cor-texto-secundario);
+  text-shadow: 0 0 8px rgba(var(--cor-primaria-rgb), 0.5);
 }
 
 .info-equipamento {
   display: flex;
   flex-direction: column;
+  line-height: 1.3;
 }
 
 .titulo-equipamento {
   font-weight: 600;
   color: var(--cor-texto-principal);
   margin: 0;
+  font-size: 1.1rem;
 }
 
 .descricao-equipamento {
