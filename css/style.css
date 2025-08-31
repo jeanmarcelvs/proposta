@@ -412,7 +412,47 @@ header {
 
 /* Seção de Equipamentos - CÓDIGO FINAL OTIMIZADO */
 
-/* Estilo para o card de cada equipamento */
+/* Seção de Equipamentos - CÓDIGO FINAL OTIMIZADO */
+.conteudo-equipamentos {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .conteudo-equipamentos {
+    flex-direction: row; 
+    justify-content: center;
+  }
+}
+
+.imagem-equipamentos {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 350px;
+}
+
+.imagem-equipamentos img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px var(--cor-sombra);
+  transition: transform 0.3s ease;
+}
+
+.imagem-equipamentos img:hover {
+  transform: scale(1.02);
+}
+
+.lista-equipamentos {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Estilo do card principal de cada equipamento */
 .item-equipamento {
   display: flex;
   align-items: center;
@@ -430,7 +470,7 @@ header {
   box-shadow: 0 6px 15px var(--cor-sombra);
 }
 
-/* Estilo para o ícone do equipamento */
+/* Estilo do ícone */
 .icone-equipamento {
   font-size: 2rem;
   color: var(--cor-primaria);
@@ -439,40 +479,43 @@ header {
 
 /* Container de texto ajustado */
 .detalhes-item {
+  flex-grow: 1;
   display: flex;
-  flex-direction: row; /* Layout horizontal para alinhamento arrojado */
-  align-items: center; /* Alinha verticalmente no centro */
-  gap: 1rem; /* Espaço entre a quantidade e as informações */
+  flex-direction: column; /* Organiza os elementos em coluna */
 }
 
-/* A quantidade agora tem um visual arrojado, como uma etiqueta */
+/* Estilo da quantidade, que fica acima */
 .quantidade-equipamento {
   font-size: 2.2rem;
   font-weight: 700;
   color: var(--cor-primaria);
   line-height: 1;
-  padding: 0 0.5rem;
-  border-right: 2px solid var(--cor-borda); /* Borda para separação visual */
+  margin-bottom: 0.5rem;
 }
 
-/* Informações do equipamento (descrição e título) */
+/* Container que envolve o título e a descrição */
 .info-equipamento {
   display: flex;
   flex-direction: column;
 }
 
-/* O título do item (Módulo Solar, Inversor) com destaque */
 .titulo-equipamento {
   font-weight: 600;
   color: var(--cor-texto-principal);
   margin: 0;
-  font-size: 1.1rem; /* Tamanho maior para destaque */
+  font-size: 1.1rem;
 }
 
-/* A descrição (potência) também tem um visual claro */
+/* A descrição do item com um fundo para destaque */
 .descricao-equipamento {
   font-size: 0.9rem;
-  color: var(--cor-texto-secundario);
+  font-weight: 600;
+  color: var(--cor-fundo); /* Usa a cor de fundo do tema para o texto */
+  background-color: var(--cor-primaria); /* Fundo com a cor de destaque */
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block; /* Garante que o fundo envolva apenas o texto */
+  margin-top: 0.5rem;
 }
 
 /* Seção de Instalação */
