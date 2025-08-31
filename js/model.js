@@ -51,15 +51,18 @@ function buscarValorVariavel(variables, key) {
 function tratarDadosProposta(dadosBrutos, tipo) {
     console.log(`Modelo: Tratando dados para proposta ${tipo}`);
 
+    // CORRIGIDO: Agora espera que a primeira requisição retorne um array de propostas.
+    const proposta = Array.isArray(dadosBrutos.data) ? dadosBrutos.data[0] : dadosBrutos.data;
+    
     // CORRIGIDO: Adiciona uma verificação mais robusta para os dados
-    if (!dadosBrutos || !dadosBrutos.data || !Array.isArray(dadosBrutos.data.variables)) {
+    if (!proposta || !Array.isArray(proposta.variables)) {
         console.error("ERRO: Dados brutos da API inválidos para tratamento.");
         return null;
     }
 
-    const variables = dadosBrutos.data.variables;
-    const cliente = dadosBrutos.data.client_name || 'Cliente';
-    const propostaId = dadosBrutos.data.id;
+    const variables = proposta.variables;
+    const cliente = proposta.project.name || 'Cliente';
+    const propostaId = proposta.project.id;
 
     // Extrai valores das variáveis
     const consumo = buscarValorVariavel(variables, 'consumo-medio');
@@ -106,10 +109,10 @@ async function buscarPropostaPorTipo(numeroProjeto, tipo) {
     }
 
     const accessToken = authResponse.accessToken;
-    const endpoint = `/projects/${numeroProjeto}`;
+    // CORRIGIDO: Endpoint para buscar propostas é '.../projects/{id}/proposals'
+    const endpoint = `/projects/${numeroProjeto}/proposals`;
     const dadosApi = await get(endpoint, accessToken);
     
-    // NOVA LINHA ADICIONADA: LOG DA RESPOSTA BRUTA
     console.log("Modelo: Resposta bruta da API:", dadosApi);
 
     if (!dadosApi.sucesso) {
@@ -144,10 +147,12 @@ export async function buscarETratarProposta(numeroProjeto) {
     dadosProposta.premium = propostaPremium.proposta;
 
     // Tenta encontrar o ID da proposta acessível
-    const dadosBrutos = await get(`/projects/${numeroProjeto}`, (await authenticate(apiToken)).accessToken);
+    // CORRIGIDO: Agora usa o endpoint /proposals para a segunda requisição
+    const dadosBrutos = await get(`/projects/${numeroProjeto}/proposals`, (await authenticate(apiToken)).accessToken);
     let idPropostaAcessivel = null;
-    if (dadosBrutos.sucesso && dadosBrutos.dados && dadosBrutos.dados.variables) {
-        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.variables, 'proposta-acessivel');
+    // CORRIGIDO: Ajuste na lógica para encontrar o ID da proposta acessível
+    if (dadosBrutos.sucesso && dadosBrutos.dados && Array.isArray(dadosBrutos.dados.data) && dadosBrutos.dados.data.length > 0) {
+        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.data[0].variables, 'proposta-acessivel');
     }
 
     if (idPropostaAcessivel) {
