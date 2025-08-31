@@ -151,39 +151,27 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         return null;
     }
 
-    const {
-        dados
-    } = dadosApi;
+    const { dados } = dadosApi;
     const variables = dados.variables || [];
     const pricingTable = dados.pricingTable || [];
-    // CORRIGIDO: Nome do cliente agora é extraído do objeto de variáveis
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
-    // CORRIGIDO: Acessa a cidade e estado pelas chaves corretas
     const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
     const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
 
     console.log(`Modelo: Tratando dados para proposta ${tipoProposta}`);
 
-    // Encontra os equipamentos
-    const painel = pricingTable.find(item => item.category === 'Módulo');
-    const inversor = pricingTable.find(item => item.category === 'Inversor');
-    const instalacao = pricingTable.find(item => item.category === 'Instalação');
-    const kit = pricingTable.find(item => item.category === 'KIT' && item.item === '123');
-
-    // CORRIGIDO: Encontra as variáveis usando as chaves corretas e tipos corretos
     const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
     const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
     const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
     
-    // NOVO: Calcula o valor ideal para a conta de luz
+    // Calcula o valor ideal para a conta de luz
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
-    // CORRIGIDO: Calcula os valores financeiros com base nas chaves da API
     const valorTotal = extrairValorVariavelPorChave(variables, 'preco') || 0;
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
@@ -209,14 +197,13 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         linkProposta: linkProposta,
         sistema: {
             geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
-            instalacaoPaineis: tipoEstrutura, // CORRIGIDO
-            idealPara: idealParaValor.toLocaleString('pt-BR', { // AQUI É O CÁLCULO
+            instalacaoPaineis: tipoEstrutura,
+            idealPara: idealParaValor.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             })
         },
         equipamentos: {
-            // CORRIGIDO: Adiciona a URL da imagem
             imagem: caminhosImagens.equipamentos[tipoProposta], 
             quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
             descricaoPainel: extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado',
@@ -224,14 +211,14 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
             descricaoInversor: extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado'
         },
         instalacao: {
-            // CORRIGIDO: Adiciona a URL da imagem
             imagem: caminhosImagens.instalacao[tipoProposta],
             detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
         },
         valores: {
             valorTotal: valorTotal,
             valorResumo: valorResumo,
-            economiaMensal: economiaMensal,
+            // REMOVIDO: A variável 'economiaMensal' não existe.
+            // A economia em kWh é o próprio 'geracaoMensal'.
             payback: payback,
             parcelas: parcelas,
             observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
