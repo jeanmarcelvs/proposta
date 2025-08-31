@@ -346,7 +346,7 @@ main {
     align-items: stretch;
 }
 
-.sistema-info-card {}
+
 
 .sistema-info-card p {
     margin: 0;
@@ -369,8 +369,7 @@ main {
     /* NOVO: Peso da fonte mais leve */
     color: var(--cor-texto-secundario);
     /* NOVO: Cor mais suave */
-    vertical-align: super;
-    /* Pode ser removido, pois 'display: block' já quebra a linha */
+    
 }
 
 .ideal-para-container {
@@ -532,7 +531,7 @@ main {
 }
 
 /* Estilos para os cartões individuais dentro da grade de parcelas */
-.cartoes-parcelas .card {}
+
 
 .cartoes-parcelas .card:hover {
     transform: translateY(-5px);
@@ -914,7 +913,7 @@ footer {
 
 /* Cores dos ícones */
 .observacao-financiamento {
-    border-color: var(--cor-primaria);
+border-color: var(--cor-primaria);
     margin-top: 2rem; /* Adiciona mais espaço no topo */
 }
 
@@ -929,3 +928,67 @@ footer {
         padding: 1rem 1.5rem;
     }
 }
+
+/* proposta.css */
+
+/* ... outros estilos ... */
+
+/* --- Estilos para o Loading Overlay (Splash de Transição) --- */
+#loading-overlay {
+    /* Mantenha os estilos existentes */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 250, 250, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    /* AQUI ESTÁ A MUDANÇA: Torne o overlay visível por padrão */
+    opacity: 1;
+    visibility: visible;
+}
+
+#loading-overlay.oculto {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* NOVO ESTILO: Oculta o conteúdo principal por padrão */
+.main-oculto {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* NOVO ESTILO: Exibe o conteúdo principal com uma transição suave */
+.main-visivel {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Animação do spinner de carregamento */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid var(--cor-secundaria);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
