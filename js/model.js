@@ -33,372 +33,134 @@ const caminhosImagens = {
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
  * e retornar seu valor formatado.
- * @param {Array} variables O array de objetos de onde extrair os dados.
- * @param {string} key A chave do objeto a ser encontrado.
- * @returns {string|null} O valor formatado ou null se não encontrado.
+ * @param {Array} array O array de objetos de variáveis.
+ * @param {string} chave A chave a ser procurada (ex: 'consumo_mensal').
+ * @returns {string|number|null} O valor da chave ou null se não for encontrada.
  */
-function extrairValorVariavelPorChave(variables, key) {
-    const item = variables.find(obj => obj.key === key);
-    return item ? item.formattedValue : null;
-}
-
-/**
- * Função auxiliar para encontrar um objeto no array 'variables' pela chave
- * e retornar seu valor numérico.
- * @param {Array} variables O array de objetos de onde extrair os dados.
- * @param {string} key A chave do objeto a ser encontrado.
- * @returns {number|null} O valor numérico ou null se não encontrado.
- */
-function extrairValorNumericoPorChave(variables, key) {
-    const item = variables.find(obj => obj.key === key);
-    if (!item || item.value === null || item.value === undefined) {
+function buscarValorVariavel(array, chave) {
+    if (!Array.isArray(array)) {
+        console.error('ERRO: O objeto de variáveis não é um array.');
         return null;
     }
-    // Converte a string do valor para número, substituindo vírgulas por pontos.
-    return parseFloat(String(item.value).replace(',', '.'));
+    const item = array.find(v => v.key === chave);
+    return item ? item.value : null;
 }
 
 /**
- * Função para tratar a string de payback (ex: "2 anos e 2 meses") e retornar os anos e meses.
- * @param {string} textoPayback A string de payback do JSON.
- * @returns {{anos: number, meses: number}} Objeto com anos e meses.
+ * Função para tratar os dados da API e preparar os objetos de propostas.
+ * @param {object} dadosApiBrutos Dados brutos retornados pela API.
+ * @returns {object} Um objeto formatado com os dados da proposta.
  */
-function extrairValorPayback(textoPayback) {
-    const regex = /(\d+)\s+anos?\s+e\s+(\d+)\s+meses?/;
-    const match = textoPayback?.match(regex);
-    if (match) {
-        return {
-            anos: parseInt(match[1]),
-            meses: parseInt(match[2])
-        };
+function tratarDadosProposta(dadosApiBrutos) {
+    if (!dadosApiBrutos || !dadosApiBrutos.data || !dadosApiBrutos.data.variables) {
+        console.error("ERRO: Dados brutos da API inválidos para tratamento.");
+        return null;
     }
+
+    const variables = dadosApiBrutos.data.variables;
+    const propostaId = dadosApiBrutos.data.id;
+    const cliente = dadosApiBrutos.data.owner.name;
+
+    const consumoMensal = buscarValorVariavel(variables, 'consumo_mensal');
+    const valorSistema = buscarValorVariavel(variables, 'valor_sistema');
+    const valorEconomia = buscarValorVariavel(variables, 'economia_mensal');
+    const valorPayback = buscarValorVariavel(variables, 'payback');
+    const geracaoMensal = buscarValorVariavel(variables, 'geracao_mensal');
+
     return {
-        anos: 0,
-        meses: 0
+        id: propostaId,
+        cliente: cliente,
+        consumoMensal: consumoMensal ? `${consumoMensal} kWh` : 'Não disponível',
+        geracaoMensal: geracaoMensal ? `${geracaoMensal} kWh` : 'Não disponível',
+        valorSistema: valorSistema ? parseFloat(valorSistema).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Não disponível',
+        economiaMensal: valorEconomia ? parseFloat(valorEconomia).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Não disponível',
+        payback: valorPayback ? `${valorPayback} meses` : 'Não disponível'
     };
 }
 
 /**
- * NOVO: Função para formatar um total de meses em "X anos e Y meses".
- * @param {number} totalMeses O total de meses a ser formatado.
- * @returns {string} A string formatada.
- */
-function formatarPayback(totalMeses) {
-    if (totalMeses < 0) totalMeses = 0;
-    const anos = Math.floor(totalMeses / 12);
-    // Alterado para Math.ceil() para arredondar os meses para cima.
-    const meses = Math.ceil(totalMeses % 12);
-
-    if (anos === 0 && meses === 0) {
-        return "Não informado";
-    }
-
-    // Tratamento para o caso de o cálculo resultar em 12 meses
-    const anosCalculados = meses === 12 ? anos + 1 : anos;
-    const mesesCalculados = meses === 12 ? 0 : meses;
-
-    const textoAnos = anosCalculados > 0 ? `${anosCalculados} ano${anosCalculados > 1 ? 's' : ''}` : '';
-    const textoMeses = mesesCalculados > 0 ? `${mesesCalculados} mes${mesesCalculados > 1 ? 'es' : ''}` : '';
-
-    if (textoAnos && textoMeses) {
-        return `${textoAnos} e ${textoMeses}`;
-    }
-
-    return textoAnos || textoMeses;
-}
-
-/**
- * Função para formatar a data ISO 8601 (2025-08-20T23:33:46.000Z) para DD/MM/AAAA.
- * @param {string} dataISO A string de data no formato ISO 8601.
- * @returns {string} A data formatada.
- */
-function formatarData(dataISO) {
-    if (!dataISO) return 'N/A';
-    const data = new Date(dataISO);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
-    return `${dia}/${mes}/${ano}`;
-}
-
-/**
- * Calcula os valores da proposta acessível com base nos valores da Premium.
- * @param {object} propostaPremium Os dados da proposta Premium.
- * @returns {object} Os dados da proposta acessível.
- */
-/**
- * Calcula os valores da proposta acessível com base nos valores da Premium.
- * @param {object} propostaPremium Os dados da proposta Premium.
- * @returns {object} Os dados da proposta acessível.
- */
-function calcularPropostaAcessivel(propostaPremium) {
-    console.log("DEBUG: Calculando proposta Acessível com base na Premium...");
-
-    // Lógica para calcular o fator de redução dinâmico
-    const potenciaStr = propostaPremium.sistema?.potenciaSistema || '0 kWp';
-    const potenciaNumerica = parseFloat(potenciaStr.replace(' kWp', '').replace(',', '.'));
-
-    const minPotencia = 2;
-    const maxPotencia = 100;
-    const minReducao = 0.078; // 7.8%
-    const maxReducao = 0.098; // 9.8%
-
-    // Garante que a potência esteja dentro da faixa esperada
-    const potenciaClamped = Math.max(minPotencia, Math.min(maxPotencia, potenciaNumerica));
-
-    // Calcula o percentual de redução usando uma interpolação linear inversa
-    const percentualReducao = maxReducao -
-        ((potenciaClamped - minPotencia) / (maxPotencia - minPotencia)) * (maxReducao - minReducao);
-
-    // Calcula o fator de redução
-    const fatorReducao = 1 - percentualReducao;
-
-    const novaProposta = JSON.parse(JSON.stringify(propostaPremium));
-
-    // Converte o valor total formatado para um número para o cálculo
-    const valorTotalNumerico = parseFloat(novaProposta.valores.valorTotal.replace('.', '').replace(',', '.'));
-    console.log(`DEBUG: Valor Total Premium: ${valorTotalNumerico}`);
-    console.log(`DEBUG: Potência do Sistema: ${potenciaClamped} kWp`);
-    console.log(`DEBUG: Percentual de Redução: ${(percentualReducao * 100).toFixed(2)}%`);
-
-    novaProposta.valores.valorTotal = (valorTotalNumerico * fatorReducao).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-    console.log(`DEBUG: Novo Valor Total Acessível: ${novaProposta.valores.valorTotal}`);
-
-    // Calcula os valores das parcelas com base no fator de redução
-    for (const key in novaProposta.valores.parcelas) {
-        const valorParcelaNumerico = parseFloat(novaProposta.valores.parcelas[key].replace('.', '').replace(',', '.'));
-        novaProposta.valores.parcelas[`${key}`] = (valorParcelaNumerico * fatorReducao).toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-        console.log(`DEBUG: Nova Parcela ${key}: ${novaProposta.valores.parcelas[key]}`);
-    }
-
-    // NOVO: Cálculo do payback proporcional
-    const paybackPremiumEmMeses = (propostaPremium.valores.paybackAnos * 12) + propostaPremium.valores.paybackMeses;
-    const paybackAcessivelEmMeses = paybackPremiumEmMeses * fatorReducao;
-    novaProposta.valores.payback = formatarPayback(paybackAcessivelEmMeses);
-
-    novaProposta.equipamentos.imagemAcessivel = caminhosImagens.equipamentos.acessivel;
-
-    // NOVO: Detalhes de instalação para a proposta +Acessível (Texto corrigido)
-    novaProposta.instalacao = {
-        imagemInstalacaoAcessivel: caminhosImagens.instalacao.acessivel,
-        detalhesInstalacao: [
-            { icone: 'fa-shield-alt', texto: 'O projeto considera as proteções internas já existentes na propriedade e as internas do inversor.' },
-            { icone: 'fa-bolt', texto: 'Conexões elétricas simples.' },
-            { icone: 'fa-solar-panel', texto: 'Utilização de cabos simples.' },
-            { icone: 'fa-plug', texto: 'Ramal de Entrada de **responsabilidade da concessionária**, geralmente de alumínio, **Não fazemos a sua substituição**.' },
-            { icone: 'fa-cogs', texto: 'Instalação elétrica simples, sem as otimizações de uma instalação especializada padrão premium.' }
-        ]
-    };
-    console.log("DEBUG: Proposta Acessível finalizada.");
-    return novaProposta;
-}
-
-/**
- * Busca e trata os dados de uma proposta da API.
- * @param {string} numeroProjeto O número do projeto a ser buscado.
- * @returns {Promise<object>} Objeto com a proposta tratada ou um erro.
+ * Busca e trata a proposta na API. Agora busca a principal e a acessível.
+ * @param {string} numeroProjeto O ID da proposta principal.
+ * @returns {Promise<object>} Objeto com os dados de ambas as propostas.
  */
 export async function buscarETratarProposta(numeroProjeto) {
     try {
-        console.log("Modelo: Iniciando o processo de autenticação...");
-        const authResponse = await authenticate(apiToken);
+        mostrarLoadingOverlay();
+        console.log(`Modelo: Buscando proposta PREMIUM para o ID: ${numeroProjeto}`);
 
+        // 1. Autenticação na API
+        const authResponse = await authenticate(apiToken);
         if (!authResponse.sucesso) {
             console.error("Modelo: Falha na autenticação.", authResponse.mensagem);
-            return authResponse;
+            return {
+                sucesso: false,
+                mensagem: authResponse.mensagem
+            };
         }
-
         const accessToken = authResponse.accessToken;
 
-        console.log("Modelo: Autenticação bem-sucedida. Buscando dados da proposta...");
-        // Usa o endpoint correto com o número do projeto e passa o accessToken
-        const respostaApi = await get(`/projects/${numeroProjeto}/proposals`, accessToken);
-        console.log("Modelo: Resposta da API recebida:", respostaApi);
+        // 2. Busca a proposta principal (PREMIUM)
+        const endpointPrincipal = `/projects/${numeroProjeto}`;
+        const respostaPrincipal = await get(endpointPrincipal, accessToken);
 
-        if (!respostaApi.sucesso || !respostaApi.dados) {
-            console.error("Modelo: Resposta da API indica falha ou dados ausentes.");
-            throw new Error(respostaApi.mensagem || 'Proposta não encontrada.');
+        if (!respostaPrincipal.sucesso) {
+            console.error("Modelo: Falha ao buscar a proposta PREMIUM.", respostaPrincipal.mensagem);
+            return respostaPrincipal;
         }
+        const dadosPropostaPrincipal = respostaPrincipal.dados;
 
-        const dadosOriginais = respostaApi.dados;
-        const variables = dadosOriginais.variables || [];
-        const pricingTable = dadosOriginais.pricingTable || [];
+        // Armazena a proposta principal (PREMIUM)
+        dadosProposta.premium = tratarDadosProposta(dadosPropostaPrincipal);
 
-        const expirationDate = dadosOriginais.expirationDate;
+        // 3. Verifica se existe um ID de proposta acessível na resposta
+        // ATUALIZAÇÃO: Usando a chave correta fornecida pelo usuário
+        const idPropostaAcessivel = buscarValorVariavel(dadosPropostaPrincipal.data.variables, 'vc_prejeto_acessivel');
 
-        if (!expirationDate) {
-            console.error("Modelo: A proposta não possui uma data de expiração. Retornando erro.");
-            return {
-                sucesso: false,
-                mensagem: 'Esta proposta não é válida, pois não possui uma data de expiração definida.'
-            };
-        }
+        // Apenas busca a segunda proposta se o ID for um valor válido e numérico
+        if (idPropostaAcessivel && !isNaN(idPropostaAcessivel)) {
+            console.log(`Modelo: ID da proposta acessível encontrado: ${idPropostaAcessivel}. Buscando...`);
 
-        const expirationDateLocalString = expirationDate.replace('Z', '');
-        const validade = new Date(expirationDateLocalString);
-        const hoje = new Date();
-        const diasRestantes = Math.ceil((validade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+            // 4. Busca a segunda proposta (+Acessível)
+            const endpointAcessivel = `/projects/${idPropostaAcessivel}`;
+            const respostaAcessivel = await get(endpointAcessivel, accessToken);
 
-        // Verifica a validade da proposta antes de processar todos os dados
-        if (diasRestantes <= 0) {
-            return {
-                sucesso: false,
-                expirada: true,
-                mensagem: 'Esta proposta está expirada.'
-            };
-        }
-
-        console.log("Modelo: Extraindo variáveis e dados da pricingTable...");
-
-        // Dados do cliente
-        const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || dadosOriginais.cliente?.nome || 'Não informado';
-        const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informada';
-        const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
-
-        // Dados do sistema
-        const geracaoMensalFormatada = extrairValorVariavelPorChave(variables, 'geracao_mensal') || 'N/A';
-        const geracaoMensalNumerica = extrairValorNumericoPorChave(variables, 'geracao_mensal');
-        const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_sistema') || 'N/A';
-        const instalacaoPaineis = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
-        const tarifaNumerica = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1');
-
-        // Cálculo do valor "Ideal para contas de até"
-        const idealParaValor = (geracaoMensalNumerica && tarifaNumerica) ?
-            (geracaoMensalNumerica * tarifaNumerica).toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }) :
-            'Não informado';
-
-        // Dados dos equipamentos a partir das chaves corretas
-        const potenciaInversor = extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || '0';
-        const quantidadeInversor = extrairValorVariavelPorChave(variables, 'inversor_quantidade_1') || '0';
-        const potenciaModulo = extrairValorVariavelPorChave(variables, 'modulo_potencia') || '0';
-        const quantidadeModulo = extrairValorVariavelPorChave(variables, 'modulo_quantidade') || '0';
-
-        // Valores financeiros
-        const valorTotal = extrairValorVariavelPorChave(variables, 'preco') || 'Não informado';
-        const paybackDados = extrairValorPayback(extrairValorVariavelPorChave(variables, 'payback'));
-
-        // Extração dos valores das parcelas
-        const parcelas = {};
-        for (let i = 1; i <= 7; i++) {
-            const prazoKey = `f_prazo_${i}`;
-            const parcelaKey = `f_parcela_${i}`;
-            const prazo = extrairValorVariavelPorChave(variables, prazoKey);
-            const valorParcela = extrairValorVariavelPorChave(variables, parcelaKey);
-
-            if (prazo && valorParcela) {
-                parcelas[prazo] = valorParcela;
+            if (respostaAcessivel.sucesso) {
+                // Armazena a proposta acessível
+                dadosProposta.acessivel = tratarDadosProposta(respostaAcessivel.dados);
+                console.log("Modelo: Dados da proposta +Acessível carregados com sucesso!");
+            } else {
+                console.warn("Modelo: Não foi possível carregar a proposta +Acessível. Acessível será nulo.");
+                dadosProposta.acessivel = null;
             }
+        } else {
+            console.warn("Modelo: Nenhum ID de proposta acessível válido encontrado. Acessível será nulo.");
+            dadosProposta.acessivel = null;
         }
 
-        const dadosProposta = {
-            premium: {
-                cliente: {
-                    nome: nomeCliente,
-                    local: `${cidade}-${estado}`,
-                    dataProposta: formatarData(dadosOriginais.generatedAt),
-                },
-                sistema: {
-                    geracaoMedia: `${geracaoMensalFormatada} kWh/mês`,
-                    potenciaSistema: `${potenciaSistema} kWp`,
-                    instalacaoPaineis: instalacaoPaineis,
-                    idealPara: idealParaValor,
-                },
-                equipamentos: {
-                    descricaoInversor: `${potenciaInversor} W`,
-                    quantidadeInversor: quantidadeInversor,
-                    descricaoPainel: `${potenciaModulo} W`,
-                    quantidadePainel: quantidadeModulo,
-                    imagemPremium: caminhosImagens.equipamentos.premium,
-                },
-                valores: {
-                    valorTotal: valorTotal,
-                    paybackAnos: paybackDados.anos,
-                    paybackMeses: paybackDados.meses,
-                    payback: formatarPayback((paybackDados.anos * 12) + paybackDados.meses), // Adicionado para manter a estrutura
-                    parcelas: parcelas,
-                },
-                instalacao: {
-                    imagemInstalacaoPremium: caminhosImagens.instalacao.premium,
-                    detalhesInstalacao: [
-                        { icone: 'fa-shield-alt', texto: 'Sistema de proteção **coordenado completo**, projetado para garantir a **segurança total** dos seus equipamentos e da sua residência contra surtos e descargas atmosféricas. Um escudo de proteção para o seu investimento.' },
-                        { icone: 'fa-bolt', texto: 'Utilização de componentes e materiais elétricos de **padrão superior**, com certificação técnica que assegura a máxima integridade e **longevidade** de toda a sua instalação.' },
-                        { icone: 'fa-solar-panel', texto: 'Cabos solares com **dupla camada de proteção**, resistentes a raios UV e retardantes de chamas, garantindo um desempenho seguro e ininterrupto por décadas.' },
-                        { icone: 'fa-plug', texto: 'O ramal de entrada, de **responsabilidade da concessionária** e geralmente de alumínio, é **totalmente substituído** por um ramal de cobre, otimizando o fluxo de energia e elevando o nível de segurança da sua propriedade.' },
-                        { icone: 'fa-cogs', texto: 'Instalação executada por mão de obra especializada que segue rigorosamente as **normas técnicas da ABNT**, garantindo o desempenho máximo do seu sistema e eliminando riscos.' }
-                    ]
-                }
-            }
-        };
-
-        const propostaAcessivel = calcularPropostaAcessivel(dadosProposta.premium);
-        dadosProposta.acessivel = propostaAcessivel;
-
-        dadosProposta.validade = {
-            dias: diasRestantes,
-            texto: `Válida por mais ${diasRestantes} dias`
-        };
-
-        localStorage.setItem('propostaData', JSON.stringify(dadosProposta));
+        // 5. Retorna o objeto completo com ambas as propostas
         return {
             sucesso: true,
-            proposta: dadosProposta
+            dados: dadosProposta,
+            caminhosImagens: caminhosImagens
         };
 
     } catch (erro) {
-        console.error("Modelo: Erro no modelo:", erro);
+        console.error('Modelo: Ocorreu um erro no fluxo de busca de propostas:', erro);
         return {
             sucesso: false,
-            mensagem: erro.message
+            mensagem: 'Ocorreu um erro inesperado ao buscar as propostas.'
         };
     }
 }
 
 /**
- * Função para atualizar o status de visualização na API.
- * @param {object} dados Os dados a serem enviados (ex: numeroProjeto e tipo de visualização).
+ * CORREÇÃO: Função para ocultar a tela de splash
+ * No seu código original essa função estava em indexController.js, mas
+ * como é um comportamento global, pode ser movida para cá.
  */
-export async function atualizarStatusVisualizacao(dados) {
-    try {
-        console.log("Modelo: Recebendo dados para atualização.");
-        const authResponse = await authenticate(apiToken);
-        if (!authResponse.sucesso) {
-            console.error("Modelo: Falha na autenticação para atualizar status.", authResponse.mensagem);
-            return authResponse;
-        }
-
-        const accessToken = authResponse.accessToken;
-
-        // Formata a data e hora para a mensagem da API
-        const agora = new Date();
-        const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
-
-        // Monta a mensagem para o campo 'description'
-        const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
-
-        // O endpoint correto é o do projeto, e o método é PATCH
-        // CORRIGIDO: Agora usa dados.propostaId
-        const endpoint = `/projects/${dados.propostaId}`;
-        const body = {
-            description: novaDescricao
-        };
-
-        const respostaApi = await patch(endpoint, body, accessToken);
-
-        if (respostaApi.sucesso) {
-            console.log("Modelo: Status de visualização atualizado com sucesso!");
-        } else {
-            console.error("Modelo: Falha ao atualizar status de visualização.");
-        }
-    } catch (erro) {
-        console.error("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
-    }
+function esconderTelaSplash() {
+  const telaSplash = document.getElementById('tela-splash');
+  if (telaSplash) {
+    telaSplash.classList.add('oculto');
+  }
 }
