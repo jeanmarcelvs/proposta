@@ -52,14 +52,15 @@ function buscarValorVariavel(array, chave) {
  * @returns {object} Um objeto formatado com os dados da proposta.
  */
 function tratarDadosProposta(dadosApiBrutos) {
-    if (!dadosApiBrutos || !dadosApiBrutos.data || !dadosApiBrutos.data.variables) {
+    // CORREÇÃO: Acessando as propriedades diretamente do objeto principal
+    if (!dadosApiBrutos || !dadosApiBrutos.variables) {
         console.error("ERRO: Dados brutos da API inválidos para tratamento.");
         return null;
     }
 
-    const variables = dadosApiBrutos.data.variables;
-    const propostaId = dadosApiBrutos.data.id;
-    const cliente = dadosApiBrutos.data.owner.name;
+    const variables = dadosApiBrutos.variables;
+    const propostaId = dadosApiBrutos.id;
+    const cliente = dadosApiBrutos.owner.name;
 
     const consumoMensal = buscarValorVariavel(variables, 'consumo_mensal');
     const valorSistema = buscarValorVariavel(variables, 'valor_sistema');
@@ -85,7 +86,6 @@ function tratarDadosProposta(dadosApiBrutos) {
  */
 export async function buscarETratarProposta(numeroProjeto) {
     try {
-        //mostrarLoadingOverlay();
         console.log(`Modelo: Buscando proposta PREMIUM para o ID: ${numeroProjeto}`);
 
         // 1. Autenticação na API
@@ -113,8 +113,8 @@ export async function buscarETratarProposta(numeroProjeto) {
         dadosProposta.premium = tratarDadosProposta(dadosPropostaPrincipal);
 
         // 3. Verifica se existe um ID de proposta acessível na resposta
-        // ATUALIZAÇÃO: Usando a chave correta fornecida pelo usuário
-        const idPropostaAcessivel = buscarValorVariavel(dadosPropostaPrincipal.data.variables, 'vc_prejeto_acessivel');
+        // CORREÇÃO: Usando a chave correta fornecida pelo usuário, acessando 'variables' do objeto principal
+        const idPropostaAcessivel = buscarValorVariavel(dadosPropostaPrincipal.variables, 'vc_prejeto_acessivel');
 
         // Apenas busca a segunda proposta se o ID for um valor válido e numérico
         if (idPropostaAcessivel && !isNaN(idPropostaAcessivel)) {
@@ -152,4 +152,3 @@ export async function buscarETratarProposta(numeroProjeto) {
         };
     }
 }
-
