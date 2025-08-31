@@ -117,12 +117,12 @@ async function buscarPropostaPorTipo(numeroProjeto, tipo) {
 
     console.log("Modelo: Resposta bruta da API:", dadosApi);
 
-    // CORRIGIDO: Acessa o array de propostas dentro de dados.data e pega o primeiro item.
-    if (!dadosApi.sucesso || !dadosApi.dados || !Array.isArray(dadosApi.dados.data) || dadosApi.dados.data.length === 0) {
-        return { sucesso: false, mensagem: 'Não foram encontradas propostas para este projeto.' };
+    // CORRIGIDO: Agora, passamos o objeto 'dadosApi.dados' diretamente para a função tratarDadosProposta
+    if (!dadosApi.sucesso || !dadosApi.dados || !Array.isArray(dadosApi.dados.variables)) {
+        return { sucesso: false, mensagem: 'Não foram encontradas propostas válidas para este projeto.' };
     }
 
-    const propostaTratada = tratarDadosProposta(dadosApi.dados.data[0], tipo);
+    const propostaTratada = tratarDadosProposta(dadosApi.dados, tipo);
     if (!propostaTratada) {
         return {
             sucesso: false,
@@ -150,12 +150,11 @@ export async function buscarETratarProposta(numeroProjeto) {
     dadosProposta.premium = propostaPremium.proposta;
 
     // Tenta encontrar o ID da proposta acessível
-    // CORRIGIDO: Agora usa o endpoint /proposals para a segunda requisição
     const dadosBrutos = await get(`/projects/${numeroProjeto}/proposals`, (await authenticate(apiToken)).accessToken);
     let idPropostaAcessivel = null;
-    // CORRIGIDO: Ajuste na lógica para encontrar o ID da proposta acessível
-    if (dadosBrutos.sucesso && dadosBrutos.dados && Array.isArray(dadosBrutos.dados.data) && dadosBrutos.dados.data.length > 0) {
-        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.data[0].variables, 'proposta-acessivel');
+    // CORRIGIDO: Ajuste na lógica para encontrar o ID da proposta acessível, acessando diretamente o array de variáveis
+    if (dadosBrutos.sucesso && dadosBrutos.dados && Array.isArray(dadosBrutos.dados.variables)) {
+        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.variables, 'proposta-acessivel');
     }
 
     if (idPropostaAcessivel) {
