@@ -1,6 +1,6 @@
 /* style.css */
 
-/* Importação da fonte e variáveis de cores globais- */
+/* Importação da fonte e variáveis de cores globais */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
 
 /* --- Variáveis de Cores (Temas) --- */
@@ -240,10 +240,6 @@ h1 {
     filter: none; /* A nova paleta não precisa de inversão */
 }
 
-.info-detalhe-item .icone-item {
-    color: var(--cor-primaria);
-}
-
 /* --- Estilos para a página de proposta (proposta.html) --- */
 header {
     background-color: var(--cor-header-fundo);
@@ -480,22 +476,34 @@ header {
     gap: 1rem;
 }
 
+/* NOVO: Estilização para os novos itens de instalação */
 .info-detalhe-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.8rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: var(--cor-cartao-fundo);
+    border: 1px solid var(--cor-borda);
+    box-shadow: 0 2px 8px var(--cor-sombra);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-detalhe-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px var(--cor-sombra);
 }
 
 .info-detalhe-item .icone-item {
     font-size: 1.2rem;
     color: var(--cor-primaria);
     flex-shrink: 0;
-    margin-top: 4px;
 }
 
 .info-detalhe-item p {
     font-weight: 400;
     color: var(--cor-texto-principal);
+    margin: 0;
 }
 
 /* Seção de Financiamento */
