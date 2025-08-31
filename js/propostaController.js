@@ -130,13 +130,14 @@ function preencherDadosProposta(dados) {
                 }
             }
         }
-
+        
+        // CORRIGIDO: Acessa o elemento para o tipo de instalação
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
         if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || "Não informado";
 
         const idealParaEl = document.getElementById('ideal-para');
         if (idealParaEl) {
-            const idealPara = dados.sistema?.idealPara || 'R$ 0';
+            const idealPara = dados.sistema?.idealPara || 'R$ 0,00';
             idealParaEl.innerText = idealPara.replace('R$', '').trim();
         }
         console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
