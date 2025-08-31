@@ -5,7 +5,7 @@
 
 /* --- Variáveis de Cores (Temas) --- */
 :root {
-    /* Novo Tema Leve e Acessível */
+    /* Tema Padrão (Leve e Acessível) */
     --cor-fundo: #FFFFFF; /* Fundo Branco Puro */
     --cor-cartao-fundo: #F8F9FA; /* Fundo de Card Cinza Muito Claro */
     --cor-header-fundo: rgba(255, 255, 255, 0.9); /* Fundo de Header Branco semi-transparente */
@@ -57,6 +57,13 @@ html {
     transition: all var(--transicao-padrao);
 }
 
+/* --- Estilos para a logo principal na página inicial --- */
+.logo {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 2rem;
+}
+
 /* --- Botoões (Estilos Padrão) --- */
 .btn {
     padding: 12px 24px;
@@ -101,7 +108,12 @@ html {
 #mensagem-feedback.error-msg {
     background-color: rgba(220, 53, 69, 0.2); 
     color: var(--cor-destaque-negativo);
-    border: 1-px solid var(--cor-destaque-negativo);
+    border: 1px solid var(--cor-destaque-negativo);
+}
+
+/* Estilos adicionais para o novo tema 'acessivel' */
+.logo-acessivel {
+    filter: invert(1);
 }
 
 .info-detalhe-item .icone-item {
