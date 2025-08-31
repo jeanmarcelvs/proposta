@@ -187,7 +187,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     });
     
     // ******************************************************
-    // NOVO: Cria a lista de equipamentos de forma estruturada.
+    // CORREÇÃO: Cria a lista de equipamentos de forma estruturada.
     // O `propostaController` precisa de um array para renderizar os cards.
     // ******************************************************
     const quantidadeInversor = extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 'N/A';
@@ -214,6 +214,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
             descricao: tipoProposta === 'premium' ? "Painel de silício monocristalino, com 25 anos de garantia." : "Painel solar padrão."
         }
     ];
+
     
     const retorno = {
         id: dados.project.id,
