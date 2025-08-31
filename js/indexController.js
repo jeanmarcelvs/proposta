@@ -109,4 +109,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // --- NOVA LÓGICA: Verifica se há um ID na URL e inicia a consulta automática ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const idDaUrl = urlParams.get('id');
+    
+    if (idDaUrl) {
+        console.log(`ID encontrado na URL: ${idDaUrl}`);
+        // Preenche o campo de input com o ID da URL
+        inputNumeroProjeto.value = idDaUrl;
+        // Chama a função de submissão do formulário com o ID da URL
+        handleFormSubmit(null, idDaUrl);
+    }
 });
