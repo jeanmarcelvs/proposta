@@ -12,7 +12,7 @@
 
 <body>
 
-    <div id="loading-overlay">
+    <div id="loading-overlay" class="oculto">
         <div class="spinner"></div>
     </div>
 
@@ -25,170 +25,169 @@
                 <button id="btn-premium" class="btn-proposta selecionado">Premium</button>
                 <button id="btn-acessivel" class="btn-proposta">+Acessível</button>
             </div>
-            <div id="secao-resumo">
-                <div class="valor-resumo">
-                    <span id="valor-resumo-premium"></span>
-                </div>
-                <div class="valor-resumo">
-                    <span id="valor-resumo-acessivel"></span>
-                </div>
-            </div>
         </header>
 
-        <section id="secao-dados-cliente" class="secao-info">
-            <h2 class="titulo-secao-icone"><i class="fas fa-user icone-titulo"></i> <span id="nome-cliente"></span>
-            </h2>
-            <div class="info-cliente-grid">
-                <p><i class="fas fa-map-marker-alt icone-info"></i> <strong>Local:</strong> <span
-                        id="local-cliente"></span></p>
-                <p><i class="fas fa-calendar-alt icone-info"></i> <strong>Data da Proposta:</strong> <span
-                        id="data-proposta"></span></p>
+        <section id="secao-resumo">
+            <div class="valor-resumo">
+                <span id="valor-resumo-premium" class="texto-valor-resumo"></span>
             </div>
-        </section>
-
-        <section id="secao-sistema" class="secao-info">
-            <h2 class="titulo-secao-icone"><i class="fas fa-solar-panel icone-titulo"></i> Sistema Proposto</h2>
-            <div class="etiqueta-proposta-dinamica">Sistema</div>
-            <div class="info-sistema-grid">
-                <div class="equipamento-marca-card card">
-                    <img id="imagem-marca" class="equipamento-marca-imagem" alt="Marca do Inversor">
-                </div>
-                <div class="sistema-info-card card">
-                    <i class="fas fa-bolt icone-card"></i>
-                    <p class="legenda-card">Geração Média</p>
-                    <p class="valor-card-grande">
-                        <span id="geracao-media"></span>
-                        <span class="unidade-simbolo" id="unidade-geracao"></span>
-                    </p>
-                </div>
-                <div class="sistema-info-card card">
-                    <i class="fas fa-home icone-card"></i>
-                    <p class="legenda-card">Instalação</p>
-                    <p class="valor-card-grande" id="instalacao-paineis"></p>
-                </div>
+            <div class="valor-resumo">
+                <span id="valor-resumo-acessivel" class="texto-valor-resumo"></span>
             </div>
-            <div class="ideal-para-container card">
-                <i class="fas fa-file-invoice-dollar icone-card icone-topo"></i>
-                <p class="legenda-card">Ideal para contas de até:</p>
-                <p class="valor-card-grande">
-                    <span class="simbolo-moeda">R$</span>
-                    <span id="ideal-para"></span>
+            <div id="secao-cliente">
+                <h2 id="nome-cliente" class="nome-cliente"></h2>
+                <p class="local-proposta">
+                    <span id="local-cliente"></span> | <span id="data-proposta"></span>
                 </p>
             </div>
         </section>
 
-        <section id="secao-equipamentos" class="secao-info">
-            <div class="etiqueta-proposta-dinamica">Componentes</div>
-            <h2 class="titulo-secao-icone"><i class="fas fa-tools icone-titulo"></i> Equipamentos</h2>
-            <div class="equipamentos-grid">
-                <div class="equipamento-item card">
-                    <i class="fas fa-microchip icone-equipamento"></i>
-                    <p class="titulo-equipamento">Inversor</p>
-                    <p class="info-equipamento"><span id="descricao-inversor" class="potencia-equipamento"></span></p>
-                    <p class="info-equipamento"><span id="quantidade-inversor"></span></p>
+        <section id="secao-sistema" class="secao-principal">
+            <h2 class="titulo-secao">Sistema Proposto</h2>
+            <div class="cards-container">
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span id="geracao-media" class="valor-card"></span>
+                        <span id="unidade-geracao" class="unidade-card">kWh/mês</span>
+                        <p class="legenda-card">Geração média</p>
+                    </div>
                 </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span id="potencia-sistema" class="valor-card"></span>
+                        <span class="unidade-card">kWp</span>
+                        <p class="legenda-card">Potência do Sistema</p>
+                    </div>
+                </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-house-chimney"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <p id="instalacao-paineis" class="texto-card"></p>
+                        <p class="legenda-card">Instalação de Painéis</p>
+                    </div>
+                </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span class="unidade-card">R$</span>
+                        <span id="ideal-para" class="valor-card"></span>
+                        <p class="legenda-card">Ideal para contas de até</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <div class="equipamento-item card">
-                    <i class="fas fa-solar-panel icone-equipamento"></i>
-                    <p class="titulo-equipamento">Painel Solar</p>
-                    <p class="info-equipamento"><span id="descricao-painel" class="potencia-equipamento"></span></p>
-                    <p class="info-equipamento"><span id="quantidade-painel"></span></p>
+        <section id="secao-equipamentos" class="secao-principal">
+            <h2 class="titulo-secao">Equipamentos</h2>
+            <div class="conteudo-equipamentos">
+                <div class="imagem-equipamentos">
+                    <img id="imagem-marca" src="" alt="Imagem da marca do equipamento">
+                </div>
+                <div class="lista-equipamentos">
+                    <div class="item-equipamento">
+                        <span class="quantidade-equipamento" id="quantidade-inversor"></span>
+                        <p class="descricao-equipamento">Inversor <span id="descricao-inversor"></span></p>
+                    </div>
+                    <div class="item-equipamento">
+                        <span class="quantidade-equipamento" id="quantidade-painel"></span>
+                        <p class="descricao-equipamento">Módulo Solar <span id="descricao-painel"></span></p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="secao-instalacao" class="secao-info">
-            <div class="etiqueta-proposta-dinamica">Instalação</div>
-            <h2 class="titulo-secao-icone"><i class="fas fa-hard-hat icone-titulo"></i> Instalação</h2>
-            <div id="cards-detalhes-instalacao" class="cards-detalhes-instalacao">
-                <div class="card card-item-instalacao card-imagem-instalacao-wrapper">
-                    <img id="imagem-instalacao" class="imagem-instalacao" src="" alt="Padrão de Instalação">
+        <section id="secao-instalacao" class="secao-principal">
+            <h2 class="titulo-secao">Padrão de Instalação</h2>
+            <div class="conteudo-instalacao">
+                <div class="imagem-instalacao">
+                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação">
                 </div>
-                <div class="card card-pequeno card-item-instalacao">
-                    <i id="icone-instalacao-1" class="icone-card fas"></i>
-                    <p id="texto-instalacao-1"></p>
-                </div>
-                <div class="card card-pequeno card-item-instalacao">
-                    <i id="icone-instalacao-2" class="icone-card fas"></i>
-                    <p id="texto-instalacao-2"></p>
-                </div>
-                <div class="card card-pequeno card-item-instalacao">
-                    <i id="icone-instalacao-3" class="icone-card fas"></i>
-                    <p id="texto-instalacao-3"></p>
-                </div>
-                <div class="card card-pequeno card-item-instalacao">
-                    <i id="icone-instalacao-4" class="icone-card fas"></i>
-                    <p id="texto-instalacao-4"></p>
-                </div>
-                <div class="card card-pequeno card-item-instalacao">
-                    <i id="icone-instalacao-5" class="icone-card fas"></i>
-                    <p id="texto-instalacao-5"></p>
-                </div>
-            </div>
-        </section>
-        <section id="secao-financiamento" class="secao-info">
-            <div class="etiqueta-proposta-dinamica">Simulação</div>
-            <h2 class="titulo-secao-icone"><i class="fas fa-hand-holding-usd icone-titulo"></i> Simulação de
-                Financiamento</h2>
-            <div class="cartoes-parcelas">
-                <div class="card">
-                    <p class="parcelas">12x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-12"></span></p>
-                </div>
-                <div class="card">
-                    <p class="parcelas">24x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-24"></span></p>
-                </div>
-                <div class="card">
-                    <p class="parcelas">36x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-36"></span></p>
-                </div>
-                <div class="card">
-                    <p class="parcelas">48x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-48"></span></p>
-                </div>
-                <div class="card">
-                    <p class="parcelas">60x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-60"></span></p>
-                </div>
-                <div class="card">
-                    <p class="parcelas">72x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-72"></span></p>
-                </div>
-                <div class="card">
-                    <p class="parcelas">84x</p>
-                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-84"></span></p>
+                <div class="detalhes-instalacao">
+                    <div class="card-instalacao">
+                        <i id="icone-instalacao-1" class="icone-card fas"></i>
+                        <p id="texto-instalacao-1" class="texto-card"></p>
+                    </div>
+                    <div class="card-instalacao">
+                        <i id="icone-instalacao-2" class="icone-card fas"></i>
+                        <p id="texto-instalacao-2" class="texto-card"></p>
+                    </div>
+                    <div class="card-instalacao">
+                        <i id="icone-instalacao-3" class="icone-card fas"></i>
+                        <p id="texto-instalacao-3" class="texto-card"></p>
+                    </div>
+                    <div class="card-instalacao">
+                        <i id="icone-instalacao-4" class="icone-card fas"></i>
+                        <p id="texto-instalacao-4" class="texto-card"></p>
+                    </div>
+                    <div class="card-instalacao">
+                        <i id="icone-instalacao-5" class="icone-card fas"></i>
+                        <p id="texto-instalacao-5" class="texto-card"></p>
+                    </div>
                 </div>
             </div>
-            <section class="observacao-financiamento secao-info">
-                <p class="etiqueta-info">
-                    <i class="fas fa-exclamation-triangle icone-alerta"></i>
-                    Esta simulação é uma estimativa, os valores estão sujeito à varição conforme análise de crédito do CPF/CNPJ informado.
-                </p>
-            </section>
         </section>
 
-        <section id="secao-investimento" class="secao-info">
-            <div class="etiqueta-proposta-dinamica">Investimento</div>
-            <h2 class="titulo-secao-icone"><i class="fas fa-coins icone-titulo"></i> Investimento</h2>
-            <div class="investimento-conteudo">
-                <div class="info-investimento card">
-                    <div class="etiqueta-proposta-dinamica etiqueta-a-vista">À Vista</div>
-                    <p class="legenda-investimento">Investimento Total</p>
-                    <p class="valor-investimento"><span class="simbolo-moeda">R$</span> <span id="valor-total"></span>
-                    </p>
+        <section id="secao-financiamento" class="secao-principal">
+            <h2 class="titulo-secao">Valores e Condições</h2>
+            <div class="valores-container">
+                <div class="card-valores card-total">
+                    <p class="legenda-valores">Valor total <br>
+                        (Proposta <span class="etiqueta-proposta-dinamica">Premium</span>):</p>
+                    <p class="valor-total-proposta">R$ <span id="valor-total"></span></p>
                 </div>
-                <div class="info-investimento card">
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 12x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-12"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 24x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-24"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 36x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-36"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 48x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-48"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 60x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-60"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 72x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-72"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 84x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-84"></span></p>
+                </div>
+                <div class="card-investimento card-payback">
                     <p class="legenda-investimento">Seu investimento se paga em:</p>
                     <p class="valor-investimento"><span id="payback"></span></p>
                 </div>
+            </div>
+            <div id="secao-observacao" class="secao-observacao-financiamento">
+                <p class="titulo-observacao">Observações sobre Financiamento:</p>
+                <p id="texto-observacao" class="texto-observacao"></p>
             </div>
         </section>
 
         <section id="secao-validade" class="secao-info validade-proposta">
             <p class="etiqueta-info">
                 <i class="fas fa-calendar-check icone-info-proposta"></i>
-                Proposta válida em todos os termos por até 3 (três) dias corridos ou enquanto durarem os estoques.
+                Válida por mais <span id="texto-validade"></span>
             </p>
         </section>
 
@@ -207,12 +206,13 @@
                 <i class="fas fa-envelope"></i> gdis.solar@gmail.com
             </a>
             <a href="https://www.instagram.com/gdis.solar/" target="_blank" class="footer-contact-item">
-                <i class="fab fa-instagram"></i> gdis.solar
+                <i class="fab fa-instagram"></i> @gdis.solar
             </a>
         </div>
     </footer>
 
-    <script src="js/propostaController.js" type="module"></script>
+    <script type="module" src="propostaController.js"></script>
+
 </body>
 
 </html>
