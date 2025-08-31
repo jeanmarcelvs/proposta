@@ -64,11 +64,11 @@ function tratarDadosProposta(dadosBrutos, tipo) {
     const cliente = dadosBrutos.project.name || 'Cliente';
     const propostaId = dadosBrutos.project.id;
 
-    // Extrai valores das variáveis
-    const consumo = buscarValorVariavel(variables, 'consumo-medio');
-    const geracao = buscarValorVariavel(variables, 'geracao-estimada');
-    const valorSistema = buscarValorVariavel(variables, 'valor-sistema');
-    const economia = buscarValorVariavel(variables, 'economia-mensal');
+    // Extrai valores das variáveis com as chaves CORRIGIDAS da API
+    const consumo = buscarValorVariavel(variables, 'consumo_mensal');
+    const geracao = buscarValorVariavel(variables, 'geracao_estimada');
+    const valorSistema = buscarValorVariavel(variables, 'valor_sistema');
+    const economia = buscarValorVariavel(variables, 'economia_mensal');
     const payback = buscarValorVariavel(variables, 'payback');
 
     // Mapeamento dinâmico das imagens
@@ -78,11 +78,11 @@ function tratarDadosProposta(dadosBrutos, tipo) {
     const propostaFormatada = {
         id: propostaId,
         cliente: cliente,
-        consumoMensal: `${consumo} kWh`,
-        geracaoMensal: `${geracao} kWh`,
-        valorSistema: `R$ ${valorSistema}`,
-        economiaMensal: `R$ ${economia}`,
-        payback: `${payback} anos`,
+        consumoMensal: `${consumo || 'N/A'} kWh`,
+        geracaoMensal: `${geracao || 'N/A'} kWh`,
+        valorSistema: `R$ ${valorSistema || 'N/A'}`,
+        economiaMensal: `R$ ${economia || 'N/A'}`,
+        payback: `${payback || 'N/A'} anos`,
         equipamentos: {
             imagem: imagemEquipamentos
         },

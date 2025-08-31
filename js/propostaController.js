@@ -38,24 +38,40 @@ function atualizarImagemEquipamentos(propostas, tipo) {
     console.log(`Imagem de equipamentos atualizada para: ${imagemMarca.src}`);
 }
 
-// Funções para preencher o HTML com os dados da proposta
+// CORRIGIDO: Função para preencher o HTML com os dados da proposta, agora mais robusta
 function preencherDadosProposta(proposta) {
     if (!proposta) {
         console.error("ERRO: Objeto de proposta é nulo.");
         return;
     }
-    document.getElementById('consumo').textContent = proposta.consumoMensal;
-    document.getElementById('geracao').textContent = proposta.geracaoMensal;
-    document.getElementById('valor-sistema').textContent = proposta.valorSistema;
-    document.getElementById('economia').textContent = proposta.economiaMensal;
-    document.getElementById('payback').textContent = proposta.payback;
-    document.getElementById('cliente').textContent = proposta.cliente;
 
+    // Mapeia os IDs dos elementos HTML para os dados da proposta
+    const elementosParaAtualizar = {
+        'consumo': proposta.consumoMensal,
+        'geracao': proposta.geracaoMensal,
+        'valor-sistema': proposta.valorSistema,
+        'economia': proposta.economiaMensal,
+        'payback': proposta.payback,
+        'cliente': proposta.cliente
+    };
+    
+    // Itera sobre o mapa e atualiza apenas os elementos que existem
+    for (const [id, valor] of Object.entries(elementosParaAtualizar)) {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.textContent = valor;
+        } else {
+            console.warn(`AVISO: Elemento com ID '${id}' não encontrado. Ignorando.`);
+        }
+    }
+
+    // Atualiza o valor do resumo, que pode ter um ID diferente
     const valorResumoPremium = document.getElementById('valor-resumo-premium');
     if (valorResumoPremium) {
         valorResumoPremium.textContent = proposta.valorSistema;
     }
-    console.log("Dados da proposta preenchidos no HTML.");
+
+    console.log("Dados da proposta preenchidos no HTML de forma robusta.");
 }
 
 function preencherDetalhesInstalacao(proposta) {
