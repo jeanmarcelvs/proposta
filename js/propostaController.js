@@ -9,6 +9,7 @@ import { buscarETratarProposta, atualizarStatusVisualizacao } from './model.js';
 function mostrarLoadingOverlay() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
+        // Apenas para garantir, mas o CSS já deve estar fazendo isso
         overlay.classList.remove('oculto');
     }
 }
@@ -18,10 +19,12 @@ function esconderLoadingOverlay() {
     const mainContent = document.querySelector('main');
 
     if (mainContent) {
+        // Remove a classe que oculta e adiciona a que exibe
         mainContent.classList.remove('main-oculto');
         mainContent.classList.add('main-visivel');
     }
 
+    // Oculta o overlay após o conteúdo principal aparecer
     if (overlay) {
         overlay.classList.add('oculto');
     }
@@ -34,151 +37,286 @@ function atualizarImagemEquipamentos(propostas, tipo) {
         console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
         return;
     }
-    imagemMarca.src = propostas[tipo].equipamentos.imagem;
-    console.log(`Imagem de equipamentos atualizada para: ${imagemMarca.src}`);
+    if (tipo === 'premium') {
+        imagemMarca.src = propostas.premium?.equipamentos?.imagemPremium || '';
+    } else {
+        imagemMarca.src = propostas.acessivel?.equipamentos?.imagemAcessivel || '';
+    }
 }
 
-// CORRIGIDO: Função para preencher o HTML com os dados da proposta, agora mais robusta
-function preencherDadosProposta(proposta) {
-    if (!proposta) {
-        console.error("ERRO: Objeto de proposta é nulo.");
+// Função para atualizar a imagem do padrão de instalação
+function atualizarImagemInstalacao(propostas, tipo) {
+    const imagemInstalacao = document.getElementById('imagem-instalacao');
+    if (!imagemInstalacao) {
+        console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
         return;
     }
-
-    // Mapeia os IDs dos elementos HTML para os dados da proposta
-    const elementosParaAtualizar = {
-        'consumo': proposta.consumoMensal,
-        'geracao': proposta.geracaoMensal,
-        'valor-sistema': proposta.valorSistema,
-        'economia': proposta.economiaMensal,
-        'payback': proposta.payback,
-        'cliente': proposta.cliente
-    };
-    
-    // Itera sobre o mapa e atualiza apenas os elementos que existem
-    for (const [id, valor] of Object.entries(elementosParaAtualizar)) {
-        const elemento = document.getElementById(id);
-        if (elemento) {
-            elemento.textContent = valor;
-        } else {
-            console.warn(`AVISO: Elemento com ID '${id}' não encontrado. Ignorando.`);
-        }
-    }
-
-    // Atualiza o valor do resumo, que pode ter um ID diferente
-    const valorResumoPremium = document.getElementById('valor-resumo-premium');
-    if (valorResumoPremium) {
-        valorResumoPremium.textContent = proposta.valorSistema;
-    }
-
-    console.log("Dados da proposta preenchidos no HTML de forma robusta.");
-}
-
-function preencherDetalhesInstalacao(proposta) {
-    const imagemInstalacao = document.getElementById('imagem-instalacao');
-    if (imagemInstalacao && proposta.instalacao && proposta.instalacao.imagemInstalacao) {
-        imagemInstalacao.src = proposta.instalacao.imagemInstalacao;
-        console.log("Imagem de instalação atualizada.");
+    if (tipo === 'premium') {
+        imagemInstalacao.src = propostas.premium?.instalacao?.imagemInstalacaoPremium || '';
+    } else {
+        imagemInstalacao.src = propostas.acessivel?.instalacao?.imagemInstalacaoAcessivel || '';
     }
 }
 
-// NOVO: Função para atualizar etiquetas dinâmicas
+// Função para atualizar as etiquetas das seções dinâmicas,
+// ignorando a etiqueta do card "À Vista".
 function atualizarEtiquetasDinamicas(tipo) {
-    const etiquetas = document.querySelectorAll('[data-etiqueta-proposta]');
+    const etiquetas = document.querySelectorAll('.etiqueta-proposta-dinamica:not(.etiqueta-a-vista)');
+    const texto = tipo === 'premium' ? 'Premium' : '+Acessível';
     etiquetas.forEach(etiqueta => {
-        if (etiqueta.dataset.etiquetaProposta === tipo) {
-            etiqueta.style.display = 'block';
-        } else {
-            etiqueta.style.display = 'none';
-        }
+        etiqueta.innerText = texto;
     });
 }
 
-// Função de inicialização
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("Controlador: DOM totalmente carregado. Iniciando.");
+// Função para preencher a nova seção de detalhes da instalação
+function preencherDetalhesInstalacao(proposta) {
+    const cards = proposta.instalacao?.detalhesInstalacao;
+    if (!cards) {
+        console.warn("AVISO: Detalhes da instalação não encontrados.");
+        return;
+    }
+    for (let i = 0; i < cards.length; i++) {
+        const iconeElemento = document.getElementById(`icone-instalacao-${i + 1}`);
+        const textoElemento = document.getElementById(`texto-instalacao-${i + 1}`);
+        if (iconeElemento && textoElemento) {
+            iconeElemento.className = `icone-card fas ${cards[i].icone}`;
+            textoElemento.textContent = cards[i].texto;
+        } else {
+            console.error(`ERRO: Elemento de detalhe da instalação com ID 'icone-instalacao-${i + 1}' ou 'texto-instalacao-${i + 1}' não encontrado.`);
+        }
+    }
+}
 
+// Função para preencher a página com os dados da proposta
+function preencherDadosProposta(dados) {
+    console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
+
+    try {
+        // 1. Dados do Cliente
+        console.log("DEBUG: Preenchendo dados do cliente...");
+        const nomeClienteEl = document.getElementById('nome-cliente');
+        if (nomeClienteEl) nomeClienteEl.innerText = dados.cliente?.nome || "Não informado";
+
+        const localClienteEl = document.getElementById('local-cliente');
+        if (localClienteEl) localClienteEl.innerText = dados.cliente?.local || "Não informado";
+
+        const dataPropostaEl = document.getElementById('data-proposta');
+        if (dataPropostaEl) dataPropostaEl.innerText = dados.cliente?.dataProposta || "Não informado";
+        console.log("DEBUG: Dados do cliente preenchidos com sucesso.");
+
+        // 2. Sistema Proposto (Separa valor e unidade)
+        console.log("DEBUG: Preenchendo dados do sistema...");
+        const geracaoMediaEl = document.getElementById('geracao-media');
+        if (geracaoMediaEl) {
+            const geracaoMedia = dados.sistema?.geracaoMedia;
+            if (typeof geracaoMedia === 'string' && geracaoMedia.trim() !== '') {
+                const geracaoMediaSplit = geracaoMedia.split(' ');
+                geracaoMediaEl.innerText = geracaoMediaSplit[0];
+                const unidadeGeracaoEl = document.getElementById('unidade-geracao');
+                if (unidadeGeracaoEl) {
+                    unidadeGeracaoEl.innerText = geracaoMediaSplit.slice(1).join(' ');
+                }
+            } else {
+                geracaoMediaEl.innerText = 'N/A';
+                const unidadeGeracaoEl = document.getElementById('unidade-geracao');
+                if (unidadeGeracaoEl) {
+                    unidadeGeracaoEl.innerText = 'kWh/mês';
+                }
+            }
+        }
+
+        const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
+        if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || "Não informado";
+
+        const idealParaEl = document.getElementById('ideal-para');
+        if (idealParaEl) {
+            const idealPara = dados.sistema?.idealPara || 'R$ 0';
+            idealParaEl.innerText = idealPara.replace('R$', '').trim();
+        }
+        console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
+
+        // 3. Equipamentos
+        console.log("DEBUG: Preenchendo dados dos equipamentos...");
+        const descricaoInversorEl = document.getElementById('descricao-inversor');
+        if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
+
+        const quantidadeInversorEl = document.getElementById('quantidade-inversor');
+        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `( ${dados.equipamentos?.quantidadeInversor || 0} )`;
+
+        const descricaoPainelEl = document.getElementById('descricao-painel');
+        if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
+
+        const quantidadePainelEl = document.getElementById('quantidade-painel');
+        if (quantidadePainelEl) quantidadePainelEl.innerText = `( ${dados.equipamentos?.quantidadePainel || 0} )`;
+        console.log("DEBUG: Dados de equipamentos preenchidos com sucesso.");
+
+        // 4. Valores Finais
+        console.log("DEBUG: Preenchendo valores financeiros...");
+        const valorTotalEl = document.getElementById('valor-total');
+        if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
+
+        const paybackEl = document.getElementById('payback');
+        if (paybackEl) {
+            if (dados.valores?.payback) {
+                paybackEl.innerText = dados.valores.payback;
+            } else {
+                paybackEl.innerText = `${dados.valores?.paybackAnos || 0} anos e ${dados.valores?.paybackMeses || 0} meses`;
+            }
+        }
+        console.log("DEBUG: Valores finais preenchidos com sucesso.");
+
+        // 5. Parcelas
+        console.log("DEBUG: Preenchendo parcelas...");
+        for (const key in dados.valores?.parcelas || {}) {
+            const elemento = document.getElementById(`parcela-${key.replace('x', '')}`);
+            if (elemento) {
+                elemento.innerText = dados.valores.parcelas[key] || 'N/A';
+            } else {
+                console.warn(`AVISO: Elemento de parcela '${key}' não encontrado.`);
+            }
+        }
+        console.log("DEBUG: Parcelas preenchidas com sucesso.");
+
+        // 6. Observações e Validade (Seções atualizadas)
+        console.log("DEBUG: Preenchendo observações e validade...");
+        const observacaoEl = document.getElementById('texto-observacao');
+        const validadeEl = document.getElementById('texto-validade');
+
+        if (observacaoEl) {
+            observacaoEl.innerText = dados.observacaoFinanciamento || "Não há observações sobre financiamento.";
+        }
+
+        if (validadeEl) {
+            validadeEl.innerText = dados.validade || "Não informada";
+        }
+        console.log("DEBUG: Observações e validade preenchidas com sucesso.");
+    } catch (error) {
+        // Log detalhado do erro dentro da função de preenchimento
+        console.error("ERRO DENTRO DE preencherDadosProposta:", error);
+    }
+}
+
+// Espera a página carregar
+document.addEventListener('DOMContentLoaded', async () => {
+    mostrarLoadingOverlay();
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
 
     if (!numeroProjeto) {
-        console.error("ERRO: ID do projeto não encontrado na URL.");
-        document.querySelector('h1').textContent = "Erro ao Carregar Proposta";
-        esconderLoadingOverlay();
+        console.error('ERRO: Número do projeto não encontrado na URL.');
+        alert('Número do projeto não encontrado na URL.');
+        window.location.href = 'index.html';
         return;
     }
 
-    mostrarLoadingOverlay();
+    try {
+        console.log(`DEBUG: Iniciando busca da proposta para o projeto: ${numeroProjeto}`);
+        const resposta = await buscarETratarProposta(numeroProjeto);
 
-    // Tenta buscar os dados da API
-    console.log("Controlador: Buscando dados da API...");
-    const resposta = await buscarETratarProposta(numeroProjeto);
+        if (resposta.sucesso) {
+            console.log("DEBUG: Proposta buscada com sucesso. Preenchendo a página...");
+            const propostaData = resposta.proposta;
+            localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
-    if (resposta.sucesso) {
-        const propostas = resposta.proposta;
-        console.log("Controlador: Dados da proposta carregados com sucesso da API.");
+            // PONTO DE DEBUG 1: VERIFICA SE OS DADOS FORAM RECEBIDOS CORRETAMENTE
+            console.log("DEBUG: Conteúdo de propostaData:", propostaData);
 
-        // Salva os dados no localStorage para uso futuro
-        localStorage.setItem('propostaData', JSON.stringify(propostas));
-        
-        // Exibe a proposta Premium por padrão
-        preencherDadosProposta(propostas.premium);
-        atualizarImagemEquipamentos(propostas, 'premium');
-        atualizarEtiquetasDinamicas('premium');
-        preencherDetalhesInstalacao(propostas.premium);
-        document.body.classList.add('theme-premium');
-        document.body.classList.remove('theme-acessivel');
-        esconderLoadingOverlay();
+            document.body.classList.add('theme-premium');
 
-        // Configura os botões de tipo de proposta
-        const btnPremium = document.getElementById('btn-premium');
-        const btnAcessivel = document.getElementById('btn-acessivel');
+            // PONTO DE DEBUG 2: ANTES DE CADA CHAMADA DE FUNÇÃO DE PREENCHIMENTO
+            console.log("DEBUG: Chamando preencherDadosProposta...");
+            preencherDadosProposta(propostaData.premium);
 
-        if (btnPremium) {
-            btnPremium.addEventListener('click', () => {
-                console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
+            console.log("DEBUG: Chamando atualizarImagemEquipamentos...");
+            atualizarImagemEquipamentos(propostaData, 'premium');
+
+            console.log("DEBUG: Chamando atualizarEtiquetasDinamicas...");
+            atualizarEtiquetasDinamicas('premium');
+
+            console.log("DEBUG: Chamando atualizarImagemInstalacao...");
+            atualizarImagemInstalacao(propostaData, 'premium');
+
+            console.log("DEBUG: Chamando preencherDetalhesInstalacao...");
+            preencherDetalhesInstalacao(propostaData.premium);
+
+            console.log("DEBUG: Preenchimento inicial concluído.");
+            
+            // SOMENTE ESCONDE O OVERLAY SE O SUCESSO FOR CONFIRMADO
+            esconderLoadingOverlay();
+
+        } else {
+            console.error("ERRO: Falha na busca da proposta. Mensagem:", resposta.mensagem);
+            alert(resposta.mensagem);
+            window.location.href = 'index.html';
+        }
+    } catch (error) {
+        console.error("ERRO: Ocorreu um erro fatal ao carregar a proposta.", error);
+        alert('Ocorreu um erro ao carregar a proposta.');
+        window.location.href = 'index.html';
+    } finally {
+        // REMOVA A CHAMADA DAQUI
+        // esconderLoadingOverlay(); 
+    }
+
+    // Lógica para alternar entre propostas
+    const btnPremium = document.getElementById('btn-premium');
+    const btnAcessivel = document.getElementById('btn-acessivel');
+
+    if (btnPremium) {
+        btnPremium.addEventListener('click', () => {
+            console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
+            const propostas = JSON.parse(localStorage.getItem('propostaData'));
+            if (propostas && propostas.premium) {
+                mostrarLoadingOverlay();
                 preencherDadosProposta(propostas.premium);
                 atualizarImagemEquipamentos(propostas, 'premium');
                 atualizarEtiquetasDinamicas('premium');
+                atualizarImagemInstalacao(propostas, 'premium');
                 preencherDetalhesInstalacao(propostas.premium);
                 document.body.classList.add('theme-premium');
                 document.body.classList.remove('theme-acessivel');
-                btnPremium.classList.add('selecionado');
-                btnAcessivel.classList.remove('selecionado');
-            });
-        }
+                setTimeout(() => {
+                    btnPremium.classList.add('selecionado');
+                    btnAcessivel.classList.remove('selecionado');
+                    esconderLoadingOverlay();
+                }, 100);
+            } else {
+                console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
+            }
+        });
+    }
 
-        if (propostas.acessivel && btnAcessivel) {
-            // Exibe o botão "+Acessível" apenas se houver dados
-            btnAcessivel.style.display = 'inline-block';
-            btnAcessivel.addEventListener('click', () => {
-                console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
+    if (btnAcessivel) {
+        btnAcessivel.addEventListener('click', () => {
+            console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
+            const propostas = JSON.parse(localStorage.getItem('propostaData'));
+            if (propostas && propostas.acessivel) {
+                mostrarLoadingOverlay();
                 preencherDadosProposta(propostas.acessivel);
                 atualizarImagemEquipamentos(propostas, 'acessivel');
                 atualizarEtiquetasDinamicas('acessivel');
+                atualizarImagemInstalacao(propostas, 'acessivel');
                 preencherDetalhesInstalacao(propostas.acessivel);
                 document.body.classList.add('theme-acessivel');
                 document.body.classList.remove('theme-premium');
-                btnAcessivel.classList.add('selecionado');
-                btnPremium.classList.remove('selecionado');
-            });
-        }
+                setTimeout(() => {
+                    btnAcessivel.classList.add('selecionado');
+                    btnPremium.classList.remove('selecionado');
+                    esconderLoadingOverlay();
+                }, 100);
+            } else {
+                console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
+            }
+        });
+    }
 
-        // Tenta atualizar o status de visualização na API
-        try {
-            const dadosVisualizacao = {
-                propostaId: numeroProjeto,
-                tipoVisualizacao: 'P' // O 'P' maiúsculo é para Premium
-            };
-            await atualizarStatusVisualizacao(dadosVisualizacao);
-        } catch (error) {
-            console.error("ERRO: Falha ao atualizar o status de visualização.", error);
-        }
-
-    } else {
-        // Trata o caso de erro ao buscar dados
-        console.error("ERRO: Não foi possível carregar a proposta.", resposta.mensagem);
-        document.querySelector('h1').textContent = `Erro ao Carregar: ${resposta.mensagem}`;
-        esconderLoadingOverlay();
+    try {
+        const dadosVisualizacao = {
+            propostaId: numeroProjeto,
+            tipoVisualizacao: 'P' // O 'P' maiúsculo é para Premium
+        };
+        await atualizarStatusVisualizacao(dadosVisualizacao);
+    } catch (error) {
+        console.error("ERRO: Falha ao atualizar o status de visualização.", error);
     }
 });
