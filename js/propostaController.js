@@ -136,7 +136,8 @@ function preencherDadosProposta(dados) {
 
         const idealParaEl = document.getElementById('ideal-para');
         if (idealParaEl) {
-            const idealPara = dados.sistema?.idealPara || 'R$ 0';
+            const idealPara = dados.sistema?.idealPara || 'R$ 0,00';
+            // Garante que o valor venha sem o "R$" para o HTML
             idealParaEl.innerText = idealPara.replace('R$', '').trim();
         }
         console.log("DEBUG: Dados do sistema preenchidos com sucesso.");

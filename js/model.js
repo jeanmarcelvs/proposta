@@ -176,7 +176,6 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     // CORRIGIDO: Encontra as variáveis usando as chaves corretas e tipos corretos
     const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
     const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
-    const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_sistema') || 'N/A';
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
     const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
@@ -211,10 +210,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         sistema: {
             geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
             instalacaoPaineis: tipoEstrutura, // CORRIGIDO
-            idealPara: idealParaValor.toLocaleString('pt-BR', {
+            idealPara: idealParaValor.toLocaleString('pt-BR', { // AQUI É O CÁLCULO
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
-            }) // CORRIGIDO
+            })
         },
         equipamentos: {
             // CORRIGIDO: Adiciona a URL da imagem
