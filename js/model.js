@@ -168,7 +168,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
     const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
-    
+
     // Calcula o valor ideal para a conta de luz
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
@@ -182,10 +182,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         const prazo = extrairValorVariavelPorChave(variables, `f_prazo_${p}`);
         const valorParcela = extrairValorVariavelPorChave(variables, `f_parcela_${p}`);
         if (prazo && valorParcela) {
-             parcelas[`parcela-${prazo}`] = valorParcela;
+            parcelas[`parcela-${prazo}`] = valorParcela;
         }
     });
-    
+
     const retorno = {
         id: dados.project.id,
         propostaId: idProposta,
@@ -204,11 +204,13 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
             })
         },
         equipamentos: {
-            imagem: caminhosImagens.equipamentos[tipoProposta], 
+            imagem: caminhosImagens.equipamentos[tipoProposta],
             quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
-            descricaoPainel: extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado',
+            // CORREÇÃO: Adicionando ' W' ao final da string da potência do painel.
+            descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
             quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
-            descricaoInversor: extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado'
+            // CORREÇÃO: Adicionando ' W' ao final da string da potência do inversor.
+            descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
         },
         instalacao: {
             imagem: caminhosImagens.instalacao[tipoProposta],
