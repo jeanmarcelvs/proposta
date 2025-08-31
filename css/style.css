@@ -412,28 +412,31 @@ header {
 
 /* Seção de Equipamentos - CÓDIGO FINAL OTIMIZADO */
 
-/* Seção de Equipamentos - CÓDIGO FINAL OTIMIZADO */
-.conteudo-equipamentos {
+/* Seção de Equipamentos - CÓDIGO FINAL COM QUANTIDADE SIMPLES */
+
+/* Container de layout */
+#secao-equipamentos .conteudo-equipamentos {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
   gap: 2rem;
 }
 
 @media (min-width: 992px) {
-  .conteudo-equipamentos {
-    flex-direction: row; 
+  #secao-equipamentos .conteudo-equipamentos {
+    flex-direction: row;
     justify-content: center;
   }
 }
 
-.imagem-equipamentos {
+/* Estilo da imagem do equipamento */
+#secao-equipamentos .imagem-equipamentos {
   flex-shrink: 0;
   width: 100%;
   max-width: 350px;
 }
 
-.imagem-equipamentos img {
+#secao-equipamentos .imagem-equipamentos img {
   width: 100%;
   height: auto;
   border-radius: 12px;
@@ -441,19 +444,20 @@ header {
   transition: transform 0.3s ease;
 }
 
-.imagem-equipamentos img:hover {
+#secao-equipamentos .imagem-equipamentos img:hover {
   transform: scale(1.02);
 }
 
-.lista-equipamentos {
+/* Container da lista de itens */
+#secao-equipamentos .lista-equipamentos {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Estilo do card principal de cada equipamento */
-.item-equipamento {
+/* Estilo de cada card de equipamento */
+#secao-equipamentos .item-equipamento {
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -465,57 +469,50 @@ header {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.item-equipamento:hover {
+#secao-equipamentos .item-equipamento:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 15px var(--cor-sombra);
 }
 
 /* Estilo do ícone */
-.icone-equipamento {
+#secao-equipamentos .icone-equipamento {
   font-size: 2rem;
   color: var(--cor-primaria);
   flex-shrink: 0;
 }
 
-/* Container de texto ajustado */
-.detalhes-item {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column; /* Organiza os elementos em coluna */
-}
-
-/* Estilo da quantidade, que fica acima */
-.quantidade-equipamento {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--cor-primaria);
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-
-/* Container que envolve o título e a descrição */
-.info-equipamento {
+/* Container de texto para título e descrição */
+#secao-equipamentos .info-equipamento {
   display: flex;
   flex-direction: column;
 }
 
-.titulo-equipamento {
+/* A quantidade agora é apenas um texto simples, alinhado com o título */
+#secao-equipamentos .detalhes-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#secao-equipamentos .quantidade-equipamento {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--cor-texto-principal);
+}
+
+#secao-equipamentos .titulo-equipamento {
   font-weight: 600;
   color: var(--cor-texto-principal);
   margin: 0;
   font-size: 1.1rem;
 }
 
-/* A descrição do item com um fundo para destaque */
-.descricao-equipamento {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--cor-fundo); /* Usa a cor de fundo do tema para o texto */
-  background-color: var(--cor-primaria); /* Fundo com a cor de destaque */
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  display: inline-block; /* Garante que o fundo envolva apenas o texto */
-  margin-top: 0.5rem;
+/* A descrição (potência) recebe o maior destaque */
+#secao-equipamentos .descricao-equipamento {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--cor-primaria);
+  margin-top: 0.2rem;
 }
 
 /* Seção de Instalação */
