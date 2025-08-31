@@ -69,21 +69,37 @@ function atualizarEtiquetasDinamicas(tipo) {
 
 // Função para preencher a nova seção de detalhes da instalação
 function preencherDetalhesInstalacao(proposta) {
-    const cards = proposta.instalacao?.detalhesInstalacao;
-    if (!cards) {
-        console.warn("AVISO: Detalhes da instalação não encontrados.");
+    const secaoDetalhes = document.getElementById('detalhes-instalacao');
+    if (!secaoDetalhes) {
+        console.warn("AVISO: Elemento 'detalhes-instalacao' não encontrado. Não é possível preencher.");
         return;
     }
-    for (let i = 0; i < cards.length; i++) {
-        const iconeElemento = document.getElementById(`icone-instalacao-${i + 1}`);
-        const textoElemento = document.getElementById(`texto-instalacao-${i + 1}`);
-        if (iconeElemento && textoElemento) {
-            iconeElemento.className = `icone-card fas ${cards[i].icone}`;
-            textoElemento.textContent = cards[i].texto;
-        } else {
-            console.error(`ERRO: Elemento de detalhe da instalação com ID 'icone-instalacao-${i + 1}' ou 'texto-instalacao-${i + 1}' não encontrado.`);
-        }
+
+    // Limpa os detalhes anteriores para evitar duplicatas ao trocar de proposta
+    secaoDetalhes.innerHTML = '';
+
+    // Acessa o array de detalhes diretamente do objeto de proposta
+    const detalhes = proposta.instalacao?.detalhesInstalacao;
+
+    if (!detalhes || detalhes.length === 0) {
+        console.warn("AVISO: Detalhes da instalação não encontrados na proposta.");
+        // Opcional: exibe uma mensagem no HTML se não houver detalhes
+        secaoDetalhes.innerHTML = '<p>Nenhum detalhe de instalação disponível.</p>';
+        return;
     }
+
+    // Itera sobre o array de detalhes e cria os elementos HTML
+    detalhes.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item-detalhe';
+        div.innerHTML = `
+            <i class="fas ${item.icone} icone-detalhe"></i>
+            <p class="texto-detalhe">${item.texto}</p>
+        `;
+        secaoDetalhes.appendChild(div);
+    });
+
+    console.log("DEBUG: Detalhes de instalação preenchidos com sucesso.");
 }
 
 // Função para preencher a página com os dados da proposta

@@ -29,6 +29,24 @@ const caminhosImagens = {
     }
 };
 
+// Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
+const detalhesInstalacaoPremium = [
+    { icone: 'fa-shield-alt', texto: 'Sistema de proteção **coordenado completo**, projetado para garantir a **segurança total** dos seus equipamentos e da sua residência contra surtos e descargas atmosféricas. Um escudo de proteção para o seu investimento.' },
+    { icone: 'fa-bolt', texto: 'Utilização de componentes e materiais elétricos de **padrão superior**, com certificação técnica que assegura a máxima integridade e **longevidade** de toda a sua instalação.' },
+    { icone: 'fa-solar-panel', texto: 'Cabos solares com **dupla camada de proteção**, resistentes a raios UV e retardantes de chamas, garantindo um desempenho seguro e ininterrupto por décadas.' },
+    { icone: 'fa-plug', texto: 'O ramal de entrada, de **responsabilidade da concessionária** e geralmente de alumínio, é **totalmente substituído** por um ramal de cobre, otimizando o fluxo de energia e elevando o nível de segurança da sua propriedade.' },
+    { icone: 'fa-cogs', texto: 'Instalação executada por mão de obra especializada que segue rigorosamente as **normas técnicas da ABNT**, garantindo o desempenho máximo do seu sistema e eliminando riscos.' }
+];
+
+// Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
+const detalhesInstalacaoAcessivel = [
+    { icone: 'fa-shield-alt', texto: 'O projeto considera as proteções internas já existentes na propriedade e as internas do inversor.' },
+    { icone: 'fa-bolt', texto: 'Conexões elétricas simples.' },
+    { icone: 'fa-solar-panel', texto: 'Utilização de cabos simples.' },
+    { icone: 'fa-plug', texto: 'Ramal de Entrada de **responsabilidade da concessionária**, geralmente de alumínio, **Não fazemos a sua substituição**.' },
+    { icone: 'fa-cogs', texto: 'Instalação elétrica simples, sem as otimizações de uma instalação especializada padrão premium.' }
+];
+
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
  * e retornar seu valor formatado.
@@ -78,7 +96,7 @@ function extrairValorPayback(textoPayback) {
 }
 
 /**
- * NOVO: Função para formatar um total de meses em "X anos e Y meses".
+ * Função para formatar um total de meses em "X anos e Y meses".
  * @param {number} totalMeses O total de meses a ser formatado.
  * @returns {string} A string formatada.
  */
@@ -121,84 +139,13 @@ function formatarData(dataISO) {
 }
 
 /**
- * Calcula os valores da proposta acessível com base nos valores da Premium.
- * @param {object} propostaPremium Os dados da proposta Premium.
- * @returns {object} Os dados da proposta acessível.
- */
-function calcularPropostaAcessivel(propostaPremium) {
-    console.log("DEBUG: Calculando proposta Acessível com base na Premium...");
-
-    // Lógica para calcular o fator de redução dinâmico
-    const potenciaStr = propostaPremium.sistema?.potenciaSistema || '0 kWp';
-    const potenciaNumerica = parseFloat(potenciaStr.replace(' kWp', '').replace(',', '.'));
-    const minPotencia = 2;
-    const maxPotencia = 100;
-    const minReducao = 0.078; // 7.8%
-    const maxReducao = 0.098; // 9.8%
-
-    // Garante que a potência esteja dentro da faixa esperada
-    const potenciaClamped = Math.max(minPotencia, Math.min(maxPotencia, potenciaNumerica));
-
-    // Calcula o percentual de redução usando uma interpolação linear inversa
-    const percentualReducao = maxReducao - ((potenciaClamped - minPotencia) / (maxPotencia - minPotencia)) * (maxReducao - minReducao);
-
-    // Calcula o fator de redução
-    const fatorReducao = 1 - percentualReducao;
-
-    const novaProposta = JSON.parse(JSON.stringify(propostaPremium));
-
-    // Converte o valor total formatado para um número para o cálculo
-    const valorTotalNumerico = parseFloat(novaProposta.valores.valorTotal.replace('.', '').replace(',', '.'));
-    console.log(`DEBUG: Valor Total Premium: ${valorTotalNumerico}`);
-    console.log(`DEBUG: Fator de Redução: ${fatorReducao}`);
-
-    // Calcula o novo valor total com a redução
-    const novoValorTotal = valorTotalNumerico * fatorReducao;
-
-    // Atualiza os valores da nova proposta
-    novaProposta.valores.valorTotal = novoValorTotal.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-
-    // Recalcula o valor das parcelas
-    for (const key in novaProposta.valores.parcelas) {
-        if (Object.hasOwnProperty.call(novaProposta.valores.parcelas, key)) {
-            const numParcelas = parseInt(key.replace('parcela-', ''));
-            const valorParcela = novoValorTotal / numParcelas;
-            novaProposta.valores.parcelas[key] = valorParcela.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-    }
-
-    // Calcula o novo payback com base no novo valor total e no consumo mensal
-    const consumoMensal = parseFloat(propostaPremium.sistema.consumoMensal.replace(' kWh', ''));
-    if (consumoMensal > 0 && propostaPremium.valores.economiaMensal && propostaPremium.valores.economiaMensal > 0) {
-        const mesesPayback = novoValorTotal / propostaPremium.valores.economiaMensal;
-        novaProposta.valores.payback = formatarPayback(mesesPayback);
-    } else {
-        novaProposta.valores.payback = "Não informado";
-    }
-
-    // Atualiza os caminhos das imagens
-    novaProposta.caminhosImagens = {
-        equipamentos: caminhosImagens.equipamentos.acessivel,
-        instalacao: caminhosImagens.instalacao.acessivel
-    };
-
-    console.log("DEBUG: Proposta Acessível calculada e tratada.", novaProposta);
-    return novaProposta;
-}
-
-/**
  * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
  * Esta é a função principal de transformação.
  * @param {object} dadosApi O objeto de dados brutos recebido da API.
+ * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
  * @returns {object} Um objeto com os dados formatados para a página.
  */
-function tratarDadosParaProposta(dadosApi) {
+function tratarDadosParaProposta(dadosApi, tipoProposta) {
     if (!dadosApi || !dadosApi.dados) {
         console.error("Modelo: Dados da API não encontrados ou incompletos.");
         return null;
@@ -214,7 +161,7 @@ function tratarDadosParaProposta(dadosApi) {
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
 
-    console.log("Modelo: Tratando dados para proposta premium");
+    console.log(`Modelo: Tratando dados para proposta ${tipoProposta}`);
 
     // Encontra os equipamentos
     const painel = pricingTable.find(item => item.category === 'Módulo');
@@ -275,19 +222,8 @@ function tratarDadosParaProposta(dadosApi) {
             descricaoInversor: inversor?.item || 'Não informado'
         },
         instalacao: {
-            detalhesInstalacao: [{
-                icone: 'fa-truck-moving',
-                texto: 'Transporte de todo o material'
-            }, {
-                icone: 'fa-tools',
-                texto: 'Instalação do sistema fotovoltaico'
-            }, {
-                icone: 'fa-drafting-compass',
-                texto: 'Projeto técnico e homologação'
-            }, {
-                icone: 'fa-check-circle',
-                texto: 'Garantia e suporte técnico'
-            }, ],
+            // AQUI ESTÁ A LÓGICA DE SELEÇÃO CORRIGIDA
+            detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
         },
         valores: {
             valorTotal: valorTotal,
@@ -328,7 +264,7 @@ export async function buscarETratarProposta(numeroProjeto) {
         return dadosApiPremium;
     }
 
-    const propostaPremium = tratarDadosParaProposta(dadosApiPremium);
+    const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium');
     if (!propostaPremium) {
         console.error("Modelo: Falha ao tratar dados da proposta Premium.");
         return {
@@ -341,23 +277,35 @@ export async function buscarETratarProposta(numeroProjeto) {
     // Tenta encontrar e buscar a proposta acessível
     const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'id_proposta_acessivel');
     let propostaAcessivel = null;
+
     if (idPropostaAcessivel) {
-        console.log(`Modelo: ID de proposta acessível encontrado: ${idPropostaAcessivel}`);
+        console.log(`Modelo: ID de proposta acessível encontrado: ${idPropostaAcessivel}. Buscando da API...`);
         const endpointAcessivel = `/projects/${idPropostaAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel, accessToken);
+
         if (dadosApiAcessivel.sucesso) {
-            propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel);
-            if (!propostaAcessivel) {
-                console.warn("Modelo: Falha ao tratar dados da proposta Acessível. Calculando com base na Premium.");
-                propostaAcessivel = calcularPropostaAcessivel(propostaPremium);
-            }
+            propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel');
         } else {
-            console.warn("Modelo: Falha ao buscar dados da proposta Acessível. Calculando com base na Premium.");
-            propostaAcessivel = calcularPropostaAcessivel(propostaPremium);
+            console.error("Modelo: Falha ao buscar dados da proposta Acessível da API. Abortando.");
+            return {
+                sucesso: false,
+                mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.'
+            };
         }
     } else {
-        console.warn("Modelo: ID da proposta acessível não encontrado. Calculando com base na Premium.");
-        propostaAcessivel = calcularPropostaAcessivel(propostaPremium);
+        console.error("Modelo: ID da proposta acessível não encontrado. Não é possível buscar os dados da API.");
+        return {
+            sucesso: false,
+            mensagem: 'ID da proposta acessível não encontrado.'
+        };
+    }
+
+    if (!propostaAcessivel) {
+        console.error("Modelo: Falha ao tratar dados da proposta Acessível.");
+        return {
+            sucesso: false,
+            mensagem: 'Falha ao processar dados da proposta Acessível.'
+        };
     }
     dadosProposta.acessivel = propostaAcessivel;
 
