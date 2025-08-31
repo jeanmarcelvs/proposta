@@ -232,15 +232,6 @@ h1 {
 }
 
 /* --- Estilos para a página de proposta (proposta.html) --- */
-.main-oculto {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.main-oculto.visivel {
-    opacity: 1;
-}
-
 header {
     background-color: var(--cor-header-fundo);
     backdrop-filter: blur(10px);
