@@ -30,15 +30,19 @@ function esconderLoadingOverlay() {
     }
 }
 
-// Função para atualizar as imagens dos equipamentos com base no tipo de proposta
-function atualizarImagemEquipamentos(propostas, tipo) {
+// CORRIGIDO: A função agora recebe diretamente o objeto da proposta (premium ou acessivel)
+function atualizarImagemEquipamentos(proposta) {
     const imagemMarca = document.getElementById('imagem-marca');
     if (!imagemMarca) {
         console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
         return;
     }
-    if (propostas.caminhosImagens && propostas.caminhosImagens.equipamentos && propostas.caminhosImagens.equipamentos[tipo]) {
-        imagemMarca.src = propostas.caminhosImagens.equipamentos[tipo];
+    // CORRIGIDO: Acessa o caminho da imagem diretamente do objeto da proposta
+    const caminho = proposta.equipamentos.imagemPremium || proposta.equipamentos.imagemAcessivel;
+    const tipo = proposta.equipamentos.imagemPremium ? 'premium' : 'acessivel';
+
+    if (caminho) {
+        imagemMarca.src = caminho;
     } else {
         console.error("ERRO: Caminho da imagem de equipamentos não encontrado para o tipo: " + tipo);
     }
@@ -65,14 +69,19 @@ function preencherDadosProposta(dados) {
     }
 }
 
-function atualizarImagemInstalacao(propostas, tipo) {
+// CORRIGIDO: A função agora recebe diretamente o objeto da proposta (premium ou acessivel)
+function atualizarImagemInstalacao(proposta) {
     const imagemInstalacao = document.getElementById('imagem-instalacao');
     if (!imagemInstalacao) {
         console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
         return;
     }
-    if (propostas.caminhosImagens && propostas.caminhosImagens.instalacao && propostas.caminhosImagens.instalacao[tipo]) {
-        imagemInstalacao.src = propostas.caminhosImagens.instalacao[tipo];
+    // CORRIGIDO: Acessa o caminho da imagem diretamente do objeto da proposta
+    const caminho = proposta.instalacao.imagemInstalacaoPremium || proposta.instalacao.imagemInstalacaoAcessivel;
+    const tipo = proposta.instalacao.imagemInstalacaoPremium ? 'premium' : 'acessivel';
+
+    if (caminho) {
+        imagemInstalacao.src = caminho;
     } else {
         console.error("ERRO: Caminho da imagem de instalação não encontrado para o tipo: " + tipo);
     }
@@ -112,13 +121,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("Controlador: Dados não encontrados no localStorage. Buscando na API...");
         const resposta = await buscarETratarProposta(numeroProjeto);
 
-        if (resposta.sucesso && resposta.dados && resposta.dados.premium) {
+        if (resposta.sucesso && resposta.proposta && resposta.proposta.premium) {
             // Salva os dados completos (premium e acessível) no localStorage
-            localStorage.setItem('propostaData', JSON.stringify(resposta.dados));
-            inicializarBotoes(resposta.dados);
-            preencherDadosProposta(resposta.dados.premium);
-            atualizarImagemEquipamentos(resposta.dados, 'premium');
-            atualizarImagemInstalacao(resposta.dados, 'premium');
+            localStorage.setItem('propostaData', JSON.stringify(resposta)); // Salva o objeto completo de resposta
+            inicializarBotoes(resposta.proposta); // Passa o objeto 'proposta' para a função
+            preencherDadosProposta(resposta.proposta.premium);
+            atualizarImagemEquipamentos(resposta.proposta.premium);
+            atualizarImagemInstalacao(resposta.proposta.premium);
             atualizarEtiquetasDinamicas('premium');
             esconderLoadingOverlay();
         } else {
@@ -130,10 +139,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         console.log("Controlador: Dados encontrados no localStorage. Carregando...");
         const propostas = JSON.parse(dadosArmazenados);
-        inicializarBotoes(propostas);
-        preencherDadosProposta(propostas.premium);
-        atualizarImagemEquipamentos(propostas, 'premium');
-        atualizarImagemInstalacao(propostas, 'premium');
+        inicializarBotoes(propostas.proposta); // Passa o objeto 'proposta' para a função
+        preencherDadosProposta(propostas.proposta.premium);
+        atualizarImagemEquipamentos(propostas.proposta.premium);
+        atualizarImagemInstalacao(propostas.proposta.premium);
         atualizarEtiquetasDinamicas('premium');
         esconderLoadingOverlay();
     }
@@ -164,9 +173,9 @@ function inicializarBotoes(propostas) {
             console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
             mostrarLoadingOverlay();
             preencherDadosProposta(propostas.premium);
-            atualizarImagemEquipamentos(propostas, 'premium');
+            atualizarImagemEquipamentos(propostas.premium);
             atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostas, 'premium');
+            atualizarImagemInstalacao(propostas.premium);
             preencherDetalhesInstalacao(propostas.premium);
             document.body.classList.remove('theme-acessivel');
             document.body.classList.add('theme-premium');
@@ -189,9 +198,9 @@ function inicializarBotoes(propostas) {
             console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
             mostrarLoadingOverlay();
             preencherDadosProposta(propostas.acessivel);
-            atualizarImagemEquipamentos(propostas, 'acessivel');
+            atualizarImagemEquipamentos(propostas.acessivel);
             atualizarEtiquetasDinamicas('acessivel');
-            atualizarImagemInstalacao(propostas, 'acessivel');
+            atualizarImagemInstalacao(propostas.acessivel);
             preencherDetalhesInstalacao(propostas.acessivel);
             document.body.classList.add('theme-acessivel');
             document.body.classList.remove('theme-premium');
