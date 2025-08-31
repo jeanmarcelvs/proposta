@@ -186,44 +186,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         }
     });
     
-    // ******************************************************
-    // CORREÇÃO: Cria a lista de equipamentos de forma estruturada.
-    // O `propostaController` precisa de um array para renderizar os cards.
-    // ******************************************************
-    const quantidadeInversor = extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 'N/A';
-    const potenciaInversor = extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado';
-    const nomeInversor = `Inversor ${potenciaInversor}`;
-
-    const quantidadePainel = extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 'N/A';
-    const potenciaPainel = extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado';
-    const nomePainel = `Painel Solar ${potenciaPainel}`;
-
-    const equipamentosLista = [
-        { 
-            icone: 'fa-microchip', 
-            quantidade: quantidadeInversor,
-            potenciaFormatada: potenciaInversor,
-            nome: nomeInversor,
-            descricao: tipoProposta === 'premium' ? "Inversor de alta eficiência, com Wi-Fi e monitoramento 24h." : "Inversor com funcionalidades básicas."
-        },
-        { 
-            icone: 'fa-solar-panel', 
-            quantidade: quantidadePainel,
-            potenciaFormatada: potenciaPainel,
-            nome: nomePainel,
-            descricao: tipoProposta === 'premium' ? "Painel de silício monocristalino, com 25 anos de garantia." : "Painel solar padrão."
-        }
-    ];
-
-    
     const retorno = {
         id: dados.project.id,
         propostaId: idProposta,
-        cliente: {
-            nome: nomeCliente,
-            cidade: cidade,
-            estado: estado
-        },
+        cliente: nomeCliente,
         consumoMensal: `${consumoMensal} kWh`,
         geracaoMensal: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
         local: `${cidade} / ${estado}`,
@@ -238,21 +204,21 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
             })
         },
         equipamentos: {
-            imagem: caminhosImagens.equipamentos[tipoProposta],
-            lista: equipamentosLista // AGORA PASSAMOS A LISTA COMPLETA
+            imagem: caminhosImagens.equipamentos[tipoProposta], 
+            quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
+            descricaoPainel: extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado',
+            quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
+            descricaoInversor: extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado'
         },
         instalacao: {
             imagem: caminhosImagens.instalacao[tipoProposta],
-            detalhes: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel, // CORRIGIDO: Propriedade agora é 'detalhes'
+            detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
         },
-        financiamento: {
+        valores: {
             valorTotal: valorTotal,
             valorResumo: valorResumo,
-            economiaMensal: idealParaValor.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                minimumFractionDigits: 2
-            }),
+            // REMOVIDO: A variável 'economiaMensal' não existe.
+            // A economia em kWh é o próprio 'geracaoMensal'.
             payback: payback,
             parcelas: parcelas,
             observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
