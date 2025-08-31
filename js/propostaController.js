@@ -1,219 +1,117 @@
 /**
- * propostaController.js
- * * Este arquivo é o Controlador da página proposta.html. Ele gerencia
- * a interface do usuário e coordena a exibição dos dados do Modelo.
+ * indexController.js
+ * Este arquivo é o Controlador da página index.html. Ele gerencia a
+ * interação do usuário com o formulário e coordena a comunicação com o Modelo.
  */
-import { buscarETratarProposta, atualizarStatusVisualizacao } from './model.js';
+import { buscarETratarProposta } from './model.js';
 
-// Funções para o novo loading-overlay
-function mostrarLoadingOverlay() {
-    const overlay = document.getElementById('loading-overlay');
-    if (overlay) {
-        // Apenas para garantir, mas o CSS já deve estar fazendo isso
-        overlay.classList.remove('oculto');
-    }
+// Função para ocultar a tela de splash
+function esconderTelaSplash() {
+  const telaSplash = document.getElementById('tela-splash');
+  if (telaSplash) {
+    telaSplash.classList.add('oculto');
+  }
 }
 
-function esconderLoadingOverlay() {
-    const overlay = document.getElementById('loading-overlay');
-    const mainContent = document.querySelector('main');
-
-    if (mainContent) {
-        // Remove a classe que oculta e adiciona a que exibe
-        mainContent.classList.remove('main-oculto');
-        mainContent.classList.add('main-visivel');
+// Função para exibir mensagem de feedback
+function exibirMensagem(tipo, mensagem) {
+    const mensagemFeedback = document.getElementById('mensagem-feedback');
+    mensagemFeedback.textContent = mensagem;
+    mensagemFeedback.className = 'mensagem-feedback show';
+    if (tipo === 'sucesso') {
+        mensagemFeedback.classList.add('success-msg');
+    } else if (tipo === 'erro') {
+        mensagemFeedback.classList.add('error-msg');
     }
-
-    // Oculta o overlay após o conteúdo principal aparecer
-    if (overlay) {
-        overlay.classList.add('oculto');
-    }
+    // Oculta a mensagem após alguns segundos
+    setTimeout(() => {
+        mensagemFeedback.classList.remove('show');
+        setTimeout(() => {
+            mensagemFeedback.className = 'mensagem-feedback';
+        }, 500);
+    }, 5000);
 }
 
-// CORRIGIDO: A função agora recebe apenas o objeto da proposta (premium ou acessivel)
-function atualizarImagemEquipamentos(proposta) {
-    const imagemMarca = document.getElementById('imagem-marca');
-    if (!imagemMarca) {
-        console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
-        return;
-    }
-    // CORRIGIDO: Acessa o caminho da imagem diretamente do objeto da proposta
-    const caminho = proposta.equipamentos.imagemPremium || proposta.equipamentos.imagemAcessivel;
+// Função para resetar o botão para o estado padrão
+function resetarBotao() {
+    const btnConsultar = document.getElementById('btn-consultar');
+    const btnTexto = btnConsultar.querySelector('.btn-texto');
+    const iconeCarregando = btnConsultar.querySelector('.icone-carregando');
+    const iconeSucesso = btnConsultar.querySelector('.icone-sucesso');
+    const iconeErro = btnConsultar.querySelector('.icone-erro');
 
-    if (caminho) {
-        imagemMarca.src = caminho;
-    } else {
-        console.error("ERRO: Caminho da imagem de equipamentos não encontrado.");
-    }
+    btnConsultar.classList.remove('loading', 'success', 'error');
+    if (btnTexto) btnTexto.style.opacity = '1';
+    if (iconeCarregando) iconeCarregando.style.opacity = '0';
+    if (iconeSucesso) iconeSucesso.style.opacity = '0';
+    if (iconeErro) iconeErro.style.opacity = '0';
 }
 
-// Função para preencher os dados dinâmicos da proposta
-function preencherDadosProposta(dados) {
-    // Mapeamento dos IDs de elementos para as chaves de dados
-    const mapaDados = {
-        'nome-cliente': 'cliente',
-        'consumo': 'consumoMensal',
-        'geracao': 'geracaoMensal',
-        'valor-investimento-premium': 'valorSistema',
-        'economia': 'economiaMensal',
-        'payback': 'payback'
-    };
+// Lógica principal
+document.addEventListener('DOMContentLoaded', () => {
+    const formConsulta = document.getElementById('form-consulta');
+    const inputNumeroProjeto = document.getElementById('numero-projeto');
+    const btnConsultar = document.getElementById('btn-consultar');
 
-    // Preenche os campos de texto com os dados do objeto
-    for (const id in mapaDados) {
-        const elemento = document.getElementById(id);
-        if (elemento && dados[mapaDados[id]]) {
-            elemento.textContent = dados[mapaDados[id]];
+    // Inicialmente esconde a tela de splash para que o usuário veja o formulário
+    esconderTelaSplash();
+
+    // Função assíncrona para lidar com a submissão do formulário
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
+
+        // --- Estado de Carregamento do Botão ---
+        btnConsultar.classList.add('loading');
+        exibirMensagem('sucesso', 'Buscando dados da proposta...');
+        let sucesso = false;
+
+        try {
+            const numeroProjeto = inputNumeroProjeto.value.trim();
+            const resposta = await buscarETratarProposta(numeroProjeto);
+            
+            // CORRIGIDO: Verifica se a propriedade 'proposta' existe na resposta
+            if (resposta.sucesso && resposta.proposta) {
+                sucesso = true;
+                // --- Estado de Sucesso do Botão ---
+                btnConsultar.classList.add('success');
+                exibirMensagem('sucesso', 'Proposta encontrada. Redirecionando...');
+
+                // CORRIGIDO: Salva a propriedade 'proposta' no localStorage
+                localStorage.setItem('propostaData', JSON.stringify(resposta.proposta));
+                
+                setTimeout(() => {
+                    window.location.href = `proposta.html?id=${numeroProjeto}`;
+                }, 1500);
+            } else {
+                // --- Estado de Erro do Botão ---
+                btnConsultar.classList.add('error');
+                exibirMensagem('erro', `Erro: ${resposta.mensagem}`);
+            }
+        } catch (erro) {
+            console.error('Ocorreu um erro na busca:', erro);
+            // --- Estado de Erro do Botão ---
+            btnConsultar.classList.add('error');
+            exibirMensagem('erro', 'Ocorreu um erro inesperado ao consultar. Tente novamente.');
+        } finally {
+            // Se não houve sucesso, resetamos o botão para a próxima interação
+            if (!sucesso) {
+                setTimeout(resetarBotao, 2000);
+            }
         }
     }
-}
 
-// CORRIGIDO: A função agora recebe apenas o objeto da proposta (premium ou acessivel)
-function atualizarImagemInstalacao(proposta) {
-    const imagemInstalacao = document.getElementById('imagem-instalacao');
-    if (!imagemInstalacao) {
-        console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
-        return;
-    }
-    // CORRIGIDO: Acessa o caminho da imagem diretamente do objeto da proposta
-    const caminho = proposta.instalacao.imagemInstalacaoPremium || proposta.instalacao.imagemInstalacaoAcessivel;
-    
-    if (caminho) {
-        imagemInstalacao.src = caminho;
-    } else {
-        console.error("ERRO: Caminho da imagem de instalação não encontrado.");
-    }
-}
+    // Adiciona o event listener para o formulário
+    formConsulta.addEventListener('submit', handleFormSubmit);
 
-function preencherDetalhesInstalacao(dados) {
-    // Implemente a lógica para preencher os detalhes de instalação
-    // com base na sua estrutura de dados (dados.acessivel ou dados.premium)
-}
-
-function atualizarEtiquetasDinamicas(tipo) {
-    const etiquetaEconomia = document.getElementById('etiqueta-economia');
-    const etiquetaPayback = document.getElementById('etiqueta-payback');
-
-    if (etiquetaEconomia) {
-        etiquetaEconomia.textContent = tipo === 'premium' ? "Economia mensal estimada:" : "Economia mensal estimada:";
-    }
-
-    if (etiquetaPayback) {
-        etiquetaPayback.textContent = tipo === 'premium' ? "Seu investimento se paga em:" : "Seu investimento se paga em:";
-    }
-}
-
-// Lógica de inicialização da página
-document.addEventListener('DOMContentLoaded', async () => {
+    // --- NOVA LÓGICA: Verifica se há um ID na URL e inicia a consulta automática ---
     const urlParams = new URLSearchParams(window.location.search);
-    const numeroProjeto = urlParams.get('id');
-
-    if (!numeroProjeto) {
-        console.error('ERRO: ID do projeto não encontrado na URL.');
-        // Redirecionar ou mostrar mensagem de erro
-        return;
-    }
-
-    const dadosArmazenados = localStorage.getItem('propostaData');
-    if (!dadosArmazenados) {
-        console.log("Controlador: Dados não encontrados no localStorage. Buscando na API...");
-        const resposta = await buscarETratarProposta(numeroProjeto);
-
-        // CORRIGIDO: Verifica se a resposta e a proposta existem
-        if (resposta.sucesso && resposta.proposta && resposta.proposta.premium) {
-            // CORRIGIDO: Salva o objeto completo de resposta.proposta no localStorage
-            localStorage.setItem('propostaData', JSON.stringify(resposta.proposta));
-            inicializarBotoes(resposta.proposta);
-            preencherDadosProposta(resposta.proposta.premium);
-            atualizarImagemEquipamentos(resposta.proposta.premium);
-            atualizarImagemInstalacao(resposta.proposta.premium);
-            atualizarEtiquetasDinamicas('premium');
-            esconderLoadingOverlay();
-        } else {
-            // Trata o erro, talvez redirecionando para a página inicial
-            console.error("Controlador: Falha ao carregar dados da API.");
-            alert(resposta.mensagem || 'Falha ao carregar a proposta.');
-            window.location.href = 'index.html';
-        }
-    } else {
-        console.log("Controlador: Dados encontrados no localStorage. Carregando...");
-        // CORRIGIDO: O parse agora retorna o objeto { premium: ..., acessivel: ... }
-        const propostas = JSON.parse(dadosArmazenados);
-        inicializarBotoes(propostas);
-        preencherDadosProposta(propostas.premium);
-        atualizarImagemEquipamentos(propostas.premium);
-        atualizarImagemInstalacao(propostas.premium);
-        atualizarEtiquetasDinamicas('premium');
-        esconderLoadingOverlay();
+    const idDaUrl = urlParams.get('id');
+    
+    if (idDaUrl) {
+        console.log(`ID encontrado na URL: ${idDaUrl}`);
+        // Preenche o campo de input com o ID da URL
+        inputNumeroProjeto.value = idDaUrl;
+        // Simula o envio do formulário, o que irá iniciar o processo de busca
+        handleFormSubmit({ preventDefault: () => {} });
     }
 });
-
-// A nova função para inicializar os botões e controlar a visibilidade
-function inicializarBotoes(propostas) {
-    const btnPremium = document.getElementById('btn-premium');
-    const btnAcessivel = document.getElementById('btn-acessivel');
-    const seletorBotoes = document.querySelector('.seletor-tipo-proposta');
-
-    // Se não houver dados para a proposta acessível, esconde o seletor de botões
-    if (!propostas.acessivel) {
-        if (seletorBotoes) {
-            seletorBotoes.style.display = 'none';
-        }
-        return; // Sai da função, não precisa adicionar os event listeners
-    } else {
-        // Garante que o seletor está visível se a proposta acessível existir
-        if (seletorBotoes) {
-            seletorBotoes.style.display = 'flex'; // ou 'block'
-        }
-    }
-
-    // Lógica para o botão Premium
-    if (btnPremium) {
-        btnPremium.addEventListener('click', () => {
-            console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
-            mostrarLoadingOverlay();
-            preencherDadosProposta(propostas.premium);
-            atualizarImagemEquipamentos(propostas.premium);
-            atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostas.premium);
-            preencherDetalhesInstalacao(propostas.premium);
-            document.body.classList.remove('theme-acessivel');
-            document.body.classList.add('theme-premium');
-            setTimeout(() => {
-                btnPremium.classList.add('selecionado');
-                btnAcessivel.classList.remove('selecionado');
-                esconderLoadingOverlay();
-            }, 100);
-            const dadosVisualizacao = {
-                propostaId: propostas.premium.id,
-                tipoVisualizacao: 'P' // Premium
-            };
-            atualizarStatusVisualizacao(dadosVisualizacao);
-        });
-    }
-
-    // Lógica para o botão +Acessível
-    if (btnAcessivel) {
-        btnAcessivel.addEventListener('click', () => {
-            console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
-            mostrarLoadingOverlay();
-            preencherDadosProposta(propostas.acessivel);
-            atualizarImagemEquipamentos(propostas.acessivel);
-            atualizarEtiquetasDinamicas('acessivel');
-            atualizarImagemInstalacao(propostas.acessivel);
-            preencherDetalhesInstalacao(propostas.acessivel);
-            document.body.classList.add('theme-acessivel');
-            document.body.classList.remove('theme-premium');
-            setTimeout(() => {
-                btnAcessivel.classList.add('selecionado');
-                btnPremium.classList.remove('selecionado');
-                esconderLoadingOverlay();
-            }, 100);
-            const dadosVisualizacao = {
-                propostaId: propostas.acessivel.id,
-                tipoVisualizacao: 'A' // Acessível
-            };
-            atualizarStatusVisualizacao(dadosVisualizacao);
-        });
-    }
-}
