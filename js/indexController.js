@@ -36,62 +36,48 @@ function exibirMensagem(tipo, mensagem) {
 function resetarBotao() {
     const btnConsultar = document.getElementById('btn-consultar');
     const btnTexto = btnConsultar.querySelector('.btn-texto');
+    const iconeCarregando = btnConsultar.querySelector('.icone-carregando');
+    const iconeSucesso = btnConsultar.querySelector('.icone-sucesso');
+    const iconeErro = btnConsultar.querySelector('.icone-erro');
+
     btnConsultar.classList.remove('loading', 'success', 'error');
-    btnConsultar.disabled = false;
-    btnTexto.textContent = 'Consultar';
+    if (btnTexto) btnTexto.style.opacity = '1';
+    if (iconeCarregando) iconeCarregando.style.opacity = '0';
+    if (iconeSucesso) iconeSucesso.style.opacity = '0';
+    if (iconeErro) iconeErro.style.opacity = '0';
 }
 
-
-// Aguarda o documento HTML ser totalmente carregado
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(esconderTelaSplash, 500);
-
+// Lógica principal
+document.addEventListener('DOMContentLoaded', () => {
     const formConsulta = document.getElementById('form-consulta');
     const inputNumeroProjeto = document.getElementById('numero-projeto');
     const btnConsultar = document.getElementById('btn-consultar');
-    const btnTexto = btnConsultar.querySelector('.btn-texto');
 
-    // Função que será executada ao submeter o formulário (ou ao carregar a página com ID)
-    async function handleFormSubmit(evento, numeroProjetoUrl = null) {
-        if (evento) {
-          evento.preventDefault();
-        }
+    // Inicialmente esconde a tela de splash para que o usuário veja o formulário
+    esconderTelaSplash();
 
-        // Usa o número do projeto da URL, se existir, senão pega do input
-        const numeroProjeto = numeroProjetoUrl || inputNumeroProjeto.value.trim();
-        
-        // 1. Validação de campo vazio
-        if (!numeroProjeto) {
-            if (!numeroProjetoUrl) { // Evita exibir mensagem se o ID da URL for inválido
-              exibirMensagem('erro', 'Por favor, digite o número do projeto.');
-            }
-            return;
-        }
+    // Função assíncrona para lidar com a submissão do formulário
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
 
-        // 2. Validação para garantir que é um número
-        const regexNumeros = /^\d+$/; // Aceita apenas um ou mais dígitos de 0 a 9
-        if (!regexNumeros.test(numeroProjeto)) {
-            exibirMensagem('erro', 'O número do projeto deve conter apenas dígitos.');
-            setTimeout(resetarBotao, 2000);
-            return;
-        }
-
-        // --- Início do estado de carregamento do botão ---
+        // --- Estado de Carregamento do Botão ---
         btnConsultar.classList.add('loading');
-        btnConsultar.disabled = true;
-        btnConsultar.classList.remove('success', 'error');
-        btnTexto.textContent = '';
-
+        exibirMensagem('sucesso', 'Buscando dados da proposta...');
         let sucesso = false;
-        try {
-            const resposta = await buscarETratarProposta(numeroProjeto);
 
-            if (resposta.sucesso) {
-                // --- Estado de Sucesso do Botão ---
+        try {
+            const numeroProjeto = inputNumeroProjeto.value.trim();
+            const resposta = await buscarETratarProposta(numeroProjeto);
+            
+            // CORRIGIDO: Agora verifica e salva a propriedade 'proposta' da resposta.
+            if (resposta.sucesso && resposta.proposta) {
                 sucesso = true;
+                // --- Estado de Sucesso do Botão ---
                 btnConsultar.classList.add('success');
-                exibirMensagem('sucesso', 'Proposta encontrada! Redirecionando...');
-                console.log('Proposta encontrada. Redirecionando para a página de proposta.');
+                exibirMensagem('sucesso', 'Proposta encontrada. Redirecionando...');
+
+                // CORRIGIDO: Salva a propriedade 'proposta' no localStorage
+                localStorage.setItem('propostaData', JSON.stringify(resposta.proposta));
                 
                 setTimeout(() => {
                     window.location.href = `proposta.html?id=${numeroProjeto}`;
@@ -125,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`ID encontrado na URL: ${idDaUrl}`);
         // Preenche o campo de input com o ID da URL
         inputNumeroProjeto.value = idDaUrl;
-        // Chama a função de submissão do formulário com o ID da URL
-        handleFormSubmit(null, idDaUrl);
+        // Simula o envio do formulário, o que irá iniciar o processo de busca
+        handleFormSubmit({ preventDefault: () => {} });
     }
 });
