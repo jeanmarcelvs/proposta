@@ -85,7 +85,7 @@ function tratarDadosProposta(dadosApiBrutos) {
  */
 export async function buscarETratarProposta(numeroProjeto) {
     try {
-        mostrarLoadingOverlay();
+        //mostrarLoadingOverlay();
         console.log(`Modelo: Buscando proposta PREMIUM para o ID: ${numeroProjeto}`);
 
         // 1. Autenticação na API
