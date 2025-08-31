@@ -223,7 +223,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
             parcelas: parcelas,
             observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
         },
-        validade: `3 dias corridos ou enquanto durarem os estoques.`
+        validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
     };
 
     console.log("Modelo: Dados tratados para a página.", retorno);

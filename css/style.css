@@ -440,11 +440,28 @@ header {
   gap: 1rem;
 }
 
+/* NOVO: Estilo para o container de quantidade e unidade */
+.quantidade-e-unidade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* NOVO: Destaque sutil para a quantidade */
 .quantidade-equipamento {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--cor-primaria);
-  line-height: 1;
+  text-shadow: 0 0 5px rgba(180, 107, 63, 0.5); /* Sombra sutil para destaque */
+}
+
+/* NOVO: Estilo para a unidade de potência */
+.watts-unidade {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--cor-texto-secundario);
 }
 
 .info-equipamento {
@@ -470,12 +487,15 @@ header {
   gap: 2rem;
 }
 
+/* NOVO: Estilo para a imagem que se adapta à largura da tela */
 .imagem-instalacao {
-  flex-shrink: 0;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 400px; /* Limita a largura em telas maiores, se necessário */
 }
 
 .imagem-instalacao img {
-  max-width: 250px;
+  width: 100%;
   height: auto;
   border-radius: 10px;
 }
@@ -487,14 +507,14 @@ header {
   gap: 1rem;
 }
 
-/* O design dos cards individuais está aqui */
+/* NOVO: Design específico para cada cartão de instalação */
 .info-detalhe-item {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  padding: 1rem;
+  padding: 1.25rem;
   border-radius: 12px;
-  background-color: var(--cor-fundo);
+  background-color: var(--cor-cartao-fundo); /* Altera o fundo para um tom mais claro */
   border: 1px solid var(--cor-borda);
   box-shadow: 0 2px 8px var(--cor-sombra);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -506,7 +526,7 @@ header {
 }
 
 .info-detalhe-item .icone-item {
-  font-size: 1.2rem;
+  font-size: 1.5rem; /* Aumenta o tamanho do ícone */
   color: var(--cor-primaria);
   flex-shrink: 0;
 }
