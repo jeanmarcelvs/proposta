@@ -4,37 +4,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
 
 /* --- Variáveis de Cores (Temas) --- */
+
+/* Paleta de Cores Premium (Azuis Suaves e Elegantes) */
 :root {
-    /* Tema Padrão (Leve e Acessível) */
-    --cor-fundo: #FFFFFF; /* Fundo Branco Puro */
-    --cor-cartao-fundo: #F8F9FA; /* Fundo de Card Cinza Muito Claro */
-    --cor-header-fundo: rgba(255, 255, 255, 0.9); /* Fundo de Header Branco semi-transparente */
-    --cor-header-botoes-fundo: #E9ECEF; /* Fundo de botões do header */
-    --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
-    --cor-primaria: #0077b6; /* Azul Marinho Profundo */
-    --cor-primaria-hover: #0088cc; /* Para o hover do botão */
-    --cor-secundaria: #00b4d8; /* Azul Turquesa Claro */
-    --cor-texto-principal: #333333; /* Texto Preto Escuro */
-    --cor-texto-secundario: #666666; /* Texto Cinza Escuro para detalhes */
-    --cor-borda: rgba(0, 0, 0, 0.1);
-    --cor-sombra: rgba(0, 0, 0, 0.1);
-    --cor-destaque-positivo: #28a745; /* Verde Positivo */
-    --cor-destaque-negativo: #dc3545; /* Vermelho Negativo */
+    --cor-fundo: #f0f4f7;
+    --cor-cartao-fundo: #e9eff4;
+    --cor-header-fundo: rgba(233, 239, 244, 0.9);
+    --cor-header-botoes-fundo: #dbe4ee;
+    --cor-header-botoes-borda: rgba(108, 141, 183, 0.2);
+    
+    --cor-primaria: #6c8db7; /* Azul elegante e fosco */
+    --cor-primaria-hover: #5c7fa8;
+    --cor-secundaria: #9fbddb;
+    
+    --cor-texto-principal: #333d45;
+    --cor-texto-secundario: #6b7782;
+    
+    --cor-borda: rgba(108, 141, 183, 0.2);
+    --cor-sombra: rgba(108, 141, 183, 0.1);
+    
+    --cor-destaque-positivo: #4caf50;
+    --cor-destaque-negativo: #dc3545;
     --transicao-padrao: 0.3s ease-in-out;
 }
 
-/* Paleta de cores para o tema +Acessível (Mantido para compatibilidade) */
+/* Paleta de Cores +Acessível (Tons de Marfim) */
 body.theme-acessivel {
-    --cor-fundo: #F8F9FA;
-    --cor-header-fundo: rgba(255, 255, 255, 0.9);
-    --cor-cartao-fundo: #FFFFFF;
-    --cor-texto-principal: #333333;
-    --cor-texto-secundario: #666666;
-    --cor-primaria: #2C3E50;
-    --cor-secundaria: #466380;
-    --cor-borda: rgba(0, 0, 0, 0.15);
-    --cor-sombra: rgba(0, 0, 0, 0.1);
-    --cor-header-botoes-fundo: #DDE2E6;
+    --cor-fundo: #fbfaf5;
+    --cor-cartao-fundo: #e9e6d8;
+    --cor-header-fundo: rgba(233, 230, 216, 0.9);
+    --cor-header-botoes-fundo: #dcd9c7;
+    --cor-header-botoes-borda: rgba(133, 122, 98, 0.2);
+
+    --cor-primaria: #857a62; /* Marrom suave, equivalente ao azul Premium */
+    --cor-primaria-hover: #766c5a;
+    --cor-secundaria: #a29b8c;
+    
+    --cor-texto-principal: #3d3429;
+    --cor-texto-secundario: #6e6252;
+    
+    --cor-borda: rgba(133, 122, 98, 0.2);
+    --cor-sombra: rgba(133, 122, 98, 0.1);
+    
+    --cor-destaque-positivo: #4caf50;
+    --cor-destaque-negativo: #dc3545;
 }
 
 /* --- Estilos Globais --- */
@@ -129,7 +142,7 @@ h1 {
 .input-grupo input:focus {
     outline: none;
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
+    box-shadow: 0 0 0 3px rgba(108, 141, 183, 0.2);
 }
 
 /* --- Estilos do botão de consulta --- */
@@ -138,7 +151,7 @@ h1 {
     width: 100%;
     padding: 14px;
     background-color: var(--cor-primaria);
-    color: #fff;
+    color: var(--cor-fundo); /* Usando o fundo para ter o contraste inverso */
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -211,7 +224,7 @@ h1 {
 }
 
 #mensagem-feedback.success-msg {
-    background-color: rgba(40, 167, 69, 0.2);
+    background-color: rgba(76, 175, 80, 0.2);
     color: var(--cor-destaque-positivo);
     border: 1px solid var(--cor-destaque-positivo);
 }
@@ -224,7 +237,7 @@ h1 {
 
 /* Estilos adicionais para o novo tema 'acessivel' */
 .logo-acessivel {
-    filter: invert(1);
+    filter: none; /* A nova paleta não precisa de inversão */
 }
 
 .info-detalhe-item .icone-item {
@@ -278,8 +291,8 @@ header {
 
 .btn-proposta.selecionado {
     background-color: var(--cor-primaria);
-    color: white;
-    box-shadow: 0 2px 8px rgba(0, 119, 182, 0.2);
+    color: var(--cor-fundo);
+    box-shadow: 0 2px 8px var(--cor-sombra);
     transform: none;
 }
 
@@ -508,13 +521,13 @@ header {
 .card-total {
     grid-column: 1 / -1;
     background-color: var(--cor-primaria);
-    color: white;
+    color: var(--cor-cartao-fundo);
 }
 
 .card-total .legenda-valores,
 .card-total .valor-total-proposta,
 .card-total .etiqueta-proposta-dinamica {
-    color: white;
+    color: var(--cor-cartao-fundo);
 }
 
 .legenda-valores {

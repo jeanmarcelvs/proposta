@@ -1,697 +1,180 @@
-/* style.css */
+<!DOCTYPE html>
+<html lang="pt-br">
 
-/* Importação da fonte e variáveis de cores globais */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
-
-/* --- Variáveis de Cores (Temas) --- */
-
-/* Paleta de Cores Premium (Azuis Suaves e Elegantes) */
-:root {
-    --cor-fundo: #f0f4f7;
-    --cor-cartao-fundo: #e9eff4;
-    --cor-header-fundo: rgba(233, 239, 244, 0.9);
-    --cor-header-botoes-fundo: #dbe4ee;
-    --cor-header-botoes-borda: rgba(108, 141, 183, 0.2);
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta Comercial | GDIS</title>
+    <link rel="stylesheet" href="css/style.css">
     
-    --cor-primaria: #6c8db7; /* Azul elegante e fosco */
-    --cor-primaria-hover: #5c7fa8;
-    --cor-secundaria: #9fbddb;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
     
-    --cor-texto-principal: #333d45;
-    --cor-texto-secundario: #6b7782;
-    
-    --cor-borda: rgba(108, 141, 183, 0.2);
-    --cor-sombra: rgba(108, 141, 183, 0.1);
-    
-    --cor-destaque-positivo: #4caf50;
-    --cor-destaque-negativo: #dc3545;
-    --transicao-padrao: 0.3s ease-in-out;
-}
 
-/* Paleta de Cores +Acessível (Tons de Marfim) */
-body.theme-acessivel {
-    --cor-fundo: #fbfaf5;
-    --cor-cartao-fundo: #e9e6d8;
-    --cor-header-fundo: rgba(233, 230, 216, 0.9);
-    --cor-header-botoes-fundo: #dcd9c7;
-    --cor-header-botoes-borda: rgba(133, 122, 98, 0.2);
-
-    --cor-primaria: #857a62; /* Marrom suave, equivalente ao azul Premium */
-    --cor-primaria-hover: #766c5a;
-    --cor-secundaria: #a29b8c;
-    
-    --cor-texto-principal: #3d3429;
-    --cor-texto-secundario: #6e6252;
-    
-    --cor-borda: rgba(133, 122, 98, 0.2);
-    --cor-sombra: rgba(133, 122, 98, 0.1);
-    
-    --cor-destaque-positivo: #4caf50;
-    --cor-destaque-negativo: #dc3545;
-}
-
-/* --- Estilos Globais --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--cor-fundo);
-    color: var(--cor-texto-principal);
-    line-height: 1.6;
-    transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
-}
-
-/* Efeito de Fundo Arrojado para index.html */
-body.index-page {
-    background: radial-gradient(circle, #f0f4f7 0%, #FFFFFF 100%);
-}
-
-/* Estilos de transição para tema */
-html {
-    transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
-}
-
-.card {
-    background-color: var(--cor-cartao-fundo);
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px var(--cor-sombra);
-    border: 1px solid var(--cor-borda);
-    transition: all var(--transicao-padrao);
-}
-
-/* --- Estilos para a página de consulta (index.html) --- */
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    text-align: center;
-    background-color: var(--cor-cartao-fundo);
-    border-radius: 15px;
-    box-shadow: 0 8px 30px var(--cor-sombra);
-    max-width: 500px;
-    margin: 2rem auto;
-}
-
-.logo {
-    max-width: 200px;
-    height: auto;
-    margin-bottom: 2rem;
-}
-
-h1 {
-    color: var(--cor-primaria);
-    margin-bottom: 1.5rem;
-    font-weight: 500;
-}
-
-#form-consulta {
-    width: 100%;
-}
-
-.input-grupo {
-    margin-bottom: 1.5rem;
-    text-align: left;
-}
-
-.input-grupo label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--cor-texto-secundario);
-}
-
-.input-grupo input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--cor-borda);
-    border-radius: 8px;
-    font-size: 1rem;
-    color: var(--cor-texto-principal);
-    background-color: transparent;
-    transition: border-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
-}
-
-.input-grupo input:focus {
-    outline: none;
-    border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(108, 141, 183, 0.2);
-}
-
-/* --- Estilos do botão de consulta --- */
-#btn-consultar {
-    position: relative;
-    width: 100%;
-    padding: 14px;
-    background-color: var(--cor-primaria);
-    color: var(--cor-fundo); /* Usando o fundo para ter o contraste inverso */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color var(--transicao-padrao);
-    overflow: hidden;
-}
-
-#btn-consultar:hover {
-    background-color: var(--cor-primaria-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-#btn-consultar .btn-texto {
-    transition: opacity 0.3s ease;
-}
-
-#btn-consultar.carregando .btn-texto,
-#btn-consultar.sucesso .btn-texto,
-#btn-consultar.erro .btn-texto {
-    opacity: 0;
-}
-
-/* Estilos e animações dos ícones */
-.icone-carregando, .icone-sucesso, .icone-erro {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    font-size: 1.2rem;
-}
-
-#btn-consultar.carregando .icone-carregando {
-    opacity: 1;
-    animation: spin 1s linear infinite;
-}
-
-#btn-consultar.sucesso .icone-sucesso {
-    opacity: 1;
-}
-
-#btn-consultar.erro .icone-erro {
-    opacity: 1;
-}
-
-@keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-/* Estilos para a mensagem de feedback */
-#mensagem-feedback {
-    margin-top: 1.5rem;
-    padding: 10px;
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 0.9em;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-#mensagem-feedback.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-#mensagem-feedback.success-msg {
-    background-color: rgba(76, 175, 80, 0.2);
-    color: var(--cor-destaque-positivo);
-    border: 1px solid var(--cor-destaque-positivo);
-}
-
-#mensagem-feedback.error-msg {
-    background-color: rgba(220, 53, 69, 0.2); 
-    color: var(--cor-destaque-negativo);
-    border: 1px solid var(--cor-destaque-negativo);
-}
-
-/* Estilos adicionais para o novo tema 'acessivel' */
-.logo-acessivel {
-    filter: none; /* A nova paleta não precisa de inversão */
-}
-
-.info-detalhe-item .icone-item {
-    color: var(--cor-primaria);
-}
-
-/* --- Estilos para a página de proposta (proposta.html) --- */
-header {
-    background-color: var(--cor-header-fundo);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
-    z-index: 500;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 10px var(--cor-sombra);
-    margin-bottom: 2rem;
-}
-
-.logo-container .logo {
-    max-width: 150px;
-}
-
-.seletor-tipo-proposta {
-    display: flex;
-    gap: 0.5rem;
-    background-color: var(--cor-header-botoes-fundo);
-    border-radius: 8px;
-    padding: 4px;
-}
-
-.btn-proposta {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: 1px solid var(--cor-header-botoes-borda);
-    border-radius: 6px;
-    cursor: pointer;
-    background: transparent;
-    color: var(--cor-texto-principal);
-    transition: background-color 0.2s ease-in-out, transform 0.2s ease;
-}
-
-.btn-proposta:hover:not(.selecionado) {
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: translateY(-1px);
-}
-
-.btn-proposta.selecionado {
-    background-color: var(--cor-primaria);
-    color: var(--cor-fundo);
-    box-shadow: 0 2px 8px var(--cor-sombra);
-    transform: none;
-}
-
-/* CORREÇÃO: Nova estilização para a seção de resumo */
-#secao-resumo {
-    display: flex;
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-    margin-bottom: 2rem;
-    gap: 1.5rem; /* Espaçamento entre os elementos */
-}
-
-.valor-resumo {
-    background-color: var(--cor-cartao-fundo);
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 2px 8px var(--cor-sombra);
-    flex-grow: 1; /* Permite que ocupe o espaço disponível */
-    min-width: 150px; /* Garante que os painéis não fiquem muito pequenos */
-}
-
-.texto-valor-resumo {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--cor-primaria);
-}
-
-#secao-cliente {
-    flex-grow: 2;
-    text-align: right;
-}
-
-.nome-cliente {
-    font-size: 1.5rem;
-    color: var(--cor-primaria);
-    font-weight: 600;
-}
-
-.local-proposta {
-    color: var(--cor-texto-secundario);
-    font-size: 0.9rem;
-}
-
-.secao-principal {
-    margin: 0 2rem 2rem;
-    padding: 2rem;
-    background-color: var(--cor-cartao-fundo);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px var(--cor-sombra);
-}
-
-.titulo-secao {
-    font-size: 1.8rem;
-    font-weight: 500;
-    color: var(--cor-primaria);
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid var(--cor-borda);
-    padding-bottom: 0.5rem;
-}
-
-.cards-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    justify-content: center;
-}
-
-.card-detalhe {
-    background-color: transparent;
-    border: 1px solid var(--cor-borda);
-    display: flex;
-    align-items: center;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px var(--cor-sombra);
-    transition: transform 0.2s ease;
-}
-
-.card-detalhe:hover {
-    transform: translateY(-5px);
-}
-
-.icone-card {
-    font-size: 2.5rem;
-    color: var(--cor-primaria);
-    margin-right: 1rem;
-}
-
-.conteudo-card {
-    display: flex;
-    flex-direction: column;
-}
-
-.valor-card {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--cor-texto-principal);
-}
-
-.unidade-card {
-    font-size: 0.9rem;
-    color: var(--cor-texto-secundario);
-}
-
-.legenda-card {
-    font-size: 0.8rem;
-    color: var(--cor-texto-secundario);
-    margin-top: 0.2rem;
-}
-
-.texto-card {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-/* Seção de Equipamentos */
-.conteudo-equipamentos {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-
-.imagem-equipamentos {
-    flex-shrink: 0;
-}
-
-.imagem-equipamentos img {
-    max-width: 250px;
-    height: auto;
-    border-radius: 10px;
-}
-
-.lista-equipamentos {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.item-equipamento {
-    background-color: var(--cor-fundo);
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--cor-borda);
-}
-
-.quantidade-equipamento {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--cor-primaria);
-    margin-right: 1rem;
-}
-
-.descricao-equipamento {
-    font-weight: 500;
-    color: var(--cor-texto-principal);
-}
-
-/* Seção de Instalação */
-.conteudo-instalacao {
-    display: flex;
-    align-items: flex-start;
-    gap: 2rem;
-}
-
-.imagem-instalacao {
-    flex-shrink: 0;
-}
-
-.imagem-instalacao img {
-    max-width: 250px;
-    height: auto;
-    border-radius: 10px;
-}
-
-.detalhes-instalacao {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.info-detalhe-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.8rem;
-}
-
-.info-detalhe-item .icone-item {
-    font-size: 1.2rem;
-    color: var(--cor-primaria);
-    flex-shrink: 0;
-    margin-top: 4px;
-}
-
-.info-detalhe-item p {
-    font-weight: 400;
-    color: var(--cor-texto-principal);
-}
-
-/* Seção de Financiamento */
-.valores-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-}
-
-.card-valores {
-    padding: 1rem;
-    background-color: var(--cor-fundo);
-    border-radius: 8px;
-    border: 1px solid var(--cor-borda);
-    text-align: center;
-    transition: transform 0.2s ease;
-}
-
-.card-valores:hover {
-    transform: translateY(-3px);
-}
-
-.card-total {
-    grid-column: 1 / -1;
-    background-color: var(--cor-primaria);
-    color: var(--cor-cartao-fundo);
-}
-
-.card-total .legenda-valores,
-.card-total .valor-total-proposta,
-.card-total .etiqueta-proposta-dinamica {
-    color: var(--cor-cartao-fundo);
-}
-
-.legenda-valores {
-    font-size: 0.8rem;
-    color: var(--cor-texto-secundario);
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-}
-
-.valor-total-proposta {
-    font-size: 1.8rem;
-    font-weight: 700;
-}
-
-.valor-parcela-proposta {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.card-investimento {
-    padding: 1.5rem;
-    background-color: var(--cor-fundo);
-    border-radius: 8px;
-    border: 1px solid var(--cor-borda);
-    text-align: center;
-    grid-column: 1 / -1;
-    margin-top: 1rem;
-    box-shadow: 0 2px 8px var(--cor-sombra);
-}
-
-.legenda-investimento {
-    font-size: 0.9rem;
-    color: var(--cor-texto-secundario);
-    margin-bottom: 0.5rem;
-}
-
-.valor-investimento {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--cor-primaria);
-}
-
-.secao-observacao-financiamento {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background-color: var(--cor-fundo);
-    border-radius: 8px;
-    border: 1px solid var(--cor-borda);
-    box-shadow: 0 2px 8px var(--cor-sombra);
-}
-
-.titulo-observacao {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--cor-primaria);
-    margin-bottom: 0.5rem;
-}
-
-.texto-observacao {
-    font-size: 0.9rem;
-    color: var(--cor-texto-secundario);
-}
-
-/* Seção de Validade */
-.secao-info {
-    text-align: center;
-    margin: 2rem;
-    padding: 1.5rem;
-    background-color: var(--cor-cartao-fundo);
-    border-radius: 12px;
-    border: 1px solid var(--cor-borda);
-    box-shadow: 0 4px 12px var(--cor-sombra);
-}
-
-.etiqueta-info {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--cor-texto-principal);
-}
-
-.icone-info-proposta {
-    color: var(--cor-primaria);
-    margin-right: 0.5rem;
-}
-
-/* Seção de Voltar */
-.secao-voltar-proposta {
-    text-align: center;
-    margin: 2rem 0;
-}
-
-.btn-voltar-proposta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 10px 20px;
-    background-color: transparent;
-    border: 1px solid var(--cor-borda);
-    color: var(--cor-texto-principal);
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-voltar-proposta:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: translateY(-2px);
-}
-
-/* Footer */
-footer {
-    background-color: var(--cor-cartao-fundo);
-    padding: 1.5rem;
-    text-align: center;
-    border-top: 1px solid var(--cor-borda);
-}
-
-.footer-contact-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-}
-
-.footer-contact-item {
-    color: var(--cor-texto-secundario);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.2s ease;
-}
-
-.footer-contact-item:hover {
-    color: var(--cor-primaria);
-}
-
-@media (max-width: 768px) {
-    header, #secao-resumo {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    #secao-cliente {
-        text-align: center;
-        margin-top: 1rem;
-    }
-
-    .valor-resumo {
-        margin-right: 0;
-        margin-bottom: 1rem;
-    }
-
-    .secao-principal, .secao-info {
-        margin: 0 1rem 1rem;
-        padding: 1rem;
-    }
-
-    .conteudo-equipamentos, .conteudo-instalacao {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .imagem-equipamentos, .imagem-instalacao {
-        text-align: center;
-    }
-}
+    <main>
+        <header>
+            <div class="logo-container">
+                <img src="imagens/logo-gdis-2.png" alt="Logo da GDIS" class="logo">
+            </div>
+            <div class="seletor-tipo-proposta">
+                <button id="btn-premium" class="btn-proposta selecionado">Premium</button>
+                <button id="btn-acessivel" class="btn-proposta">+Acessível</button>
+            </div>
+        </header>
+
+        <section id="secao-resumo">
+            <div id="secao-cliente">
+                <h2 id="nome-cliente" class="nome-cliente"></h2>
+                <p class="local-proposta">
+                    <span id="local-cliente"></span> | <span id="data-proposta"></span>
+                </p>
+            </div>
+        </section>
+
+        <section id="secao-sistema" class="secao-principal">
+            <h2 class="titulo-secao">Sistema Proposto</h2>
+            <div class="cards-container">
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span id="geracao-media" class="valor-card"></span>
+                        <span id="unidade-geracao" class="unidade-card">kWh/mês</span>
+                        <p class="legenda-card">Geração média</p>
+                    </div>
+                </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-house-chimney"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <p id="instalacao-paineis" class="texto-card"></p>
+                        <p class="legenda-card">Instalação de Painéis</p>
+                    </div>
+                </div>
+                <div class="card-detalhe">
+                    <div class="icone-card">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="conteudo-card">
+                        <span class="unidade-card">R$</span>
+                        <span id="ideal-para" class="valor-card"></span>
+                        <p class="legenda-card">Ideal para contas de até</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="secao-equipamentos" class="secao-principal">
+            <h2 class="titulo-secao">Equipamentos</h2>
+            <div class="conteudo-equipamentos">
+                <div class="imagem-equipamentos">
+                    <img id="imagem-marca" src="" alt="Imagem da marca do equipamento">
+                </div>
+                <div class="lista-equipamentos">
+                    <div class="item-equipamento">
+                        <span class="quantidade-equipamento" id="quantidade-inversor"></span>
+                        <p class="descricao-equipamento">Inversor <span id="descricao-inversor"></span></p>
+                    </div>
+                    <div class="item-equipamento">
+                        <span class="quantidade-equipamento" id="quantidade-painel"></span>
+                        <p class="descricao-equipamento">Módulo Solar <span id="descricao-painel"></span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="secao-instalacao" class="secao-principal">
+            <h2 class="titulo-secao">Padrão de Instalação</h2>
+            <div class="conteudo-instalacao">
+                <div class="imagem-instalacao">
+                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação">
+                </div>
+                <div id="detalhes-instalacao" class="detalhes-instalacao">
+                </div>
+            </div>
+        </section>
+
+        <section id="secao-financiamento" class="secao-principal">
+            <h2 class="titulo-secao">Valores e Condições</h2>
+            <div class="valores-container">
+                <div class="card-valores card-total">
+                    <p class="legenda-valores">Valor total <br>
+                        (Proposta <span class="etiqueta-proposta-dinamica">Premium</span>):</p>
+                    <p class="valor-total-proposta">R$ <span id="valor-total"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 12x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-12"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 24x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-24"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 36x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-36"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 48x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-48"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 60x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-60"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 72x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-72"></span></p>
+                </div>
+                <div class="card-valores">
+                    <p class="legenda-valores">Em 84x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
+                    <p class="valor-parcela-proposta">R$ <span id="parcela-84"></span></p>
+                </div>
+                <div class="card-investimento card-payback">
+                    <p class="legenda-investimento">Seu investimento se paga em:</p>
+                    <p class="valor-investimento"><span id="payback"></span></p>
+                </div>
+            </div>
+            <div id="secao-observacao" class="secao-observacao-financiamento">
+                <p class="titulo-observacao">Observações sobre Financiamento:</p>
+                <p id="texto-observacao" class="texto-observacao"></p>
+            </div>
+        </section>
+
+        <section id="secao-validade" class="secao-info validade-proposta">
+            <p class="etiqueta-info">
+                <i class="fas fa-calendar-check icone-info-proposta"></i>
+                Válida por mais <span id="texto-validade"></span>
+            </p>
+        </section>
+
+        <section class="secao-voltar-proposta">
+            <a href="index.html" class="btn-voltar-proposta"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-contact-container">
+            <a href="https://wa.me/5582994255946" target="_blank" class="footer-contact-item">
+                <i class="fab fa-whatsapp"></i> (82) 99425-5946
+            </a>
+            <a href="mailto:gdis.solar@gmail.com" class="footer-contact-item">
+                <i class="fas fa-envelope"></i> gdis.solar@gmail.com
+            </a>
+            <a href="https://www.instagram.com/gdis.solar/" target="_blank" class="footer-contact-item">
+                <i class="fab fa-instagram"></i> @gdis.solar
+            </a>
+        </div>
+    </footer>
+
+    <script type="module" src="js/propostaController.js"></script>
+
+</body>
+
+</html>
