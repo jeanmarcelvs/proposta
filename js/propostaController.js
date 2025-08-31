@@ -34,11 +34,11 @@ function atualizarImagemEquipamentos(propostas, tipo) {
         console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
         return;
     }
-    // CORRIGIDO: Usa a estrutura de dados plana que o model.js retorna
+    // CORRIGIDO: Usa as novas propriedades de imagem definidas no model.js
     if (tipo === 'premium') {
-        imagemMarca.src = propostas.premium?.equipamentos?.imagem || '';
+        imagemMarca.src = propostas.premium?.equipamentos?.imagemPremium || '';
     } else {
-        imagemMarca.src = propostas.acessivel?.equipamentos?.imagem || '';
+        imagemMarca.src = propostas.acessivel?.equipamentos?.imagemAcessivel || '';
     }
 }
 
@@ -49,11 +49,11 @@ function atualizarImagemInstalacao(propostas, tipo) {
         console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
         return;
     }
-    // CORRIGIDO: Usa a estrutura de dados plana que o model.js retorna
+    // CORRIGIDO: Usa as novas propriedades de imagem definidas no model.js
     if (tipo === 'premium') {
-        imagemInstalacao.src = propostas.premium?.instalacao?.imagemInstalacao || '';
+        imagemInstalacao.src = propostas.premium?.instalacao?.imagemInstalacaoPremium || '';
     } else {
-        imagemInstalacao.src = propostas.acessivel?.instalacao?.imagemInstalacao || '';
+        imagemInstalacao.src = propostas.acessivel?.instalacao?.imagemInstalacaoAcessivel || '';
     }
 }
 
@@ -67,15 +67,26 @@ function atualizarEtiquetasDinamicas(tipo) {
     });
 }
 
-// CORRIGIDO: Lógica para preencher a nova seção de detalhes da instalação
+// Função para preencher a nova seção de detalhes da instalação
 function preencherDetalhesInstalacao(proposta) {
-    // ATENÇÃO: A API não fornece esses dados, então a seção será ocultada
-    // ou deixada em branco, dependendo da necessidade do layout.
-    // Como não há dados, vamos simplesmente não preencher e deixar o aviso.
-    console.warn("AVISO: Detalhes da instalação não encontrados. Não é possível preencher esta seção.");
+    const cards = proposta.instalacao?.detalhesInstalacao;
+    if (!cards) {
+        console.warn("AVISO: Detalhes da instalação não encontrados.");
+        return;
+    }
+    for (let i = 0; i < cards.length; i++) {
+        const iconeElemento = document.getElementById(`icone-instalacao-${i + 1}`);
+        const textoElemento = document.getElementById(`texto-instalacao-${i + 1}`);
+        if (iconeElemento && textoElemento) {
+            iconeElemento.className = `icone-card fas ${cards[i].icone}`;
+            textoElemento.textContent = cards[i].texto;
+        } else {
+            console.error(`ERRO: Elemento de detalhe da instalação com ID 'icone-instalacao-${i + 1}' ou 'texto-instalacao-${i + 1}' não encontrado.`);
+        }
+    }
 }
 
-// CORRIGIDO: Lógica para preencher a página com os dados da proposta
+// Função para preencher a página com os dados da proposta
 function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
 
@@ -83,88 +94,106 @@ function preencherDadosProposta(dados) {
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
-        if (nomeClienteEl) nomeClienteEl.innerText = dados.cliente || "Não informado";
+        if (nomeClienteEl) nomeClienteEl.innerText = dados.cliente?.nome || "Não informado";
 
-        // NOTA: Os campos 'local' e 'data' não são retornados pela API na estrutura atual
-        // e, portanto, serão deixados como "Não informado" ou podem ser ocultados.
         const localClienteEl = document.getElementById('local-cliente');
-        if (localClienteEl) localClienteEl.innerText = "Não informado";
+        if (localClienteEl) localClienteEl.innerText = dados.cliente?.local || "Não informado";
 
         const dataPropostaEl = document.getElementById('data-proposta');
-        if (dataPropostaEl) dataPropostaEl.innerText = "Não informado";
+        if (dataPropostaEl) dataPropostaEl.innerText = dados.cliente?.dataProposta || "Não informado";
         console.log("DEBUG: Dados do cliente preenchidos com sucesso.");
 
-        // 2. Sistema Proposto
+        // 2. Sistema Proposto (Separa valor e unidade)
         console.log("DEBUG: Preenchendo dados do sistema...");
         const geracaoMediaEl = document.getElementById('geracao-media');
         if (geracaoMediaEl) {
-            geracaoMediaEl.innerText = dados.geracaoMensal?.split(' ')[0] || 'N/A';
-            const unidadeGeracaoEl = document.getElementById('unidade-geracao');
-            if (unidadeGeracaoEl) {
-                unidadeGeracaoEl.innerText = dados.geracaoMensal?.split(' ').slice(1).join(' ') || 'kWh/mês';
+            const geracaoMedia = dados.sistema?.geracaoMedia;
+            if (typeof geracaoMedia === 'string' && geracaoMedia.trim() !== '') {
+                const geracaoMediaSplit = geracaoMedia.split(' ');
+                geracaoMediaEl.innerText = geracaoMediaSplit[0];
+                const unidadeGeracaoEl = document.getElementById('unidade-geracao');
+                if (unidadeGeracaoEl) {
+                    unidadeGeracaoEl.innerText = geracaoMediaSplit.slice(1).join(' ');
+                }
+            } else {
+                geracaoMediaEl.innerText = 'N/A';
+                const unidadeGeracaoEl = document.getElementById('unidade-geracao');
+                if (unidadeGeracaoEl) {
+                    unidadeGeracaoEl.innerText = 'kWh/mês';
+                }
             }
         }
 
-        // NOTA: Os campos 'instalacaoPaineis' e 'idealPara' não são retornados pela API
-        // e serão deixados como "Não informado" ou "0".
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
-        if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = "Não informado";
+        if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || "Não informado";
 
         const idealParaEl = document.getElementById('ideal-para');
-        if (idealParaEl) idealParaEl.innerText = "0";
-
+        if (idealParaEl) {
+            const idealPara = dados.sistema?.idealPara || 'R$ 0';
+            idealParaEl.innerText = idealPara.replace('R$', '').trim();
+        }
         console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
 
         // 3. Equipamentos
         console.log("DEBUG: Preenchendo dados dos equipamentos...");
-        // NOTA: Estes campos não são retornados pela API
         const descricaoInversorEl = document.getElementById('descricao-inversor');
-        if (descricaoInversorEl) descricaoInversorEl.innerText = "Não informado";
+        if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
 
         const quantidadeInversorEl = document.getElementById('quantidade-inversor');
-        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `( 0 )`;
+        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `( ${dados.equipamentos?.quantidadeInversor || 0} )`;
 
         const descricaoPainelEl = document.getElementById('descricao-painel');
-        if (descricaoPainelEl) descricaoPainelEl.innerText = "Não informado";
+        if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
 
         const quantidadePainelEl = document.getElementById('quantidade-painel');
-        if (quantidadePainelEl) quantidadePainelEl.innerText = `( 0 )`;
+        if (quantidadePainelEl) quantidadePainelEl.innerText = `( ${dados.equipamentos?.quantidadePainel || 0} )`;
         console.log("DEBUG: Dados de equipamentos preenchidos com sucesso.");
 
         // 4. Valores Finais
         console.log("DEBUG: Preenchendo valores financeiros...");
         const valorTotalEl = document.getElementById('valor-total');
-        if (valorTotalEl) valorTotalEl.innerText = dados.valorSistema?.replace('R$ ', '') || "Não informado";
+        if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
         const paybackEl = document.getElementById('payback');
-        if (paybackEl) paybackEl.innerText = dados.payback || "0 anos e 0 meses";
+        if (paybackEl) {
+            if (dados.valores?.payback) {
+                paybackEl.innerText = dados.valores.payback;
+            } else {
+                paybackEl.innerText = `${dados.valores?.paybackAnos || 0} anos e ${dados.valores?.paybackMeses || 0} meses`;
+            }
+        }
         console.log("DEBUG: Valores finais preenchidos com sucesso.");
 
-        // 5. Parcelas (Dados ausentes na API)
+        // 5. Parcelas
         console.log("DEBUG: Preenchendo parcelas...");
-        // NOTA: Estes campos não são retornados pela API
-        const parcelas = [12, 24, 36, 48, 60, 72, 84];
-        parcelas.forEach(p => {
-            const elemento = document.getElementById(`parcela-${p}`);
-            if (elemento) elemento.innerText = 'N/A';
-        });
+        for (const key in dados.valores?.parcelas || {}) {
+            const elemento = document.getElementById(`parcela-${key.replace('x', '')}`);
+            if (elemento) {
+                elemento.innerText = dados.valores.parcelas[key] || 'N/A';
+            } else {
+                console.warn(`AVISO: Elemento de parcela '${key}' não encontrado.`);
+            }
+        }
         console.log("DEBUG: Parcelas preenchidas com sucesso.");
 
         // 6. Observações e Validade (Seções atualizadas)
         console.log("DEBUG: Preenchendo observações e validade...");
-        // NOTA: Estes campos não são retornados pela API
         const observacaoEl = document.getElementById('texto-observacao');
-        if (observacaoEl) observacaoEl.innerText = "Não há observações sobre financiamento.";
         const validadeEl = document.getElementById('texto-validade');
-        if (validadeEl) validadeEl.innerText = "Não informada";
-        console.log("DEBUG: Observações e validade preenchidas com sucesso.");
 
+        if (observacaoEl) {
+            observacaoEl.innerText = dados.observacaoFinanciamento || "Não há observações sobre financiamento.";
+        }
+
+        if (validadeEl) {
+            validadeEl.innerText = dados.validade?.texto || "Não informada";
+        }
+        console.log("DEBUG: Observações e validade preenchidas com sucesso.");
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
     }
 }
 
-// O restante do código permanece o mesmo.
 document.addEventListener('DOMContentLoaded', async () => {
     mostrarLoadingOverlay();
     const urlParams = new URLSearchParams(window.location.search);
@@ -261,6 +290,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 atualizarEtiquetasDinamicas('acessivel');
                 atualizarImagemInstalacao(propostas, 'acessivel');
                 preencherDetalhesInstalacao(propostas.acessivel);
+                // CORRIGIDO: Adiciona e remove as classes de tema corretamente
                 document.body.classList.add('theme-acessivel');
                 document.body.classList.remove('theme-premium');
                 setTimeout(() => {
