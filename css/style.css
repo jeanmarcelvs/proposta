@@ -1,0 +1,162 @@
+/* style.css */
+
+/* Importação da fonte e variáveis de cores globais */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+/* --- Variáveis de Cores (Temas) --- */
+:root {
+    /* Tema Padrão (Premium) */
+    --cor-primaria: #0077b6; /* Azul Marinho Profundo */
+    --cor-primaria-hover: #0088cc; /* Para o hover do botão */
+    --cor-secundaria: #00b4d8; /* Azul Turquesa Claro */
+    --cor-fundo: #023047; /* Azul Petróleo Escuro */
+    --cor-cartao-fundo: #024869; /* Azul Mais Claro para Cards */
+    --cor-texto-principal: #f4f7f6; /* Branco Suave */
+    --cor-texto-secundario: #a8dadc; /* Azul Claro para detalhes */
+    --cor-borda: rgba(255, 255, 255, 0.1);
+    --cor-sombra: rgba(0, 0, 0, 0.4);
+    --cor-destaque-positivo: #86e5ad; /* NOVO: Verde claro e fosco */
+    --cor-destaque-negativo: #dc3545;
+    --cor-header-fundo: rgba(2, 48, 71, 0.9);
+    --cor-header-botoes-fundo: rgba(2, 72, 107, 0.7);
+    --cor-header-botoes-borda: rgba(255, 255, 255, 0.2);
+    --transicao-padrao: 0.3s ease-in-out;
+}
+
+/* Paleta de cores para o tema +Acessível (opcional, pode ser adicionado depois) */
+body.theme-acessivel {
+    --cor-fundo: #FFFFFF;
+    --cor-header-fundo: rgba(255, 255, 255, 0.9);
+    --cor-texto-principal: #333333;
+    --cor-texto-secundario: #666666;
+    --cor-primaria: #2C3E50;
+    --cor-secundaria: #466380;
+    --cor-destaque-negativo: #EF233C;
+    --cor-cartao-fundo: #F8F9FA;
+    --cor-borda: rgba(0, 0, 0, 0.1);
+    --cor-sombra: rgba(0, 0, 0, 0.05);
+}
+
+/* --- Estilos Globais --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto-principal);
+    line-height: 1.6;
+    transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
+}
+
+/* Estilos de transição para tema */
+html {
+    transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
+}
+
+.card {
+    background-color: var(--cor-cartao-fundo);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px var(--cor-sombra);
+    border: 1px solid var(--cor-borda);
+    transition: all var(--transicao-padrao);
+}
+
+/* --- Seção de Splash Screen --- */
+.tela-splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cor-fundo);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.tela-splash.oculto {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.logo-splash {
+    max-width: 200px;
+    margin-bottom: 1rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.tela-splash p {
+    color: var(--cor-texto-principal);
+    font-size: 1.2rem;
+}
+
+/* --- Botoões (Estilos Padrão) --- */
+.btn {
+    padding: 12px 24px;
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto-principal);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para a mensagem de feedback */
+#mensagem-feedback {
+    margin-top: 1.5rem;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9em;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#mensagem-feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#mensagem-feedback.success-msg {
+    background-color: rgba(134, 229, 173, 0.2); /* NOVO: Cor de fundo semi-transparente */
+    color: var(--cor-destaque-positivo);
+    border: 1px solid var(--cor-destaque-positivo);
+}
+
+#mensagem-feedback.error-msg {
+    background-color: rgba(220, 53, 69, 0.2); 
+    color: var(--cor-destaque-negativo);
+    border: 1px solid var(--cor-destaque-negativo);
+}
+
+/* Estilos adicionais para o novo tema 'acessivel' */
+.logo-acessivel {
+    filter: invert(1);
+    /* Inverte a cor do logo para que ele apareça em fundos claros */
+}
+
+.info-detalhe-item .icone-item {
+    color: var(--cor-primaria);
+}

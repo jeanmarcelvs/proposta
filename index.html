@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Proposta | GDIS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="theme-premium">
+
+    <div id="tela-splash" class="tela-splash">
+        <img src="imagens/logo-gdis.png" alt="Logo da GDIS" class="logo-splash">
+    </div>
+
+    <main class="container">
+        <img src="imagens/logo-gdis.png" alt="Logo da empresa GDIS" class="logo">
+        <h1>Consultar Proposta</h1>
+        <form id="form-consulta">
+            <div class="input-grupo">
+                <label for="numero-projeto">Número do Projeto:</label>
+                <input type="text" id="numero-projeto" placeholder="Ex: 1234" required>
+            </div>
+            <button type="submit" id="btn-consultar">
+                <span class="btn-texto">Consultar</span>
+                <i class="fas fa-spinner fa-spin icone-carregando"></i>
+                <i class="fas fa-check icone-sucesso"></i>
+                <i class="fas fa-times icone-erro"></i>
+            </button>
+            <div id="mensagem-feedback" class="mensagem-feedback" aria-live="polite"></div>
+        </form>
+    </main>
+
+    <script src="js/indexController.js" type="module"></script>
+</body>
+
+</html>

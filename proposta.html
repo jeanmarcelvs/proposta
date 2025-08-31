@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta Comercial | GDIS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/proposta.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="theme-premium">
+
+    <header>
+        <div class="logo-container">
+            <img src="imagens/logo-gdis-2.png" alt="Logo da GDIS" class="logo">
+        </div>
+        <div class="seletor-tipo-proposta">
+            <button id="btn-premium" class="btn-proposta selecionado">Premium</button>
+            <button id="btn-acessivel" class="btn-proposta">+Acessível</button>
+        </div>
+        <div id="secao-resumo">
+            <div class="valor-resumo">
+                <span id="valor-resumo-premium"></span>
+            </div>
+            <div class="valor-resumo">
+                <span id="valor-resumo-acessivel"></span>
+            </div>
+        </div>
+    </header>
+
+    <div id="loading-overlay" class="oculto">
+        <div class="spinner"></div>
+    </div>
+
+    <main>
+        <section id="secao-dados-cliente" class="secao-info">
+            <h2 class="titulo-secao-icone"><i class="fas fa-user icone-titulo"></i> <span id="nome-cliente"></span></h2>
+            <div class="info-cliente-grid">
+                <p><i class="fas fa-map-marker-alt icone-info"></i> <strong>Local:</strong> <span
+                        id="local-cliente"></span></p>
+                <p><i class="fas fa-calendar-alt icone-info"></i> <strong>Data da Proposta:</strong> <span
+                        id="data-proposta"></span></p>
+            </div>
+        </section>
+
+        <section id="secao-sistema" class="secao-info">
+            <h2 class="titulo-secao-icone"><i class="fas fa-solar-panel icone-titulo"></i> Sistema Proposto</h2>
+            <div class="etiqueta-proposta-dinamica">Sistema</div>
+            <div class="info-sistema-grid">
+                <div class="equipamento-marca-card card">
+                    <img id="imagem-marca" class="equipamento-marca-imagem" alt="Marca do Inversor">
+                </div>
+                <div class="sistema-info-card card">
+                    <i class="fas fa-bolt icone-card"></i>
+                    <p class="legenda-card">Geração Média</p>
+                    <p class="valor-card-grande">
+                        <span id="geracao-media"></span>
+                        <span class="unidade-simbolo" id="unidade-geracao"></span>
+                    </p>
+                </div>
+                <div class="sistema-info-card card">
+                    <i class="fas fa-home icone-card"></i>
+                    <p class="legenda-card">Instalação</p>
+                    <p class="valor-card-grande" id="instalacao-paineis"></p>
+                </div>
+            </div>
+            <div class="ideal-para-container card">
+                <i class="fas fa-file-invoice-dollar icone-card icone-topo"></i>
+                <p class="legenda-card">Ideal para contas de até:</p>
+                <p class="valor-card-grande">
+                    <span class="simbolo-moeda">R$</span>
+                    <span id="ideal-para"></span>
+                </p>
+            </div>
+        </section>
+
+        <section id="secao-equipamentos" class="secao-info">
+            <div class="etiqueta-proposta-dinamica">Componentes</div>
+            <h2 class="titulo-secao-icone"><i class="fas fa-tools icone-titulo"></i> Equipamentos</h2>
+            <div class="equipamentos-grid">
+                <div class="equipamento-item card">
+                    <i class="fas fa-microchip icone-equipamento"></i>
+                    <p class="titulo-equipamento">Inversor</p>
+                    <p class="info-equipamento"><span id="descricao-inversor" class="potencia-equipamento"></span></p>
+                    <p class="info-equipamento"><span id="quantidade-inversor"></span></p>
+                </div>
+
+                <div class="equipamento-item card">
+                    <i class="fas fa-solar-panel icone-equipamento"></i>
+                    <p class="titulo-equipamento">Painel Solar</p>
+                    <p class="info-equipamento"><span id="descricao-painel" class="potencia-equipamento"></span></p>
+                    <p class="info-equipamento"><span id="quantidade-painel"></span></p>
+                </div>
+
+        </section>
+
+        <section id="secao-instalacao" class="secao-info">
+            <div class="etiqueta-proposta-dinamica">Instalação</div>
+            <h2 class="titulo-secao-icone"><i class="fas fa-hard-hat icone-titulo"></i> Instalação</h2>
+
+            <div id="cards-detalhes-instalacao" class="cards-detalhes-instalacao">
+
+                <div class="card card-item-instalacao card-imagem-instalacao-wrapper">
+                    <img id="imagem-instalacao" class="imagem-instalacao" src="" alt="Padrão de Instalação">
+                </div>
+
+                <div class="card card-pequeno card-item-instalacao">
+                    <i id="icone-instalacao-1" class="icone-card fas"></i>
+                    <p id="texto-instalacao-1"></p>
+                </div>
+
+                <div class="card card-pequeno card-item-instalacao">
+                    <i id="icone-instalacao-2" class="icone-card fas"></i>
+                    <p id="texto-instalacao-2"></p>
+                </div>
+
+                <div class="card card-pequeno card-item-instalacao">
+                    <i id="icone-instalacao-3" class="icone-card fas"></i>
+                    <p id="texto-instalacao-3"></p>
+                </div>
+
+                <div class="card card-pequeno card-item-instalacao">
+                    <i id="icone-instalacao-4" class="icone-card fas"></i>
+                    <p id="texto-instalacao-4"></p>
+                </div>
+
+                <div class="card card-pequeno card-item-instalacao">
+                    <i id="icone-instalacao-5" class="icone-card fas"></i>
+                    <p id="texto-instalacao-5"></p>
+                </div>
+
+            </div>
+        </section>
+        <section id="secao-financiamento" class="secao-info">
+            <div class="etiqueta-proposta-dinamica">Simulação</div>
+            <h2 class="titulo-secao-icone"><i class="fas fa-hand-holding-usd icone-titulo"></i> Simulação de
+                Financiamento</h2>
+            <div class="cartoes-parcelas">
+                <div class="card">
+                    <p class="parcelas">12x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-12"></span></p>
+                </div>
+                <div class="card">
+                    <p class="parcelas">24x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-24"></span></p>
+                </div>
+                <div class="card">
+                    <p class="parcelas">36x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-36"></span></p>
+                </div>
+                <div class="card">
+                    <p class="parcelas">48x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-48"></span></p>
+                </div>
+                <div class="card">
+                    <p class="parcelas">60x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-60"></span></p>
+                </div>
+                <div class="card">
+                    <p class="parcelas">72x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-72"></span></p>
+                </div>
+                <div class="card">
+                    <p class="parcelas">84x</p>
+                    <p class="valor-card-grande"><span class="simbolo-moeda">R$</span> <span id="parcela-84"></span></p>
+                </div>
+            </div>
+            <section class="observacao-financiamento secao-info">
+                <p class="etiqueta-info">
+                    <i class="fas fa-exclamation-triangle icone-alerta"></i>
+                    A aprovação e as condições de financiamento são estimativas. O valor final e a aprovação dependem de
+                    uma análise de crédito rigorosa da instituição financeira, levando em conta fatores como seu
+                    histórico, score (CPF/CNPJ) e renda. Eventuais mudanças na taxa de juros do mercado até a
+                    contratação também podem impactar a proposta final.
+                </p>
+            </section>
+        </section>
+
+        <section id="secao-investimento" class="secao-info">
+            <div class="etiqueta-proposta-dinamica">Investimento</div>
+            <h2 class="titulo-secao-icone"><i class="fas fa-coins icone-titulo"></i> Investimento</h2>
+            <div class="investimento-conteudo">
+                <div class="info-investimento card">
+                    <div class="etiqueta-proposta-dinamica etiqueta-a-vista">À Vista</div>
+                    <p class="legenda-investimento">Investimento Total</p>
+                    <p class="valor-investimento"><span class="simbolo-moeda">R$</span> <span id="valor-total"></span>
+                    </p>
+                </div>
+                <div class="info-investimento card">
+                    <p class="legenda-investimento">Seu investimento se paga em:</p>
+                    <p class="valor-investimento"><span id="payback"></span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="secao-validade" class="secao-info validade-proposta">
+            <p class="etiqueta-info">
+                <i class="fas fa-calendar-check icone-info-proposta"></i>
+                **Proposta válida em todos os termos por até 3 (três) dias corridos ou enquanto durarem os estoques.**
+            </p>
+        </section>
+
+
+        <section class="secao-voltar-proposta">
+            <a href="index.html" class="btn-voltar-proposta"><i class="fas fa-arrow-left"></i> Voltar</a>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-contact-container">
+            <a href="https://wa.me/5582994255946" target="_blank" class="footer-contact-item">
+                <i class="fab fa-whatsapp"></i> (82) 99425-5946
+            </a>
+            <a href="mailto:gdis.solar@gmail.com" class="footer-contact-item">
+                <i class="fas fa-envelope"></i> gdis.solar@gmail.com
+            </a>
+            <a href="https://www.instagram.com/gdis.solar/" target="_blank" class="footer-contact-item">
+                <i class="fab fa-instagram"></i> gdis.solar
+            </a>
+        </div>
+    </footer>
+
+    <script src="js/propostaController.js" type="module"></script>
+</body>
+
+</html>
