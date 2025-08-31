@@ -1,6 +1,7 @@
 /*
     style.css
     Design leve e sofisticado, com foco em conforto visual e alinhamento profissional.
+    Versão corrigida para funcionar sem o JavaScript.
 */
 
 /* ---------------------------------- */
@@ -76,12 +77,9 @@ html, body {
 
 /* Seções Principais */
 main {
-    opacity: 0;
-    transition: opacity 1s ease-in;
-}
-
-main.main-visivel {
+    /* REMOVIDO: A opacidade 0 que estava causando o problema. */
     opacity: 1;
+    transition: none;
 }
 
 header {
