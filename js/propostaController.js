@@ -216,6 +216,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             atualizarImagemInstalacao(propostaData, 'premium');
             preencherDetalhesInstalacao(propostaData.premium);
             console.log("DEBUG: Preenchimento inicial concluído.");
+            
+            // SOMENTE ESCONDE O OVERLAY SE O SUCESSO FOR CONFIRMADO
+            esconderLoadingOverlay();
 
         } else {
             console.error("ERRO: Falha na busca da proposta. Mensagem:", resposta.mensagem);
@@ -227,7 +230,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Ocorreu um erro ao carregar a proposta.');
         window.location.href = 'index.html';
     } finally {
-        esconderLoadingOverlay();
+        // REMOVA A CHAMADA DAQUI
+        // esconderLoadingOverlay(); 
     }
 
     // Lógica para alternar entre propostas
