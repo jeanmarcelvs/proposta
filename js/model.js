@@ -297,27 +297,14 @@ export async function buscarETratarProposta(numeroProjeto) {
 
         if (dadosApiAcessivel.sucesso) {
             propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel');
+            if (!propostaAcessivel) {
+                console.warn("AVISO: Falha ao tratar dados da proposta Acessível. A proposta Premium será exibida.");
+            }
         } else {
-            console.error("Modelo: Falha ao buscar dados da proposta Acessível da API. Abortando.");
-            return {
-                sucesso: false,
-                mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.'
-            };
+            console.warn("AVISO: Falha ao buscar dados da proposta Acessível da API. A proposta Premium será exibida.");
         }
     } else {
-        console.error("Modelo: ID da proposta acessível não encontrado. Não é possível buscar os dados da API.");
-        return {
-            sucesso: false,
-            mensagem: 'ID da proposta acessível não encontrado.'
-        };
-    }
-
-    if (!propostaAcessivel) {
-        console.error("Modelo: Falha ao tratar dados da proposta Acessível.");
-        return {
-            sucesso: false,
-            mensagem: 'Falha ao processar dados da proposta Acessível.'
-        };
+        console.warn("AVISO: ID da proposta acessível não encontrado. Apenas a proposta Premium será exibida.");
     }
     dadosProposta.acessivel = propostaAcessivel;
 
