@@ -51,18 +51,15 @@ function buscarValorVariavel(variables, key) {
 function tratarDadosProposta(dadosBrutos, tipo) {
     console.log(`Modelo: Tratando dados para proposta ${tipo}`);
 
-    // CORRIGIDO: Agora espera que a primeira requisição retorne um array de propostas.
-    const proposta = dadosBrutos;
-    
     // CORRIGIDO: Adiciona uma verificação mais robusta para os dados
-    if (!proposta || !Array.isArray(proposta.variables)) {
+    if (!dadosBrutos || !Array.isArray(dadosBrutos.variables)) {
         console.error("ERRO: Dados brutos da API inválidos para tratamento.");
         return null;
     }
 
-    const variables = proposta.variables;
-    const cliente = proposta.project.name || 'Cliente';
-    const propostaId = proposta.project.id;
+    const variables = dadosBrutos.variables;
+    const cliente = dadosBrutos.project.name || 'Cliente';
+    const propostaId = dadosBrutos.project.id;
 
     // Extrai valores das variáveis
     const consumo = buscarValorVariavel(variables, 'consumo-medio');
@@ -116,7 +113,7 @@ async function buscarPropostaPorTipo(numeroProjeto, tipo) {
     console.log("Modelo: Resposta bruta da API:", dadosApi);
 
     // CORRIGIDO: Acessa o array de propostas dentro de dados.data e pega o primeiro item.
-    if (!dadosApi.sucesso || !dadosApi.dados || !dadosApi.dados.data || dadosApi.dados.data.length === 0) {
+    if (!dadosApi.sucesso || !dadosApi.dados || !Array.isArray(dadosApi.dados.data) || dadosApi.dados.data.length === 0) {
         return { sucesso: false, mensagem: 'Não foram encontradas propostas para este projeto.' };
     }
 
