@@ -1,15 +1,11 @@
 /**
  * model.js
- * * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios,
+ * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios,
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
-// Importa as funções da API, incluindo a nova 'authenticate' e 'patch'
 import { get, post, authenticate, patch } from './api.js';
 
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
-// Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
-
-//const apiToken = process.env.API_TOKEN;
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
@@ -33,133 +29,149 @@ const caminhosImagens = {
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
  * e retornar seu valor formatado.
- * @param {Array} array O array de objetos de variáveis.
- * @param {string} chave A chave a ser procurada (ex: 'consumo_mensal').
- * @returns {string|number|null} O valor da chave ou null se não for encontrada.
+ * @param {Array} variables O array de objetos de onde extrair os dados.
+ * @param {string} key A chave do objeto a ser encontrado.
+ * @returns {string|null} O valor formatado ou null se não encontrado.
  */
-function buscarValorVariavel(array, chave) {
-    if (!Array.isArray(array)) {
-        console.error('ERRO: O objeto de variáveis não é um array.');
+function buscarValorVariavel(variables, key) {
+    if (!Array.isArray(variables)) {
+        console.error("ERRO: O objeto de variáveis não é um array.");
         return null;
     }
-    const item = array.find(v => v.key === chave);
-    return item ? item.value : null;
+    const item = variables.find(v => v.key === key);
+    return item ? (item.value || 'N/A') : null;
 }
 
 /**
- * Função para tratar os dados da API e preparar os objetos de propostas.
- * @param {object} dadosApiBrutos Dados brutos retornados pela API.
- * @returns {object} Um objeto formatado com os dados da proposta.
+ * Trata os dados brutos da API e extrai informações da proposta.
+ * @param {object} dadosBrutos Objeto de dados recebido da API.
+ * @param {string} tipo O tipo de proposta ('premium' ou 'acessivel').
+ * @returns {object} Um objeto com os dados da proposta formatados.
  */
-function tratarDadosProposta(dadosApiBrutos) {
-    // CORREÇÃO: Acessando as propriedades diretamente do objeto principal
-    if (!dadosApiBrutos || !dadosApiBrutos.variables) {
+function tratarDadosProposta(dadosBrutos, tipo) {
+    console.log(`Modelo: Tratando dados para proposta ${tipo}`);
+
+    // CORRIGIDO: Adiciona uma verificação mais robusta para os dados
+    if (!dadosBrutos || !dadosBrutos.data || !Array.isArray(dadosBrutos.data.variables)) {
         console.error("ERRO: Dados brutos da API inválidos para tratamento.");
         return null;
     }
 
-    const variables = dadosApiBrutos.variables;
-    const propostaId = dadosApiBrutos.id;
-    const cliente = dadosApiBrutos.owner.name;
+    const variables = dadosBrutos.data.variables;
+    const cliente = dadosBrutos.data.client_name || 'Cliente';
+    const propostaId = dadosBrutos.data.id;
 
-    const consumoMensal = buscarValorVariavel(variables, 'consumo_mensal');
-    const valorSistema = buscarValorVariavel(variables, 'valor_sistema');
-    const valorEconomia = buscarValorVariavel(variables, 'economia_mensal');
-    const valorPayback = buscarValorVariavel(variables, 'payback');
-    const geracaoMensal = buscarValorVariavel(variables, 'geracao_mensal');
+    // Extrai valores das variáveis
+    const consumo = buscarValorVariavel(variables, 'consumo-medio');
+    const geracao = buscarValorVariavel(variables, 'geracao-estimada');
+    const valorSistema = buscarValorVariavel(variables, 'valor-sistema');
+    const economia = buscarValorVariavel(variables, 'economia-mensal');
+    const payback = buscarValorVariavel(variables, 'payback');
 
-    return {
+    // Mapeamento dinâmico das imagens
+    const imagemEquipamentos = caminhosImagens.equipamentos[tipo];
+    const imagemInstalacao = caminhosImagens.instalacao[tipo];
+
+    const propostaFormatada = {
         id: propostaId,
         cliente: cliente,
-        consumoMensal: consumoMensal ? `${consumoMensal} kWh` : 'Não disponível',
-        geracaoMensal: geracaoMensal ? `${geracaoMensal} kWh` : 'Não disponível',
-        valorSistema: valorSistema ? parseFloat(valorSistema).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Não disponível',
-        economiaMensal: valorEconomia ? parseFloat(valorEconomia).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Não disponível',
-        payback: valorPayback ? `${valorPayback} meses` : 'Não disponível'
+        consumoMensal: `${consumo} kWh`,
+        geracaoMensal: `${geracao} kWh`,
+        valorSistema: `R$ ${valorSistema}`,
+        economiaMensal: `R$ ${economia}`,
+        payback: `${payback} anos`,
+        equipamentos: {
+            imagem: imagemEquipamentos
+        },
+        instalacao: {
+            imagemInstalacao: imagemInstalacao
+        }
+    };
+
+    return propostaFormatada;
+}
+
+/**
+ * Busca uma proposta na API pelo ID do projeto e trata os dados.
+ * @param {string} numeroProjeto O ID do projeto.
+ * @param {string} tipo O tipo de proposta a ser buscada.
+ * @returns {Promise<object>} Um objeto com os dados da proposta ou erro.
+ */
+async function buscarPropostaPorTipo(numeroProjeto, tipo) {
+    console.log(`Modelo: Buscando proposta ${tipo.toUpperCase()} para o ID: ${numeroProjeto}`);
+    const authResponse = await authenticate(apiToken);
+
+    if (!authResponse.sucesso) {
+        return { sucesso: false, mensagem: authResponse.mensagem };
+    }
+
+    const accessToken = authResponse.accessToken;
+    const endpoint = `/projects/${numeroProjeto}`;
+    const dadosApi = await get(endpoint, accessToken);
+
+    if (!dadosApi.sucesso) {
+        return { sucesso: false, mensagem: dadosApi.mensagem };
+    }
+
+    const propostaTratada = tratarDadosProposta(dadosApi.dados, tipo);
+    if (!propostaTratada) {
+        return {
+            sucesso: false,
+            mensagem: 'Dados da API para a proposta ' + tipo + ' são inválidos.'
+        };
+    }
+
+    return { sucesso: true, proposta: propostaTratada };
+}
+
+/**
+ * Busca a proposta principal e a proposta acessível (se houver) e armazena os dados.
+ * @param {string} numeroProjeto O ID do projeto principal.
+ * @returns {Promise<object>} Objeto com os dados de ambas as propostas ou um erro.
+ */
+export async function buscarETratarProposta(numeroProjeto) {
+    dadosProposta.premium = null;
+    dadosProposta.acessivel = null;
+
+    // Busca a proposta principal (PREMIUM)
+    const propostaPremium = await buscarPropostaPorTipo(numeroProjeto, 'premium');
+    if (!propostaPremium.sucesso) {
+        return propostaPremium; // Retorna erro se a proposta premium não for encontrada
+    }
+    dadosProposta.premium = propostaPremium.proposta;
+
+    // Tenta encontrar o ID da proposta acessível
+    const dadosBrutos = await get(`/projects/${numeroProjeto}`, (await authenticate(apiToken)).accessToken);
+    let idPropostaAcessivel = null;
+    if (dadosBrutos.sucesso && dadosBrutos.dados && dadosBrutos.dados.variables) {
+        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.variables, 'proposta-acessivel');
+    }
+
+    if (idPropostaAcessivel) {
+        console.log(`Modelo: ID de proposta acessível encontrado: ${idPropostaAcessivel}`);
+        const propostaAcessivel = await buscarPropostaPorTipo(idPropostaAcessivel, 'acessivel');
+        if (propostaAcessivel.sucesso) {
+            dadosProposta.acessivel = propostaAcessivel.proposta;
+        } else {
+            console.warn("Modelo: Falha ao carregar a proposta acessível. Continuar com a premium.");
+        }
+    } else {
+        console.log("Modelo: Nenhum ID de proposta acessível válido encontrado. Acessível será nulo.");
+    }
+
+    return {
+        sucesso: true,
+        proposta: dadosProposta
     };
 }
 
 /**
- * Busca e trata a proposta na API. Agora busca a principal e a acessível.
- * @param {string} numeroProjeto O ID da proposta principal.
- * @returns {Promise<object>} Objeto com os dados de ambas as propostas.
- */
-export async function buscarETratarProposta(numeroProjeto) {
-    try {
-        console.log(`Modelo: Buscando proposta PREMIUM para o ID: ${numeroProjeto}`);
-
-        // 1. Autenticação na API
-        const authResponse = await authenticate(apiToken);
-        if (!authResponse.sucesso) {
-            console.error("Modelo: Falha na autenticação.", authResponse.mensagem);
-            return {
-                sucesso: false,
-                mensagem: authResponse.mensagem
-            };
-        }
-        const accessToken = authResponse.accessToken;
-
-        // 2. Busca a proposta principal (PREMIUM)
-        const endpointPrincipal = `/projects/${numeroProjeto}`;
-        const respostaPrincipal = await get(endpointPrincipal, accessToken);
-
-        if (!respostaPrincipal.sucesso) {
-            console.error("Modelo: Falha ao buscar a proposta PREMIUM.", respostaPrincipal.mensagem);
-            return respostaPrincipal;
-        }
-        const dadosPropostaPrincipal = respostaPrincipal.dados;
-
-        // Armazena a proposta principal (PREMIUM)
-        dadosProposta.premium = tratarDadosProposta(dadosPropostaPrincipal);
-
-        // 3. Verifica se existe um ID de proposta acessível na resposta
-        // CORREÇÃO: Usando a chave correta fornecida pelo usuário, acessando 'variables' do objeto principal
-        const idPropostaAcessivel = buscarValorVariavel(dadosPropostaPrincipal.variables, 'vc_prejeto_acessivel');
-
-        // Apenas busca a segunda proposta se o ID for um valor válido e numérico
-        if (idPropostaAcessivel && !isNaN(idPropostaAcessivel)) {
-            console.log(`Modelo: ID da proposta acessível encontrado: ${idPropostaAcessivel}. Buscando...`);
-
-            // 4. Busca a segunda proposta (+Acessível)
-            const endpointAcessivel = `/projects/${idPropostaAcessivel}`;
-            const respostaAcessivel = await get(endpointAcessivel, accessToken);
-
-            if (respostaAcessivel.sucesso) {
-                // Armazena a proposta acessível
-                dadosProposta.acessivel = tratarDadosProposta(respostaAcessivel.dados);
-                console.log("Modelo: Dados da proposta +Acessível carregados com sucesso!");
-            } else {
-                console.warn("Modelo: Não foi possível carregar a proposta +Acessível. Acessível será nulo.");
-                dadosProposta.acessivel = null;
-            }
-        } else {
-            console.warn("Modelo: Nenhum ID de proposta acessível válido encontrado. Acessível será nulo.");
-            dadosProposta.acessivel = null;
-        }
-
-        // 5. Retorna o objeto completo com ambas as propostas
-        return {
-            sucesso: true,
-            dados: dadosProposta,
-            caminhosImagens: caminhosImagens
-        };
-
-    } catch (erro) {
-        console.error('Modelo: Ocorreu um erro no fluxo de busca de propostas:', erro);
-        return {
-            sucesso: false,
-            mensagem: 'Ocorreu um erro inesperado ao buscar as propostas.'
-        };
-    }
-}
-
-/**
- * Função para atualizar o status de visualização na API.
- * @param {object} dados Os dados a serem enviados (ex: numeroProjeto e tipo de visualização).
+ * Atualiza o status de visualização da proposta na API.
+ * @param {object} dados Objeto com propostaId e tipoVisualizacao.
  */
 export async function atualizarStatusVisualizacao(dados) {
+    console.log("Modelo: Tentando atualizar o status de visualização na API.");
     try {
-        console.log("Modelo: Recebendo dados para atualização.");
         const authResponse = await authenticate(apiToken);
         if (!authResponse.sucesso) {
             console.error("Modelo: Falha na autenticação para atualizar status.", authResponse.mensagem);
@@ -167,15 +179,9 @@ export async function atualizarStatusVisualizacao(dados) {
         }
 
         const accessToken = authResponse.accessToken;
-
-        // Formata a data e hora para a mensagem da API
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
-
-        // Monta a mensagem para o campo 'description'
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
-
-        // O endpoint correto é o do projeto, e o método é PATCH
         const endpoint = `/projects/${dados.propostaId}`;
         const body = {
             description: novaDescricao
@@ -189,10 +195,7 @@ export async function atualizarStatusVisualizacao(dados) {
             console.error("Modelo: Falha ao atualizar status de visualização.");
         }
     } catch (erro) {
-        console.error("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
-        return {
-            sucesso: false,
-            mensagem: 'Ocorreu um erro inesperado ao atualizar o status.'
-        };
+        console.error("Modelo: Erro no processo de atualização do status de visualização.", erro);
+        return { sucesso: false, mensagem: 'Erro inesperado ao atualizar status.' };
     }
 }

@@ -69,14 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const numeroProjeto = inputNumeroProjeto.value.trim();
             const resposta = await buscarETratarProposta(numeroProjeto);
             
-            // CORRIGIDO: Agora verifica e salva a propriedade 'proposta' da resposta.
             if (resposta.sucesso && resposta.proposta) {
                 sucesso = true;
                 // --- Estado de Sucesso do Botão ---
                 btnConsultar.classList.add('success');
                 exibirMensagem('sucesso', 'Proposta encontrada. Redirecionando...');
 
-                // CORRIGIDO: Salva a propriedade 'proposta' no localStorage
                 localStorage.setItem('propostaData', JSON.stringify(resposta.proposta));
                 
                 setTimeout(() => {
