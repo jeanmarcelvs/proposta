@@ -27,182 +27,142 @@ function esconderLoadingOverlay() {
     }
 }
 
-// CORRIGIDO: A função agora recebe apenas o objeto da proposta (premium ou acessivel)
-function atualizarImagemEquipamentos(proposta) {
+// Função para atualizar as imagens dos equipamentos com base no tipo de proposta
+function atualizarImagemEquipamentos(propostas, tipo) {
     const imagemMarca = document.getElementById('imagem-marca');
     if (!imagemMarca) {
         console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
         return;
     }
-    // CORRIGIDO: Acessa o caminho da imagem diretamente do objeto da proposta
-    const caminho = proposta.equipamentos.imagemPremium || proposta.equipamentos.imagemAcessivel;
-    const tipo = proposta.equipamentos.imagemPremium ? 'premium' : 'acessivel';
-
-    if (caminho) {
-        imagemMarca.src = caminho;
-    } else {
-        console.error("ERRO: Caminho da imagem de equipamentos não encontrado para o tipo: " + tipo);
-    }
+    imagemMarca.src = propostas[tipo].equipamentos.imagem;
+    console.log(`Imagem de equipamentos atualizada para: ${imagemMarca.src}`);
 }
 
-// Função para preencher os dados dinâmicos da proposta
-function preencherDadosProposta(dados) {
-    // Mapeamento dos IDs de elementos para as chaves de dados
-    const mapaDados = {
-        'nome-cliente': 'cliente',
-        'consumo': 'consumoMensal',
-        'geracao': 'geracaoMensal',
-        'valor-investimento-premium': 'valorSistema',
-        'economia': 'economiaMensal',
-        'payback': 'payback'
-    };
-
-    // Preenche os campos de texto com os dados do objeto
-    for (const id in mapaDados) {
-        const elemento = document.getElementById(id);
-        if (elemento && dados[mapaDados[id]]) {
-            elemento.textContent = dados[mapaDados[id]];
-        }
-    }
-}
-
-// CORRIGIDO: A função agora recebe apenas o objeto da proposta (premium ou acessivel)
-function atualizarImagemInstalacao(proposta) {
-    const imagemInstalacao = document.getElementById('imagem-instalacao');
-    if (!imagemInstalacao) {
-        console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
+// Funções para preencher o HTML com os dados da proposta
+function preencherDadosProposta(proposta) {
+    if (!proposta) {
+        console.error("ERRO: Objeto de proposta é nulo.");
         return;
     }
-    // CORRIGIDO: Acessa o caminho da imagem diretamente do objeto da proposta
-    const caminho = proposta.instalacao.imagemInstalacaoPremium || proposta.instalacao.imagemInstalacaoAcessivel;
+    document.getElementById('consumo').textContent = proposta.consumoMensal;
+    document.getElementById('geracao').textContent = proposta.geracaoMensal;
+    document.getElementById('valor-sistema').textContent = proposta.valorSistema;
+    document.getElementById('economia').textContent = proposta.economiaMensal;
+    document.getElementById('payback').textContent = proposta.payback;
+    document.getElementById('cliente').textContent = proposta.cliente;
 
-    if (caminho) {
-        imagemInstalacao.src = caminho;
-    } else {
-        console.error("ERRO: Caminho da imagem de instalação não encontrado.");
+    const valorResumoPremium = document.getElementById('valor-resumo-premium');
+    if (valorResumoPremium) {
+        valorResumoPremium.textContent = proposta.valorSistema;
+    }
+    console.log("Dados da proposta preenchidos no HTML.");
+}
+
+function preencherDetalhesInstalacao(proposta) {
+    const imagemInstalacao = document.getElementById('imagem-instalacao');
+    if (imagemInstalacao && proposta.instalacao && proposta.instalacao.imagemInstalacao) {
+        imagemInstalacao.src = proposta.instalacao.imagemInstalacao;
+        console.log("Imagem de instalação atualizada.");
     }
 }
 
-function preencherDetalhesInstalacao(dados) {
-    // Implemente a lógica para preencher os detalhes de instalação
-    // com base na sua estrutura de dados (dados.acessivel ou dados.premium)
-}
-
+// NOVO: Função para atualizar etiquetas dinâmicas
 function atualizarEtiquetasDinamicas(tipo) {
-    const etiquetaEconomia = document.getElementById('etiqueta-economia');
-    const etiquetaPayback = document.getElementById('etiqueta-payback');
-
-    if (etiquetaEconomia) {
-        etiquetaEconomia.textContent = tipo === 'premium' ? "Economia mensal estimada:" : "Economia mensal estimada:";
-    }
-
-    if (etiquetaPayback) {
-        etiquetaPayback.textContent = tipo === 'premium' ? "Seu investimento se paga em:" : "Seu investimento se paga em:";
-    }
+    const etiquetas = document.querySelectorAll('[data-etiqueta-proposta]');
+    etiquetas.forEach(etiqueta => {
+        if (etiqueta.dataset.etiquetaProposta === tipo) {
+            etiqueta.style.display = 'block';
+        } else {
+            etiqueta.style.display = 'none';
+        }
+    });
 }
 
-// Lógica de inicialização da página
+// Função de inicialização
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log("Controlador: DOM totalmente carregado. Iniciando.");
+
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
 
     if (!numeroProjeto) {
-        console.error('ERRO: ID do projeto não encontrado na URL.');
+        console.error("ERRO: ID do projeto não encontrado na URL.");
+        document.querySelector('h1').textContent = "Erro ao Carregar Proposta";
+        esconderLoadingOverlay();
         return;
     }
 
-    const dadosArmazenados = localStorage.getItem('propostaData');
-    if (!dadosArmazenados) {
-        console.log("Controlador: Dados não encontrados no localStorage. Buscando na API...");
-        const resposta = await buscarETratarProposta(numeroProjeto);
+    mostrarLoadingOverlay();
 
-        if (resposta.sucesso && resposta.proposta && resposta.proposta.premium) {
-            localStorage.setItem('propostaData', JSON.stringify(resposta.proposta));
-            inicializarBotoes(resposta.proposta);
-            preencherDadosProposta(resposta.proposta.premium);
-            atualizarImagemEquipamentos(resposta.proposta.premium);
-            atualizarImagemInstalacao(resposta.proposta.premium);
-            atualizarEtiquetasDinamicas('premium');
-            esconderLoadingOverlay();
-        } else {
-            console.error("Controlador: Falha ao carregar dados da API.");
-            alert(resposta.mensagem || 'Falha ao carregar a proposta.');
-            window.location.href = 'index.html';
-        }
-    } else {
-        console.log("Controlador: Dados encontrados no localStorage. Carregando...");
-        const propostas = JSON.parse(dadosArmazenados);
-        inicializarBotoes(propostas);
+    // Tenta buscar os dados da API
+    console.log("Controlador: Buscando dados da API...");
+    const resposta = await buscarETratarProposta(numeroProjeto);
+
+    if (resposta.sucesso) {
+        const propostas = resposta.proposta;
+        console.log("Controlador: Dados da proposta carregados com sucesso da API.");
+
+        // Salva os dados no localStorage para uso futuro
+        localStorage.setItem('propostaData', JSON.stringify(propostas));
+        
+        // Exibe a proposta Premium por padrão
         preencherDadosProposta(propostas.premium);
-        atualizarImagemEquipamentos(propostas.premium);
-        atualizarImagemInstalacao(propostas.premium);
+        atualizarImagemEquipamentos(propostas, 'premium');
         atualizarEtiquetasDinamicas('premium');
+        preencherDetalhesInstalacao(propostas.premium);
+        document.body.classList.add('theme-premium');
+        document.body.classList.remove('theme-acessivel');
+        esconderLoadingOverlay();
+
+        // Configura os botões de tipo de proposta
+        const btnPremium = document.getElementById('btn-premium');
+        const btnAcessivel = document.getElementById('btn-acessivel');
+
+        if (btnPremium) {
+            btnPremium.addEventListener('click', () => {
+                console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
+                preencherDadosProposta(propostas.premium);
+                atualizarImagemEquipamentos(propostas, 'premium');
+                atualizarEtiquetasDinamicas('premium');
+                preencherDetalhesInstalacao(propostas.premium);
+                document.body.classList.add('theme-premium');
+                document.body.classList.remove('theme-acessivel');
+                btnPremium.classList.add('selecionado');
+                btnAcessivel.classList.remove('selecionado');
+            });
+        }
+
+        if (propostas.acessivel && btnAcessivel) {
+            // Exibe o botão "+Acessível" apenas se houver dados
+            btnAcessivel.style.display = 'inline-block';
+            btnAcessivel.addEventListener('click', () => {
+                console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
+                preencherDadosProposta(propostas.acessivel);
+                atualizarImagemEquipamentos(propostas, 'acessivel');
+                atualizarEtiquetasDinamicas('acessivel');
+                preencherDetalhesInstalacao(propostas.acessivel);
+                document.body.classList.add('theme-acessivel');
+                document.body.classList.remove('theme-premium');
+                btnAcessivel.classList.add('selecionado');
+                btnPremium.classList.remove('selecionado');
+            });
+        }
+
+        // Tenta atualizar o status de visualização na API
+        try {
+            const dadosVisualizacao = {
+                propostaId: numeroProjeto,
+                tipoVisualizacao: 'P' // O 'P' maiúsculo é para Premium
+            };
+            await atualizarStatusVisualizacao(dadosVisualizacao);
+        } catch (error) {
+            console.error("ERRO: Falha ao atualizar o status de visualização.", error);
+        }
+
+    } else {
+        // Trata o caso de erro ao buscar dados
+        console.error("ERRO: Não foi possível carregar a proposta.", resposta.mensagem);
+        document.querySelector('h1').textContent = `Erro ao Carregar: ${resposta.mensagem}`;
         esconderLoadingOverlay();
     }
 });
-
-// A nova função para inicializar os botões e controlar a visibilidade
-function inicializarBotoes(propostas) {
-    const btnPremium = document.getElementById('btn-premium');
-    const btnAcessivel = document.getElementById('btn-acessivel');
-    const seletorBotoes = document.querySelector('.seletor-tipo-proposta');
-
-    if (!propostas.acessivel) {
-        if (seletorBotoes) {
-            seletorBotoes.style.display = 'none';
-        }
-        return;
-    } else {
-        if (seletorBotoes) {
-            seletorBotoes.style.display = 'flex';
-        }
-    }
-
-    if (btnPremium) {
-        btnPremium.addEventListener('click', () => {
-            console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
-            mostrarLoadingOverlay();
-            preencherDadosProposta(propostas.premium);
-            atualizarImagemEquipamentos(propostas.premium);
-            atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostas.premium);
-            preencherDetalhesInstalacao(propostas.premium);
-            document.body.classList.remove('theme-acessivel');
-            document.body.classList.add('theme-premium');
-            setTimeout(() => {
-                btnPremium.classList.add('selecionado');
-                btnAcessivel.classList.remove('selecionado');
-                esconderLoadingOverlay();
-            }, 100);
-            const dadosVisualizacao = {
-                propostaId: propostas.premium.id,
-                tipoVisualizacao: 'P'
-            };
-            atualizarStatusVisualizacao(dadosVisualizacao);
-        });
-    }
-
-    if (btnAcessivel) {
-        btnAcessivel.addEventListener('click', () => {
-            console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
-            mostrarLoadingOverlay();
-            preencherDadosProposta(propostas.acessivel);
-            atualizarImagemEquipamentos(propostas.acessivel);
-            atualizarEtiquetasDinamicas('acessivel');
-            atualizarImagemInstalacao(propostas.acessivel);
-            preencherDetalhesInstalacao(propostas.acessivel);
-            document.body.classList.add('theme-acessivel');
-            document.body.classList.remove('theme-premium');
-            setTimeout(() => {
-                btnAcessivel.classList.add('selecionado');
-                btnPremium.classList.remove('selecionado');
-                esconderLoadingOverlay();
-            }, 100);
-            const dadosVisualizacao = {
-                propostaId: propostas.acessivel.id,
-                tipoVisualizacao: 'A'
-            };
-            atualizarStatusVisualizacao(dadosVisualizacao);
-        });
-    }
-}
