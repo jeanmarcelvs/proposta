@@ -44,7 +44,7 @@ function resetarBotao() {
 
 // Aguarda o documento HTML ser totalmente carregado
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(esconderTelaSplash, 500);
+    //setTimeout(esconderTelaSplash, 500);
 
     const formConsulta = document.getElementById('form-consulta');
     const inputNumeroProjeto = document.getElementById('numero-projeto');

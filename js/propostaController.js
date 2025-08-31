@@ -204,7 +204,7 @@ function preencherDadosProposta(dados) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    mostrarLoadingOverlay();
+    //mostrarLoadingOverlay();
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
 
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             console.log("DEBUG: Preenchimento inicial concluído.");
 
-            esconderLoadingOverlay();
+            //esconderLoadingOverlay();
 
         } else {
             console.error("ERRO: Falha na busca da proposta. Mensagem:", resposta.mensagem);
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("DEBUG: Clicado no botão 'Premium'. Carregando dados Premium...");
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
-                mostrarLoadingOverlay();
+                //mostrarLoadingOverlay();
                 preencherDadosProposta(propostas.premium);
                 // CORRIGIDO: Funções de imagem atualizadas
                 atualizarImagemEquipamentos(propostas.premium);
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 setTimeout(() => {
                     btnPremium.classList.add('selecionado');
                     btnAcessivel.classList.remove('selecionado');
-                    esconderLoadingOverlay();
+                    //esconderLoadingOverlay();
                 }, 100);
             } else {
                 console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("DEBUG: Clicado no botão '+Acessível'. Carregando dados +Acessível...");
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {
-                mostrarLoadingOverlay();
+                //mostrarLoadingOverlay();
                 preencherDadosProposta(propostas.acessivel);
                 // CORRIGIDO: Funções de imagem atualizadas
                 atualizarImagemEquipamentos(propostas.acessivel);
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 setTimeout(() => {
                     btnAcessivel.classList.add('selecionado');
                     btnPremium.classList.remove('selecionado');
-                    esconderLoadingOverlay();
+                    //esconderLoadingOverlay();
                 }, 100);
             } else {
                 console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
