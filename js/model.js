@@ -173,14 +173,16 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     const instalacao = pricingTable.find(item => item.category === 'Instalação');
     const kit = pricingTable.find(item => item.category === 'KIT' && item.item === '123');
 
-    // CORRIGIDO: Encontra as variáveis usando as chaves corretas
+    // CORRIGIDO: Encontra as variáveis usando as chaves corretas e tipos corretos
     const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
-    const geracaoMedia = extrairValorVariavelPorChave(variables, 'geracao_mensal') || 'N/A';
+    const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
     const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_sistema') || 'N/A';
-    // A API não retorna a economia_mensal_valor, vamos calcular
-    const economiaMensal = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
-    // CORRIGIDO: A chave do payback está correta, mas pode estar em outro lugar
+    const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
+    const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
+    
+    // NOVO: Calcula o valor ideal para a conta de luz
+    const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
     // CORRIGIDO: Calcula os valores financeiros com base nas chaves da API
     const valorTotal = extrairValorVariavelPorChave(variables, 'preco') || 0;
@@ -202,18 +204,17 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         propostaId: idProposta,
         cliente: nomeCliente,
         consumoMensal: `${consumoMensal} kWh`,
-        geracaoMensal: `${geracaoMedia} kWh/mês`,
+        geracaoMensal: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
         local: `${cidade} / ${estado}`,
         dataProposta: dataProposta,
         linkProposta: linkProposta,
         sistema: {
-            geracaoMedia: `${geracaoMedia} kWh/mês`,
-            potenciaSistema: `${potenciaSistema} kWp`,
-            idealPara: (economiaMensal * 1.5).toLocaleString('pt-BR', {
+            geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
+            instalacaoPaineis: tipoEstrutura, // CORRIGIDO
+            idealPara: idealParaValor.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
-            }),
-            instalacaoPaineis: 'Instalação no telhado (inclinação e orientação ideal)' // Valor estático
+            }) // CORRIGIDO
         },
         equipamentos: {
             // CORRIGIDO: Adiciona a URL da imagem
