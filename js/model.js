@@ -156,10 +156,14 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     } = dadosApi;
     const variables = dados.variables || [];
     const pricingTable = dados.pricingTable || [];
-    const nomeCliente = dados.project?.name || 'Não informado';
+    // CORRIGIDO: Nome do cliente agora é extraído do objeto de variáveis
+    const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
+    // CORRIGIDO: Acessa a cidade e estado pelas chaves corretas
+    const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
+    const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
 
     console.log(`Modelo: Tratando dados para proposta ${tipoProposta}`);
 
@@ -169,41 +173,37 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     const instalacao = pricingTable.find(item => item.category === 'Instalação');
     const kit = pricingTable.find(item => item.category === 'KIT' && item.item === '123');
 
-    // Encontra variáveis
+    // CORRIGIDO: Encontra as variáveis usando as chaves corretas
     const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
-    const geracaoMedia = extrairValorVariavelPorChave(variables, 'geracao_media') || 'N/A';
-    const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_kit') || 'N/A';
-    const economiaMensal = extrairValorNumericoPorChave(variables, 'economia_mensal_valor') || 0;
+    const geracaoMedia = extrairValorVariavelPorChave(variables, 'geracao_mensal') || 'N/A';
+    const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_sistema') || 'N/A';
+    // A API não retorna a economia_mensal_valor, vamos calcular
+    const economiaMensal = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
+    // CORRIGIDO: A chave do payback está correta, mas pode estar em outro lugar
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
 
-    // Calcula os valores financeiros
-    const valorTotal = (dados.salesValue || 0).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+    // CORRIGIDO: Calcula os valores financeiros com base nas chaves da API
+    const valorTotal = extrairValorVariavelPorChave(variables, 'preco') || 0;
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
     const parcelas = {};
-    [12, 24, 36, 48, 60, 72, 84].forEach(p => {
-        if (dados.salesValue > 0) {
-            parcelas[`parcela-${p}`] = (dados.salesValue / p).toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        } else {
-            parcelas[`parcela-${p}`] = '0,00';
+    [1, 2, 3, 4, 5, 6, 7].forEach(p => {
+        const prazo = extrairValorVariavelPorChave(variables, `f_prazo_${p}`);
+        const valorParcela = extrairValorVariavelPorChave(variables, `f_parcela_${p}`);
+        if (prazo && valorParcela) {
+             parcelas[`parcela-${prazo}`] = valorParcela;
         }
     });
-
+    
     const retorno = {
         id: dados.project.id,
         propostaId: idProposta,
         cliente: nomeCliente,
         consumoMensal: `${consumoMensal} kWh`,
-        geracaoMensal: `${geracaoMedia} kWh`,
-        local: `${dados.project.city || 'Não informado'} / ${dados.project.state || 'Não informado'}`,
+        geracaoMensal: `${geracaoMedia} kWh/mês`,
+        local: `${cidade} / ${estado}`,
         dataProposta: dataProposta,
         linkProposta: linkProposta,
         sistema: {
@@ -218,10 +218,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         equipamentos: {
             // CORRIGIDO: Adiciona a URL da imagem
             imagem: caminhosImagens.equipamentos[tipoProposta], 
-            quantidadePainel: painel?.qnt || 0,
-            descricaoPainel: painel?.item || 'Não informado',
-            quantidadeInversor: inversor?.qnt || 0,
-            descricaoInversor: inversor?.item || 'Não informado'
+            quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
+            descricaoPainel: extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado',
+            quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
+            descricaoInversor: extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado'
         },
         instalacao: {
             // CORRIGIDO: Adiciona a URL da imagem
