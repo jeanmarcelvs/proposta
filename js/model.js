@@ -108,6 +108,9 @@ async function buscarPropostaPorTipo(numeroProjeto, tipo) {
     const accessToken = authResponse.accessToken;
     const endpoint = `/projects/${numeroProjeto}`;
     const dadosApi = await get(endpoint, accessToken);
+    
+    // NOVA LINHA ADICIONADA: LOG DA RESPOSTA BRUTA
+    console.log("Modelo: Resposta bruta da API:", dadosApi);
 
     if (!dadosApi.sucesso) {
         return { sucesso: false, mensagem: dadosApi.mensagem };
