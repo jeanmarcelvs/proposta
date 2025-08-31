@@ -3,7 +3,7 @@
  * Este arquivo é o Controlador da página index.html. Ele gerencia a
  * interação do usuário com o formulário e coordena a comunicação com o Modelo.
  */
-import { buscarETratarProposta } from './model.js'; 
+import { buscarETratarProposta } from './model.js';
 
 // Função para ocultar a tela de splash
 function esconderTelaSplash() {
@@ -17,7 +17,7 @@ function esconderTelaSplash() {
 function exibirMensagem(tipo, mensagem) {
     const mensagemFeedback = document.getElementById('mensagem-feedback');
     mensagemFeedback.textContent = mensagem;
-    mensagemFeedback.className = 'mensagem-feedback show'; 
+    mensagemFeedback.className = 'mensagem-feedback show';
     if (tipo === 'sucesso') {
         mensagemFeedback.classList.add('success-msg');
     } else if (tipo === 'erro') {
@@ -28,8 +28,8 @@ function exibirMensagem(tipo, mensagem) {
         mensagemFeedback.classList.remove('show');
         setTimeout(() => {
             mensagemFeedback.className = 'mensagem-feedback';
-        }, 500); 
-    }, 5000); 
+        }, 500);
+    }, 5000);
 }
 
 // Função para resetar o botão para o estado padrão
@@ -51,14 +51,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnConsultar = document.getElementById('btn-consultar');
     const btnTexto = btnConsultar.querySelector('.btn-texto');
 
-    formConsulta.addEventListener('submit', async function(evento) {
-        evento.preventDefault();
+    // Função que será executada ao submeter o formulário (ou ao carregar a página com ID)
+    async function handleFormSubmit(evento, numeroProjetoUrl = null) {
+        if (evento) {
+          evento.preventDefault();
+        }
 
-        const numeroProjeto = inputNumeroProjeto.value.trim();
-
+        // Usa o número do projeto da URL, se existir, senão pega do input
+        const numeroProjeto = numeroProjetoUrl || inputNumeroProjeto.value.trim();
+        
         // 1. Validação de campo vazio
         if (!numeroProjeto) {
-            exibirMensagem('erro', 'Por favor, digite o número do projeto.');
+            if (!numeroProjetoUrl) { // Evita exibir mensagem se o ID da URL for inválido
+              exibirMensagem('erro', 'Por favor, digite o número do projeto.');
+            }
             return;
         }
 
@@ -66,16 +72,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const regexNumeros = /^\d+$/; // Aceita apenas um ou mais dígitos de 0 a 9
         if (!regexNumeros.test(numeroProjeto)) {
             exibirMensagem('erro', 'O número do projeto deve conter apenas dígitos.');
-            // Usamos a função para exibir a mensagem de erro
-            setTimeout(resetarBotao, 2000); // Reseta o botão após ver a mensagem de erro
+            setTimeout(resetarBotao, 2000);
             return;
         }
 
         // --- Início do estado de carregamento do botão ---
         btnConsultar.classList.add('loading');
         btnConsultar.disabled = true;
-        btnConsultar.classList.remove('success', 'error'); 
-        btnTexto.textContent = ''; 
+        btnConsultar.classList.remove('success', 'error');
+        btnTexto.textContent = '';
 
         let sucesso = false;
         try {
@@ -90,8 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 setTimeout(() => {
                     window.location.href = `proposta.html?id=${numeroProjeto}`;
-                }, 1500); 
-
+                }, 1500);
             } else {
                 // --- Estado de Erro do Botão ---
                 btnConsultar.classList.add('error');
@@ -105,10 +109,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             // Se não houve sucesso, resetamos o botão para a próxima interação
             if (!sucesso) {
-                setTimeout(resetarBotao, 2000); // Aguarda para que o usuário veja o estado de erro
+                setTimeout(resetarBotao, 2000);
             }
         }
-    });
+    }
+
+    // Adiciona o event listener para o formulário
+    formConsulta.addEventListener('submit', handleFormSubmit);
 
     // --- NOVA LÓGICA: Verifica se há um ID na URL e inicia a consulta automática ---
     const urlParams = new URLSearchParams(window.location.search);
