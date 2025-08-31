@@ -152,13 +152,6 @@ function formatarData(dataISO) {
  * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
  * @returns {object} Um objeto com os dados formatados para a página.
  */
-/**
- * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
- * Esta é a função principal de transformação.
- * @param {object} dadosApi O objeto de dados brutos recebido da API.
- * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
- * @returns {object} Um objeto com os dados formatados para a página.
- */
 function tratarDadosParaProposta(dadosApi, tipoProposta) {
     if (!dadosApi || !dadosApi.dados) {
         console.error("Modelo: Dados da API não encontrados ou incompletos.");
@@ -170,30 +163,35 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     } = dadosApi;
     const variables = dados.variables || [];
     const pricingTable = dados.pricingTable || [];
+    // CORRIGIDO: Nome do cliente agora é extraído do objeto de variáveis
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
+    // CORRIGIDO: Acessa a cidade e estado pelas chaves corretas
     const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
     const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
 
     console.log(`Modelo: Tratando dados para proposta ${tipoProposta}`);
 
+    // Encontra os equipamentos
     const painel = pricingTable.find(item => item.category === 'Módulo');
     const inversor = pricingTable.find(item => item.category === 'Inversor');
     const instalacao = pricingTable.find(item => item.category === 'Instalação');
     const kit = pricingTable.find(item => item.category === 'KIT' && item.item === '123');
 
+    // CORRIGIDO: Encontra as variáveis usando as chaves corretas e tipos corretos
     const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
     const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
     const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_sistema') || 'N/A';
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
     const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
-
+    
     // NOVO: Calcula o valor ideal para a conta de luz
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
+    // CORRIGIDO: Calcula os valores financeiros com base nas chaves da API
     const valorTotal = extrairValorVariavelPorChave(variables, 'preco') || 0;
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
@@ -207,7 +205,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
              parcelas[`parcela-${prazo}`] = valorParcela;
         }
     });
-
+    
     const retorno = {
         id: dados.project.id,
         propostaId: idProposta,
@@ -219,30 +217,29 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         linkProposta: linkProposta,
         sistema: {
             geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
-            instalacaoPaineis: tipoEstrutura,
+            instalacaoPaineis: tipoEstrutura, // CORRIGIDO
             idealPara: idealParaValor.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
-            })
+            }) // CORRIGIDO
         },
         equipamentos: {
-            imagem: caminhosImagens.equipamentos[tipoProposta],
+            // CORRIGIDO: Adiciona a URL da imagem
+            imagem: caminhosImagens.equipamentos[tipoProposta], 
             quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
             descricaoPainel: extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado',
             quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
             descricaoInversor: extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado'
         },
         instalacao: {
+            // CORRIGIDO: Adiciona a URL da imagem
             imagem: caminhosImagens.instalacao[tipoProposta],
             detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
         },
         valores: {
             valorTotal: valorTotal,
             valorResumo: valorResumo,
-            // AQUI ESTÁ A CORREÇÃO. USE A TARIFA DE ENERGIA QUE VOCÊ JÁ TEM,
-            // E MUDE A ECONOMIA MENSAL PARA A GERAÇÃO, QUE REPRESENTA A ECONOMIA DE ENERGIA.
-            economiaMensal: geracaoMediaValor,
-            tarifaEnergia: tarifaEnergia,
+            economiaMensal: economiaMensal,
             payback: payback,
             parcelas: parcelas,
             observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
@@ -300,14 +297,27 @@ export async function buscarETratarProposta(numeroProjeto) {
 
         if (dadosApiAcessivel.sucesso) {
             propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel');
-            if (!propostaAcessivel) {
-                console.warn("AVISO: Falha ao tratar dados da proposta Acessível. A proposta Premium será exibida.");
-            }
         } else {
-            console.warn("AVISO: Falha ao buscar dados da proposta Acessível da API. A proposta Premium será exibida.");
+            console.error("Modelo: Falha ao buscar dados da proposta Acessível da API. Abortando.");
+            return {
+                sucesso: false,
+                mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.'
+            };
         }
     } else {
-        console.warn("AVISO: ID da proposta acessível não encontrado. Apenas a proposta Premium será exibida.");
+        console.error("Modelo: ID da proposta acessível não encontrado. Não é possível buscar os dados da API.");
+        return {
+            sucesso: false,
+            mensagem: 'ID da proposta acessível não encontrado.'
+        };
+    }
+
+    if (!propostaAcessivel) {
+        console.error("Modelo: Falha ao tratar dados da proposta Acessível.");
+        return {
+            sucesso: false,
+            mensagem: 'Falha ao processar dados da proposta Acessível.'
+        };
     }
     dadosProposta.acessivel = propostaAcessivel;
 
