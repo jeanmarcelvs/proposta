@@ -8,7 +8,7 @@ import { get, post, authenticate, patch } from './api.js';
 
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
 // Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
-const apiToken = '3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T';
+const apiToken = process.env.API_TOKEN;
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
 let dadosProposta = {
@@ -124,14 +124,41 @@ function formatarData(dataISO) {
  * @param {object} propostaPremium Os dados da proposta Premium.
  * @returns {object} Os dados da proposta acessível.
  */
+/**
+ * Calcula os valores da proposta acessível com base nos valores da Premium.
+ * @param {object} propostaPremium Os dados da proposta Premium.
+ * @returns {object} Os dados da proposta acessível.
+ */
 function calcularPropostaAcessivel(propostaPremium) {
     console.log("DEBUG: Calculando proposta Acessível com base na Premium...");
-    const fatorReducao = 0.8; // Redução de 20%
+
+    // Lógica para calcular o fator de redução dinâmico
+    const potenciaStr = propostaPremium.sistema?.potenciaSistema || '0 kWp';
+    const potenciaNumerica = parseFloat(potenciaStr.replace(' kWp', '').replace(',', '.'));
+
+    const minPotencia = 2;
+    const maxPotencia = 100;
+    const minReducao = 0.078; // 7.8%
+    const maxReducao = 0.098; // 9.8%
+
+    // Garante que a potência esteja dentro da faixa esperada
+    const potenciaClamped = Math.max(minPotencia, Math.min(maxPotencia, potenciaNumerica));
+
+    // Calcula o percentual de redução usando uma interpolação linear inversa
+    const percentualReducao = maxReducao - 
+                             ((potenciaClamped - minPotencia) / (maxPotencia - minPotencia)) * (maxReducao - minReducao);
+    
+    // Calcula o fator de redução
+    const fatorReducao = 1 - percentualReducao;
+
     const novaProposta = JSON.parse(JSON.stringify(propostaPremium));
 
     // Converte o valor total formatado para um número para o cálculo
     const valorTotalNumerico = parseFloat(novaProposta.valores.valorTotal.replace('.', '').replace(',', '.'));
     console.log(`DEBUG: Valor Total Premium: ${valorTotalNumerico}`);
+    console.log(`DEBUG: Potência do Sistema: ${potenciaClamped} kWp`);
+    console.log(`DEBUG: Percentual de Redução: ${(percentualReducao * 100).toFixed(2)}%`);
+    
     novaProposta.valores.valorTotal = (valorTotalNumerico * fatorReducao).toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
@@ -141,11 +168,11 @@ function calcularPropostaAcessivel(propostaPremium) {
     // Calcula os valores das parcelas com base no fator de redução
     for (const key in novaProposta.valores.parcelas) {
         const valorParcelaNumerico = parseFloat(novaProposta.valores.parcelas[key].replace('.', '').replace(',', '.'));
-        novaProposta.valores.parcelas[key] = (valorParcelaNumerico * fatorReducao).toLocaleString('pt-BR', {
+        novaProposta.valores.parcela[`${key}`] = (valorParcelaNumerico * fatorReducao).toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
-        console.log(`DEBUG: Nova Parcela ${key}: ${novaProposta.valores.parcelas[key]}`);
+        console.log(`DEBUG: Nova Parcela ${key}: ${novaProposta.valores.parcela[key]}`);
     }
 
     // NOVO: Cálculo do payback proporcional
