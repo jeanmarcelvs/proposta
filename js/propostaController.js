@@ -174,7 +174,8 @@ function preencherDadosProposta(dados) {
         // 5. Parcelas
         console.log("DEBUG: Preenchendo parcelas...");
         for (const key in dados.valores?.parcelas || {}) {
-            const elemento = document.getElementById(`parcela-${key.replace('x', '')}`);
+            // CORRIGIDO: Usa querySelector para maior compatibilidade e robustez
+            const elemento = document.querySelector(`#parcela-${key.replace('parcela-', '')}`);
             if (elemento) {
                 elemento.innerText = dados.valores.parcelas[key] || 'N/A';
             } else {
@@ -220,7 +221,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (resposta.sucesso) {
             console.log("DEBUG: Proposta buscada com sucesso. Preenchendo a página...");
             // CORRIGIDO: Acessa a propriedade 'dados' do objeto de retorno
-            const propostaData = resposta.dados; 
+            const propostaData = resposta.dados;
             localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
             console.log("DEBUG: Conteúdo de propostaData:", propostaData);
@@ -245,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             preencherDetalhesInstalacao(propostaData.premium);
 
             console.log("DEBUG: Preenchimento inicial concluído.");
-            
+
             esconderLoadingOverlay();
 
         } else {
@@ -258,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Ocorreu um erro ao carregar a proposta.');
         window.location.href = 'index.html';
     } finally {
-        
+
     }
 
     // Lógica para alternar entre propostas
