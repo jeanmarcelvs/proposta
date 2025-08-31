@@ -41,6 +41,8 @@ body {
     color: var(--cor-texto-principal);
     line-height: 1.6;
     transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
+    /* Efeito de Fundo Arrojado */
+    background: radial-gradient(circle, #f0f4f7 0%, #FFFFFF 100%);
 }
 
 /* Estilos de transição para tema */
@@ -57,29 +59,126 @@ html {
     transition: all var(--transicao-padrao);
 }
 
-/* --- Estilos para a logo principal na página inicial --- */
+/* --- Estilos para a página de consulta (index.html) --- */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+    background-color: var(--cor-cartao-fundo);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px var(--cor-sombra);
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
 .logo {
     max-width: 200px;
     height: auto;
     margin-bottom: 2rem;
 }
 
-/* --- Botoões (Estilos Padrão) --- */
-.btn {
-    padding: 12px 24px;
-    background-color: var(--cor-primaria);
+h1 {
+    color: var(--cor-primaria);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+#form-consulta {
+    width: 100%;
+}
+
+.input-grupo {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.input-grupo label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--cor-texto-secundario);
+}
+
+.input-grupo input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    font-size: 1rem;
     color: var(--cor-texto-principal);
+    background-color: transparent;
+    transition: border-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
+}
+
+.input-grupo input:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
+}
+
+/* --- Estilos do botão de consulta --- */
+#btn-consultar {
+    position: relative;
+    width: 100%;
+    padding: 14px;
+    background-color: var(--cor-primaria);
+    color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
     font-weight: 600;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color var(--transicao-padrao);
+    overflow: hidden;
 }
 
-.btn:hover {
+#btn-consultar:hover {
+    background-color: var(--cor-primaria-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#btn-consultar .btn-texto {
+    transition: opacity 0.3s ease;
+}
+
+#btn-consultar.carregando .btn-texto,
+#btn-consultar.sucesso .btn-texto,
+#btn-consultar.erro .btn-texto {
+    opacity: 0;
+}
+
+/* Estilos e animações dos ícones */
+.icone-carregando, .icone-sucesso, .icone-erro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-size: 1.2rem;
+}
+
+#btn-consultar.carregando .icone-carregando {
+    opacity: 1;
+    animation: spin 1s linear infinite;
+}
+
+#btn-consultar.sucesso .icone-sucesso {
+    opacity: 1;
+}
+
+#btn-consultar.erro .icone-erro {
+    opacity: 1;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* Estilos para a mensagem de feedback */
