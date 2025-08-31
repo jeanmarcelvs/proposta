@@ -8,7 +8,9 @@ import { get, post, authenticate, patch } from './api.js';
 
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
 // Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
-const apiToken = process.env.API_TOKEN;
+
+//const apiToken = process.env.API_TOKEN;
+const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
 let dadosProposta = {
@@ -86,11 +88,11 @@ function formatarPayback(totalMeses) {
     const anos = Math.floor(totalMeses / 12);
     // Alterado para Math.ceil() para arredondar os meses para cima.
     const meses = Math.ceil(totalMeses % 12);
-    
+
     if (anos === 0 && meses === 0) {
         return "Não informado";
     }
-    
+
     // Tratamento para o caso de o cálculo resultar em 12 meses
     const anosCalculados = meses === 12 ? anos + 1 : anos;
     const mesesCalculados = meses === 12 ? 0 : meses;
@@ -101,7 +103,7 @@ function formatarPayback(totalMeses) {
     if (textoAnos && textoMeses) {
         return `${textoAnos} e ${textoMeses}`;
     }
-    
+
     return textoAnos || textoMeses;
 }
 
@@ -145,9 +147,9 @@ function calcularPropostaAcessivel(propostaPremium) {
     const potenciaClamped = Math.max(minPotencia, Math.min(maxPotencia, potenciaNumerica));
 
     // Calcula o percentual de redução usando uma interpolação linear inversa
-    const percentualReducao = maxReducao - 
-                             ((potenciaClamped - minPotencia) / (maxPotencia - minPotencia)) * (maxReducao - minReducao);
-    
+    const percentualReducao = maxReducao -
+        ((potenciaClamped - minPotencia) / (maxPotencia - minPotencia)) * (maxReducao - minReducao);
+
     // Calcula o fator de redução
     const fatorReducao = 1 - percentualReducao;
 
@@ -158,7 +160,7 @@ function calcularPropostaAcessivel(propostaPremium) {
     console.log(`DEBUG: Valor Total Premium: ${valorTotalNumerico}`);
     console.log(`DEBUG: Potência do Sistema: ${potenciaClamped} kWp`);
     console.log(`DEBUG: Percentual de Redução: ${(percentualReducao * 100).toFixed(2)}%`);
-    
+
     novaProposta.valores.valorTotal = (valorTotalNumerico * fatorReducao).toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
@@ -168,11 +170,11 @@ function calcularPropostaAcessivel(propostaPremium) {
     // Calcula os valores das parcelas com base no fator de redução
     for (const key in novaProposta.valores.parcelas) {
         const valorParcelaNumerico = parseFloat(novaProposta.valores.parcelas[key].replace('.', '').replace(',', '.'));
-        novaProposta.valores.parcela[`${key}`] = (valorParcelaNumerico * fatorReducao).toLocaleString('pt-BR', {
+        novaProposta.valores.parcelas[`${key}`] = (valorParcelaNumerico * fatorReducao).toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
-        console.log(`DEBUG: Nova Parcela ${key}: ${novaProposta.valores.parcela[key]}`);
+        console.log(`DEBUG: Nova Parcela ${key}: ${novaProposta.valores.parcelas[key]}`);
     }
 
     // NOVO: Cálculo do payback proporcional
@@ -181,7 +183,7 @@ function calcularPropostaAcessivel(propostaPremium) {
     novaProposta.valores.payback = formatarPayback(paybackAcessivelEmMeses);
 
     novaProposta.equipamentos.imagemAcessivel = caminhosImagens.equipamentos.acessivel;
-    
+
     // NOVO: Detalhes de instalação para a proposta +Acessível (Texto corrigido)
     novaProposta.instalacao = {
         imagemInstalacaoAcessivel: caminhosImagens.instalacao.acessivel,
@@ -213,7 +215,7 @@ export async function buscarETratarProposta(numeroProjeto) {
         }
 
         const accessToken = authResponse.accessToken;
-        
+
         console.log("Modelo: Autenticação bem-sucedida. Buscando dados da proposta...");
         // Usa o endpoint correto com o número do projeto e passa o accessToken
         const respostaApi = await get(`/projects/${numeroProjeto}/proposals`, accessToken);
@@ -227,7 +229,7 @@ export async function buscarETratarProposta(numeroProjeto) {
         const dadosOriginais = respostaApi.dados;
         const variables = dadosOriginais.variables || [];
         const pricingTable = dadosOriginais.pricingTable || [];
-        
+
         const expirationDate = dadosOriginais.expirationDate;
 
         if (!expirationDate) {
@@ -242,7 +244,7 @@ export async function buscarETratarProposta(numeroProjeto) {
         const validade = new Date(expirationDateLocalString);
         const hoje = new Date();
         const diasRestantes = Math.ceil((validade.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-        
+
         // Verifica a validade da proposta antes de processar todos os dados
         if (diasRestantes <= 0) {
             return {
@@ -258,22 +260,22 @@ export async function buscarETratarProposta(numeroProjeto) {
         const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || dadosOriginais.cliente?.nome || 'Não informado';
         const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informada';
         const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
-        
+
         // Dados do sistema
         const geracaoMensalFormatada = extrairValorVariavelPorChave(variables, 'geracao_mensal') || 'N/A';
         const geracaoMensalNumerica = extrairValorNumericoPorChave(variables, 'geracao_mensal');
         const potenciaSistema = extrairValorVariavelPorChave(variables, 'potencia_sistema') || 'N/A';
         const instalacaoPaineis = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
         const tarifaNumerica = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1');
-        
+
         // Cálculo do valor "Ideal para contas de até"
-        const idealParaValor = (geracaoMensalNumerica && tarifaNumerica) ? 
-                                (geracaoMensalNumerica * tarifaNumerica).toLocaleString('pt-BR', { 
-                                    minimumFractionDigits: 2, 
-                                    maximumFractionDigits: 2 
-                                }) : 
-                                'Não informado';
-        
+        const idealParaValor = (geracaoMensalNumerica && tarifaNumerica) ?
+            (geracaoMensalNumerica * tarifaNumerica).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) :
+            'Não informado';
+
         // Dados dos equipamentos a partir das chaves corretas
         const potenciaInversor = extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || '0';
         const quantidadeInversor = extrairValorVariavelPorChave(variables, 'inversor_quantidade_1') || '0';
@@ -291,7 +293,7 @@ export async function buscarETratarProposta(numeroProjeto) {
             const parcelaKey = `f_parcela_${i}`;
             const prazo = extrairValorVariavelPorChave(variables, prazoKey);
             const valorParcela = extrairValorVariavelPorChave(variables, parcelaKey);
-            
+
             if (prazo && valorParcela) {
                 parcelas[prazo] = valorParcela;
             }
@@ -374,11 +376,11 @@ export async function atualizarStatusVisualizacao(dados) {
         }
 
         const accessToken = authResponse.accessToken;
-        
+
         // Formata a data e hora para a mensagem da API
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
-        
+
         // Monta a mensagem para o campo 'description'
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
 
