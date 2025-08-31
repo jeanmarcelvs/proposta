@@ -52,7 +52,7 @@ function tratarDadosProposta(dadosBrutos, tipo) {
     console.log(`Modelo: Tratando dados para proposta ${tipo}`);
 
     // CORRIGIDO: Agora espera que a primeira requisição retorne um array de propostas.
-    const proposta = Array.isArray(dadosBrutos.data) ? dadosBrutos.data[0] : dadosBrutos.data;
+    const proposta = dadosBrutos;
     
     // CORRIGIDO: Adiciona uma verificação mais robusta para os dados
     if (!proposta || !Array.isArray(proposta.variables)) {
@@ -115,11 +115,12 @@ async function buscarPropostaPorTipo(numeroProjeto, tipo) {
     
     console.log("Modelo: Resposta bruta da API:", dadosApi);
 
-    if (!dadosApi.sucesso) {
-        return { sucesso: false, mensagem: dadosApi.mensagem };
+    // CORRIGIDO: Acessa o array de propostas dentro de dados.data e pega o primeiro item.
+    if (!dadosApi.sucesso || !dadosApi.dados || !dadosApi.dados.data || dadosApi.dados.data.length === 0) {
+        return { sucesso: false, mensagem: 'Não foram encontradas propostas para este projeto.' };
     }
 
-    const propostaTratada = tratarDadosProposta(dadosApi.dados, tipo);
+    const propostaTratada = tratarDadosProposta(dadosApi.dados.data[0], tipo);
     if (!propostaTratada) {
         return {
             sucesso: false,
