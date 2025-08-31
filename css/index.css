@@ -2,43 +2,50 @@
 
 /* Estilos específicos para a página inicial (index.html) */
 
+/* Importa a fonte para uso local */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
 /* --- Reset e Base para index.html --- */
-body.theme-premium {
+body.theme-premium { 
+    font-family: 'Poppins', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
+    background-color: var(--cor-fundo); 
+    color: var(--cor-texto-principal);
 }
 
 /* --- Container do Formulário --- */
 .container {
-    max-width: 450px;
-    width: 90%;
-    padding: 2.5rem;
-    background-color: var(--cor-cartao-fundo);
+    max-width: 450px; 
+    width: 90%; 
+    padding: 2.5rem; 
+    background-color: var(--cor-cartao-fundo); 
     border-radius: 12px;
-    box-shadow: 0 8px 20px var(--cor-sombra);
+    box-shadow: 0 8px 20px var(--cor-sombra); 
     text-align: center;
     transition: all 0.4s ease-in-out;
-    border: 1px solid var(--cor-borda);
+    border: 1px solid var(--cor-borda); 
 }
 
 .container .logo {
-    max-width: 180px;
-    margin-bottom: 2.5rem;
+    max-width: 180px; 
+    margin-bottom: 2.5rem; 
 }
 
 h1 {
-    font-size: 2.2em;
+    font-size: 2.2em; 
     margin-bottom: 2rem;
-    color: ghostwhite;
-    font-weight: 700;
+    color: ghostwhite; 
+    font-weight: 700; 
 }
 
 /* --- Formulário e Inputs --- */
 #form-consulta {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.25rem; 
 }
 
 .input-grupo {
@@ -47,74 +54,87 @@ h1 {
 
 label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     font-weight: 500;
-    font-size: 0.95em;
     color: var(--cor-texto-principal);
+    font-size: 0.95em;
 }
 
 input[type="text"] {
     width: 100%;
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
+    padding: 14px; 
     border: 1px solid var(--cor-borda);
-    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px; 
+    background-color: var(--cor-input-fundo); 
     color: var(--cor-texto-principal);
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]::placeholder {
+    color: var(--cor-texto-secundario);
+    opacity: 0.7; 
 }
 
 input[type="text"]:focus {
+    outline: none;
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.3);
+    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.3); 
 }
 
-/* Estilo para o placeholder */
-input[type="text"]::placeholder {
-    color: var(--cor-texto-secundario);
-    opacity: 0.7;
-}
-
-/* --- Botão com Animação --- */
-
+/* --- Botão de Consulta com Animação (USANDO GRID) --- */
 button#btn-consultar {
-    position: relative;
-    padding: 0.8rem 1.5rem;
-    font-size: 1.1em;
-    font-weight: 600;
+    padding: 15px 25px; 
     border: none;
     border-radius: 8px;
-    cursor: pointer;
     background-color: var(--cor-primaria);
-    color: white;
-    overflow: hidden;
-    transition: background-color 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    color: var(--cor-texto-principal); 
+    font-weight: 700; 
+    font-size: 1.1em; 
+    cursor: pointer;
+    transition: all 0.3s ease; 
+    position: relative;
+    overflow: hidden; 
+    /* REMOVIDO: A margem superior fixa foi removida para usar o "gap" do formulário */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    min-height: 50px; 
+
+    /* Centraliza o conteúdo com Grid */
+    display: grid;
+    place-items: center; 
+    grid-template-areas: "content";
 }
 
 button#btn-consultar:hover {
     background-color: var(--cor-primaria-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
 }
 
-.btn-texto {
-    display: inline-block;
-    transition: opacity 0.3s ease;
-}
-
-/* Estilos dos ícones */
+/* Todos os elementos filhos ocupam a mesma área de grid */
+.btn-texto,
 .icone-carregando,
 .icone-sucesso,
 .icone-erro {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2em;
+    grid-area: content; 
     opacity: 0;
     transition: opacity 0.3s ease;
 }
+
+/* O texto padrão precisa ter opacidade 1 */
+.btn-texto {
+    opacity: 1;
+}
+
+.icone-sucesso {
+    color: var(--cor-destaque-positivo);
+}
+
+.icone-erro {
+    color: var(--cor-destaque-negativo);
+}
+
+/* --- Estados do Botão com Animação --- */
 
 /* Estado: Carregando */
 button#btn-consultar.loading .btn-texto {
@@ -126,7 +146,7 @@ button#btn-consultar.loading .icone-carregando {
 
 /* Estado: Sucesso */
 button#btn-consultar.success {
-    background-color: var(--cor-destaque-positivo);
+    background-color: var(--cor-destaque-positivo); 
 }
 button#btn-consultar.success .btn-texto {
     opacity: 0;
@@ -137,11 +157,41 @@ button#btn-consultar.success .icone-sucesso {
 
 /* Estado: Erro */
 button#btn-consultar.error {
-    background-color: var(--cor-destaque-negativo);
+    background-color: var(--cor-destaque-negativo); 
 }
 button#btn-consultar.error .btn-texto {
     opacity: 0;
 }
 button#btn-consultar.error .icone-erro {
     opacity: 1;
+}
+
+/* --- Mensagens de Feedback (AGORA COM ESPAÇAMENTO DINÂMICO) --- */
+#mensagem-feedback {
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9em;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease, max-height 0.4s ease, margin-top 0.4s ease;
+}
+
+#mensagem-feedback.show {
+    opacity: 1;
+    max-height: 100px;
+    margin-top: 0.5rem; /* Margem reduzida para um espaço mais sutil */
+}
+
+#mensagem-feedback.success-msg {
+    background-color: rgba(134, 229, 173, 0.2); 
+    color: var(--cor-destaque-positivo);
+    border: 1px solid var(--cor-destaque-positivo);
+}
+
+#mensagem-feedback.error-msg {
+    background-color: rgba(220, 53, 69, 0.2); 
+    color: var(--cor-destaque-negativo);
+    border: 1px solid var(--cor-destaque-negativo);
 }

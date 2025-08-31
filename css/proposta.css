@@ -2,37 +2,80 @@
 
 /* Estilos específicos para a página de proposta */
 
+/* --- Variáveis de Cores (Paletas de Temas) --- */
+:root {
+    /* Paleta Padrão (Premium) */
+    --cor-fundo: #F4F7F9;
+    --cor-header-fundo: rgba(244, 247, 249, 0.8);
+    --cor-texto-principal: #333333;
+    --cor-texto-secundario: #666666;
+    --cor-primaria: #2C3E50;
+    /* NOVO: Azul primário escuro fosco */
+    --cor-secundaria: #466380;
+    /* NOVO: Azul secundário escuro fosco */
+    --cor-destaque-negativo: #EF233C;
+    --cor-cartao-fundo: #FFFFFF;
+    --cor-borda: rgba(220, 220, 220, 1);
+    --cor-sombra: rgba(0, 0, 0, 0.1);
+    --transicao-padrao: 0.3s ease-in-out;
+}
+
+/* Paleta para o Tema +Acessível (Cores ajustadas para serem menos intensas/mais opacas) */
+body.theme-acessivel {
+    --cor-fundo: #FFFFFF;
+    --cor-header-fundo: rgba(255, 255, 255, 0.9);
+    --cor-texto-principal: #333333;
+    --cor-texto-secundario: #666666;
+    --cor-primaria: #4D7C4A;
+    /* Verde floresta fosco e escuro */
+    --cor-secundaria: #618B5E;
+    /* Verde musgo fosco e escuro */
+    --cor-destaque-negativo: #EF233C;
+    --cor-cartao-fundo: #F5F5F5;
+    --cor-borda: rgba(220, 220, 220, 1);
+    --cor-sombra: rgba(0, 0, 0, 0.1);
+}
+
 /* --- Estilos de Transição de Tema --- */
 body {
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color var(--transicao-padrao);
 }
 
 .secao-info,
 .card {
-    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    transition: background-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
 }
 
 /* Estilos para todos os cards */
 .card {
     background-color: var(--cor-cartao-fundo);
     padding: 1.5rem;
+    /* Ajuste este padding se necessário */
     border-radius: 10px;
     box-shadow: 0 4px 15px var(--cor-sombra);
     text-align: center;
-    transition: transform 0.3s ease, background-color 0.3s ease-in-out;
+    transition: transform 0.3s ease, background-color var(--transicao-padrao);
+
+    /* Propriedades de Layout Padrão para todos os Cards */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    /* Centraliza o conteúdo verticalmente */
     align-items: center;
+    /* Centraliza o conteúdo horizontalmente */
     min-height: 180px;
+    /* Altura mínima consistente para todos os cards */
+    /* REMOVA QUALQUER 'width' ou 'max-width' AQUI! */
 }
 
 /* --- Padronização de Grades (Grid Layout) --- */
 .card-grid {
     display: grid;
+    /* Padrão para telas grandes: 3 colunas iguais */
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     align-items: stretch;
+    /* Garante que os cards da mesma linha tenham a mesma altura */
 }
 
 /* --- Cabeçalho --- */
@@ -49,7 +92,7 @@ header {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    transition: padding 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    transition: padding var(--transicao-padrao), background-color var(--transicao-padrao);
 }
 
 header.expanded {
@@ -73,6 +116,7 @@ header.expanded {
 .seletor-tipo-proposta {
     display: flex;
     gap: 0.75rem;
+    /* Altera o alinhamento para o lado direito */
     margin-left: auto;
 }
 
@@ -85,7 +129,7 @@ header.expanded {
     cursor: pointer;
     background-color: transparent;
     color: var(--cor-texto-principal);
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease, box-shadow 0.3s ease-in-out;
+    transition: background-color var(--transicao-padrao), transform 0.2s ease, box-shadow var(--transicao-padrao);
 }
 
 .btn-proposta.selecionado {
@@ -100,12 +144,13 @@ header.expanded {
     transform: translateY(-2px);
 }
 
+/* Estilo para o ícone dentro do botão */
 .btn-proposta .fas {
     margin-left: 0.5rem;
     font-size: 0.8em;
 }
 
-/* --- Botão Voltar --- */
+/* --- Botão Voltar (Estilo único para onde ele estiver) --- */
 .btn-voltar-proposta {
     display: inline-block;
     padding: 0.75rem 1.8rem;
@@ -117,8 +162,9 @@ header.expanded {
     font-size: 0.95rem;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    transition: background-color var(--transicao-padrao), transform 0.2s ease, box-shadow var(--transicao-padrao), border-color var(--transicao-padrao);
     margin-top: 2rem;
+    /* Adiciona espaçamento superior quando o botão está no corpo */
 }
 
 .btn-voltar-proposta:hover {
@@ -133,17 +179,20 @@ header.expanded {
     margin-right: 0.5rem;
 }
 
+/* Nova seção para centralizar o botão "Voltar" no corpo */
 .secao-voltar-proposta {
     text-align: center;
     margin-bottom: 2rem;
+    /* Espaçamento abaixo da seção do botão */
 }
+
 
 /* --- Estilos Gerais do Conteúdo da Proposta --- */
 main {
     padding: 2rem;
     background-color: var(--cor-fundo);
     color: var(--cor-texto-principal);
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color var(--transicao-padrao);
 }
 
 .container {
@@ -158,7 +207,7 @@ main {
     border-radius: 15px;
     margin-bottom: 2rem;
     box-shadow: 0 8px 30px var(--cor-sombra);
-    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    transition: background-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
 }
 
 .secao-info.entrada {
@@ -170,6 +219,7 @@ main {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -183,259 +233,799 @@ main {
     align-items: center;
 }
 
+/* NOVO: Estilos específicos para o texto e ícones dos dados do cliente */
 .info-cliente-grid p {
     font-size: 1.15rem;
     display: flex;
     align-items: center;
     margin: 0.5rem 0;
-    color: var(--cor-texto-secundario);
-    font-weight: 500;
 }
 
-.icone-info-proposta {
-    color: var(--cor-primaria);
-    margin-right: 12px;
-    font-size: 1.5em;
-    min-width: 30px;
+.info-cliente-grid strong {
+    margin-right: 0.5rem;
 }
 
-h2.titulo-secao {
-    font-size: 2.2em;
-    font-weight: 700;
-    color: var(--cor-primaria);
-    margin-bottom: 1.5rem;
-    text-align: center;
+.info-cliente-grid .icone-info {
+    font-size: 1.4rem;
+    margin-right: 0.5rem;
+    color: var(--cor-secundaria);
 }
 
-.imagem-container-proposta {
-    width: 100%;
-    margin-bottom: 1.5rem;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px var(--cor-sombra);
-}
-
-.imagem-container-proposta img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-/* --- Estilos do Resumo da Proposta --- */
-#secao-resumo {
+.titulo-secao-icone {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.valor-resumo {
-    background-color: var(--cor-cartao-fundo);
-    padding: 1.5rem 2.5rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px var(--cor-sombra);
-    border: 1px solid var(--cor-borda);
-    min-width: 250px;
-    text-align: center;
-    transition: all 0.4s ease-in-out;
-}
-
-.valor-resumo:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px var(--cor-sombra);
-}
-
-.valor-resumo .rotulo {
-    display: block;
-    font-size: 0.9em;
-    color: var(--cor-texto-secundario);
-    margin-bottom: 0.2rem;
-}
-
-.texto-valor-resumo {
-    font-size: 2.2em;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--cor-primaria);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--cor-secundaria);
+    padding-bottom: 0.8rem;
+    transition: color var(--transicao-padrao), border-color var(--transicao-padrao);
 }
 
-.texto-valor-pequeno {
-    font-size: 1.5em;
+.titulo-secao-icone i {
+    font-size: 1.3em;
+    color: var(--cor-secundaria);
+    transition: color var(--transicao-padrao);
 }
 
-/* --- Estilos dos Cards Detalhe de Instalação --- */
-.detalhes-instalacao-container {
+/* --- Estilos para as Etiquetas de Seção (Simulação, Investimento, Componentes) --- */
+.etiqueta-proposta-dinamica {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--cor-secundaria);
+    color: var(--cor-fundo);
+    padding: 0.4rem 1.2rem;
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    z-index: 10;
+    box-shadow: -2px 2px 5px var(--cor-sombra);
+    transition: transform 0.3s ease, background-color var(--transicao-padrao), color var(--transicao-padrao);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 12px 100%, 0% calc(100% - 12px));
+}
+
+/* NOVO: Estilo para a etiqueta "À Vista" no CARD */
+.etiqueta-a-vista {
+    background-color: #d6761b;
+    color: #FFFFFF;
+    /* CORRIGIDO: Cor da fonte totalmente branca */
+    top: -12px;
+    right: -12px;
+    z-index: 15;
+    transform: rotate(5deg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Seção de Valores (Resumo) --- */
+.resumo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
-    margin-top: 1rem;
 }
 
-.item-detalhe {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.2rem;
-    padding: 1rem;
-    background-color: var(--cor-cartao-fundo);
-    border-radius: 10px;
-    box-shadow: 0 2px 10px var(--cor-sombra);
-    transition: all 0.3s ease;
+/* O card ja tem os estilos de flex e centralização */
+.resumo-item {
+    min-height: 150px;
 }
 
-.item-detalhe:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px var(--cor-sombra);
+.resumo-item:hover {
+    transform: translateY(-5px);
 }
 
-.icone-detalhe {
-    font-size: 1.5em;
+.icone-card {
+    font-size: 3rem;
     color: var(--cor-primaria);
-    min-width: 30px;
-    text-align: center;
+    margin-bottom: 0.5rem;
 }
 
-.texto-detalhe {
-    margin: 0;
-    font-size: 0.95em;
-    line-height: 1.6;
+.legenda-card {
+    font-size: 1rem;
+    color: var(--cor-texto-secundario);
+    margin-bottom: 0.5rem;
+}
+
+.valor-card-grande {
+    font-size: 2.5rem;
+    font-weight: 700;
     color: var(--cor-texto-principal);
 }
 
-/* --- Estilos da Seção de Observação de Financiamento --- */
-.secao-observacao-financiamento {
-    background-color: var(--cor-cartao-fundo);
-    padding: 1.5rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px var(--cor-sombra);
-    border: 1px solid var(--cor-borda);
-    margin-top: 2rem;
+/* --- Seção Sistema Proposto --- */
+/* Usa a nova classe padronizada de grid */
+.info-sistema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    align-items: stretch;
 }
 
-.titulo-observacao {
-    font-size: 1.2em;
-    font-weight: 600;
-    color: var(--cor-primaria);
-    margin-top: 0;
-    margin-bottom: 1rem;
+
+
+.sistema-info-card p {
+    margin: 0;
 }
 
-.texto-observacao {
-    font-size: 1em;
-    line-height: 1.5;
+
+/* Seletor específico para os ícones de sistema proposto */
+.sistema-info-card .icone-card {
+    font-size: 2.5rem;
+}
+
+/* Estilos para o símbolo da unidade de medida (kWp, kWh/mês) */
+.unidade-simbolo {
+    /* NOVO: Propriedades para forçar a quebra de linha e alinhamento */
+    display: block;
+    /* Força a unidade para uma nova linha */
+    font-size: 0.65em;
+    /* NOVO: Tamanho da fonte ajustado para melhor leitura */
+    font-weight: 400;
+    /* NOVO: Peso da fonte mais leve */
     color: var(--cor-texto-secundario);
-    white-space: pre-wrap;
+    /* NOVO: Cor mais suave */
+    
 }
 
-/* --- Estilos da Validade da Proposta --- */
-.validade-proposta {
-    text-align: center;
-    padding: 1rem;
+.ideal-para-container {
+    background-color: var(--cor-primaria);
+    /* Fundo azul escuro */
+    color: #FFFFFF;
+    /* Texto branco */
+    /* As demais propriedades como padding, border-radius, box-shadow e transition
+       já estão na classe '.card', que você adicionou no HTML.
+       Não as repita aqui para evitar duplicação e conflito. */
 }
 
-.validade-proposta .etiqueta-info {
-    font-size: 1.2em;
-    font-weight: 500;
+/* Garante que a legenda e o ícone dentro DESTE card sejam brancos */
+.ideal-para-container {
+    background-color: var(--cor-primaria);
+    color: #FFFFFF;
+    /* Garante que todo o texto no card seja branco por padrão */
+
+    /* Garante que os elementos internos se alinhem verticalmente */
+    display: flex;
+    flex-direction: column;
+    /* Coloca os itens um abaixo do outro */
+    justify-content: center;
+    /* Centraliza o grupo verticalmente */
+    align-items: center;
+    /* Centraliza os itens horizontalmente */
 }
 
-/* --- Rodapé --- */
+/* NOVO: Estilo para o ícone no topo */
+.icone-topo {
+    font-size: 2.5rem;
+    /* Aumenta o tamanho do ícone */
+    margin-bottom: 0.5rem;
+    /* Espaçamento abaixo do ícone */
+}
+
+/* Garante que o valor e o símbolo também fiquem brancos, sobrepondo outras regras */
+.ideal-para-container .legenda-card {
+    /* NOVO: Zera a margem padrão do parágrafo */
+    margin: 0;
+    /* NOVO: Aplica uma pequena margem abaixo para separar do valor */
+    margin-bottom: 0.1rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Ajuste de espaçamento para o valor do card "Ideal para" */
+.ideal-para-container .valor-card-grande {
+    /* NOVO: Zera a margem padrão do parágrafo */
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Assegura que o ícone tenha a cor e o espaçamento corretos */
+.ideal-para-container .icone-topo {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+    color: #FFFFFF;
+}
+
+/* Garante que todas as cores sejam brancas para este card */
+.ideal-para-container .legenda-card,
+.ideal-para-container .icone-topo,
+.ideal-para-container .valor-card-grande,
+.ideal-para-container .simbolo-moeda {
+    color: #FFFFFF;
+}
+
+.simbolo-moeda {
+    font-size: 0.6em;
+    vertical-align: super;
+}
+
+/* --- Seção de Equipamentos --- */
+.equipamentos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 colunas flexíveis */
+    gap: 1.5rem;
+    align-items: stretch;
+    /* Garante que os cards da mesma linha tenham a mesma altura */
+}
+
+/* Unifica o estilo de card para todos os cards desta seção */
+.equipamentos-grid .card {
+    min-height: 180px;
+    /* Altura padrão para todos os cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.equipamento-marca-imagem {
+    max-width: 80%;
+    /* A imagem ocupa no máximo 80% da largura do card. */
+    max-height: 80%;
+    /* A imagem se ajusta à altura do card. */
+    object-fit: contain;
+    /* Garante que a imagem inteira seja visível */
+    transition: opacity 0.3s ease;
+    margin: 0;
+    /* Remove qualquer margem que possa estar influenciando */
+    padding: 0;
+    /* Remove qualquer padding que possa estar influenciando */
+}
+
+.icone-equipamento {
+    font-size: 2.5rem;
+    color: var(--cor-secundaria);
+    margin-bottom: 0.5rem;
+}
+
+.titulo-equipamento {
+    font-weight: 700;
+    font-size: 1.5rem;
+    /* AJUSTADO: Aumenta o tamanho da fonte para os labels de Inversor e Painel Solar */
+    color: var(--cor-primaria);
+    margin: 0;
+}
+
+.info-equipamento {
+    font-size: 1.1rem;
+    color: var(--cor-texto-principal);
+    margin: 0.25rem 0;
+    font-weight: 400;
+}
+
+/* --- Estilos para a Descrição de Potência dos Equipamentos --- */
+.potencia-equipamento {
+    font-size: 1.25rem;
+    /* Ajuste para ser proeminente, mas não maior que o título */
+    font-weight: 700;
+    /* Negrito para destaque */
+    color: var(--cor-texto-principal);
+    /* Cor principal para o texto */
+    margin: 0;
+    /* Zera margens padrão */
+    line-height: 1.2;
+    /* Espaçamento entre linhas, se houver quebra */
+}
+
+/* Ajustes para o .info-equipamento pai, para garantir espaçamento */
+.equipamento-item .info-equipamento {
+    margin: 0.25rem 0;
+    /* Pequena margem vertical para separar os itens */
+}
+
+
+/* --- Seção de Parcelas --- */
+.cartoes-parcelas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+/* Estilos para os cartões individuais dentro da grade de parcelas */
+
+
+.cartoes-parcelas .card:hover {
+    transform: translateY(-5px);
+}
+
+/* Estilos para a legenda das parcelas (ex: "12x") */
+/* --- Ajuste de Espaçamento para os Cards de Parcelas --- */
+/* --- Seção de Parcelas --- */
+.cartoes-parcelas {
+    display: grid;
+    /* NOVO: Divide em até 3 colunas, com cada coluna ajustando o tamanho do card */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.cartoes-parcelas .card {
+    /* Garante que o card de parcela tenha uma altura mínima consistente */
+    min-height: 150px;
+}
+
+.cartoes-parcelas .parcelas {
+    margin: 0;
+    /* REDUZIDO: Torna o número de parcelas menor */
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    /* Espaçamento mínimo abaixo do número de parcelas */
+    color: var(--cor-texto-principal);
+    /* Cor padrão para a legenda */
+}
+
+.cartoes-parcelas .valor-card-grande {
+    margin: 0;
+    /* AUMENTADO: Torna o valor da parcela maior e mais destacado */
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    /* Destaque com a cor primária */
+}
+
+.cartoes-parcelas .simbolo-moeda {
+    font-size: 0.5em;
+    /* Mantém o 'R$' menor em proporção ao valor grande */
+    vertical-align: super;
+}
+
+/* --- Responsividade para as Parcelas --- */
+@media (max-width: 768px) {
+    .cartoes-parcelas {
+        /* Em telas de tablet, permite até 2 colunas */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .cartoes-parcelas {
+        /* Em celulares, 1 coluna por linha */
+        grid-template-columns: 1fr;
+    }
+
+    .cartoes-parcelas .valor-card-grande {
+        font-size: 1.8rem;
+        /* Ajuste para caber em telas menores */
+    }
+}
+
+/* --- Seção de Investimento --- */
+.investimento-conteudo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+/* Estilos para os cartões de informação de investimento */
+.info-investimento {
+    position: relative;
+    /* NOVO: Fundo azul para os cartões de investimento */
+    background-color: var(--cor-primaria);
+    /* NOVO: Cor do texto e ícones para o branco, garantindo contraste */
+    color: #FFFFFF;
+    /* NOVO: Aplica a mesma sombra utilizada nos outros cartões */
+    box-shadow: 0 4px 15px var(--cor-sombra);
+
+    /* NOVO: Transição suave para as novas propriedades */
+    transition: background-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
+}
+
+.info-investimento:hover {
+    transform: translateY(-5px);
+}
+
+.legenda-investimento {
+    font-size: 1rem;
+    /* ALTERADO: Muda a cor da legenda para branco (herda de .info-investimento) */
+    color: inherit;
+    margin-bottom: 0.5rem;
+}
+
+.valor-investimento {
+    font-size: 2.5rem;
+    font-weight: 700;
+    /* ALTERADO: Muda a cor do valor para branco (herda de .info-investimento) */
+    color: inherit;
+}
+
+/* --- Estilos do Loading Overlay (Splash de Transição) --- */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 250, 250, 0.2);
+    /* Cor de fundo mais transparente */
+    backdrop-filter: blur(5px);
+    /* Efeito fosco */
+    -webkit-backdrop-filter: blur(5px);
+    /* Suporte para navegadores WebKit */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#loading-overlay.oculto {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Animação do spinner de carregamento */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid var(--cor-secundaria);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* --- Estilos do Rodapé --- */
+/* --- Estilos do Rodapé --- */
 footer {
-    padding: 1.5rem;
-    background-color: var(--cor-header-fundo);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    padding: 2rem;
+    background-color: var(--cor-primaria);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
     text-align: center;
-    border-top: 1px solid var(--cor-borda);
-    margin-top: 2rem;
 }
 
 .footer-contact-container {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .footer-contact-item {
-    color: var(--cor-texto-principal);
+    color: #fff;
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 1rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    transition: color 0.3s ease;
+    gap: 0.5rem;
+    transition: color 0.3s ease-in-out;
+    /* NOVO: Adiciona a mãozinha para indicar que o item é clicável */
+    cursor: pointer;
+}
+
+.footer-contact-item:hover,
+.footer-contact-item:active {
+    color: var(--cor-secundaria);
 }
 
 .footer-contact-item i {
-    margin-right: 0.5rem;
-    font-size: 1.2em;
+    font-size: 1.2rem;
 }
 
-.footer-contact-item:hover {
+/* proposta.css */
+
+/* ... (código anterior) ... */
+
+/* --- Layout da Seção de Instalação --- */
+.cards-detalhes-instalacao {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.card-item-instalacao {
+    /* Mantenha a altura mínima para consistência */
+    min-height: 180px;
+
+    /* MOVIDO PARA CÁ: As propriedades flexbox para alinhamento vertical */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    /* Mantenha o padding para o conteúdo */
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    font-size: 0.95rem;
+}
+
+.card-item-instalacao .icone-card {
+    font-size: 2rem;
     color: var(--cor-primaria);
+    margin-bottom: 0.5rem;
 }
 
-.footer-copyright {
-    margin-top: 1rem;
-    font-size: 0.8em;
-    color: var(--cor-texto-secundario);
+.card-item-instalacao p {
+    font-size: 0.9rem;
+    color: var(--cor-texto-principal);
 }
 
+/* Responsividade */
 /* --- Responsividade --- */
-
-/* Para tablets e telas médias */
-@media (max-width: 992px) {
-    .card-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .valor-resumo {
-        min-width: auto;
-    }
-}
-
-/* Para celulares */
 @media (max-width: 768px) {
-    .card-grid {
+
+    /* Unifica a regra de altura para todos os cards em telas pequenas */
+    .card {
+        min-height: 120px;
+        /* Altura menor para telas pequenas */
+    }
+
+    /* Padroniza o layout de grade para seções em telas pequenas */
+    .equipamentos-grid,
+    .cards-detalhes-instalacao {
         grid-template-columns: 1fr;
     }
 
+    .equipamento-marca-imagem {
+        max-width: 100px;
+        /* Limita a largura em telas pequenas */
+    }
+
+    /* ... Mantenha as outras regras de responsividade que você já tinha ... */
+}
+
+@media (max-width: 480px) {
+    .btn-proposta {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .logo {
+        max-width: 100px;
+    }
+
+    .titulo-secao-icone {
+        font-size: 1.3rem;
+    }
+
+    .equipamento-item {
+        padding: 1rem;
+    }
+
+    .info-equipamento {
+        font-size: 0.9rem;
+    }
+
+    .valor-principal {
+        font-size: 2rem;
+    }
+
+    .cartoes-parcelas {
+        grid-template-columns: 1fr;
+    }
+
+    .cards-detalhes-instalacao {
+        grid-template-columns: 1fr;
+        /* Em telas muito pequenas, 1 coluna */
+    }
+}
+
+
+/* Estilo para a imagem dentro do card */
+.imagem-instalacao {
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* Adicione esta classe ao seu proposta.css */
+.card-instalacao {
+    height: 250px;
+    /* Altura fixa para o card da imagem */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* Importante para esconder qualquer parte que ultrapasse a altura */
+}
+
+.card-full-width {
+    display: flex;
+    /* Permite centralizar o conteúdo */
+    justify-content: center;
+    /* Centraliza horizontalmente */
+    align-items: center;
+    /* Centraliza verticalmente */
+    height: 300px;
+    /* Altere este valor para a altura desejada do card */
+    overflow: hidden;
+    /* Garante que a imagem não ultrapasse a altura do contêiner */
+}
+
+/* Estilo específico para o card que envolve a imagem, se precisar de um padding diferente */
+.card-imagem-instalacao-wrapper {
+    padding: 0.5rem;
+    /* Menor padding para a imagem ter mais espaço */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.observacao {
+    margin-top: 30px; /* Cria um espaço de 30 pixels acima do texto */
+    font-size: 14px; /* Diminui a fonte para que a observação seja sutil */
+    color: #666; /* Torna a cor do texto mais suave, para não competir com os títulos */
+}
+
+/* --- Seções de Observação e Validade --- */
+.observacao-financiamento,
+.validade-proposta {
+    background-color: var(--cor-cartao-fundo);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px var(--cor-sombra);
+    /* Adiciona sombra para dar profundidade */
+    border-left: 5px solid;
+    /* Linha lateral colorida */
+}
+
+/* Cor da borda para cada seção */
+.observacao-financiamento {
+    border-color: var(--cor-primaria);
+}
+
+.validade-proposta {
+    border-color: var(--cor-secundaria);
+}
+
+/* Estilo para a etiqueta que contém o ícone e o texto */
+.etiqueta-info {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    color: var(--cor-texto-principal);
+    font-weight: 500;
+}
+
+.etiqueta-info i {
+    font-size: 1.4rem;
+    margin-right: 0.8rem;
+}
+
+/* Cores dos ícones */
+.observacao-financiamento {
+border-color: var(--cor-primaria);
+    margin-top: 2rem; /* Adiciona mais espaço no topo */
+}
+
+.validade-proposta .icone-info-proposta {
+    color: var(--cor-secundaria);
+}
+
+/* Estilos de responsividade */
+@media (max-width: 768px) {
+    .observacao-financiamento,
+    .validade-proposta {
+        padding: 1rem 1.5rem;
+    }
+}
+
+/* proposta.css */
+
+/* ... outros estilos ... */
+
+/* --- Estilos para o Loading Overlay (Splash de Transição) --- */
+#loading-overlay {
+    /* Mantenha os estilos existentes */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 250, 250, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    /* AQUI ESTÁ A MUDANÇA: Torne o overlay visível por padrão */
+    opacity: 1;
+    visibility: visible;
+}
+
+#loading-overlay.oculto {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* NOVO ESTILO: Oculta o conteúdo principal por padrão */
+.main-oculto {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* NOVO ESTILO: Exibe o conteúdo principal com uma transição suave */
+.main-visivel {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Animação do spinner de carregamento */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid var(--cor-secundaria);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- Responsividade do Cabeçalho (SOLUÇÃO FINAL) --- */
+
+@media (max-width: 768px) {
+    /* Faz os itens do cabeçalho se empilharem verticalmente */
     header {
         flex-direction: column;
-        align-items: center;
+        align-items: center; /* Centraliza todos os itens */
         text-align: center;
         padding: 1rem;
     }
 
+    /* Ajusta a largura e margem dos botões */
     .seletor-tipo-proposta {
-        width: 100%;
+        width: 100%; /* Ocupa a largura total para melhor espaçamento */
         margin-top: 1rem;
         margin-bottom: 1rem;
-        justify-content: center;
+        justify-content: center; /* Centraliza os botões */
     }
 
+    /* Garante que os botões tenham um espaço mínimo */
+    .btn-proposta {
+        min-width: 120px;
+    }
+
+    /* Remove o resumo na visualização mobile para não sobrecarregar a tela */
+    #secao-resumo {
+        display: none;
+    }
+
+    /* Garante que a logo tenha seu próprio espaço */
     .logo-container {
-        margin-right: 0;
-    }
-
-    main {
-        padding: 1rem;
-    }
-
-    .secao-info {
-        padding: 1.5rem;
-    }
-
-    h2.titulo-secao {
-        font-size: 1.8em;
-    }
-
-    .valor-resumo {
         width: 100%;
-        padding: 1.5rem;
-    }
-
-    .footer-contact-container {
-        flex-direction: column;
-        gap: 0.5rem;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.5rem;
     }
 }

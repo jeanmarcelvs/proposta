@@ -1,125 +1,809 @@
-/* style.css */
+/*
+    style.css
+    Design arrojado e sofisticado baseado em templates de tecnologia
+*/
 
-/* Importação da fonte global e variáveis de cores */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+/* ---------------------------------- */
+/* --- Variáveis e Configurações Globais --- */
+/* ---------------------------------- */
 
-/* Estilos de corpo globais */
-body {
-    font-family: 'Poppins', sans-serif;
+:root {
+    --cor-fundo-premium: #1A1A1A;
+    --cor-fundo-acessivel: #E9ECEF;
+    --cor-primaria-premium: #007BFF;
+    --cor-primaria-acessivel: #28A745;
+    --cor-texto-premium: #F8F9FA;
+    --cor-texto-acessivel: #212529;
+    --cor-card: #2B2D30;
+    --cor-card-claro: #FFFFFF;
+    --cor-borda-card: #444;
+    --cor-sombra-card: rgba(0, 0, 0, 0.4);
+    --cor-borda-input: #444;
+    --cor-placeholder-input: #6C757D;
+    --cor-selecao-botao: #0056b3;
+    --cor-feedback-sucesso: #28a745;
+    --cor-feedback-erro: #dc3545;
+    --cor-carregamento: #6C757D;
+    --cor-link-hover: #0056b3;
+
+    --font-principal: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --transicao-suave: 0.3s ease-in-out;
+}
+
+/* ---------------------------------- */
+/* --- Configurações Básicas do Body e HTML --- */
+/* ---------------------------------- */
+
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-    background-color: var(--cor-fundo);
-    color: var(--cor-texto-principal);
+    font-family: var(--font-principal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transicao-suave), color var(--transicao-suave);
 }
 
-/* --- Variáveis de Cores (Temas) --- */
-
-/* Tema Padrão (Premium) */
-:root {
-    --cor-primaria: #0077b6; /* Azul Marinho Profundo */
-    --cor-primaria-hover: #0088cc; /* Para o hover do botão */
-    --cor-secundaria: #00b4d8; /* Azul Turquesa Claro */
-    --cor-fundo: #023047; /* Azul Petróleo Escuro */
-    --cor-cartao-fundo: #024869; /* Azul Mais Claro para Cards */
-    --cor-texto-principal: #f4f7f6; /* Branco Suave */
-    --cor-texto-secundario: #a8dadc; /* Azul Claro para detalhes */
-    --cor-borda: rgba(255, 255, 255, 0.1);
-    --cor-sombra: rgba(0, 0, 0, 0.4);
-    --cor-destaque-positivo: #86e5ad;
-    --cor-destaque-negativo: #dc3545;
-    --cor-header-fundo: rgba(2, 48, 71, 0.9);
+/* Temas de cores */
+body.theme-premium {
+    background-color: var(--cor-fundo-premium);
+    color: var(--cor-texto-premium);
 }
 
-/* Paleta para o Tema +Acessível (ativado via classe no body) */
 body.theme-acessivel {
-    --cor-fundo: #F4F7F9;
-    --cor-header-fundo: rgba(244, 247, 249, 0.8);
-    --cor-texto-principal: #333333;
-    --cor-texto-secundario: #666666;
-    --cor-primaria: #2C3E50;
-    --cor-secundaria: #466380;
-    --cor-destaque-negativo: #EF233C;
-    --cor-cartao-fundo: #FFFFFF;
-    --cor-borda: rgba(220, 220, 220, 1);
-    --cor-sombra: rgba(0, 0, 0, 0.1);
-    --cor-destaque-positivo: #86e5ad; /* Mantido para consistência */
+    background-color: var(--cor-fundo-acessivel);
+    color: var(--cor-texto-acessivel);
 }
 
-/* --- Estilos Gerais --- */
+/* ---------------------------------- */
+/* --- Seção de Splash Screen (index.html) --- */
+/* ---------------------------------- */
 
-/* Esconde elementos visualmente */
-.oculto {
-    display: none !important;
+.tela-splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cor-fundo-premium);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity var(--transicao-suave);
 }
 
-.main-oculto {
+.tela-splash.oculto {
     opacity: 0;
-    visibility: hidden;
+    pointer-events: none;
 }
 
-.main-visivel {
+.logo-splash {
+    width: 250px;
+    animation: fade-in-up 0.8s ease-out;
+}
+
+/* ---------------------------------- */
+/* --- Container Principal e Layout --- */
+/* ---------------------------------- */
+
+.container, main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+main.main-oculto {
+    opacity: 0;
+    pointer-events: none;
+}
+
+main.main-visivel {
     opacity: 1;
-    visibility: visible;
+    transition: opacity 1s ease-in;
 }
 
-/* Animação de carregamento */
+.logo {
+    width: 200px;
+    margin-bottom: 2rem;
+}
+
+h1, .titulo-secao {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+h1::after, .titulo-secao::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 0.5rem auto 0;
+    background-color: var(--cor-primaria-premium);
+    border-radius: 5px;
+    transition: background-color var(--transicao-suave);
+}
+
+/* Ajuste para o tema claro */
+body.theme-acessivel h1::after, body.theme-acessivel .titulo-secao::after {
+    background-color: var(--cor-primaria-acessivel);
+}
+
+/* ---------------------------------- */
+/* --- Formulário de Consulta (index.html) --- */
+/* ---------------------------------- */
+
+#form-consulta {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.input-grupo {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cor-borda-input);
+    border-radius: 8px;
+    background-color: transparent;
+    color: inherit;
+    font-size: 1rem;
+    transition: border-color var(--transicao-suave), box-shadow var(--transicao-suave);
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--cor-primaria-premium);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+input::placeholder {
+    color: var(--cor-placeholder-input);
+}
+
+/* Botão de Consulta */
+#btn-consultar {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--cor-primaria-premium);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transicao-suave);
+    position: relative;
+    overflow: hidden;
+}
+
+#btn-consultar:hover:not(:disabled) {
+    background-color: var(--cor-selecao-botao);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+#btn-consultar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Ícones de feedback do botão */
+.icone-carregando, .icone-sucesso, .icone-erro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity var(--transicao-suave);
+}
+
+.btn-texto {
+    transition: opacity var(--transicao-suave);
+}
+
+#btn-consultar.loading .btn-texto {
+    opacity: 0;
+}
+
+#btn-consultar.loading .icone-carregando {
+    opacity: 1;
+}
+
+#btn-consultar.success .btn-texto {
+    opacity: 0;
+}
+
+#btn-consultar.success .icone-sucesso {
+    opacity: 1;
+}
+
+#btn-consultar.error .btn-texto {
+    opacity: 0;
+}
+
+#btn-consultar.error .icone-erro {
+    opacity: 1;
+}
+
+/* Mensagens de feedback */
+.mensagem-feedback {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--transicao-suave), transform var(--transicao-suave);
+}
+
+.mensagem-feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.success-msg {
+    background-color: var(--cor-feedback-sucesso);
+    color: white;
+}
+
+.error-msg {
+    background-color: var(--cor-feedback-erro);
+    color: white;
+}
+
+/* ---------------------------------- */
+/* --- Loading Overlay (proposta.html) --- */
+/* ---------------------------------- */
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--cor-fundo-premium);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity var(--transicao-suave);
+}
+
+#loading-overlay.oculto {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .spinner {
     width: 50px;
     height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.2);
-    border-top: 5px solid var(--cor-secundaria);
+    border: 4px solid var(--cor-carregamento);
+    border-top: 4px solid var(--cor-primaria-premium);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-/* Botões Padrão */
-.btn {
-    padding: 12px 24px;
-    background-color: var(--cor-primaria);
-    color: var(--cor-texto-principal);
+/* ---------------------------------- */
+/* --- Seções da Proposta (proposta.html) --- */
+/* ---------------------------------- */
+
+header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.seletor-tipo-proposta {
+    display: flex;
+    justify-content: center;
+    background-color: var(--cor-card);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 8px;
+    margin-top: 1.5rem;
+    transition: background-color var(--transicao-suave);
+}
+
+body.theme-acessivel .seletor-tipo-proposta {
+    background-color: var(--cor-card-claro);
+    border: 1px solid #ccc;
+}
+
+.btn-proposta {
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
+    background-color: transparent;
+    color: var(--cor-texto-premium);
     font-size: 1rem;
     font-weight: 600;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    transition: all var(--transicao-suave);
 }
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+body.theme-acessivel .btn-proposta {
+    color: var(--cor-texto-acessivel);
 }
 
-/* Mensagem de Feedback */
-#mensagem-feedback {
-    margin-top: 1.5rem;
-    padding: 10px;
-    border-radius: 6px;
+.btn-proposta.selecionado {
+    background-color: var(--cor-primaria-premium);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+body.theme-acessivel .btn-proposta.selecionado {
+    background-color: var(--cor-primaria-acessivel);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Seção Resumo e Cliente */
+#secao-resumo {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.valor-resumo {
+    display: none; /* Escondido por padrão, usado para a lógica no JS */
+}
+
+.texto-valor-resumo {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--cor-primaria-premium);
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .texto-valor-resumo {
+    color: var(--cor-primaria-acessivel);
+}
+
+#secao-cliente {
+    margin-top: 1rem;
+}
+
+.nome-cliente {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.local-proposta {
+    font-size: 0.9rem;
+    color: #ADB5BD;
+}
+
+/* Seções de cards */
+.secao-principal {
+    width: 100%;
+    margin-bottom: 3rem;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.card-detalhe {
+    background-color: var(--cor-card);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 25px var(--cor-sombra-card);
+    transition: transform var(--transicao-suave), box-shadow var(--transicao-suave);
+}
+
+body.theme-acessivel .card-detalhe {
+    background-color: var(--cor-card-claro);
+    color: var(--cor-texto-acessivel);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-detalhe:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px var(--cor-sombra-card);
+}
+
+.icone-card {
+    font-size: 2.5rem;
+    color: var(--cor-primaria-premium);
+    margin-bottom: 1rem;
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .icone-card {
+    color: var(--cor-primaria-acessivel);
+}
+
+.valor-card {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
+}
+
+.unidade-card {
+    font-size: 1rem;
     font-weight: 500;
-    font-size: 0.9em;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-#mensagem-feedback.show {
-    opacity: 1;
-    transform: translateY(0);
+.legenda-card {
+    font-size: 0.9rem;
+    color: #ADB5BD;
+    margin-top: 0.5rem;
 }
 
-#mensagem-feedback.success-msg {
-    background-color: var(--cor-destaque-positivo);
+body.theme-acessivel .legenda-card {
+    color: #6C757D;
+}
+
+/* Seção de Equipamentos e Instalação */
+.conteudo-equipamentos, .conteudo-instalacao {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .conteudo-equipamentos, .conteudo-instalacao {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.imagem-equipamentos, .imagem-instalacao {
+    text-align: center;
+}
+
+.imagem-equipamentos img, .imagem-instalacao img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--cor-sombra-card);
+}
+
+body.theme-acessivel .imagem-equipamentos img, body.theme-acessivel .imagem-instalacao img {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.lista-equipamentos {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-left: 0;
+}
+
+.item-equipamento {
+    background-color: var(--cor-card);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-acessivel .item-equipamento {
+    background-color: var(--cor-card-claro);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.quantidade-equipamento {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--cor-primaria-premium);
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .quantidade-equipamento {
+    color: var(--cor-primaria-acessivel);
+}
+
+.descricao-equipamento {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.detalhes-instalacao {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.item-detalhe {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.icone-detalhe {
+    font-size: 1.5rem;
+    color: var(--cor-primaria-premium);
+    min-width: 24px;
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .icone-detalhe {
+    color: var(--cor-primaria-acessivel);
+}
+
+.texto-detalhe {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ---------------------------------- */
+/* --- Seção de Valores e Financiamento --- */
+/* ---------------------------------- */
+
+.valores-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.card-valores {
+    background-color: var(--cor-card);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-acessivel .card-valores {
+    background-color: var(--cor-card-claro);
+    color: var(--cor-texto-acessivel);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-total {
+    grid-column: 1 / -1;
+    background-color: var(--cor-primaria-premium);
     color: white;
+    background: linear-gradient(135deg, var(--cor-primaria-premium), #004d99);
 }
 
-#mensagem-feedback.error-msg {
-    background-color: var(--cor-destaque-negativo);
-    color: white;
+body.theme-acessivel .card-total {
+    background: linear-gradient(135deg, var(--cor-primaria-acessivel), #1a7e37);
+}
+
+.legenda-valores {
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+body.theme-acessivel .card-valores .legenda-valores {
+    color: #6C757D;
+}
+
+.card-total .legenda-valores {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.etiqueta-proposta-dinamica {
+    font-weight: 700;
+}
+
+.valor-total-proposta {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.valor-parcela-proposta {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--cor-primaria-premium);
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .valor-parcela-proposta {
+    color: var(--cor-primaria-acessivel);
+}
+
+.card-investimento {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 1.5rem;
+    background-color: var(--cor-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-acessivel .card-investimento {
+    background-color: var(--cor-card-claro);
+    color: var(--cor-texto-acessivel);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.legenda-investimento {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.valor-investimento {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cor-primaria-premium);
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .valor-investimento {
+    color: var(--cor-primaria-acessivel);
+}
+
+.secao-observacao-financiamento {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--cor-card);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-acessivel .secao-observacao-financiamento {
+    background-color: var(--cor-card-claro);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-observacao {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 0;
+}
+
+.texto-observacao {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #ADB5BD;
+}
+
+body.theme-acessivel .texto-observacao {
+    color: #6C757D;
+}
+
+/* Seção de Validade */
+.validade-proposta {
+    text-align: center;
+}
+
+.etiqueta-info {
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.icone-info-proposta {
+    color: var(--cor-primaria-premium);
+}
+
+body.theme-acessivel .icone-info-proposta {
+    color: var(--cor-primaria-acessivel);
+}
+
+/* Botão de Voltar */
+.secao-voltar-proposta {
+    width: 100%;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-voltar-proposta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--cor-borda-input);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 500;
+    transition: all var(--transicao-suave);
+}
+
+.btn-voltar-proposta:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--cor-primaria-premium);
+    transform: translateY(-2px);
+}
+
+body.theme-acessivel .btn-voltar-proposta:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: var(--cor-primaria-acessivel);
+}
+
+/* Rodapé */
+footer {
+    width: 100%;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid var(--cor-borda-input);
+    text-align: center;
+}
+
+body.theme-acessivel footer {
+    border-top-color: #ccc;
+}
+
+.footer-contact-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.footer-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #ADB5BD;
+    transition: color var(--transicao-suave);
+}
+
+body.theme-acessivel .footer-contact-item {
+    color: #6C757D;
+}
+
+.footer-contact-item:hover {
+    color: var(--cor-primaria-premium);
+}
+
+body.theme-acessivel .footer-contact-item:hover {
+    color: var(--cor-primaria-acessivel);
+}
+
+/* ---------------------------------- */
+/* --- Animações e Efeitos de Transição --- */
+/* ---------------------------------- */
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.secao-principal, header, footer {
+    animation: fade-in-up 0.8s ease-out;
 }
