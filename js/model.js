@@ -154,7 +154,8 @@ export async function buscarETratarProposta(numeroProjeto) {
     let idPropostaAcessivel = null;
     // CORRIGIDO: Ajuste na lógica para encontrar o ID da proposta acessível, acessando diretamente o array de variáveis
     if (dadosBrutos.sucesso && dadosBrutos.dados && Array.isArray(dadosBrutos.dados.variables)) {
-        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.variables, 'proposta-acessivel');
+        // Agora busca pelas chaves corretas que estão no JSON
+        idPropostaAcessivel = buscarValorVariavel(dadosBrutos.dados.variables, 'vc_projeto_acessivel') || buscarValorVariavel(dadosBrutos.dados.variables, 'capo_projeto_acessivel');
     }
 
     if (idPropostaAcessivel) {
@@ -189,9 +190,16 @@ export async function atualizarStatusVisualizacao(dados) {
         }
 
         const accessToken = authResponse.accessToken;
+
+        // Formata a data e hora para a mensagem da API
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
+
+        // Monta a mensagem para o campo 'description'
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
+
+        // O endpoint correto é o do projeto, e o método é PATCH
+        // CORRIGIDO: Agora usa dados.propostaId
         const endpoint = `/projects/${dados.propostaId}`;
         const body = {
             description: novaDescricao
