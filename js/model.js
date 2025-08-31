@@ -152,3 +152,47 @@ export async function buscarETratarProposta(numeroProjeto) {
         };
     }
 }
+
+/**
+ * Função para atualizar o status de visualização na API.
+ * @param {object} dados Os dados a serem enviados (ex: numeroProjeto e tipo de visualização).
+ */
+export async function atualizarStatusVisualizacao(dados) {
+    try {
+        console.log("Modelo: Recebendo dados para atualização.");
+        const authResponse = await authenticate(apiToken);
+        if (!authResponse.sucesso) {
+            console.error("Modelo: Falha na autenticação para atualizar status.", authResponse.mensagem);
+            return authResponse;
+        }
+
+        const accessToken = authResponse.accessToken;
+
+        // Formata a data e hora para a mensagem da API
+        const agora = new Date();
+        const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
+
+        // Monta a mensagem para o campo 'description'
+        const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
+
+        // O endpoint correto é o do projeto, e o método é PATCH
+        const endpoint = `/projects/${dados.propostaId}`;
+        const body = {
+            description: novaDescricao
+        };
+
+        const respostaApi = await patch(endpoint, body, accessToken);
+
+        if (respostaApi.sucesso) {
+            console.log("Modelo: Status de visualização atualizado com sucesso!");
+        } else {
+            console.error("Modelo: Falha ao atualizar status de visualização.");
+        }
+    } catch (erro) {
+        console.error("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
+        return {
+            sucesso: false,
+            mensagem: 'Ocorreu um erro inesperado ao atualizar o status.'
+        };
+    }
+}
