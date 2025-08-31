@@ -992,3 +992,40 @@ border-color: var(--cor-primaria);
     }
 }
 
+/* --- Responsividade do Cabeçalho (SOLUÇÃO FINAL) --- */
+
+@media (max-width: 768px) {
+    /* Faz os itens do cabeçalho se empilharem verticalmente */
+    header {
+        flex-direction: column;
+        align-items: center; /* Centraliza todos os itens */
+        text-align: center;
+        padding: 1rem;
+    }
+
+    /* Ajusta a largura e margem dos botões */
+    .seletor-tipo-proposta {
+        width: 100%; /* Ocupa a largura total para melhor espaçamento */
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        justify-content: center; /* Centraliza os botões */
+    }
+
+    /* Garante que os botões tenham um espaço mínimo */
+    .btn-proposta {
+        min-width: 120px;
+    }
+
+    /* Remove o resumo na visualização mobile para não sobrecarregar a tela */
+    #secao-resumo {
+        display: none;
+    }
+
+    /* Garante que a logo tenha seu próprio espaço */
+    .logo-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+}
