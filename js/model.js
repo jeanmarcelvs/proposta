@@ -153,14 +153,3 @@ export async function buscarETratarProposta(numeroProjeto) {
     }
 }
 
-/**
- * CORREÇÃO: Função para ocultar a tela de splash
- * No seu código original essa função estava em indexController.js, mas
- * como é um comportamento global, pode ser movida para cá.
- */
-function esconderTelaSplash() {
-  const telaSplash = document.getElementById('tela-splash');
-  if (telaSplash) {
-    telaSplash.classList.add('oculto');
-  }
-}
