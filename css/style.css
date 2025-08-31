@@ -5,23 +5,23 @@
 
 /* --- Variáveis de Cores (Temas) --- */
 
-/* Paleta de Cores Premium (Azuis Suaves e Elegantes) */
+/* Paleta de Cores Premium (Carvão e Cobre Elegante) */
 :root {
-    --cor-fundo: #f0f4f7;
-    --cor-cartao-fundo: #e9eff4;
-    --cor-header-fundo: rgba(233, 239, 244, 0.9);
-    --cor-header-botoes-fundo: #dbe4ee;
-    --cor-header-botoes-borda: rgba(108, 141, 183, 0.2);
+    --cor-fundo: #282c34; /* Cinza Carvão Escuro */
+    --cor-cartao-fundo: #3a4049; /* Cinza do Fundo do Cartão */
+    --cor-header-fundo: rgba(40, 44, 52, 0.9);
+    --cor-header-botoes-fundo: #4f555c;
+    --cor-header-botoes-borda: rgba(255, 255, 255, 0.1);
     
-    --cor-primaria: #6c8db7; /* Azul elegante e fosco */
-    --cor-primaria-hover: #5c7fa8;
-    --cor-secundaria: #9fbddb;
+    --cor-primaria: #b46b3f; /* Tom de Cobre Rico */
+    --cor-primaria-hover: #c47c4e;
+    --cor-secundaria: #d4a37f;
     
-    --cor-texto-principal: #333d45;
-    --cor-texto-secundario: #6b7782;
+    --cor-texto-principal: #e0e2e4; /* Cinza Quase Branco */
+    --cor-texto-secundario: #a1aab6; /* Cinza Médio para detalhes */
     
-    --cor-borda: rgba(108, 141, 183, 0.2);
-    --cor-sombra: rgba(108, 141, 183, 0.1);
+    --cor-borda: rgba(255, 255, 255, 0.1);
+    --cor-sombra: rgba(0, 0, 0, 0.4);
     
     --cor-destaque-positivo: #4caf50;
     --cor-destaque-negativo: #dc3545;
@@ -65,16 +65,6 @@ body {
     transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
 }
 
-/* Efeito de Fundo Arrojado para index.html */
-body.index-page {
-    background: radial-gradient(circle, #f0f4f7 0%, #FFFFFF 100%);
-}
-
-/* Estilos de transição para tema */
-html {
-    transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
-}
-
 .card {
     background-color: var(--cor-cartao-fundo);
     border-radius: 12px;
@@ -84,7 +74,7 @@ html {
     transition: all var(--transicao-padrao);
 }
 
-/* --- Estilos para a página de consulta (index.html) --- */
+/* Estilos para a página de consulta (index.html) */
 .container {
     display: flex;
     flex-direction: column;
@@ -142,16 +132,15 @@ h1 {
 .input-grupo input:focus {
     outline: none;
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 0 3px rgba(108, 141, 183, 0.2);
+    box-shadow: 0 0 0 3px rgba(180, 107, 63, 0.2);
 }
 
-/* --- Estilos do botão de consulta --- */
 #btn-consultar {
     position: relative;
     width: 100%;
     padding: 14px;
     background-color: var(--cor-primaria);
-    color: var(--cor-fundo); /* Usando o fundo para ter o contraste inverso */
+    color: var(--cor-texto-principal);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -167,17 +156,7 @@ h1 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-#btn-consultar .btn-texto {
-    transition: opacity 0.3s ease;
-}
-
-#btn-consultar.carregando .btn-texto,
-#btn-consultar.sucesso .btn-texto,
-#btn-consultar.erro .btn-texto {
-    opacity: 0;
-}
-
-/* Estilos e animações dos ícones */
+/* Estilos de ícones do botão de consulta... */
 .icone-carregando, .icone-sucesso, .icone-erro {
     position: absolute;
     top: 50%;
@@ -206,7 +185,6 @@ h1 {
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Estilos para a mensagem de feedback */
 #mensagem-feedback {
     margin-top: 1.5rem;
     padding: 10px;
@@ -233,11 +211,6 @@ h1 {
     background-color: rgba(220, 53, 69, 0.2); 
     color: var(--cor-destaque-negativo);
     border: 1px solid var(--cor-destaque-negativo);
-}
-
-/* Estilos adicionais para o novo tema 'acessivel' */
-.logo-acessivel {
-    filter: none; /* A nova paleta não precisa de inversão */
 }
 
 /* --- Estilos para a página de proposta (proposta.html) --- */
@@ -281,7 +254,7 @@ header {
 }
 
 .btn-proposta:hover:not(.selecionado) {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 0.05);
     transform: translateY(-1px);
 }
 
@@ -292,47 +265,51 @@ header {
     transform: none;
 }
 
-/* CORREÇÃO: Nova estilização para a seção de resumo */
 #secao-resumo {
     display: flex;
-    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
     margin-bottom: 2rem;
-    gap: 1.5rem; /* Espaçamento entre os elementos */
-}
-
-.valor-resumo {
-    background-color: var(--cor-cartao-fundo);
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 2px 8px var(--cor-sombra);
-    flex-grow: 1; /* Permite que ocupe o espaço disponível */
-    min-width: 150px; /* Garante que os painéis não fiquem muito pequenos */
-}
-
-.texto-valor-resumo {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--cor-primaria);
+    gap: 1.5rem;
 }
 
 #secao-cliente {
     flex-grow: 2;
-    text-align: right;
+    text-align: left;
 }
 
 .nome-cliente {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: var(--cor-primaria);
     font-weight: 600;
+    margin-bottom: 0.5rem;
 }
 
-.local-proposta {
-    color: var(--cor-texto-secundario);
-    font-size: 0.9rem;
+/* NOVO: Estilo para o design arrojado da localização e data */
+.localizacao-data {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--cor-cartao-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px var(--cor-sombra);
+    align-items: center;
+}
+
+.local-proposta, .data-proposta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--cor-texto-principal);
+}
+
+.icone-local, .icone-data {
+    color: var(--cor-primaria);
 }
 
 .secao-principal {
@@ -393,7 +370,9 @@ header {
 
 .unidade-card {
     font-size: 0.9rem;
+    font-weight: 600;
     color: var(--cor-texto-secundario);
+    margin-top: -0.2rem;
 }
 
 .legenda-card {
@@ -428,28 +407,60 @@ header {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* NOVO: Estilos para o novo layout de equipamento */
+.item-equipamento {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background-color: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    box-shadow: 0 2px 8px var(--cor-sombra);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item-equipamento:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px var(--cor-sombra);
+}
+
+.icone-equipamento {
+    font-size: 2rem;
+    color: var(--cor-primaria);
+    flex-shrink: 0;
+}
+
+.detalhes-item {
+    display: flex;
+    align-items: center;
     gap: 1rem;
 }
 
-.item-equipamento {
-    background-color: var(--cor-fundo);
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--cor-borda);
+.quantidade-equipamento {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    line-height: 1;
 }
 
-.quantidade-equipamento {
-    font-size: 1.2rem;
+.info-equipamento {
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-equipamento {
     font-weight: 600;
-    color: var(--cor-primaria);
-    margin-right: 1rem;
+    color: var(--cor-texto-principal);
+    margin: 0;
 }
 
 .descricao-equipamento {
-    font-weight: 500;
-    color: var(--cor-texto-principal);
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
 }
 
 /* Seção de Instalação */
@@ -476,7 +487,6 @@ header {
     gap: 1rem;
 }
 
-/* NOVO: Estilização para os novos itens de instalação */
 .info-detalhe-item {
     display: flex;
     align-items: center;
@@ -529,13 +539,13 @@ header {
 .card-total {
     grid-column: 1 / -1;
     background-color: var(--cor-primaria);
-    color: var(--cor-cartao-fundo);
+    color: var(--cor-texto-principal);
 }
 
 .card-total .legenda-valores,
 .card-total .valor-total-proposta,
 .card-total .etiqueta-proposta-dinamica {
-    color: var(--cor-cartao-fundo);
+    color: var(--cor-texto-principal);
 }
 
 .legenda-valores {
@@ -642,7 +652,7 @@ header {
 }
 
 .btn-voltar-proposta:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(255, 255, 255, 0.05);
     transform: translateY(-2px);
 }
 
@@ -683,10 +693,11 @@ footer {
         text-align: center;
         margin-top: 1rem;
     }
-
-    .valor-resumo {
-        margin-right: 0;
-        margin-bottom: 1rem;
+    
+    .localizacao-data {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
     }
 
     .secao-principal, .secao-info {
@@ -701,5 +712,14 @@ footer {
 
     .imagem-equipamentos, .imagem-instalacao {
         text-align: center;
+    }
+    
+    .detalhes-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .info-equipamento {
+        align-items: flex-start;
     }
 }

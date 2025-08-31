@@ -28,9 +28,16 @@
         <section id="secao-resumo">
             <div id="secao-cliente">
                 <h2 id="nome-cliente" class="nome-cliente"></h2>
-                <p class="local-proposta">
-                    <span id="local-cliente"></span> | <span id="data-proposta"></span>
-                </p>
+                <div class="localizacao-data">
+                    <p class="local-proposta">
+                        <i class="fas fa-map-marker-alt icone-local"></i>
+                        <span id="local-cliente"></span>
+                    </p>
+                    <p class="data-proposta">
+                        <i class="fas fa-calendar-alt icone-data"></i>
+                        <span id="data-proposta"></span>
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -77,12 +84,28 @@
                 </div>
                 <div class="lista-equipamentos">
                     <div class="item-equipamento">
-                        <span class="quantidade-equipamento" id="quantidade-inversor"></span>
-                        <p class="descricao-equipamento">Inversor <span id="descricao-inversor"></span></p>
+                        <div class="icone-equipamento">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                        </div>
+                        <div class="detalhes-item">
+                            <span class="quantidade-equipamento" id="quantidade-inversor"></span>
+                            <div class="info-equipamento">
+                                <p class="titulo-equipamento">Inversor</p>
+                                <span class="descricao-equipamento" id="descricao-inversor"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="item-equipamento">
-                        <span class="quantidade-equipamento" id="quantidade-painel"></span>
-                        <p class="descricao-equipamento">Módulo Solar <span id="descricao-painel"></span></p>
+                        <div class="icone-equipamento">
+                            <i class="fa-solid fa-solar-panel"></i>
+                        </div>
+                        <div class="detalhes-item">
+                            <span class="quantidade-equipamento" id="quantidade-painel"></span>
+                            <div class="info-equipamento">
+                                <p class="titulo-equipamento">Módulo Solar</p>
+                                <span class="descricao-equipamento" id="descricao-painel"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
