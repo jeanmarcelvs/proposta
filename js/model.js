@@ -145,13 +145,6 @@ function formatarData(dataISO) {
  * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
  * @returns {object} Um objeto com os dados formatados para a página.
  */
-/**
- * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
- * Esta é a função principal de transformação.
- * @param {object} dadosApi O objeto de dados brutos recebido da API.
- * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
- * @returns {object} Um objeto com os dados formatados para a página.
- */
 function tratarDadosParaProposta(dadosApi, tipoProposta) {
     if (!dadosApi || !dadosApi.dados) {
         console.error("Modelo: Dados da API não encontrados ou incompletos.");
