@@ -216,13 +216,16 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
             instalacaoPaineis: 'Instalação no telhado (inclinação e orientação ideal)' // Valor estático
         },
         equipamentos: {
+            // CORRIGIDO: Adiciona a URL da imagem
+            imagem: caminhosImagens.equipamentos[tipoProposta], 
             quantidadePainel: painel?.qnt || 0,
             descricaoPainel: painel?.item || 'Não informado',
             quantidadeInversor: inversor?.qnt || 0,
             descricaoInversor: inversor?.item || 'Não informado'
         },
         instalacao: {
-            // AQUI ESTÁ A LÓGICA DE SELEÇÃO CORRIGIDA
+            // CORRIGIDO: Adiciona a URL da imagem
+            imagem: caminhosImagens.instalacao[tipoProposta],
             detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
         },
         valores: {

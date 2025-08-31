@@ -27,34 +27,24 @@ function esconderLoadingOverlay() {
     }
 }
 
-// Função para atualizar as imagens dos equipamentos com base no tipo de proposta
-function atualizarImagemEquipamentos(propostas, tipo) {
+// CORRIGIDO: A função agora recebe a proposta completa e usa o caminho da imagem dela
+function atualizarImagemEquipamentos(proposta) {
     const imagemMarca = document.getElementById('imagem-marca');
     if (!imagemMarca) {
         console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
         return;
     }
-    // CORRIGIDO: Usa as novas propriedades de imagem definidas no model.js
-    if (tipo === 'premium') {
-        imagemMarca.src = propostas.premium?.equipamentos?.imagemPremium || '';
-    } else {
-        imagemMarca.src = propostas.acessivel?.equipamentos?.imagemAcessivel || '';
-    }
+    imagemMarca.src = proposta.equipamentos?.imagem || '';
 }
 
-// Função para atualizar a imagem do padrão de instalação
-function atualizarImagemInstalacao(propostas, tipo) {
+// CORRIGIDO: A função agora recebe a proposta completa e usa o caminho da imagem dela
+function atualizarImagemInstalacao(proposta) {
     const imagemInstalacao = document.getElementById('imagem-instalacao');
     if (!imagemInstalacao) {
         console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
         return;
     }
-    // CORRIGIDO: Usa as novas propriedades de imagem definidas no model.js
-    if (tipo === 'premium') {
-        imagemInstalacao.src = propostas.premium?.instalacao?.imagemInstalacaoPremium || '';
-    } else {
-        imagemInstalacao.src = propostas.acessivel?.instalacao?.imagemInstalacaoAcessivel || '';
-    }
+    imagemInstalacao.src = proposta.instalacao?.imagem || '';
 }
 
 // Função para atualizar as etiquetas das seções dinâmicas,
@@ -110,13 +100,14 @@ function preencherDadosProposta(dados) {
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
-        if (nomeClienteEl) nomeClienteEl.innerText = dados.cliente?.nome || "Não informado";
+        // CORRIGIDO: Acessa os dados diretamente do objeto `dados`
+        if (nomeClienteEl) nomeClienteEl.innerText = dados.cliente || "Não informado";
 
         const localClienteEl = document.getElementById('local-cliente');
-        if (localClienteEl) localClienteEl.innerText = dados.cliente?.local || "Não informado";
+        if (localClienteEl) localClienteEl.innerText = dados.local || "Não informado";
 
         const dataPropostaEl = document.getElementById('data-proposta');
-        if (dataPropostaEl) dataPropostaEl.innerText = dados.cliente?.dataProposta || "Não informado";
+        if (dataPropostaEl) dataPropostaEl.innerText = dados.dataProposta || "Não informado";
         console.log("DEBUG: Dados do cliente preenchidos com sucesso.");
 
         // 2. Sistema Proposto (Separa valor e unidade)
@@ -198,11 +189,11 @@ function preencherDadosProposta(dados) {
         const validadeEl = document.getElementById('texto-validade');
 
         if (observacaoEl) {
-            observacaoEl.innerText = dados.observacaoFinanciamento || "Não há observações sobre financiamento.";
+            observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         }
 
         if (validadeEl) {
-            validadeEl.innerText = dados.validade?.texto || "Não informada";
+            validadeEl.innerText = dados.validade || "Não informada";
         }
         console.log("DEBUG: Observações e validade preenchidas com sucesso.");
     } catch (error) {
@@ -228,7 +219,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (resposta.sucesso) {
             console.log("DEBUG: Proposta buscada com sucesso. Preenchendo a página...");
-            const propostaData = resposta.proposta;
+            // CORRIGIDO: Acessa a propriedade 'dados' do objeto de retorno
+            const propostaData = resposta.dados; 
             localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
             console.log("DEBUG: Conteúdo de propostaData:", propostaData);
@@ -239,13 +231,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             preencherDadosProposta(propostaData.premium);
 
             console.log("DEBUG: Chamando atualizarImagemEquipamentos...");
-            atualizarImagemEquipamentos(propostaData, 'premium');
+            // CORRIGIDO: Agora a função recebe a proposta completa e usa a URL da imagem
+            atualizarImagemEquipamentos(propostaData.premium);
 
             console.log("DEBUG: Chamando atualizarEtiquetasDinamicas...");
             atualizarEtiquetasDinamicas('premium');
 
             console.log("DEBUG: Chamando atualizarImagemInstalacao...");
-            atualizarImagemInstalacao(propostaData, 'premium');
+            // CORRIGIDO: Agora a função recebe a proposta completa e usa a URL da imagem
+            atualizarImagemInstalacao(propostaData.premium);
 
             console.log("DEBUG: Chamando preencherDetalhesInstalacao...");
             preencherDetalhesInstalacao(propostaData.premium);
@@ -278,9 +272,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (propostas && propostas.premium) {
                 mostrarLoadingOverlay();
                 preencherDadosProposta(propostas.premium);
-                atualizarImagemEquipamentos(propostas, 'premium');
+                // CORRIGIDO: Funções de imagem atualizadas
+                atualizarImagemEquipamentos(propostas.premium);
                 atualizarEtiquetasDinamicas('premium');
-                atualizarImagemInstalacao(propostas, 'premium');
+                atualizarImagemInstalacao(propostas.premium);
                 preencherDetalhesInstalacao(propostas.premium);
                 document.body.classList.add('theme-premium');
                 document.body.classList.remove('theme-acessivel');
@@ -302,9 +297,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (propostas && propostas.acessivel) {
                 mostrarLoadingOverlay();
                 preencherDadosProposta(propostas.acessivel);
-                atualizarImagemEquipamentos(propostas, 'acessivel');
+                // CORRIGIDO: Funções de imagem atualizadas
+                atualizarImagemEquipamentos(propostas.acessivel);
                 atualizarEtiquetasDinamicas('acessivel');
-                atualizarImagemInstalacao(propostas, 'acessivel');
+                atualizarImagemInstalacao(propostas.acessivel);
                 preencherDetalhesInstalacao(propostas.acessivel);
                 // CORRIGIDO: Adiciona e remove as classes de tema corretamente
                 document.body.classList.add('theme-acessivel');
