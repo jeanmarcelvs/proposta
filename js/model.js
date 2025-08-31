@@ -275,7 +275,8 @@ export async function buscarETratarProposta(numeroProjeto) {
     dadosProposta.premium = propostaPremium;
 
     // Tenta encontrar e buscar a proposta acessível
-    const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'id_proposta_acessivel');
+    // CORRIGIDO: Usando a variável correta 'vc_projeto_acessivel'
+    const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
     let propostaAcessivel = null;
 
     if (idPropostaAcessivel) {
