@@ -410,7 +410,9 @@ header {
   gap: 1.5rem;
 }
 
-/* NOVO: Estilos para o novo layout de equipamento */
+/* Seção de Equipamentos - CÓDIGO FINAL OTIMIZADO */
+
+/* Estilo para o card de cada equipamento */
 .item-equipamento {
   display: flex;
   align-items: center;
@@ -424,57 +426,50 @@ header {
 }
 
 .item-equipamento:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px var(--cor-sombra);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px var(--cor-sombra);
 }
 
+/* Estilo para o ícone do equipamento */
 .icone-equipamento {
   font-size: 2rem;
   color: var(--cor-primaria);
   flex-shrink: 0;
 }
 
+/* Container de texto ajustado */
 .detalhes-item {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: row; /* Layout horizontal para alinhamento arrojado */
+  align-items: center; /* Alinha verticalmente no centro */
+  gap: 1rem; /* Espaço entre a quantidade e as informações */
 }
 
-/* NOVO: Estilo para o container de quantidade e unidade */
-.quantidade-e-unidade {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* NOVO: Destaque sutil para a quantidade */
+/* A quantidade agora tem um visual arrojado, como uma etiqueta */
 .quantidade-equipamento {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   font-weight: 700;
   color: var(--cor-primaria);
-  text-shadow: 0 0 5px rgba(180, 107, 63, 0.5); /* Sombra sutil para destaque */
+  line-height: 1;
+  padding: 0 0.5rem;
+  border-right: 2px solid var(--cor-borda); /* Borda para separação visual */
 }
 
-/* NOVO: Estilo para a unidade de potência */
-.watts-unidade {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--cor-texto-secundario);
-}
-
+/* Informações do equipamento (descrição e título) */
 .info-equipamento {
   display: flex;
   flex-direction: column;
 }
 
+/* O título do item (Módulo Solar, Inversor) com destaque */
 .titulo-equipamento {
   font-weight: 600;
   color: var(--cor-texto-principal);
   margin: 0;
+  font-size: 1.1rem; /* Tamanho maior para destaque */
 }
 
+/* A descrição (potência) também tem um visual claro */
 .descricao-equipamento {
   font-size: 0.9rem;
   color: var(--cor-texto-secundario);
