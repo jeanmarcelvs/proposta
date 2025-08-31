@@ -3,9 +3,12 @@
  * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios,
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
+// Importa as funções da API, incluindo a nova 'authenticate' e 'patch'
 import { get, post, authenticate, patch } from './api.js';
 
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
+// Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
+//const apiToken = process.env.API_TOKEN;
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
@@ -106,10 +109,12 @@ async function buscarPropostaPorTipo(numeroProjeto, tipo) {
     }
 
     const accessToken = authResponse.accessToken;
-    // CORRIGIDO: Endpoint para buscar propostas é '.../projects/{id}/proposals'
     const endpoint = `/projects/${numeroProjeto}/proposals`;
     const dadosApi = await get(endpoint, accessToken);
     
+    // NOVO: Linha de depuração para ver a estrutura completa do JSON
+    console.log("DEBUG: Estrutura completa do objeto dadosApi:", JSON.stringify(dadosApi, null, 2));
+
     console.log("Modelo: Resposta bruta da API:", dadosApi);
 
     // CORRIGIDO: Acessa o array de propostas dentro de dados.data e pega o primeiro item.
