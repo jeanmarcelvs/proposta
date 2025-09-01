@@ -100,8 +100,22 @@ function preencherDadosProposta(dados) {
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
-        // CORRIGIDO: Acessa os dados diretamente do objeto `dados`
-        if (nomeClienteEl) nomeClienteEl.innerText = dados.cliente || "Não informado";
+
+        // NOVO: Lógica para pegar apenas os dois primeiros nomes
+        const nomeCompleto = dados.cliente || "Não informado";
+        let nomeCurto = nomeCompleto;
+
+        // Se o nome não for a string padrão "Não informado", processa
+        if (nomeCompleto !== "Não informado") {
+            const palavrasDoNome = nomeCompleto.split(' ');
+            if (palavrasDoNome.length > 2) {
+                nomeCurto = `${palavrasDoNome[0]} ${palavrasDoNome[1]}`;
+            }
+        }
+
+        if (nomeClienteEl) {
+            nomeClienteEl.innerText = nomeCurto;
+        }
 
         const localClienteEl = document.getElementById('local-cliente');
         if (localClienteEl) localClienteEl.innerText = dados.local || "Não informado";
@@ -132,7 +146,27 @@ function preencherDadosProposta(dados) {
         }
 
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
-        if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || "Não informado";
+        const iconeInstalacaoEl = document.getElementById('icone-instalacao'); // Encontra o ícone pelo novo ID
+
+        if (instalacaoPaineisEl && iconeInstalacaoEl) {
+            // **NOVA LÓGICA AQUI**
+            const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
+
+            // Define o texto para o parágrafo
+            instalacaoPaineisEl.innerText = tipoInstalacao;
+
+            // Define a classe do ícone com base no tipo de instalação
+            if (tipoInstalacao.toLowerCase().includes('telhado')) {
+                // Altera apenas a classe do ícone para a casinha
+                iconeInstalacaoEl.className = 'fas fa-house-chimney';
+            } else if (tipoInstalacao.toLowerCase().includes('solo')) {
+                // Altera apenas a classe do ícone para o painel solar
+                iconeInstalacaoEl.className = 'fas fa-solar-panel';
+            } else {
+                // Caso a informação seja desconhecida
+                iconeInstalacaoEl.className = 'fas fa-question-circle';
+            }
+        }
 
         const idealParaEl = document.getElementById('ideal-para');
         if (idealParaEl) {

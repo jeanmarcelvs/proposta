@@ -7,7 +7,7 @@
     <title>Proposta Comercial | GDIS</title>
     <link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
@@ -17,7 +17,7 @@
     <main>
         <header>
             <div class="logo-container">
-                <img src="imagens/logo-gdis.png" alt="Logo da GDIS" class="logo">
+                <img src="imagens/logo-gdis-2.png" alt="Logo da GDIS" class="logo">
             </div>
             <div class="seletor-tipo-proposta">
                 <button id="btn-premium" class="btn-proposta selecionado">Premium</button>
@@ -49,28 +49,32 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="conteudo-card">
-                        <span id="geracao-media" class="valor-card"></span>
-                        <span id="unidade-geracao" class="unidade-card">kWh/mês</span>
+                        <p class="valor-e-unidade">
+                            <span id="geracao-media" class="valor-card"></span>
+                            <span id="unidade-geracao" class="unidade-card">kWh/mês</span>
+                        </p>
                         <p class="legenda-card">Geração média</p>
                     </div>
                 </div>
                 <div class="card-detalhe">
                     <div class="icone-card">
-                        <i class="fas fa-house-chimney"></i>
+                        <i class="fas fa-file-invoice-dollar"></i>
                     </div>
                     <div class="conteudo-card">
-                        <p id="instalacao-paineis" class="texto-card"></p>
-                        <p class="legenda-card">Instalação de Painéis</p>
+                        <p class="valor-e-unidade">
+                            <span class="moeda">R$</span>
+                            <span id="ideal-para" class="valor-card"></span>
+                        </p>
+                        <p class="legenda-card">Ideal para contas de até</p>
                     </div>
                 </div>
                 <div class="card-detalhe">
                     <div class="icone-card">
-                        <i class="fas fa-money-bill-wave"></i>
+                        <i id="icone-instalacao" class="fas fa-house-chimney"></i>
                     </div>
                     <div class="conteudo-card">
-                        <span class="unidade-card">R$</span>
-                        <span id="ideal-para" class="valor-card"></span>
-                        <p class="legenda-card">Ideal para contas de até</p>
+                        <p id="instalacao-paineis" class="valor-card"></p>
+                        <p class="legenda-card">Instalação de Painéis</p>
                     </div>
                 </div>
             </div>
@@ -79,9 +83,9 @@
         <section id="secao-equipamentos" class="secao-principal">
             <h2 class="titulo-secao">Equipamentos</h2>
             <div class="conteudo-equipamentos">
-                
-                    <img id="imagem-marca" src="" alt="Imagem da marca do equipamento">
-                
+
+                <img id="imagem-marca" src="" alt="Imagem da marca do equipamento">
+
                 <div class="lista-equipamentos">
                     <div class="item-equipamento">
                         <div class="detalhes-item">
@@ -120,37 +124,60 @@
             <h2 class="titulo-secao">Valores e Condições</h2>
             <div class="valores-container">
                 <div class="card-valores card-total">
-                    <p class="legenda-valores">Valor total <br>
-                        (Proposta <span class="etiqueta-proposta-dinamica">Premium</span>):</p>
-                    <p class="valor-total-proposta">R$ <span id="valor-total"></span></p>
+                    <p class="legenda-valores">Valor total:</p>
+                    <p class="valor-total-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="valor-total"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 12x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-12"></span></p>
+                    <p class="legenda-valores">Em 12x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-12"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 24x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-24"></span></p>
+                    <p class="legenda-valores">Em 24x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-24"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 36x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-36"></span></p>
+                    <p class="legenda-valores">Em 36x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-36"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 48x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-48"></span></p>
+                    <p class="legenda-valores">Em 48x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-48"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 60x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-60"></span></p>
+                    <p class="legenda-valores">Em 60x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-60"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 72x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-72"></span></p>
+                    <p class="legenda-valores">Em 72x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-72"></span>
+                    </p>
                 </div>
                 <div class="card-valores">
-                    <p class="legenda-valores">Em 84x <span class="etiqueta-proposta-dinamica">Premium</span>:</p>
-                    <p class="valor-parcela-proposta">R$ <span id="parcela-84"></span></p>
+                    <p class="legenda-valores">Em 84x:</p>
+                    <p class="valor-parcela-proposta">
+                        <span class="moeda">R$</span>
+                        <span id="parcela-84"></span>
+                    </p>
                 </div>
                 <div class="card-investimento card-payback">
                     <p class="legenda-investimento">Seu investimento se paga em:</p>

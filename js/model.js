@@ -31,20 +31,18 @@ const caminhosImagens = {
 
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 const detalhesInstalacaoPremium = [
-    { icone: 'fa-shield-alt', texto: 'Sistema de proteção coordenado completo, projetado para garantir a segurança total dos seus equipamentos e da sua residência contra surtos e descargas atmosféricas. Um escudo de proteção para o seu investimento.' },
-    { icone: 'fa-bolt', texto: 'Utilização de componentes e materiais elétricos de padrão superior, com certificação técnica que assegura a máxima integridade e longevidade de toda a sua instalação.' },
-    { icone: 'fa-solar-panel', texto: 'Cabos solares com dupla camada de proteção, resistentes a raios UV e retardantes de chamas, garantindo um desempenho seguro e ininterrupto por décadas.' },
-    { icone: 'fa-plug', texto: 'O ramal de entrada, de responsabilidade da concessionária e geralmente de alumínio, é totalmente substituído por um ramal de cobre, otimizando o fluxo de energia e elevando o nível de segurança da sua propriedade.' },
-    { icone: 'fa-cogs', texto: 'Instalação executada por mão de obra especializada que segue rigorosamente as normas técnicas da ABNT, garantindo o desempenho máximo do seu sistema e eliminando riscos.' }
+    { icone: 'fa-shield-alt', texto: 'Proteção Coordenada Completa CC e CA' },
+    { icone: 'fa-bolt', texto: 'Materiais Elétricos mais Seguros e Duráveis' },
+    { icone: 'fa-plug', texto: 'Cabeamento com Dupla Proteção UV e anti-chama' },
+    { icone: 'fa-screwdriver-wrench', texto: 'Menor necessidade de manutenção' }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-shield-alt', texto: 'O projeto considera as proteções internas já existentes na propriedade e as internas do inversor.' },
-    { icone: 'fa-bolt', texto: 'Conexões elétricas simples.' },
-    { icone: 'fa-solar-panel', texto: 'Utilização de cabos simples.' },
-    { icone: 'fa-plug', texto: 'Ramal de Entrada de responsabilidade da concessionária, geralmente de alumínio, Não fazemos a sua substituição.' },
-    { icone: 'fa-cogs', texto: 'Instalação elétrica simples, sem as otimizações de uma instalação especializada padrão premium.' }
+    { icone: 'fa-shield-alt', texto: 'Proteções internas do inversor e da propriedade do cliente' },
+    { icone: 'fa-bolt', texto: 'Materiais Elétricos Convencionais' },
+    { icone: 'fa-plug', texto: 'Cabeamento convencional' },
+    { icone: 'fa-screwdriver-wrench', texto: 'Recomenda-se manutenção preventiva com maior frequência' }
 ];
 
 /**

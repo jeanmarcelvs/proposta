@@ -1,752 +1,728 @@
-/* style.css */
+/* style.css - Versão Final Refinada */
 
 /* Importação da fonte e variáveis de cores globais */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
 
 /* --- Variáveis de Cores (Temas) --- */
 
-/* Paleta de Cores Premium (Carvão e Cobre Elegante) */
+/* Paleta de Cores Premium (Azul Profundo e Cinza Suave) */
 :root {
-  --cor-fundo: #282c34; /* Cinza Carvão Escuro */
-  --cor-cartao-fundo: #3a4049; /* Cinza do Fundo do Cartão */
-  --cor-header-fundo: rgba(40, 44, 52, 0.9);
-  --cor-header-botoes-fundo: #4f555c;
-  --cor-header-botoes-borda: rgba(255, 255, 255, 0.1);
+  --cor-fundo-principal: #f3f5f8;
+  --cor-fundo-gradiente: linear-gradient(135deg, #f7f8fa 0%, #ebf1f6 100%);
+  --cor-cartao-fundo: #ffffff;
+  --cor-cartao-borda: rgba(0, 0, 0, 0.08);
 
-  --cor-primaria: #b46b3f; /* Tom de Cobre Rico */
-  --cor-primaria-hover: #c47c4e;
-  --cor-secundaria: #d4a37f;
+  --cor-header-fundo: rgba(255, 255, 255, 0.85);
+  --cor-header-botoes-fundo: #e0e6ec;
+  --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
 
-  --cor-texto-principal: #e0e2e4; /* Cinza Quase Branco */
-  --cor-texto-secundario: #a1aab6; /* Cinza Médio para detalhes */
-
-  --cor-borda: rgba(255, 255, 255, 0.1);
-  --cor-sombra: rgba(0, 0, 0, 0.4);
-
-  --cor-destaque-positivo: #4caf50;
-  --cor-destaque-negativo: #dc3545;
-  --transicao-padrao: 0.3s ease-in-out;
+  --cor-primaria: #1e3d6e; /* Azul Marinho Profundo */
+  --cor-primaria-clara: #4c6ca6;
+  --cor-primaria-hover: #2a508b;
+  --cor-texto-principal: #12223a; /* Azul Petróleo Escuro */
+  --cor-texto-secundario: #5b6f8a;
+  --cor-sombra: rgba(0, 0, 0, 0.12);
+  --cor-sombra-leve: rgba(0, 0, 0, 0.06);
 }
 
-/* Paleta de Cores +Acessível (Tons de Marfim) */
-body.theme-acessivel {
-  --cor-fundo: #fbfbf7;
-  --cor-cartao-fundo: #f0ede1;
-  --cor-header-fundo: rgba(225, 222, 214, 0.9);
-  --cor-header-botoes-fundo: #d9d5c4;
-  --cor-header-botoes-borda: rgba(133, 122, 98, 0.2);
+/* Paleta de Cores +Acessível (Verde Musgo Suave) */
+.theme-acessivel {
+  --cor-fundo-principal: #fdfdfd;
+  --cor-fundo-gradiente: linear-gradient(135deg, #ffffff 0%, #f6f6f6 100%);
+  --cor-cartao-fundo: #ffffff;
+  --cor-cartao-borda: rgba(0, 0, 0, 0.07);
 
-  --cor-primaria: #a38c7f; /* Tom de Argila/Marrom Suave */
-  --cor-primaria-hover: #947e70;
-  --cor-secundaria: #b6a495;
+  --cor-header-fundo: rgba(255, 255, 255, 0.9);
+  --cor-header-botoes-fundo: #e9eff5;
+  --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
 
-  --cor-texto-principal: #332f26;
-  --cor-texto-secundario: #6e6252;
-
-  --cor-borda: rgba(133, 122, 98, 0.2);
-  --cor-sombra: rgba(133, 122, 98, 0.1);
-
-  --cor-destaque-positivo: #4caf50;
-  --cor-destaque-negativo: #dc3545;
+  --cor-primaria: #6e8574; /* Verde Musgo Suave */
+  --cor-primaria-clara: #8fa693;
+  --cor-primaria-hover: #5d7063;
+  --cor-texto-principal: #333333;
+  --cor-texto-secundario: #6c7a89;
+  --cor-sombra: rgba(0, 0, 0, 0.1);
+  --cor-sombra-leve: rgba(0, 0, 0, 0.05);
 }
 
-/* --- Estilos Globais --- */
+/* --- Estilos Gerais --- */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: var(--cor-fundo);
+  background-color: var(--cor-fundo-principal);
+  background-image: var(--cor-fundo-gradiente);
   color: var(--cor-texto-principal);
-  line-height: 1.6;
-  transition: background-color var(--transicao-padrao), color var(--transicao-padrao);
-}
-
-.card {
-  background-color: var(--cor-cartao-fundo);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px var(--cor-sombra);
-  border: 1px solid var(--cor-borda);
-  transition: all var(--transicao-padrao);
-}
-
-/* Estilos para a página de consulta (index.html) */
-.container {
+  transition: background-color 0.5s ease, color 0.5s ease;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem;
-  text-align: center;
-  background-color: var(--cor-cartao-fundo);
-  border-radius: 15px;
-  box-shadow: 0 8px 30px var(--cor-sombra);
+}
+
+main {
+  flex-grow: 1;
+}
+
+.container {
   max-width: 500px;
-  margin: 2rem auto;
+  margin: 4rem auto;
+  padding: 3rem;
+  background-color: var(--cor-cartao-fundo);
+  border-radius: 20px;
+  border: 1px solid var(--cor-cartao-borda);
+  box-shadow: 0 15px 40px var(--cor-sombra);
+  text-align: center;
+  transition: all 0.5s ease;
 }
 
 .logo {
-  max-width: 200px;
-  height: auto;
-  margin-bottom: 2rem;
+  width: 180px;
+  margin-bottom: 3rem;
+  filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.logo:hover {
+  transform: scale(1.03);
 }
 
 h1 {
-  color: var(--cor-primaria);
-  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  color: var(--cor-texto-principal);
+  margin-bottom: 2rem;
   font-weight: 500;
+  letter-spacing: -1.5px;
 }
 
+/* --- Estilos do Formulário (index.html) --- */
 #form-consulta {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .input-grupo {
-  margin-bottom: 1.5rem;
   text-align: left;
 }
 
-.input-grupo label {
+label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  font-weight: 400;
+  margin-bottom: 0.8rem;
   color: var(--cor-texto-secundario);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
 }
 
-.input-grupo input {
+input[type="text"] {
   width: 100%;
-  padding: 12px;
-  border: 1px solid var(--cor-borda);
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--cor-cartao-borda);
+  border-radius: 12px;
+  background-color: #fcfcfc;
   color: var(--cor-texto-principal);
-  background-color: transparent;
-  transition: border-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
+  font-size: 1.1rem;
+  font-weight: 300;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: inset 0 2px 5px var(--cor-sombra-leve);
 }
 
-.input-grupo input:focus {
+input[type="text"]:focus {
   outline: none;
   border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 3px rgba(180, 107, 63, 0.2);
+  box-shadow: 0 0 0 4px var(--cor-primaria-clara);
 }
 
 #btn-consultar {
   position: relative;
-  width: 100%;
-  padding: 14px;
-  background-color: var(--cor-primaria);
-  color: var(--cor-texto-principal);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color var(--transicao-padrao);
   overflow: hidden;
+  padding: 1.2rem 3rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--cor-primaria);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 6px 25px var(--cor-primaria-clara);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+#btn-consultar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s ease;
 }
 
 #btn-consultar:hover {
   background-color: var(--cor-primaria-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 30px var(--cor-primaria-clara);
+  transform: translateY(-4px);
 }
 
-/* Estilos de ícones do botão de consulta... */
+#btn-consultar:hover::before {
+  left: 100%;
+}
+
+#btn-consultar:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 15px var(--cor-primaria-clara);
+}
+
 .icone-carregando, .icone-sucesso, .icone-erro {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease;
   opacity: 0;
-  transition: opacity 0.3s ease;
-  font-size: 1.2rem;
 }
 
-#btn-consultar.carregando .icone-carregando {
-  opacity: 1;
-  animation: spin 1s linear infinite;
+#btn-consultar.loading .btn-texto {
+  opacity: 0;
 }
 
-#btn-consultar.sucesso .icone-sucesso {
+#btn-consultar.loading .icone-carregando {
   opacity: 1;
 }
 
-#btn-consultar.erro .icone-erro {
+#btn-consultar.success .btn-texto,
+#btn-consultar.success .icone-carregando,
+#btn-consultar.success .icone-erro {
+  opacity: 0;
+}
+
+#btn-consultar.success .icone-sucesso {
   opacity: 1;
 }
 
-@keyframes spin {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
+#btn-consultar.error .btn-texto,
+#btn-consultar.error .icone-carregando,
+#btn-consultar.error .icone-sucesso {
+  opacity: 0;
+}
+
+#btn-consultar.error .icone-erro {
+  opacity: 1;
 }
 
 #mensagem-feedback {
-  margin-top: 1.5rem;
-  padding: 10px;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.9em;
   opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  height: 0;
+  visibility: hidden;
+  padding: 0;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: -1rem;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
 #mensagem-feedback.show {
   opacity: 1;
-  transform: translateY(0);
+  visibility: visible;
+  height: auto;
+  padding: 1.2rem;
+  margin-top: 0rem;
+  background-color: #f7f9fb;
+  border-radius: 12px;
 }
 
-#mensagem-feedback.success-msg {
-  background-color: rgba(76, 175, 80, 0.2);
-  color: var(--cor-destaque-positivo);
-  border: 1px solid var(--cor-destaque-positivo);
+.success-msg {
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
-#mensagem-feedback.error-msg {
-  background-color: rgba(220, 53, 69, 0.2);
-  color: var(--cor-destaque-negativo);
-  border: 1px solid var(--cor-destaque-negativo);
+.error-msg {
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.2);
 }
 
-/* --- Estilos para a página de proposta (proposta.html) --- */
+/* --- Estilos da Proposta (proposta.html) --- */
 header {
-  background-color: var(--cor-header-fundo);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
-  z-index: 500;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 10px var(--cor-sombra);
-  margin-bottom: 2rem;
-}
-
-.logo-container .logo {
-  max-width: 150px;
+  align-items: center; /* ALINHAMENTO VERTICAL CORRIGIDO */
+  padding: 1.5rem 4rem;
+  background-color: var(--cor-header-fundo);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--cor-cartao-borda);
+  z-index: 1000;
+  box-shadow: 0 4px 15px var(--cor-sombra-leve);
 }
 
 .seletor-tipo-proposta {
   display: flex;
-  gap: 0.5rem;
   background-color: var(--cor-header-botoes-fundo);
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: 15px;
+  padding: 0.5rem;
+  border: 1px solid var(--cor-header-botoes-borda);
 }
 
 .btn-proposta {
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: 1px solid var(--cor-header-botoes-borda);
-  border-radius: 6px;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  background-color: transparent;
+  color: var(--cor-texto-secundario);
+  font-weight: 500;
   cursor: pointer;
-  background: transparent;
-  color: var(--cor-texto-principal);
-  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
-}
-
-.btn-proposta:hover:not(.selecionado) {
-  background-color: rgba(255, 255, 255, 0.05);
-  transform: translateY(-1px);
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-transform: uppercase;
 }
 
 .btn-proposta.selecionado {
-  background-color: var(--cor-primaria);
-  color: var(--cor-fundo);
-  box-shadow: 0 2px 8px var(--cor-sombra);
-  transform: none;
+  background: var(--cor-primaria);
+  color: #ffffff;
+  box-shadow: 0 4px 15px var(--cor-primaria-clara);
+  transform: scale(1.05);
+}
+
+.secao-principal, .secao-info {
+  margin: 3rem 4rem;
+  padding: 3.5rem;
+  background-color: var(--cor-cartao-fundo);
+  border-radius: 20px;
+  border: 1px solid var(--cor-cartao-borda);
+  box-shadow: 0 15px 40px var(--cor-sombra);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.secao-principal:hover, .secao-info:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px var(--cor-sombra);
 }
 
 #secao-resumo {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-  margin-bottom: 2rem;
-  gap: 1.5rem;
+  align-items: flex-start;
+  margin: 3rem 4rem;
+  padding: 3.5rem;
+  background-color: var(--cor-cartao-fundo);
+  border-radius: 20px;
+  border: 1px solid var(--cor-cartao-borda);
+  box-shadow: 0 15px 40px var(--cor-sombra);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+#secao-resumo:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px var(--cor-sombra);
+}
+
+.titulo-secao {
+  font-size: 2rem;
+  color: var(--cor-primaria);
+  margin-bottom: 2.5rem;
+  position: relative;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.titulo-secao::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -15px;
+  height: 4px;
+  width: 70px;
+  background-color: var(--cor-primaria);
+  border-radius: 2px;
 }
 
 #secao-cliente {
-  flex-grow: 2;
   text-align: left;
 }
 
 .nome-cliente {
-  font-size: 1.8rem;
-  color: var(--cor-primaria);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-/* NOVO: Estilo para o design arrojado da localização e data */
-.localizacao-data {
-  display: flex;
-  gap: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--cor-cartao-fundo);
-  border: 1px solid var(--cor-borda);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px var(--cor-sombra);
-  align-items: center;
-}
-
-.local-proposta, .data-proposta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 3rem;
   font-weight: 500;
+  margin-bottom: 1rem;
+  letter-spacing: -1.5px;
   color: var(--cor-texto-principal);
 }
 
-.icone-local, .icone-data {
-  color: var(--cor-primaria);
+.localizacao-data {
+  display: flex;
+  gap: 2.5rem;
+  color: var(--cor-texto-secundario);
+  font-size: 1rem;
 }
 
-.secao-principal {
-  margin: 0 2rem 2rem;
-  padding: 2rem;
-  background-color: var(--cor-cartao-fundo);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px var(--cor-sombra);
-}
-
-.titulo-secao {
-  font-size: 1.8rem;
-  font-weight: 500;
+.localizacao-data i {
   color: var(--cor-primaria);
-  margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--cor-borda);
-  padding-bottom: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  justify-content: center;
+  gap: 2.5rem;
 }
 
 .card-detalhe {
-  background-color: transparent;
-  border: 1px solid var(--cor-borda);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--cor-sombra);
-  transition: transform 0.2s ease;
+  justify-content: center;
+  padding: 3rem;
+  border-radius: 16px;
+  background-color: var(--cor-fundo-principal);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.02), 0 5px 20px var(--cor-sombra-leve);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .card-detalhe:hover {
   transform: translateY(-5px);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.03), 0 10px 30px var(--cor-sombra-leve);
 }
 
 .icone-card {
-  font-size: 2.5rem;
+  font-size: 3rem; /* Tamanho do ícone ajustado para um visual mais elegante */
   color: var(--cor-primaria);
-  margin-right: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .conteudo-card {
-  display: flex;
-  flex-direction: column;
+  text-align: center;
 }
 
 .valor-card {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--cor-texto-principal);
+  font-size: 3.5rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--cor-primaria);
 }
 
 .unidade-card {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--cor-texto-secundario);
-  margin-top: -0.2rem;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--cor-primaria); /* Alterado para seguir o tema principal */
+}
+
+/* Novo estilo para alinhar valor e unidade/símbolo */
+.valor-e-unidade {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .legenda-card {
-  font-size: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 400;
   color: var(--cor-texto-secundario);
-  margin-top: 0.2rem;
+  margin-top: 0.5rem;
 }
 
-.texto-card {
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* Seção de Equipamentos */
+/* Seção Equipamentos */
 .conteudo-equipamentos {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 3.5rem;
 }
 
-.imagem-equipamentos {
-  flex-shrink: 0;
-}
-
-.imagem-equipamentos img {
-  max-width: 250px;
+#imagem-marca {
+  width: 200px;
+  max-width: 100%;
   height: auto;
-  border-radius: 10px;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
 }
 
 .lista-equipamentos {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
-/* Seção de Equipamentos - CÓDIGO FINAL OTIMIZADO */
-
-/* Seção de Equipamentos - CÓDIGO FINAL COM QUANTIDADE SIMPLES */
-
-/* Container de layout */
-#secao-equipamentos .conteudo-equipamentos {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-}
-
-@media (min-width: 992px) {
-  #secao-equipamentos .conteudo-equipamentos {
-    flex-direction: row;
-    justify-content: center;
-  }
-}
-
-#secao-equipamentos .imagem-equipamentos {
-  flex-shrink: 0;
-  width: 100%;
-  /* Limita a largura máxima do contêiner da imagem */
-  max-width: 480px; 
-}
-
-#secao-equipamentos .imagem-equipamentos img {
-  width: 100%;
-  height: auto;
-  /* Adiciona a propriedade para evitar distorção */
-  object-fit: contain; 
-  border-radius: 12px;
-  box-shadow: 0 8px 20px var(--cor-sombra);
-  transition: transform 0.3s ease;
-}
-
-/* Estilo para a imagem de marca específica ------------*/
-#imagem-marca {
-  max-width: 150px; /* Define a largura máxima que a imagem pode ter */
-  height: auto;      /* Mantém a proporção original da imagem */
-  object-fit: contain; /* Garante que a imagem não seja distorcida se o contêiner for menor */
-  display: block;    /* Para centralizar ou controlar melhor o layout se estiver em um contêiner flex */
-  margin: 0 auto;    /* Exemplo: para centralizar a imagem horizontalmente */
-}
-
-#secao-equipamentos .imagem-equipamentos img:hover {
-  transform: scale(1.02);
-}
-
-/* Container da lista de itens */
-#secao-equipamentos .lista-equipamentos {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* Estilo de cada card de equipamento */
-#secao-equipamentos .item-equipamento {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background-color: var(--cor-cartao-fundo);
-  border: 1px solid var(--cor-borda);
-  box-shadow: 0 4px 12px var(--cor-sombra);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-#secao-equipamentos .item-equipamento:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px var(--cor-sombra);
-}
-
-/* Estilo do ícone */
-#secao-equipamentos .icone-equipamento {
-  font-size: 2rem;
-  color: var(--cor-primaria);
-  flex-shrink: 0;
-}
-
-/* Container de texto para título e descrição */
-#secao-equipamentos .info-equipamento {
-  display: flex;
-  flex-direction: column;
-}
-
-/* A quantidade agora é apenas um texto simples, alinhado com o título */
-#secao-equipamentos .detalhes-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-#secao-equipamentos .quantidade-equipamento {
-  font-weight: 700;
-  color: var(--cor-fundo);
-  background-color: var(--cor-primaria);
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  font-size: 1em;
-}
-
-#secao-equipamentos .titulo-equipamento {
-  font-weight: 600;
-  color: var(--cor-texto-principal);
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-/* A descrição (potência) recebe o maior destaque */
-#secao-equipamentos .descricao-equipamento {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--cor-primaria);
-  margin-top: 0.2rem;
-}
-
-/* Seção de Instalação */
-.conteudo-instalacao {
+.item-equipamento {
   display: flex;
   align-items: flex-start;
-  gap: 2rem;
+  padding-left: 1.5rem;
 }
 
-/* NOVO: Estilo para a imagem que se adapta à largura da tela */
-.imagem-instalacao {
-    flex-shrink: 0;
-    width: 100%;
-    max-width: 400px; /* Limita a largura em telas maiores, se necessário */
-}
-
-.imagem-instalacao img {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-}
-
-.detalhes-instalacao {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* NOVO: Design específico para cada cartão de instalação */
-.info-detalhe-item {
+.detalhes-item {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  padding: 1.25rem;
-  border-radius: 12px;
-  background-color: var(--cor-cartao-fundo); /* Altera o fundo para um tom mais claro */
-  border: 1px solid var(--cor-borda);
-  box-shadow: 0 2px 8px var(--cor-sombra);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 1.8rem;
 }
 
-.info-detalhe-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px var(--cor-sombra);
+.quantidade-equipamento {
+    font-size: 1.8rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--cor-primaria); /* <-- ESTA LINHA SERÁ SUBSTITUÍDA */
+
+    /* NOVAS PROPRIEDADES AQUI */
+    display: inline-block; /* Para que o padding funcione */
+    background-color: var(--cor-primaria);
+    color: #ffffff; /* Cor do texto dentro do quadrado */
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px; /* Cantos arredondados */
+    margin-right: 1.5rem; /* Espaço entre o número e o texto */
 }
 
-.info-detalhe-item .icone-item {
-  font-size: 1.5rem; /* Aumenta o tamanho do ícone */
-  color: var(--cor-primaria);
-  flex-shrink: 0;
+.info-equipamento {
+  text-align: left;
 }
 
-.info-detalhe-item p {
-  font-weight: 400;
-  color: var(--cor-texto-principal);
-  margin: 0;
-}
-
-/* Seção de Financiamento */
-.valores-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-}
-
-.card-valores {
-  padding: 1rem;
-  background-color: var(--cor-fundo);
-  border-radius: 8px;
-  border: 1px solid var(--cor-borda);
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.card-valores:hover {
-  transform: translateY(-3px);
-}
-
-.card-total {
-  grid-column: 1 / -1;
-  background-color: var(--cor-primaria);
-  color: var(--cor-texto-principal);
-}
-
-.card-total .legenda-valores,
-.card-total .valor-total-proposta,
-.card-total .etiqueta-proposta-dinamica {
-  color: var(--cor-texto-principal);
-}
-
-.legenda-valores {
-  font-size: 0.8rem;
-  color: var(--cor-texto-secundario);
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-}
-
-.valor-total-proposta {
+.titulo-equipamento {
   font-size: 1.8rem;
-  font-weight: 700;
-}
-
-.valor-parcela-proposta {
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.card-investimento {
-  padding: 1.5rem;
-  background-color: var(--cor-fundo);
-  border-radius: 8px;
-  border: 1px solid var(--cor-borda);
-  text-align: center;
-  grid-column: 1 / -1;
-  margin-top: 1rem;
-  box-shadow: 0 2px 8px var(--cor-sombra);
-}
-
-.legenda-investimento {
-  font-size: 0.9rem;
-  color: var(--cor-texto-secundario);
-  margin-bottom: 0.5rem;
-}
-
-.valor-investimento {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--cor-primaria);
-}
-
-.secao-observacao-financiamento {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background-color: var(--cor-fundo);
-  border-radius: 8px;
-  border: 1px solid var(--cor-borda);
-  box-shadow: 0 2px 8px var(--cor-sombra);
-}
-
-.titulo-observacao {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--cor-primaria);
-  margin-bottom: 0.5rem;
-}
-
-.texto-observacao {
-  font-size: 0.9rem;
-  color: var(--cor-texto-secundario);
-}
-
-/* Seção de Validade */
-.secao-info {
-  text-align: center;
-  margin: 2rem;
-  padding: 1.5rem;
-  background-color: var(--cor-cartao-fundo);
-  border-radius: 12px;
-  border: 1px solid var(--cor-borda);
-  box-shadow: 0 4px 12px var(--cor-sombra);
-}
-
-.etiqueta-info {
-  font-size: 1.1rem;
   font-weight: 500;
   color: var(--cor-texto-principal);
 }
 
-.icone-info-proposta {
-  color: var(--cor-primaria);
-  margin-right: 0.5rem;
+.descricao-equipamento {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
 }
 
-/* Seção de Voltar */
+/* Seção Instalação */
+.conteudo-instalacao {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5rem;
+}
+
+.imagem-instalacao {
+  flex-shrink: 0;
+  width: 350px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px var(--cor-sombra);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.imagem-instalacao:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px var(--cor-sombra);
+}
+
+#imagem-instalacao {
+  width: 100%;
+  display: block;
+}
+
+.detalhes-instalacao {
+  flex-grow: 1;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.item-detalhe-instalacao {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.item-detalhe-instalacao .icone {
+  font-size: 1.6rem;
+  color: var(--cor-primaria);
+}
+
+.item-detalhe-instalacao .texto {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
+}
+
+/* Seção Valores e Condições */
+.valores-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsividade aprimorada */
+  gap: 2rem;
+  text-align: center;
+}
+
+.card-valores {
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  background-color: var(--cor-fundo-principal);
+  border: 1px solid var(--cor-cartao-borda);
+  box-shadow: 0 5px 20px var(--cor-sombra-leve);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card-valores:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px var(--cor-sombra-leve);
+}
+
+.card-total {
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  grid-column: 1 / -1;
+  box-shadow: 0 10px 30px var(--cor-primaria-clara);
+}
+
+.card-total .legenda-valores,
+.card-total .valor-total-proposta {
+  color: #ffffff;
+}
+
+.legenda-valores {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--cor-texto-secundario);
+  margin-bottom: 0.8rem;
+  opacity: 0.9;
+}
+
+.valor-total-proposta {
+  font-size: 3.2rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.valor-parcela-proposta {
+  font-size: 2.2rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--cor-primaria);
+}
+
+/* Nova classe para estilizar os símbolos de moeda */
+.moeda {
+    font-size: 1.2rem;
+    font-weight: 300;
+    vertical-align: baseline;
+    margin-right: 2px;
+    color: var(--cor-primaria); /* Alterado para seguir o tema principal */
+}
+
+.etiqueta-proposta-dinamica {
+  font-weight: 400;
+}
+
+/* FUNDO DO CARTÃO DE INVESTIMENTO CORRIGIDO */
+.card-investimento {
+  grid-column: span 2;
+  background-color: var(--cor-fundo-principal);
+  color: var(--cor-texto-principal);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid var(--cor-cartao-borda);
+  box-shadow: 0 10px 30px var(--cor-sombra);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card-investimento:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px var(--cor-sombra);
+}
+
+.legenda-investimento {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
+}
+
+.valor-investimento {
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: var(--cor-primaria);
+}
+
+.secao-observacao-financiamento {
+  margin-top: 2.5rem;
+  text-align: left;
+  border-top: 1px dashed var(--cor-cartao-borda);
+  padding-top: 2.5rem;
+}
+
+.titulo-observacao {
+  font-weight: 400;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: var(--cor-texto-principal);
+}
+
+.texto-observacao {
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
+  line-height: 1.8;
+}
+
+/* Seção Validade */
+.validade-proposta {
+  text-align: center;
+}
+
+.etiqueta-info {
+  font-weight: 400;
+  color: var(--cor-texto-secundario);
+  font-size: 1.1rem;
+}
+
+.icone-info-proposta {
+  color: var(--cor-primaria);
+  margin-right: 0.8rem;
+}
+
+/* Botão de Voltar */
 .secao-voltar-proposta {
   text-align: center;
-  margin: 2rem 0;
+  margin-bottom: 3rem;
 }
 
 .btn-voltar-proposta {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 10px 20px;
-  background-color: transparent;
-  border: 1px solid var(--cor-borda);
-  color: var(--cor-texto-principal);
-  border-radius: 8px;
+  gap: 0.8rem;
   text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: var(--cor-texto-secundario);
+  font-weight: 400;
+  transition: color 0.4s ease, transform 0.4s ease;
 }
 
 .btn-voltar-proposta:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
+  color: var(--cor-primaria);
+  transform: translateX(-8px);
 }
 
 /* Footer */
 footer {
   background-color: var(--cor-cartao-fundo);
-  padding: 1.5rem;
+  padding: 2.5rem;
   text-align: center;
-  border-top: 1px solid var(--cor-borda);
+  border-top: 1px solid var(--cor-cartao-borda);
 }
 
 .footer-contact-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
 .footer-contact-item {
   color: var(--cor-texto-secundario);
   text-decoration: none;
-  font-size: 0.9rem;
-  transition: color 0.2s ease;
+  font-size: 1rem;
+  font-weight: 300;
+  transition: color 0.4s ease;
 }
 
 .footer-contact-item:hover {
@@ -758,50 +734,67 @@ footer {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 1.5rem;
+  }
+
+  .secao-principal, .secao-info {
+    margin: 2rem 1rem;
+    padding: 2rem;
+  }
+
+  .container {
+    padding: 2rem;
   }
 
   #secao-cliente {
     text-align: center;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
   }
 
   .localizacao-data {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem;
-  }
-
-  .secao-principal, .secao-info {
-    margin: 0 1rem 1rem;
+    align-items: center;
     padding: 1rem;
   }
 
   .conteudo-equipamentos, .conteudo-instalacao {
     flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  #imagem-marca {
+    margin-bottom: 1rem;
+  }
+
+  .detalhes-instalacao {
     text-align: center;
   }
 
-  .imagem-equipamentos, .imagem-instalacao {
-    text-align: center;
-  }
-
-  .detalhes-item {
+  .item-detalhe-instalacao {
     flex-direction: column;
-    align-items: flex-start;
+    text-align: center;
+  }
+  
+  /* Corrigido: Para empilhar os cartões de valores em dispositivos móveis */
+  .valores-container {
+    grid-template-columns: 1fr;
   }
 
-  .info-equipamento {
-    align-items: flex-start;
+  .valor-total-proposta, .valor-card {
+    font-size: 2.5rem;
   }
-    
-    /* Media Query para os cards de instalação */
-    .info-detalhe-item {
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-    }
 
-    .info-detalhe-item .icone-item {
-        margin-bottom: 0.5rem;
-    }
+  .valor-parcela-proposta {
+    font-size: 1.6rem;
+  }
+
+  .card-investimento {
+      grid-column: auto;
+  }
+}
+
+.icone-instalacao {
+    margin-right: 8px; /* Espaço entre o ícone e o texto */
+    color: var(--cor-primaria); /* Usa a cor primária do seu tema */
 }
