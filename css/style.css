@@ -446,6 +446,15 @@ header {
   transition: transform 0.3s ease;
 }
 
+/* Estilo para a imagem de marca específica */
+#imagem-marca {
+  max-width: 150px; /* Define a largura máxima que a imagem pode ter */
+  height: auto;      /* Mantém a proporção original da imagem */
+  object-fit: contain; /* Garante que a imagem não seja distorcida se o contêiner for menor */
+  display: block;    /* Para centralizar ou controlar melhor o layout se estiver em um contêiner flex */
+  margin: 0 auto;    /* Exemplo: para centralizar a imagem horizontalmente */
+}
+
 #secao-equipamentos .imagem-equipamentos img:hover {
   transform: scale(1.02);
 }
