@@ -439,6 +439,8 @@ header {
 #secao-equipamentos .imagem-equipamentos img {
   width: 100%;
   height: auto;
+  /* Adiciona a propriedade para evitar distorção */
+  object-fit: contain; 
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--cor-sombra);
   transition: transform 0.3s ease;
