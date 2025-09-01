@@ -1,6 +1,6 @@
 /**
  * model.js
- * * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios,
+ * * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios-,
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
 // Importa as funções da API, incluindo a nova 'authenticate' e 'patch'
