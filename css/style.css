@@ -441,12 +441,12 @@ header {
   height: auto;
   /* Adiciona a propriedade para evitar distorção */
   object-fit: contain; 
-  border-radius: 12px;
-  box-shadow: 0 8px 20px var(--cor-sombra);
+  /*border-radius: 12px;
+  box-shadow: 0 8px 20px var(--cor-sombra);*/
   transition: transform 0.3s ease;
 }
 
-/* Estilo para a imagem de marca específica */
+/* Estilo para a imagem de marca específica ------------*/
 #imagem-marca {
   max-width: 150px; /* Define a largura máxima que a imagem pode ter */
   height: auto;      /* Mantém a proporção original da imagem */
