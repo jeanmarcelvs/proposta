@@ -148,13 +148,13 @@ function preencherDadosProposta(dados) {
         if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
 
         const quantidadeInversorEl = document.getElementById('quantidade-inversor');
-        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `( ${dados.equipamentos?.quantidadeInversor || 0} )`;
+        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
 
         const descricaoPainelEl = document.getElementById('descricao-painel');
         if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
 
         const quantidadePainelEl = document.getElementById('quantidade-painel');
-        if (quantidadePainelEl) quantidadePainelEl.innerText = `( ${dados.equipamentos?.quantidadePainel || 0} )`;
+        if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
         console.log("DEBUG: Dados de equipamentos preenchidos com sucesso.");
 
         // 4. Valores Finais

@@ -495,9 +495,13 @@ header {
 }
 
 #secao-equipamentos .quantidade-equipamento {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--cor-texto-principal);
+  font-weight: 700;
+  color: var(--cor-fundo);
+  background-color: var(--cor-primaria);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  font-size: 1em;
 }
 
 #secao-equipamentos .titulo-equipamento {
