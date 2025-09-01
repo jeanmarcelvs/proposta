@@ -334,7 +334,7 @@ export async function atualizarStatusVisualizacao(dados) {
 
         // O endpoint correto é o do projeto, e o método é PATCH
         // CORRIGIDO: Agora usa dados.propostaId
-        const endpoint = `/projects/${dados.propostaId}/custom-fields/1/`;
+        const endpoint = `/projects/${dados.propostaId}/custom-fields/1`;
         const body = {
             description: novaDescricao
         };
