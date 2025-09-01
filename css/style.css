@@ -429,11 +429,11 @@ header {
   }
 }
 
-/* Estilo da imagem do equipamento */
 #secao-equipamentos .imagem-equipamentos {
   flex-shrink: 0;
   width: 100%;
-  max-width: 350px;
+  /* Limita a largura máxima do contêiner da imagem */
+  max-width: 480px; 
 }
 
 #secao-equipamentos .imagem-equipamentos img {
