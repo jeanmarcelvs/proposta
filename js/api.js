@@ -137,7 +137,7 @@ export async function post(endpoint, dados, accessToken) {
 }
 
 /**
- * NOVO: Faz uma requisição PATCH para a API externa.
+ * NOVO: Faz uma requisição PATCH para a API externa-.
  * @param {string} endpoint O caminho específico da API (ex: '/projects/1770').
  * @param {object} dados O corpo da requisição a ser enviado.
  * @param {string} accessToken A token de autenticação temporária (JWT).
@@ -147,7 +147,7 @@ export async function patch(endpoint, dados, accessToken) {
     try {
         console.log(`API: Enviando dados para ${BASE_URL}${endpoint} com PATCH`);
         const response = await fetch(`${BASE_URL}${endpoint}`, {
-            method: 'PATCH',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
