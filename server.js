@@ -13,7 +13,6 @@ const BCB_API_URL = process.env.BCB_API_URL;
 
 // Endpoint para buscar a taxa Selic
 app.get('/selic', async (req, res) => {
-  res.send('Servidor proxy está funcionando!');
   try {
     // Usa axios para fazer a requisição
     const response = await axios.get(BCB_API_URL);
