@@ -181,7 +181,7 @@ export async function patch(endpoint, dados, accessToken) {
     }
 }
 
-// NOVO: Função para buscar a taxa Selic na API do Banco Central-------
+// NOVO: Função para buscar a taxa Selic na API do Banco Central
 /**
  * Busca a taxa Selic mais recente na API do Banco Central do Brasil.
  * @returns {Promise<number|null>} A taxa Selic anual em formato decimal ou null em caso de falha.
