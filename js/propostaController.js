@@ -27,7 +27,7 @@ function esconderLoadingOverlay() {
     }
 }
 
-// CORRIGIDO: A função agora recebe a proposta completa e usa o caminho da imagem dela
+// A função agora recebe a proposta completa e usa o caminho da imagem dela
 function atualizarImagemEquipamentos(proposta) {
     const imagemMarca = document.getElementById('imagem-marca');
     if (!imagemMarca) {
@@ -37,7 +37,7 @@ function atualizarImagemEquipamentos(proposta) {
     imagemMarca.src = proposta.equipamentos?.imagem || '';
 }
 
-// CORRIGIDO: A função agora recebe a proposta completa e usa o caminho da imagem dela
+// A função agora recebe a proposta completa e usa o caminho da imagem dela
 function atualizarImagemInstalacao(proposta) {
     const imagemInstalacao = document.getElementById('imagem-instalacao');
     if (!imagemInstalacao) {
@@ -97,14 +97,12 @@ function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
 
     try {
-        // CORREÇÃO: Declarando as variáveis do resumo e ícone no topo da função.
         const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
         const iconeResumoEl = document.getElementById('icone-resumo');
 
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
-
         const nomeCompleto = dados.cliente || "Não informado";
         let nomeCurto = nomeCompleto;
 
@@ -148,7 +146,7 @@ function preencherDadosProposta(dados) {
         }
 
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
-        const iconeInstalacaoEl = document.getElementById('icone-instalacao'); // Encontra o ícone pelo novo ID
+        const iconeInstalacaoEl = document.getElementById('icone-instalacao'); 
 
         if (instalacaoPaineisEl && iconeInstalacaoEl) {
             const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
@@ -190,7 +188,6 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
-        // NOVO: Adiciona a informação de payback diretamente no span
         const paybackValorEl = document.getElementById('payback-valor');
         if (paybackValorEl) {
             paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
@@ -198,25 +195,15 @@ function preencherDadosProposta(dados) {
             console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
         }
 
-        // --- INÍCIO DA ALTERAÇÃO ---
-        // REMOVIDO: A linha abaixo que preenche a taxa de juros mensal genérica,
-        // pois agora exibiremos a taxa específica para cada parcela.
-        // const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
-        // if (taxaMensalEl) {
-        //     taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
-        // }
-
-        // REMOVIDO: Taxa Anual e Taxa SELIC
-        // const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
-        // const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
-        // if (taxaAnualEl) {
-        //     taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
-        // }
-        // if (taxaSelicEl) {
-        //     taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
-        // }
-
-        console.log("DEBUG: Taxas de juros e SELIC preenchidas com sucesso.");
+        // --- INÍCIO DA CORREÇÃO DE BUG ---
+        // A linha abaixo preenche a taxa nominal na primeira taxa exibida no HTML.
+        // O valor 1.32% é a taxa nominal calculada (SELIC + SPREAD).
+        // A lógica abaixo garante que a taxa de juros nominal seja exibida uma vez
+        // no topo da seção de financiamento.
+        const taxaMensalNominalEl = document.getElementById('taxa-mensal-financiamento');
+        if (taxaMensalNominalEl && dados.valores?.taxasPorParcela['taxaAnualEfetiva-12']) {
+             taxaMensalNominalEl.innerText = dados.valores.taxasPorParcela['taxaAnualEfetiva-12'].replace('a.m.', 'a.a.');
+        }
 
         // 5. Parcelas e Taxas
         console.log("DEBUG: Preenchendo parcelas e taxas...");
@@ -243,7 +230,7 @@ function preencherDadosProposta(dados) {
             }
         });
         
-        // --- FIM DA ALTERAÇÃO ---
+        // --- FIM DA CORREÇÃO DE BUG ---
 
         console.log("DEBUG: Parcelas preenchidas com sucesso.");
 
@@ -263,11 +250,9 @@ function preencherDadosProposta(dados) {
         if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
             if (dados.tipo === 'premium') {
-                // CORREÇÃO: Ícone de 'check' para proposta Premium
                 iconeResumoEl.classList.add('fa-circle-check');
                 iconeResumoEl.classList.remove('fa-triangle-exclamation');
             } else {
-                // Ícone de 'exclamação' para proposta Acessível
                 iconeResumoEl.classList.add('fa-triangle-exclamation');
                 iconeResumoEl.classList.remove('fa-circle-check');
             }
@@ -279,9 +264,7 @@ function preencherDadosProposta(dados) {
     }
 }
 
-// Adiciona o event listener para garantir que o conteúdo está pronto
 document.addEventListener('DOMContentLoaded', async () => {
-    // Mostra o overlay de carregamento imediatamente
     mostrarLoadingOverlay();
 
     const urlParams = new URLSearchParams(window.location.search);
