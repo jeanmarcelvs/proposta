@@ -198,21 +198,20 @@ function preencherDadosProposta(dados) {
             console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
         }
 
-        const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
         const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
-        const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
-
-        if (taxaAnualEl) {
-            taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
-        }
-
         if (taxaMensalEl) {
             taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
         }
 
-        if (taxaSelicEl) {
-            taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
-        }
+        // REMOVIDO: Taxa Anual e Taxa SELIC
+        // const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
+        // const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
+        // if (taxaAnualEl) {
+        //     taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
+        // }
+        // if (taxaSelicEl) {
+        //     taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
+        // }
 
         console.log("DEBUG: Taxas de juros e SELIC preenchidas com sucesso.");
 
