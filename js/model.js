@@ -31,18 +31,16 @@ const caminhosImagens = {
 
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 const detalhesInstalacaoPremium = [
-    { icone: 'fa-shield-alt', texto: 'Proteção Coordenada Completa CC e CA' },
-    { icone: 'fa-bolt', texto: 'Materiais Elétricos mais Seguros e Duráveis' },
-    { icone: 'fa-plug', texto: 'Cabeamento com Dupla Proteção UV e anti-chama' },
-    { icone: 'fa-screwdriver-wrench', texto: 'Menor necessidade de manutenção' }
+    { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado e Completo (Proteções CC e CA)' },
+    { icone: 'fa-bolt', texto: 'Infraestrutura Elétrica e Mecânica mais Segura e Durável' },
+    { icone: 'fa-screwdriver-wrench', texto: 'Instalação projetada para garantir uma menor necessidade de manutenção ao longo da vida útil' }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-shield-alt', texto: 'Proteções internas do inversor e da propriedade do cliente' },
-    { icone: 'fa-bolt', texto: 'Materiais Elétricos Convencionais' },
-    { icone: 'fa-plug', texto: 'Cabeamento convencional' },
-    { icone: 'fa-screwdriver-wrench', texto: 'Recomenda-se manutenção preventiva com maior frequência' }
+    { icone: 'fa-shield-alt', texto: 'Apenas proteções internas do inversor e as existentes na propriedade do cliente' },
+    { icone: 'fa-bolt', texto: 'Infraestrutura elétrica e mecânica básica de mercado' },
+    { icone: 'fa-plug', texto: 'Tipo de instalação básica de mercado, maior necessidade de manutenção ao longo da vida útil' }
 ];
 
 /**

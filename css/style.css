@@ -8,6 +8,8 @@
 /* Paleta de Cores Premium (Azul Profundo e Cinza Suave) */
 :root {
   --cor-fundo-principal: #f3f5f8;
+  --cor-fundo-principal-rgb: 243, 245, 248;
+  /* NOVO: Versão RGB */
   --cor-fundo-gradiente: linear-gradient(135deg, #f7f8fa 0%, #ebf1f6 100%);
   --cor-cartao-fundo: #ffffff;
   --cor-cartao-borda: rgba(0, 0, 0, 0.08);
@@ -16,10 +18,12 @@
   --cor-header-botoes-fundo: #e0e6ec;
   --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
 
-  --cor-primaria: #1e3d6e; /* Azul Marinho Profundo */
+  --cor-primaria: #1e3d6e;
+  /* Azul Marinho Profundo */
   --cor-primaria-clara: #4c6ca6;
   --cor-primaria-hover: #2a508b;
-  --cor-texto-principal: #12223a; /* Azul Petróleo Escuro */
+  --cor-texto-principal: #12223a;
+  /* Azul Petróleo Escuro */
   --cor-texto-secundario: #5b6f8a;
   --cor-sombra: rgba(0, 0, 0, 0.12);
   --cor-sombra-leve: rgba(0, 0, 0, 0.06);
@@ -28,6 +32,8 @@
 /* Paleta de Cores +Acessível (Verde Musgo Suave) */
 .theme-acessivel {
   --cor-fundo-principal: #fdfdfd;
+  --cor-fundo-principal-rgb: 253, 253, 253;
+  /* NOVO: Versão RGB */
   --cor-fundo-gradiente: linear-gradient(135deg, #ffffff 0%, #f6f6f6 100%);
   --cor-cartao-fundo: #ffffff;
   --cor-cartao-borda: rgba(0, 0, 0, 0.07);
@@ -36,7 +42,8 @@
   --cor-header-botoes-fundo: #e9eff5;
   --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
 
-  --cor-primaria: #6e8574; /* Verde Musgo Suave */
+  --cor-primaria: #6e8574;
+  /* Verde Musgo Suave */
   --cor-primaria-clara: #8fa693;
   --cor-primaria-hover: #5d7063;
   --cor-texto-principal: #333333;
@@ -162,7 +169,7 @@ input[type="text"]:focus {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: left 0.6s ease;
 }
 
@@ -181,7 +188,9 @@ input[type="text"]:focus {
   box-shadow: 0 4px 15px var(--cor-primaria-clara);
 }
 
-.icone-carregando, .icone-sucesso, .icone-erro {
+.icone-carregando,
+.icone-sucesso,
+.icone-erro {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -255,7 +264,8 @@ header {
   top: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* ALINHAMENTO VERTICAL CORRIGIDO */
+  align-items: center;
+  /* ALINHAMENTO VERTICAL CORRIGIDO */
   padding: 1.5rem 4rem;
   background-color: var(--cor-header-fundo);
   backdrop-filter: blur(15px);
@@ -291,7 +301,8 @@ header {
   transform: scale(1.05);
 }
 
-.secao-principal, .secao-info {
+.secao-principal,
+.secao-info {
   margin: 3rem 4rem;
   padding: 3.5rem;
   background-color: var(--cor-cartao-fundo);
@@ -301,7 +312,8 @@ header {
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-.secao-principal:hover, .secao-info:hover {
+.secao-principal:hover,
+.secao-info:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 50px var(--cor-sombra);
 }
@@ -383,17 +395,18 @@ header {
   border-radius: 16px;
   background-color: var(--cor-fundo-principal);
   border: 1px solid rgba(0, 0, 0, 0.03);
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.02), 0 5px 20px var(--cor-sombra-leve);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02), 0 5px 20px var(--cor-sombra-leve);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .card-detalhe:hover {
   transform: translateY(-5px);
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.03), 0 10px 30px var(--cor-sombra-leve);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03), 0 10px 30px var(--cor-sombra-leve);
 }
 
 .icone-card {
-  font-size: 3rem; /* Tamanho do ícone ajustado para um visual mais elegante */
+  font-size: 3rem;
+  /* Tamanho do ícone ajustado para um visual mais elegante */
   color: var(--cor-primaria);
   margin-bottom: 0.8rem;
 }
@@ -410,17 +423,18 @@ header {
 }
 
 .unidade-card {
-    font-size: 1.2rem;
-    font-weight: 300;
-    color: var(--cor-primaria); /* Alterado para seguir o tema principal */
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--cor-primaria);
+  /* Alterado para seguir o tema principal */
 }
 
 /* Novo estilo para alinhar valor e unidade/símbolo */
 .valor-e-unidade {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .legenda-card {
@@ -441,7 +455,7 @@ header {
   width: 200px;
   max-width: 100%;
   height: auto;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
 }
 
 .lista-equipamentos {
@@ -467,15 +481,18 @@ header {
     font-size: 1.8rem;
     font-weight: 500;
     line-height: 1;
-    color: var(--cor-primaria); /* <-- ESTA LINHA SERÁ SUBSTITUÍDA */
 
-    /* NOVAS PROPRIEDADES AQUI */
-    display: inline-block; /* Para que o padding funcione */
+    /* CORRIGIDO: Propriedades para fixar o tamanho e centralizar */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 55px; /* Tamanho mínimo para acomodar 2 ou 3 dígitos */
+    height: 40px; /* Altura fixa para manter a consistência */
+    
     background-color: var(--cor-primaria);
-    color: #ffffff; /* Cor do texto dentro do quadrado */
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px; /* Cantos arredondados */
-    margin-right: 1.5rem; /* Espaço entre o número e o texto */
+    color: #ffffff;
+    border-radius: 8px;
+    margin-right: 1.5rem;
 }
 
 .info-equipamento {
@@ -496,61 +513,64 @@ header {
 
 /* Seção Instalação */
 .conteudo-instalacao {
-  display: flex;
-  align-items: flex-start;
-  gap: 3.5rem;
+ display: flex;
+ align-items: flex-start;
+ gap: 3.5rem;
 }
 
 .imagem-instalacao {
-  flex-shrink: 0;
-  width: 350px;
-  max-width: 100%;
-  height: auto;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px var(--cor-sombra);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+ flex-shrink: 0;
+ width: 350px;
+ max-width: 100%;
+ height: auto;
+ border-radius: 16px;
+ overflow: hidden;
+ box-shadow: 0 10px 30px var(--cor-sombra);
+ transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .imagem-instalacao:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 40px var(--cor-sombra);
+ transform: scale(1.02);
+ box-shadow: 0 15px 40px var(--cor-sombra);
 }
 
 #imagem-instalacao {
-  width: 100%;
-  display: block;
+ width: 100%;
+ display: block;
 }
 
 .detalhes-instalacao {
-  flex-grow: 1;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 1.8rem;
+ flex-grow: 1;
+ list-style: none;
+ display: flex;
+ flex-direction: column;
+ gap: 1.8rem;
 }
 
-.item-detalhe-instalacao {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
+/* NOVO: Ajustado para o nome da classe do JavaScript */
+.item-detalhe {
+ display: flex;
+ align-items: center;
+ gap: 1.2rem;
 }
 
-.item-detalhe-instalacao .icone {
-  font-size: 1.6rem;
-  color: var(--cor-primaria);
+/* NOVO: Ajustado para o nome da classe do JavaScript */
+.icone-detalhe {
+ font-size: 1.6rem;
+ color: var(--cor-primaria);
 }
 
-.item-detalhe-instalacao .texto {
-  font-size: 1.1rem;
-  font-weight: 300;
-  color: var(--cor-texto-secundario);
+.texto-detalhe {
+ font-size: 1.1rem;
+ font-weight: 300;
+ color: var(--cor-texto-secundario);
 }
 
 /* Seção Valores e Condições */
 .valores-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsividade aprimorada */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  /* Responsividade aprimorada */
   gap: 2rem;
   text-align: center;
 }
@@ -604,11 +624,12 @@ header {
 
 /* Nova classe para estilizar os símbolos de moeda */
 .moeda {
-    font-size: 1.2rem;
-    font-weight: 300;
-    vertical-align: baseline;
-    margin-right: 2px;
-    color: var(--cor-primaria); /* Alterado para seguir o tema principal */
+  font-size: 1.2rem;
+  font-weight: 300;
+  vertical-align: baseline;
+  margin-right: 2px;
+  color: var(--cor-primaria);
+  /* Alterado para seguir o tema principal */
 }
 
 .etiqueta-proposta-dinamica {
@@ -730,14 +751,17 @@ footer {
 }
 
 @media (max-width: 768px) {
-  header, #secao-resumo {
+
+  header,
+  #secao-resumo {
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding: 1.5rem;
   }
 
-  .secao-principal, .secao-info {
+  .secao-principal,
+  .secao-info {
     margin: 2rem 1rem;
     padding: 2rem;
   }
@@ -757,7 +781,8 @@ footer {
     padding: 1rem;
   }
 
-  .conteudo-equipamentos, .conteudo-instalacao {
+  .conteudo-equipamentos,
+  .conteudo-instalacao {
     flex-direction: column;
     align-items: center;
     gap: 2rem;
@@ -775,13 +800,14 @@ footer {
     flex-direction: column;
     text-align: center;
   }
-  
+
   /* Corrigido: Para empilhar os cartões de valores em dispositivos móveis */
   .valores-container {
     grid-template-columns: 1fr;
   }
 
-  .valor-total-proposta, .valor-card {
+  .valor-total-proposta,
+  .valor-card {
     font-size: 2.5rem;
   }
 
@@ -790,11 +816,90 @@ footer {
   }
 
   .card-investimento {
-      grid-column: auto;
+    grid-column: auto;
   }
 }
 
 .icone-instalacao {
-    margin-right: 8px; /* Espaço entre o ícone e o texto */
-    color: var(--cor-primaria); /* Usa a cor primária do seu tema */
+  margin-right: 8px;
+  /* Espaço entre o ícone e o texto */
+  color: var(--cor-primaria);
+  /* Usa a cor primária do seu tema */
+}
+
+/* NOVO: Estilos para esconder/mostrar o conteúdo da página */
+.main-oculto {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease;
+}
+
+.main-visivel {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* NOVO: Estilos para o overlay de carregamento */
+/* NOVO: Estilos para o overlay de carregamento */
+/* NOVO: Estilos para o overlay de carregamento */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* NOVO: Fundo transparente fosco */
+  background-color: rgba(var(--cor-fundo-principal-rgb), 0.7);
+  /* Cor de fundo principal com 70% de opacidade */
+  backdrop-filter: blur(5px);
+  /* Efeito de desfoque */
+  -webkit-backdrop-filter: blur(5px);
+  /* Compatibilidade para navegadores WebKit */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  transition: opacity 0.5s ease;
+}
+
+.loading-overlay.oculto {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-overlay.oculto {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Estilo do spinner de carregamento */
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid var(--cor-primaria-clara);
+  border-top: 6px solid var(--cor-primaria);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estilo para a logo em proposta.html */
+.logo-header {
+  width: 150px;
+  height: auto;
+  filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.logo-header:hover {
+  transform: scale(1.03);
 }

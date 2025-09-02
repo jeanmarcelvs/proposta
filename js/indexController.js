@@ -5,12 +5,34 @@
  */
 import { buscarETratarProposta } from './model.js';
 
+// Funções para o novo loading-overlay
+function mostrarLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('oculto');
+    }
+}
+
+function esconderLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    const mainContent = document.querySelector('main');
+
+    if (mainContent) {
+        mainContent.classList.remove('main-oculto');
+        mainContent.classList.add('main-visivel');
+    }
+
+    if (overlay) {
+        overlay.classList.add('oculto');
+    }
+}
+
 // Função para ocultar a tela de splash
 function esconderTelaSplash() {
-  const telaSplash = document.getElementById('tela-splash');
-  if (telaSplash) {
-    telaSplash.classList.add('oculto');
-  }
+    const telaSplash = document.getElementById('tela-splash');
+    if (telaSplash) {
+        telaSplash.classList.add('oculto');
+    }
 }
 
 // Função para exibir mensagem de feedback
@@ -43,89 +65,92 @@ function resetarBotao() {
 
 
 // Aguarda o documento HTML ser totalmente carregado
-document.addEventListener('DOMContentLoaded', function() {
-    //setTimeout(esconderTelaSplash, 500);
-
+// Aguarda o documento HTML ser totalmente carregado
+document.addEventListener('DOMContentLoaded', function () {
     const formConsulta = document.getElementById('form-consulta');
     const inputNumeroProjeto = document.getElementById('numero-projeto');
     const btnConsultar = document.getElementById('btn-consultar');
     const btnTexto = btnConsultar.querySelector('.btn-texto');
 
-    // Função que será executada ao submeter o formulário (ou ao carregar a página com ID)
+    // Funções de controle do overlay
+    function mostrarLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.classList.remove('oculto');
+        }
+    }
+
+    function esconderLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        const mainContent = document.querySelector('main');
+        if (mainContent) {
+            mainContent.classList.remove('main-oculto');
+            mainContent.classList.add('main-visivel');
+        }
+        if (overlay) {
+            overlay.classList.add('oculto');
+        }
+    }
+
+    // Função que será executada ao submeter o formulário
+    // Função que será executada ao submeter o formulário
+    // Função que será executada ao submeter o formulário
     async function handleFormSubmit(evento, numeroProjetoUrl = null) {
-        if (evento) {
-          evento.preventDefault();
-        }
-
-        // Usa o número do projeto da URL, se existir, senão pega do input
-        const numeroProjeto = numeroProjetoUrl || inputNumeroProjeto.value.trim();
-        
-        // 1. Validação de campo vazio
-        if (!numeroProjeto) {
-            if (!numeroProjetoUrl) { // Evita exibir mensagem se o ID da URL for inválido
-              exibirMensagem('erro', 'Por favor, digite o número do projeto.');
-            }
-            return;
-        }
-
-        // 2. Validação para garantir que é um número
-        const regexNumeros = /^\d+$/; // Aceita apenas um ou mais dígitos de 0 a 9
-        if (!regexNumeros.test(numeroProjeto)) {
-            exibirMensagem('erro', 'O número do projeto deve conter apenas dígitos.');
-            setTimeout(resetarBotao, 2000);
-            return;
-        }
-
-        // --- Início do estado de carregamento do botão ---
-        btnConsultar.classList.add('loading');
-        btnConsultar.disabled = true;
-        btnConsultar.classList.remove('success', 'error');
-        btnTexto.textContent = '';
-
         let sucesso = false;
+
+        if (evento) {
+            evento.preventDefault();
+        }
+
+        // Adicionado: Mostra o splash screen ao iniciar a consulta
+        mostrarLoadingOverlay();
+
+        const numeroProjeto = numeroProjetoUrl || document.getElementById('numero-projeto').value.trim();
+
+        if (!numeroProjeto) {
+            if (!numeroProjetoUrl) {
+                exibirMensagem('erro', 'Por favor, digite o número do projeto.');
+            }
+            // Adicionado: Esconde o splash screen se a validação falhar
+            esconderLoadingOverlay();
+            return;
+        }
+
+        const btnConsultar = document.getElementById('btn-consultar');
+        btnConsultar.disabled = true;
+        btnConsultar.classList.add('loading');
+
         try {
             const resposta = await buscarETratarProposta(numeroProjeto);
+            sucesso = resposta.sucesso;
 
-            if (resposta.sucesso) {
-                // --- Estado de Sucesso do Botão ---
-                sucesso = true;
+            if (sucesso) {
+                btnConsultar.classList.remove('loading');
                 btnConsultar.classList.add('success');
-                exibirMensagem('sucesso', 'Proposta encontrada! Redirecionando...');
-                console.log('Proposta encontrada. Redirecionando para a página de proposta.');
-                
+                exibirMensagem('sucesso', `Proposta #${numeroProjeto} encontrada!`);
+
                 setTimeout(() => {
                     window.location.href = `proposta.html?id=${numeroProjeto}`;
                 }, 1500);
             } else {
-                // --- Estado de Erro do Botão ---
                 btnConsultar.classList.add('error');
                 exibirMensagem('erro', `Erro: ${resposta.mensagem}`);
             }
         } catch (erro) {
             console.error('Ocorreu um erro na busca:', erro);
-            // --- Estado de Erro do Botão ---
             btnConsultar.classList.add('error');
             exibirMensagem('erro', 'Ocorreu um erro inesperado ao consultar. Tente novamente.');
         } finally {
-            // Se não houve sucesso, resetamos o botão para a próxima interação
+            // Garantido: Esconde o splash screen em caso de erro
             if (!sucesso) {
+                esconderLoadingOverlay();
                 setTimeout(resetarBotao, 2000);
             }
         }
     }
 
-    // Adiciona o event listener para o formulário
     formConsulta.addEventListener('submit', handleFormSubmit);
 
-    // --- NOVA LÓGICA: Verifica se há um ID na URL e inicia a consulta automática ---
-    const urlParams = new URLSearchParams(window.location.search);
-    const idDaUrl = urlParams.get('id');
-    
-    if (idDaUrl) {
-        console.log(`ID encontrado na URL: ${idDaUrl}`);
-        // Preenche o campo de input com o ID da URL
-        inputNumeroProjeto.value = idDaUrl;
-        // Chama a função de submissão do formulário com o ID da URL
-        handleFormSubmit(null, idDaUrl);
-    }
+    // Esconde o overlay de carregamento após a página carregar
+    esconderLoadingOverlay();
 });
