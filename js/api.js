@@ -187,7 +187,6 @@ export async function patch(endpoint, dados, accessToken) {
  * @returns {Promise<number|null>} A taxa Selic anual em formato decimal ou null em caso de falha.
  */
 export async function getSelicTaxa() {
-    // Substitua a URL antiga pela do seu novo serviço proxy
     const url = 'https://selic-api-proxy.onrender.com/selic'; 
 
     try {
@@ -196,9 +195,18 @@ export async function getSelicTaxa() {
             throw new Error(`Proxy: Erro na resposta. Status: ${response.status}`);
         }
         const dados = await response.json();
-        // ... (o restante do código para processar os dados permanece o mesmo)
+        
+        // A API retorna um array de objetos. Precisamos extrair o valor do primeiro item.
+        if (Array.isArray(dados) && dados.length > 0) {
+            // Converte a string do valor para um número.
+            const valorSelic = parseFloat(dados[0].valor);
+            return valorSelic; // <<< Adicionando o 'return' aqui!
+        } else {
+            throw new Error("Resposta da API do BCB está vazia ou no formato inesperado.");
+        }
     } catch (error) {
         console.error('API BCB: Erro de rede ou na requisição via proxy.', error);
-        return null;
+        // Retorna null para que o código que chamou a função saiba que falhou.
+        return null; 
     }
 }
