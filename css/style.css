@@ -636,6 +636,58 @@ header {
   font-weight: 400;
 }
 
+/* Estilo para a Etiqueta de Fita "À Vista" com fundo laranja */
+#etiqueta-avista {
+    position: absolute;
+    top: 20px;
+    right: -50px;
+    padding: 0.8rem 6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #ff6c00; /* Laranja forte e vibrante */
+    transform: rotate(45deg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    letter-spacing: 1px;
+}
+
+/* Oculta a etiqueta se o card não for "total" */
+.card-valores:not(.card-total) #etiqueta-avista {
+    display: none;
+}
+
+/* Garante que o card do total seja o ponto de referência */
+.card-total {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estilo para a fita adesiva */
+#etiqueta-avista::before,
+#etiqueta-avista::after {
+    content: '';
+    position: absolute;
+    background: rgba(0, 0, 0, 0.2);
+    width: 20px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+/* Fita de cima */
+#etiqueta-avista::before {
+    top: -3px;
+    left: 10%;
+    transform: rotate(-10deg);
+}
+
+/* Fita de baixo */
+#etiqueta-avista::after {
+    bottom: -3px;
+    right: 10%;
+    transform: rotate(10deg);
+}
+
 /* FUNDO DO CARTÃO DE INVESTIMENTO CORRIGIDO */
 .card-investimento {
   grid-column: span 2;
