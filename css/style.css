@@ -1082,37 +1082,60 @@ body.theme-acessivel .icone-resumo {
   margin: 0;
 }
 
-/* --- Melhorias no Layout do Financiamento --- */
+/* --- Estilos para o Payback e Observações --- */
 
-/* Ajusta o container principal para organizar os elementos em coluna */
-.container-financiamento {
+/* NOVO: Estiliza o container do payback para ter um fundo e padding */
+.payback-highlight {
+    background-color: rgba(255, 255, 255, 0.15); /* Cor clara e sutil para o fundo */
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Garante o layout vertical para o texto e valor do payback */
+.container-payback {
     display: flex;
-    flex-direction: column; 
-    gap: 20px; /* Reduz o gap geral para melhor controle */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
 }
 
-/* NOVO: Ajusta o espaçamento abaixo das informações de taxa */
-.taxas-financiamento {
-    margin-bottom: 20px; /* Adiciona um espaço entre as taxas e os cards */
+/* NOVO: Estilos para o bloco de observações */
+.secao-observacao-container {
+    grid-column: 1 / -1; /* Força o elemento a ocupar todas as colunas do grid */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 3px solid #ddd;
+    border-radius: 8px;
 }
 
-/* Estiliza o container dos cards para usar grid */
+/* Estilos de texto da observação */
+.titulo-observacao {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.texto-observacao {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0;
+}
+
+/* --- Estilos Gerais de Cards e Layout --- */
+
+/* Garante que o layout use grid e alinhe os cards corretamente */
 .valores-container {
     display: grid;
-    /* NOVO: Garante que os cards tenham um tamanho mínimo maior em telas grandes */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 20px;
     justify-content: center;
     align-items: stretch;
 }
 
-/* NOVO: Media Query para telas menores (celulares) */
-/* Isso fará com que os cards de parcela ocupem a largura total */
-@media (max-width: 768px) {
-    .valores-container {
-        grid-template-columns: 1fr; /* Cada card ocupa uma linha inteira */
-    }
-}
+/* Restante do seu CSS ... */
 
 /* Remove a formatação antiga do payback */
 .payback-texto {
