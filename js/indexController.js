@@ -59,32 +59,55 @@ function resetarBotao() {
 document.addEventListener('DOMContentLoaded', function () {
     const formConsulta = document.getElementById('form-consulta');
     const inputNumeroProjeto = document.getElementById('numero-projeto');
+    const inputPrimeiroNome = document.getElementById('primeiro-nome'); // NOVO: Captura o novo campo
     const btnConsultar = document.getElementById('btn-consultar');
+
+    //---------------------------------------------------------
+    // NOVO: Adiciona listeners de validação em tempo real
+    //---------------------------------------------------------
+    inputPrimeiroNome.addEventListener('input', (event) => {
+        // Remove espaços do valor do campo para garantir que seja apenas um nome
+        event.target.value = event.target.value.trim().split(' ')[0];
+    });
+
+    // Ajuste aqui: Garante que apenas dígitos sejam aceitos e limita a 4 caracteres.
+    inputNumeroProjeto.addEventListener('input', (event) => {
+        event.target.value = event.target.value.replace(/[^0-9]/g, '').substring(0, 4);
+    });
+
 
     // Funções de controle do overlay (manter aqui ou mover para o escopo global)
     // Para evitar duplicação, vamos assumir que as funções no escopo global são usadas.
     // As funções repetidas abaixo foram removidas para clareza.
 
     // Função que será executada ao submeter o formulário
-    async function handleFormSubmit(evento, numeroProjetoUrl = null) {
+    async function handleFormSubmit(evento, numeroProjetoUrl = null, primeiroNomeUrl = null) { // NOVO: Recebe o nome da URL
         let sucesso = false;
 
-        // Se o evento existe, significa que foi um envio do formulário, então previne o comportamento padrão.
         if (evento) {
             evento.preventDefault();
         }
 
-        // Mostra o loading-overlay ao iniciar a consulta
-        mostrarLoadingOverlay();
-
-        // Pega o número do projeto da URL ou do input do formulário
         const numeroProjeto = numeroProjetoUrl || inputNumeroProjeto.value.trim();
+        const primeiroNome = primeiroNomeUrl || inputPrimeiroNome.value.trim(); // NOVO: Captura o nome
 
-        if (!numeroProjeto) {
-            if (!numeroProjetoUrl) {
-                exibirMensagem('erro', 'Por favor, digite o número do projeto.');
-            }
-            // Esconde o splash screen se a validação falhar
+        // ----------------------------------------------------
+        // NOVO: Validação de Campos Vazios e Formato
+        // ----------------------------------------------------
+        if (!numeroProjeto || !primeiroNome) {
+            exibirMensagem('erro', 'Por favor, preencha o número do projeto e o primeiro nome.');
+            esconderLoadingOverlay();
+            return;
+        }
+
+        if (numeroProjeto.length !== 4) {
+            exibirMensagem('erro', 'O número do projeto deve ter exatamente 4 dígitos.');
+            esconderLoadingOverlay();
+            return;
+        }
+        
+        if (primeiroNome.includes(' ')) {
+            exibirMensagem('erro', 'Por favor, digite apenas o primeiro nome, sem espaços.');
             esconderLoadingOverlay();
             return;
         }
@@ -93,16 +116,18 @@ document.addEventListener('DOMContentLoaded', function () {
         btnConsultar.classList.add('loading');
 
         try {
-            const resposta = await buscarETratarProposta(numeroProjeto);
+            // NOVO: Passa o primeiro nome para a função do modelo
+            const resposta = await buscarETratarProposta(numeroProjeto, primeiroNome);
             sucesso = resposta.sucesso;
 
             if (sucesso) {
                 btnConsultar.classList.remove('loading');
                 btnConsultar.classList.add('success');
                 exibirMensagem('sucesso', `Proposta #${numeroProjeto} encontrada!`);
-
+                
+                // NOVO: Redireciona com o ID e o primeiro nome na URL
                 setTimeout(() => {
-                    window.location.href = `proposta.html?id=${numeroProjeto}`;
+                    window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
                 }, 1500);
             } else {
                 btnConsultar.classList.add('error');
@@ -113,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
             btnConsultar.classList.add('error');
             exibirMensagem('erro', 'Ocorreu um erro inesperado ao consultar. Tente novamente.');
         } finally {
-            // Garantido: Esconde o splash screen em caso de erro
             if (!sucesso) {
                 esconderLoadingOverlay();
                 setTimeout(resetarBotao, 2000);
@@ -123,19 +147,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     formConsulta.addEventListener('submit', handleFormSubmit);
 
-    // --- Nova Lógica Adicionada Aqui ---
-    // Verifica se há um ID de projeto na URL quando a página carrega
+    // NOVO: Lógica para verificar o ID e o nome na URL
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjetoDaUrl = urlParams.get('id');
+    const primeiroNomeDaUrl = urlParams.get('nome'); // NOVO: Pega o nome da URL
 
-    if (numeroProjetoDaUrl) {
-        // Preenche o campo de input e chama a função de envio
+    if (numeroProjetoDaUrl && primeiroNomeDaUrl) { // NOVO: Valida ambos os parâmetros
         inputNumeroProjeto.value = numeroProjetoDaUrl;
-        // Chama a função de submissão do formulário, passando o valor da URL
-        // O primeiro parâmetro 'null' indica que não é um evento de formulário
-        handleFormSubmit(null, numeroProjetoDaUrl);
+        inputPrimeiroNome.value = primeiroNomeDaUrl; // NOVO: Preenche o novo campo
+        handleFormSubmit(null, numeroProjetoDaUrl, primeiroNomeDaUrl);
     } else {
-        // Se não houver ID na URL, apenas esconde o overlay
         esconderLoadingOverlay();
     }
 });

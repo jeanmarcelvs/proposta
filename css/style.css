@@ -903,3 +903,41 @@ footer {
 .logo-header:hover {
   transform: scale(1.03);
 }
+
+/* style.css - Adicione ou ajuste esta seção */
+
+/* Oculta os ícones por padrão */
+.icone-loading,
+.icone-sucesso,
+.icone-erro {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Mostra o ícone de loading quando a classe 'loading' é adicionada ao botão */
+.btn-primary.loading .icone-loading {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Esconde o texto do botão quando a classe 'loading' é adicionada */
+.btn-primary.loading .btn-texto {
+    visibility: hidden;
+}
+
+/* Mostra o ícone de sucesso quando a classe 'success' é adicionada ao botão */
+.btn-primary.success .icone-sucesso {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mostra o ícone de erro quando a classe 'error' é adicionada ao botão */
+.btn-primary.error .icone-erro {
+    opacity: 1;
+    visibility: visible;
+}

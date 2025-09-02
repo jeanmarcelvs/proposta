@@ -242,38 +242,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Mostra o overlay de carregamento imediatamente
     mostrarLoadingOverlay();
 
-    // Tenta obter o ID da URL e os dados da proposta
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
-    const propostas = JSON.parse(localStorage.getItem('propostaData'));
+    const primeiroNome = urlParams.get('nome'); // NOVO: Captura o nome da URL
 
-    if (numeroProjeto && propostas) {
+    // NOVO: A lógica agora depende de ambos os parâmetros
+    if (numeroProjeto && primeiroNome) {
         try {
+            // AQUI OCORRE A MUDANÇA CRUCIAL
+            // A chamada de busca no model.js agora valida o nome do cliente
+            const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
+
+            if (!propostas.sucesso) {
+                throw new Error(propostas.mensagem);
+            }
+
+            // A PARTIR DAQUI, O CÓDIGO PERMANECE O MESMO
+            const propostaData = propostas.dados;
+            // Salva os dados no localStorage para alternar entre Premium e Acessível
+            localStorage.setItem('propostaData', JSON.stringify(propostaData));
+
             // Preenche os dados iniciais da proposta Premium
-            preencherDadosProposta(propostas.premium);
-            atualizarImagemEquipamentos(propostas.premium);
+            preencherDadosProposta(propostaData.premium);
+            atualizarImagemEquipamentos(propostaData.premium);
             atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostas.premium);
-            preencherDetalhesInstalacao(propostas.premium);
+            atualizarImagemInstalacao(propostaData.premium);
+            preencherDetalhesInstalacao(propostaData.premium);
 
             // Tenta atualizar o status de visualização na API
             const dadosVisualizacao = {
                 propostaId: numeroProjeto,
-                tipoVisualizacao: 'P' // O 'P' maiúsculo é para Premium
+                tipoVisualizacao: 'P'
             };
             await atualizarStatusVisualizacao(dadosVisualizacao);
 
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
-            // Redireciona em caso de erro grave
-            window.location.href = `index.html?erro=${numeroProjeto}`;
+            // Redireciona em caso de erro grave (incluindo nome do cliente incorreto)
+            window.location.href = `index.html?erro=acesso-negado`;
         } finally {
-            // Esconde o overlay de carregamento após a tentativa de carregar os dados
             esconderLoadingOverlay();
         }
     } else {
-        // Redireciona se não houver dados
-        window.location.href = 'index.html';
+        // Redireciona se não houver ID ou nome na URL
+        window.location.href = 'index.html?erro=parametros-ausentes';
     }
 
     // Captura os botões de tipo de proposta

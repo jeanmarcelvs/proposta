@@ -231,74 +231,70 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
 /**
  * Função principal para buscar e processar os dados das propostas.
  * @param {string} numeroProjeto O ID do projeto.
+ * @param {string} primeiroNomeCliente O primeiro nome do cliente para validação de segurança.
  * @returns {Promise<object>} Objeto com os dados das propostas Premium e Acessível.
  */
-export async function buscarETratarProposta(numeroProjeto) {
-    console.log(`Modelo: Iniciando busca e tratamento para o projeto: ${numeroProjeto}`);
+export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
+    console.log(`Modelo: Iniciando busca e validação para o projeto: ${numeroProjeto} e cliente: ${primeiroNomeCliente}`);
 
-    // Autentica para obter a token de acesso
     const authResponse = await authenticate(apiToken);
     if (!authResponse.sucesso) {
-        console.error("Modelo: Falha na autenticação.", authResponse.mensagem);
         return authResponse;
     }
     const accessToken = authResponse.accessToken;
 
-    // Busca os dados da proposta Premium
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
     const dadosApiPremium = await get(endpointPremium, accessToken);
+
     if (!dadosApiPremium.sucesso) {
-        console.error("Modelo: Falha ao buscar dados da proposta Premium.");
-        return dadosApiPremium;
+        return {
+            sucesso: false,
+            mensagem: 'Projeto não encontrado ou dados inválidos.'
+        };
     }
+
+    // NOVO: Extrai o primeiro nome do cliente dos dados da API
+    const nomeCompletoApi = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'cliente_nome');
+    const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
+
+    // NOVO: Realiza a validação de segurança
+    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
+        console.error("Modelo: Tentativa de acesso não autorizado. Nome não corresponde.");
+        return {
+            sucesso: false,
+            mensagem: 'Nome do cliente não corresponde ao projeto.'
+        };
+    }
+
+    // ... (restante da lógica para buscar e tratar as propostas Premium e Acessível permanece igual) ...
+    // O resto do código abaixo não precisa de grandes mudanças, pois a validação já foi feita.
 
     const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium');
     if (!propostaPremium) {
-        console.error("Modelo: Falha ao tratar dados da proposta Premium.");
-        return {
-            sucesso: false,
-            mensagem: 'Falha ao processar dados da proposta Premium.'
-        };
+        return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
     }
     dadosProposta.premium = propostaPremium;
 
-    // Tenta encontrar e buscar a proposta acessível
-    // CORRIGIDO: Usando a variável correta 'vc_projeto_acessivel'
     const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
     let propostaAcessivel = null;
 
     if (idPropostaAcessivel) {
-        console.log(`Modelo: ID de proposta acessível encontrado: ${idPropostaAcessivel}. Buscando da API...`);
         const endpointAcessivel = `/projects/${idPropostaAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel, accessToken);
-
         if (dadosApiAcessivel.sucesso) {
             propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel');
         } else {
-            console.error("Modelo: Falha ao buscar dados da proposta Acessível da API. Abortando.");
-            return {
-                sucesso: false,
-                mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.'
-            };
+            return { sucesso: false, mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.' };
         }
     } else {
-        console.error("Modelo: ID da proposta acessível não encontrado. Não é possível buscar os dados da API.");
-        return {
-            sucesso: false,
-            mensagem: 'ID da proposta acessível não encontrado.'
-        };
+        return { sucesso: false, mensagem: 'ID da proposta acessível não encontrado.' };
     }
 
     if (!propostaAcessivel) {
-        console.error("Modelo: Falha ao tratar dados da proposta Acessível.");
-        return {
-            sucesso: false,
-            mensagem: 'Falha ao processar dados da proposta Acessível.'
-        };
+        return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
     }
     dadosProposta.acessivel = propostaAcessivel;
 
-    console.log("DEBUG: Retornando dados das propostas:", dadosProposta);
     return {
         sucesso: true,
         dados: dadosProposta
