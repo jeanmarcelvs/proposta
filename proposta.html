@@ -130,8 +130,6 @@
             <h2 class="titulo-secao">Valores e Condições</h2>
 
             <div class="container-financiamento">
-                <div id="payback-texto" class="payback-texto"></div>
-
                 <div class="taxas-financiamento">
                     <p>Taxa de Juros Anual: <span id="taxa-anual-financiamento" class="valor-taxa"></span></p>
                     <p>Taxa de Juros Mensal: <span id="taxa-mensal-financiamento" class="valor-taxa"></span></p>
@@ -188,7 +186,17 @@
                             <span id="parcela-84"></span>
                         </p>
                     </div>
+
+                    <div id="secao-observacao" class="card-valores secao-observacao-financiamento">
+                        <p class="titulo-observacao">Observações sobre Financiamento:</p>
+                        <p id="texto-observacao" class="texto-observacao"></p>
+                    </div>
+
                     <div class="card-valores card-total">
+                        <div id="payback-texto" class="container-payback">
+                            <span class="legenda-investimento">Seu investimento se paga em:</span>
+                            <span class="valor-investimento" id="payback-valor"></span>
+                        </div>
                         <p class="legenda-valores">Valor total:</p>
                         <p class="valor-total-proposta">
                             <span class="moeda">R$</span>
@@ -196,11 +204,6 @@
                         </p>
                         <span class="etiqueta" id="etiqueta-avista">À Vista</span>
                     </div>
-                </div>
-
-                <div id="secao-observacao" class="secao-observacao-financiamento">
-                    <p class="titulo-observacao">Observações sobre Financiamento:</p>
-                    <p id="texto-observacao" class="texto-observacao"></p>
                 </div>
             </div>
         </section>

@@ -232,7 +232,7 @@ function preencherDadosProposta(dados) {
         console.log("DEBUG: Preenchendo observações e validade...");
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
-        
+
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         }
@@ -244,9 +244,11 @@ function preencherDadosProposta(dados) {
         if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
             if (dados.tipo === 'premium') {
+                // CORREÇÃO: Ícone de 'check' para proposta Premium
                 iconeResumoEl.classList.add('fa-circle-check');
                 iconeResumoEl.classList.remove('fa-triangle-exclamation');
             } else {
+                // Ícone de 'exclamação' para proposta Acessível
                 iconeResumoEl.classList.add('fa-triangle-exclamation');
                 iconeResumoEl.classList.remove('fa-circle-check');
             }

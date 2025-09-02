@@ -1056,22 +1056,22 @@ footer {
 }
 
 /* NOVO: Estilos base para o ícone de resumo */
+/* Estilos base para o ícone de resumo */
 .icone-resumo {
-  font-size: 2.2rem;
-  padding-top: 5px;
-  /* Alinha o ícone com o texto */
+    font-size: 2.2rem;
+    padding-top: 5px; 
 }
 
 /* NOVO: Cor para o ícone da proposta Premium */
+/* Certifique-se de que esta regra existe no seu CSS. */
 body.theme-premium .icone-resumo {
-  color: #008000;
-  /* Verde para sucesso */
+    color: #008000; /* Verde para sucesso */
 }
 
 /* NOVO: Cor para o ícone da proposta Acessível */
+/* Mantenha esta regra para a proposta Acessível. */
 body.theme-acessivel .icone-resumo {
-  color: #ffc107;
-  /* Amarelo para atenção */
+    color: #ffc107; /* Amarelo para atenção */
 }
 
 /* NOVO: Estilos para o texto do resumo */
@@ -1087,20 +1087,11 @@ body.theme-acessivel .icone-resumo {
 /* Ajusta o container principal para organizar os elementos em coluna */
 .container-financiamento {
     display: flex;
-    flex-direction: column; /* Organiza os elementos verticalmente */
-    gap: 30px; /* Adiciona espaço entre cada bloco */
+    flex-direction: column; 
+    gap: 30px; 
 }
 
-/* Novo estilo para o container de taxas */
-.taxas-financiamento {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 0;
-}
-
-/* Estilos para o container de valores */
+/* Estiliza o container dos cards para usar grid */
 .valores-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1109,12 +1100,56 @@ body.theme-acessivel .icone-resumo {
     align-items: stretch;
 }
 
-/* NOVO: Estilos para o container da observação de financiamento */
+/* NOVO: Regras para evitar o overflow nos valores das parcelas */
+.valor-parcela-proposta {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--cor-primaria);
+    white-space: nowrap; /* Impede que o texto quebre de linha */
+    overflow: hidden; /* Esconde o texto que ultrapassa o limite */
+    text-overflow: ellipsis; /* Adiciona "..." ao final do texto que foi cortado */
+}
+
+.valor-parcela-proposta .moeda {
+    margin-right: 5px;
+}
+
+/* NOVO: Estiliza o card de observações */
 .secao-observacao-financiamento {
     padding: 20px;
     background-color: #f9f9f9;
     border-left: 3px solid #ddd;
     border-radius: 8px;
+}
+
+/* Estiliza o card total para alinhar o conteúdo verticalmente */
+.card-total {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Estilos para o container do texto do payback */
+.container-payback {
+    display: flex; 
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 5px; 
+    margin-bottom: 10px;
+}
+
+/* Aprimora a legenda do payback para ter mais destaque */
+.legenda-investimento {
+    font-size: 0.9rem; 
+    font-weight: 500;
+    color: #444;
+}
+
+/* Mantém o valor do payback maior e mais visível */
+.valor-investimento {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--cor-primaria);
 }
 
 /* Garante que o texto da observação seja legível e não tenha margens desnecessárias */
