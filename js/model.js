@@ -12,8 +12,8 @@ import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
 // NOVO: Constantes para o cálculo do financiamento
-// Spread médio calculado a partir da sua proposta: 2,21% ao ano
-const SPREAD_ANUAL = 0.0221;
+// Spread calculado para que a taxa anual seja 17,11% com a SELIC de 15%
+const SPREAD_ANUAL = 0.0221; 
 const IOF_FIXO = 0.0038; // 0,38%
 const IOF_DIARIO = 0.000082; // 0,0082% ao dia
 
@@ -170,7 +170,8 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
             return;
         }
 
-        const parcela = (valorComIOF * jurosMensal) / (1 - Math.pow((1 + jurosMensal), -n));
+        // CORREÇÃO APLICADA AQUI
+        const parcela = (valorComIOF * jurosMensal * Math.pow((1 + jurosMensal), n)) / (Math.pow((1 + jurosMensal), n) - 1);
 
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
@@ -272,7 +273,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             // **NOVAS PROPRIEDADES:** As taxas de juros formatadas
             taxaJurosAnual: (taxaAnualCalculada * 100).toFixed(2).replace('.', ',') + '%',
             taxaJurosMensal: (taxaMensalCalculada * 100).toFixed(2).replace('.', ',') + '%',
-            observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
+            // NOVO: Adicionando a taxa SELIC
+            selicTaxa: selicAtual.toLocaleString('pt-BR') + '%',
+            // NOVO TEXTO DE OBSERVAÇÃO
+            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
     };

@@ -186,20 +186,21 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
-        const paybackEl = document.getElementById('payback');
-        if (paybackEl) {
-            if (dados.valores?.payback) {
-                paybackEl.innerText = dados.valores.payback;
-            } else {
-                paybackEl.innerText = `${dados.valores?.paybackAnos || 0} anos e ${dados.valores?.paybackMeses || 0} meses`;
-            }
+        // **NOVO:** ATUALIZAÇÃO DO PAYBACK
+        const paybackTextoEl = document.getElementById('payback-texto');
+        if (paybackTextoEl) {
+            paybackTextoEl.innerHTML = `
+                <span class="legenda-investimento">Seu investimento se paga em:</span>
+                <span class="valor-investimento">${dados.valores?.payback || 'Não informado'}</span>
+            `;
         }
-        console.log("DEBUG: Valores finais preenchidos com sucesso.");
 
-        // **NOVO: 4.1. Taxas de Juros**
+        // NOVO: 4.1. Taxas de Juros
         // Acessa as novas propriedades que preparamos no Model.js
         const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
         const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
+        // NOVO: Elemento para a SELIC
+        const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
 
         if (taxaAnualEl) {
             taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
@@ -208,6 +209,12 @@ function preencherDadosProposta(dados) {
         if (taxaMensalEl) {
             taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
         }
+
+        // NOVO: Preenche o valor da SELIC
+        if (taxaSelicEl) {
+            taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
+        }
+
         console.log("DEBUG: Taxas de juros preenchidas com sucesso.");
 
         // 5. Parcelas

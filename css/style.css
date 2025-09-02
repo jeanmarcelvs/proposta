@@ -1022,3 +1022,14 @@ footer {
         margin-bottom: 2rem;
     }
 }
+
+.payback-texto {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007bff; /* Ou a cor que você preferir */
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
