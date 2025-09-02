@@ -12,30 +12,27 @@ import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
 // ======================================================================
-// NOVO: CONSTANTES AJUSTADAS PARA REFLETIR A TAXA DE 1,8% A 2,9% A.M.
+// CONSTANTES AJUSTADAS PARA SIMULAR A TAXA EFETIVA DE 2,55% a 3,41%
 // ======================================================================
 
-// IOF é regulamentado, então não muda.
-const IOF_FIXO = 0.0038; // 0,38%
-const IOF_DIARIO = 0.000082; // 0,0082% ao dia
+const IOF_FIXO = 0.0038;
+const IOF_DIARIO = 0.000082;
+const DIAS_CARENCIA = 120; // 120 dias de carência
 
-// Spread-base anual por nível de valor do projeto
-// Ajustados para que a simulação reflita a realidade do mercado.
+// Spread-base anual por nível de valor do projeto.
+// Ajustados para que a simulação inicie em 2,55% a.m. (considerando carência).
 const SPREAD_POR_VALOR = {
-    // Para projetos acima de R$ 50.000, taxa inicial mais competitiva (próximo de 1,8% a.m.)
-    faixa_1: 0.0887,
-    // Para projetos de R$ 20.001 a R$ 50.000, taxa média.
-    faixa_2: 0.12,
-    // Para projetos até R$ 20.000, taxa inicial mais alta (pode ser acima de 2,5% a.m.)
-    faixa_3: 0.18,
+    faixa_1: 0.2046,
+    faixa_2: 0.25,
+    faixa_3: 0.30,
 };
 
 // Fator de risco que aumenta o spread com o número de parcelas.
-// Calculado para que o spread do pior cenário (2,9% a.m.) seja alcançado em 84 meses.
-const FATOR_RISCO_PRAZO = 0.00199;
+// Este valor é calculado para que o spread do pior cenário (35,15% a.a.) seja alcançado em 84 meses.
+const FATOR_RISCO_PRAZO = (0.3515 - 0.2046) / 84;
 
 // ======================================================================
-// FIM DAS NOVAS CONSTANTES
+// FIM DAS CONSTANTES
 // ======================================================================
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
@@ -166,23 +163,15 @@ function formatarData(dataISO) {
     return `${dia}/${mes}/${ano}`;
 }
 
-// **NOVA FUNÇÃO:** Calcula a Taxa Interna de Retorno (TIR) mensal
-/**
- * Calcula a Taxa Interna de Retorno (TIR) mensal para um financiamento.
- * Usa um método de busca binária para encontrar a taxa que zera o VPL.
- * @param {number} valorFinanciado O valor total financiado (incluindo IOF).
- * @param {number} valorParcela O valor de cada parcela.
- * @param {number} numeroParcelas O número total de parcelas.
- * @returns {number} A taxa de juros mensal em formato decimal.
- */
+// **FUNÇÃO DE CÁLCULO DA TIR** (permanece inalterada)
 function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
-    let guess = 0.01; // Chute inicial para a taxa
-    const tolerance = 0.0000000001; // Tolerância para o cálculo
+    let guess = 0.01;
+    const tolerance = 0.0000000001;
     let low = 0;
     let high = 1;
     let i = 0;
 
-    while (i < 1000) { // Limite de 1000 iterações para evitar loops infinitos
+    while (i < 1000) {
         let vpl = -valorFinanciado;
         for (let j = 1; j <= numeroParcelas; j++) {
             vpl += valorParcela / Math.pow(1 + guess, j);
@@ -202,27 +191,17 @@ function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
         i++;
     }
 
-    return guess; // Retorna o melhor chute encontrado
+    return guess;
 }
 
 // NOVO: Função para calcular o financiamento com a lógica da Tabela Price
-/**
- * Calcula a simulação de financiamento com base na Selic e em um spread fixo.
- * @param {number} valorProjeto O valor total do projeto a ser financiado.
- * @param {number} selicAnual A taxa Selic anual em formato de número (ex: 10.5).
- * @returns {object} Um objeto com as parcelas calculadas, taxa nominal e a nova taxa efetiva.
- */
-
 function calcularFinanciamento(valorProjeto, selicAnual) {
     const selicDecimal = selicAnual / 100;
-
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
-    const simulacao = {}; // Objeto para armazenar os resultados
-
-    // Objeto para armazenar as taxas efetivas de cada opção de parcela
+    const simulacao = {};
+    const taxasNominais = {};
     const taxasEfetivas = {};
 
-    // Passo 1: Determinar o spread base do projeto com base no valor
     let spreadBaseAnual;
     if (valorProjeto > 50000) {
         spreadBaseAnual = SPREAD_POR_VALOR.faixa_1;
@@ -233,47 +212,48 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
     }
 
     opcoesParcelas.forEach(n => {
-        // Passo 2: Ajustar o spread base com o fator de risco do prazo
         const spreadAnualAjustado = spreadBaseAnual + (n * FATOR_RISCO_PRAZO);
-
-        // Passo 3: Calcular a taxa nominal de juros anual
         const jurosAnualNominal = selicDecimal + spreadAnualAjustado;
         const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
 
-        // Passo 4: Calcular o valor total financiado com IOF
+        // Adiciona o IOF e os juros da carência ao valor financiado
         const iofFixoCalculado = IOF_FIXO * valorProjeto;
-        const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
-        const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
+        const iofDiarioCalculado = IOF_DIARIO * DIAS_CARENCIA * valorProjeto;
+        
+        // Valor principal para cálculo do juro da carência
+        const valorPrincipalParaCarência = valorProjeto + iofFixoCalculado;
+        
+        // Juros que acumulam durante a carência. Assume que a carência é de 4 meses.
+        const jurosCarência = valorPrincipalParaCarência * Math.pow(1 + jurosMensalNominal, DIAS_CARENCIA / 30);
+        
+        // O valor total que será financiado e pago em n parcelas
+        const valorComIOF = jurosCarência + iofDiarioCalculado;
 
-        // Passo 5: Calcular a parcela usando a Tabela Price
         if (jurosMensalNominal <= 0) {
             const valorParcela = (valorComIOF / n);
             simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            taxasNominais[`taxaNominal-${n}`] = 0;
             taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
             return;
         }
 
         const parcela = (valorComIOF * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
 
-        // Passo 6: Formatar a parcela
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-        // Passo 7: Calcular a Taxa Efetiva de Retorno (TIR)
+        taxasNominais[`taxaNominal-${n}`] = jurosMensalNominal;
         const taxaMensalEfetiva = calcularTIRMensal(valorComIOF, parcela, n);
-        const taxaAnualEfetiva = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
-        taxasEfetivas[`taxaAnualEfetiva-${n}`] = taxaAnualEfetiva;
+        taxasEfetivas[`taxaAnualEfetiva-${n}`] = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
     });
 
-    // NOVO: Retorna a simulação e as novas taxas
     return {
         parcelas: simulacao,
+        taxasNominais: taxasNominais,
         taxasEfetivas: taxasEfetivas
     };
 }
 
 /**
  * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
- * Esta é a função principal de transformação.
  * @param {object} dadosApi O objeto de dados brutos recebido da API.
  * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
  * @param {number} selicAtual A taxa Selic atual em formato decimal.
@@ -287,52 +267,32 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
     const { dados } = dadosApi;
     const variables = dados.variables || [];
-    const pricingTable = dados.pricingTable || [];
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
     const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
     const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
-
-    console.log(`Modelo: Tratando dados para proposta ${tipoProposta}`);
-
     const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
     const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
     const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
-
-    // Calcula o valor ideal para a conta de luz
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
-
     const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
-    const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+    const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const {
-        parcelas: parcelasCalculadas,
-        taxasEfetivas,
-    } = calcularFinanciamento(valorTotal, selicAtual);
+    const { parcelas: parcelasCalculadas, taxasNominais } = calcularFinanciamento(valorTotal, selicAtual);
 
-    // --- NOVA LÓGICA DE CÁLCULO E FORMATAÇÃO DA TAXA MENSAL ---
     const taxasPorParcela = {};
-    for (const key in taxasEfetivas) {
-        if (taxasEfetivas.hasOwnProperty(key)) {
-            const taxaAnualEfetiva = taxasEfetivas[key];
-            const taxaMensalEfetiva = (Math.pow(1 + taxaAnualEfetiva, 1/12) - 1);
-            taxasPorParcela[key] = `${(taxaMensalEfetiva * 100).toFixed(2).replace('.', ',')}% a.m.`;
+    for (const key in taxasNominais) {
+        if (taxasNominais.hasOwnProperty(key)) {
+            const taxaMensalNominal = taxasNominais[key];
+            taxasPorParcela[key] = `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`;
         }
     }
-    // --- FIM DA NOVA LÓGICA ---
-
-    console.log("Parcelas Calculadas:", parcelasCalculadas);
-    console.log("Taxas por Parcela:", taxasPorParcela);
 
     const retorno = {
-        // NOVO: Adiciona o tipo de proposta ao objeto
         tipo: tipoProposta,
         id: dados.project.id,
         propostaId: idProposta,
@@ -345,11 +305,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         sistema: {
             geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
             instalacaoPaineis: tipoEstrutura,
-            // **ALTERAÇÃO AQUI:** Removido as casas decimais do valor
-            idealPara: idealParaValor.toLocaleString('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            })
+            idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
         },
         equipamentos: {
             imagem: caminhosImagens.equipamentos[tipoProposta],
@@ -361,43 +317,26 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         instalacao: {
             imagem: caminhosImagens.instalacao[tipoProposta],
             detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
-            // NOVO: Adiciona o resumo de instalação ao objeto de retorno
             resumoInstalacao: tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel
         },
         valores: {
-            // **ALTERAÇÃO AQUI:** Removido as casas decimais do valor total
-            valorTotal: valorTotal.toLocaleString('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }),
+            valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
             valorResumo: valorResumo,
             payback: payback,
             parcelas: parcelasCalculadas,
-            taxasPorParcela: taxasPorParcela, // **NOVO:** Adiciona as taxas individuais aqui
-            // **CORREÇÃO AQUI:** A taxa nominal é variável, então a removemos daqui.
-            taxaJurosMensal: `Varia conforme o prazo`,
-            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
+            taxasPorParcela: taxasPorParcela,
+            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros (nominais) médias de mercado, com um período de carência de 120 dias. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
     };
 
-    console.log("Modelo: Dados tratados para a página.", retorno);
     return retorno;
 }
 
-/**
- * Função principal para buscar e processar os dados das propostas.
- * @param {string} numeroProjeto O ID do projeto.
- * @param {string} primeiroNomeCliente O primeiro nome do cliente para validação de segurança.
- * @returns {Promise<object>} Objeto com os dados das propostas Premium e Acessível.
- */
+// **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    console.log(`Modelo: Iniciando busca e validação para o projeto: ${numeroProjeto} e cliente: ${primeiroNomeCliente}`);
-
     const authResponse = await authenticate(apiToken);
-    if (!authResponse.sucesso) {
-        return authResponse;
-    }
+    if (!authResponse.sucesso) { return authResponse; }
     const accessToken = authResponse.accessToken;
 
     const selicAtual = await getSelicTaxa();
@@ -423,16 +362,11 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
         console.error("Modelo: Tentativa de acesso não autorizado. Nome não corresponde.");
-        return {
-            sucesso: false,
-            mensagem: 'Nome do cliente não corresponde ao projeto.'
-        };
+        return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
     }
 
     const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
-    if (!propostaPremium) {
-        return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
-    }
+    if (!propostaPremium) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' }; }
     dadosProposta.premium = propostaPremium;
 
     const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
@@ -450,25 +384,14 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         return { sucesso: false, mensagem: 'ID da proposta acessível não encontrado.' };
     }
 
-    if (!propostaAcessivel) {
-        return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
-    }
+    if (!propostaAcessivel) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' }; }
     dadosProposta.acessivel = propostaAcessivel;
 
-    return {
-        sucesso: true,
-        dados: dadosProposta
-    };
+    return { sucesso: true, dados: dadosProposta };
 }
 
-/**
- * Função para atualizar o status de visualização da proposta na API.
- * @param {{propostaId: string, tipoVisualizacao: 'P'|'A'}} dados O ID da proposta e o tipo de visualização.
- * @returns {Promise<object>} Objeto de resposta da API.
- */
 export async function atualizarStatusVisualizacao(dados) {
     try {
-        console.log(`Modelo: Iniciando atualização do status de visualização para o projeto ${dados.propostaId}.`);
         const authResponse = await authenticate(apiToken);
         if (!authResponse.sucesso) {
             console.error("Modelo: Falha na autenticação para atualizar status.", authResponse.mensagem);
@@ -476,19 +399,13 @@ export async function atualizarStatusVisualizacao(dados) {
         }
 
         const accessToken = authResponse.accessToken;
-
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
-
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
-
         const endpoint = `/projects/${dados.propostaId}`;
-        const body = {
-            description: novaDescricao
-        };
+        const body = { description: novaDescricao };
 
         const respostaApi = await patch(endpoint, body, accessToken);
-
         if (respostaApi.sucesso) {
             console.log("Modelo: Status de visualização atualizado com sucesso!");
         } else {
@@ -496,9 +413,6 @@ export async function atualizarStatusVisualizacao(dados) {
         }
     } catch (erro) {
         console.log("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
-        return {
-            sucesso: false,
-            mensagem: 'Ocorreu um erro ao tentar atualizar o status de visualização.'
-        };
+        return { sucesso: false, mensagem: 'Ocorreu um erro ao tentar atualizar o status de visualização.' };
     }
 }
