@@ -202,7 +202,7 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
     opcoesParcelas.forEach(n => {
         const iofFixoCalculado = IOF_FIXO * valorProjeto;
         const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
-        const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
+        const valorComIOF = valorProjeto + iofFixoCalculado + iofDiofDiarioCalculado;
         if (jurosMensalNominal <= 0) {
             const valorParcela = (valorComIOF / n);
             // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
@@ -226,6 +226,43 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
         ...taxasEfetivas,
         jurosNominal: jurosAnualNominal * 100 // Retorna a taxa nominal para fins de exibição
     };
+}
+
+
+/**
+ * NOVO: Função para verificar a validade da proposta com base em expirationDate ou,
+ * como fallback, a data de criação.
+ * @param {string} expirationDate A data de expiração da proposta no formato ISO.
+ * @param {string} createdAt A data de criação da proposta no formato ISO.
+ * @returns {{texto: string, expirada: boolean}} Um objeto com o texto para exibição e o status.
+ */
+function verificarValidadePorData(expirationDate, createdAt) {
+    let dataReferencia;
+
+    if (expirationDate) {
+        dataReferencia = new Date(expirationDate);
+    } else if (createdAt) {
+        // Fallback: se não houver data de expiração, calcula 30 dias a partir da criação
+        const dataCriacaoObj = new Date(createdAt);
+        dataReferencia = new Date(dataCriacaoObj);
+        dataReferencia.setDate(dataReferencia.getDate() + 30);
+    } else {
+        return { texto: "Validade não informada", expirada: false };
+    }
+
+    const hoje = new Date();
+    // Normaliza as datas para a comparação
+    hoje.setHours(0, 0, 0, 0);
+    dataReferencia.setHours(0, 0, 0, 0);
+
+    const expirada = hoje > dataReferencia;
+    const dataValidadeFormatada = formatarData(dataReferencia.toISOString());
+
+    if (expirada) {
+        return { texto: `Expirada em ${dataValidadeFormatada}`, expirada: true };
+    } else {
+        return { texto: `Válida até ${dataValidadeFormatada}`, expirada: false };
+    }
 }
 
 
@@ -310,11 +347,19 @@ function processarProposta(dadosOriginais, tipo, selicAnual) {
 
     const simulacaoFinanciamento = calcularFinanciamento(valorTotalProjeto, selicAnual || 13.75);
 
+    // **NOVO:** Lê a data de expiração da API e a data de criação
+    const expirationDate = extrairValorVariavelPorChave(variables, 'expiration_date');
+    const createdAt = dadosOriginais.created_at;
+
+    // **NOVO:** Chama a nova função de validação
+    const validade = verificarValidadePorData(expirationDate, createdAt);
+
     const propostaTratada = {
         propostaId: dadosOriginais.id,
         cliente: extrairValorVariavelPorChave(variables, 'nome_completo'),
         local: extrairValorVariavelPorChave(variables, 'localidade_instalacao'),
-        dataProposta: formatarData(dadosOriginais.created_at),
+        dataProposta: formatarData(createdAt),
+        validade: validade, // **NOVO:** Adiciona o objeto de validade
         sistema: {
             geracaoMedia: extrairValorVariavelPorChave(variables, 'geracao_mensal_media'),
             idealPara: extrairValorVariavelPorChave(variables, 'faixa_consumo'),

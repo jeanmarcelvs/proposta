@@ -92,6 +92,25 @@ function preencherDetalhesInstalacao(proposta) {
     console.log("DEBUG: Detalhes de instalação preenchidos com sucesso.");
 }
 
+/**
+ * NOVO: Função para atualizar o texto e a aparência de validade da proposta.
+ * @param {object} validade O objeto de validade retornado do modelo.
+ */
+function atualizarValidadeProposta(validade) {
+    const textoValidade = document.getElementById('texto-validade');
+    const secaoValidade = document.getElementById('secao-validade');
+
+    if (textoValidade) {
+        textoValidade.textContent = validade.texto;
+        // Adiciona ou remove a classe com base no status de expiração
+        if (validade.expirada) {
+            secaoValidade.classList.add('proposta-expirada');
+        } else {
+            secaoValidade.classList.remove('proposta-expirada');
+        }
+    }
+}
+
 // Função para preencher a página com os dados da proposta
 function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
@@ -125,6 +144,11 @@ function preencherDadosProposta(dados) {
         const dataPropostaEl = document.getElementById('data-proposta');
         if (dataPropostaEl) dataPropostaEl.innerText = dados.dataProposta || "Não informado";
         console.log("DEBUG: Dados do cliente preenchidos com sucesso.");
+
+        // NOVO: Chama a nova função para atualizar o status de validade
+        if (dados.validade) {
+            atualizarValidadeProposta(dados.validade);
+        }
 
         // 2. Sistema Proposto (Separa valor e unidade)
         console.log("DEBUG: Preenchendo dados do sistema...");
