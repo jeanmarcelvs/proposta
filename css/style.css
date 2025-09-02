@@ -596,7 +596,8 @@ header {
 
 .valores-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  /* NOVO: Min-width alterado para acomodar valores de forma mais segura */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   justify-content: center;
   align-items: stretch;
@@ -712,12 +713,16 @@ header {
 .secao-observacao-container {
   grid-column: 1 / -1;
   /* Força a ocupar a largura total no grid */
+  /* NOVO: Estilos de texto puro, sem fundo, borda ou sombra */
   padding: 20px;
-  background-color: var(--cor-fundo-principal);
   border-left: 5px solid var(--cor-primaria);
-  border-radius: 12px;
+  border-radius: 0;
+  /* Remove o border-radius */
+  background-color: transparent;
+  /* Remove o fundo */
+  box-shadow: none;
+  /* Remove a sombra */
   margin-top: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .titulo-observacao {
