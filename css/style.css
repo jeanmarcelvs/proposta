@@ -1088,76 +1088,30 @@ body.theme-acessivel .icone-resumo {
 .container-financiamento {
     display: flex;
     flex-direction: column; 
-    gap: 30px; 
+    gap: 20px; /* Reduz o gap geral para melhor controle */
+}
+
+/* NOVO: Ajusta o espaçamento abaixo das informações de taxa */
+.taxas-financiamento {
+    margin-bottom: 20px; /* Adiciona um espaço entre as taxas e os cards */
 }
 
 /* Estiliza o container dos cards para usar grid */
 .valores-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    /* NOVO: Garante que os cards tenham um tamanho mínimo maior em telas grandes */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     justify-content: center;
     align-items: stretch;
 }
 
-/* Regras para evitar o overflow nos valores das parcelas */
-.valor-parcela-proposta {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--cor-primaria);
-    white-space: nowrap; /* Impede que o texto quebre de linha */
-    overflow: hidden; /* Esconde o texto que ultrapassa o limite */
-    text-overflow: ellipsis; /* Adiciona "..." ao final do texto que foi cortado */
-}
-
-.valor-parcela-proposta .moeda {
-    margin-right: 5px;
-}
-
-/* NOVO: Estiliza o card de observações para ter a largura total */
-.secao-observacao-financiamento {
-    grid-column: 1 / -1; /* Força o card a ocupar todas as colunas do grid */
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-left: 3px solid #ddd;
-    border-radius: 8px;
-}
-
-/* Estiliza o card total para alinhar o conteúdo verticalmente */
-.card-total {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-/* Estilos para o container do texto do payback */
-.container-payback {
-    display: flex; 
-    flex-direction: column;
-    align-items: flex-start; 
-    gap: 5px; 
-    margin-top: 20px; /* Adiciona um espaço para separar do valor total */
-}
-
-/* Aprimora a legenda do payback para ter mais destaque */
-.legenda-investimento {
-    font-size: 0.9rem; 
-    font-weight: 500;
-    color: #444;
-}
-
-/* Mantém o valor do payback maior e mais visível */
-.valor-investimento {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--cor-primaria);
-}
-
-/* Garante que o texto da observação seja legível e não tenha margens desnecessárias */
-.texto-observacao {
-    font-size: 0.9rem;
-    color: #777;
-    margin: 0;
+/* NOVO: Media Query para telas menores (celulares) */
+/* Isso fará com que os cards de parcela ocupem a largura total */
+@media (max-width: 768px) {
+    .valores-container {
+        grid-template-columns: 1fr; /* Cada card ocupa uma linha inteira */
+    }
 }
 
 /* Remove a formatação antiga do payback */

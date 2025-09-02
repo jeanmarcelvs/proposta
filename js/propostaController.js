@@ -190,12 +190,12 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
-        const paybackTextoEl = document.getElementById('payback-texto');
-        if (paybackTextoEl) {
-            paybackTextoEl.innerHTML = `
-                <span class="legenda-investimento">Seu investimento se paga em:</span>
-                <span class="valor-investimento">${dados.valores?.payback || 'Não informado'}</span>
-            `;
+        // NOVO: Adiciona a informação de payback diretamente no span
+        const paybackValorEl = document.getElementById('payback-valor');
+        if (paybackValorEl) {
+            paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
+        } else {
+            console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
         }
 
         const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
