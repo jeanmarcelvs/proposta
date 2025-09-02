@@ -146,6 +146,12 @@ input[type="text"]:focus {
 }
 
 #btn-consultar {
+  /* CORREÇÃO AQUI: Garante o alinhamento do ícone */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Espaço entre o texto e o ícone */
+
   position: relative;
   overflow: hidden;
   padding: 1.2rem 3rem;
@@ -810,7 +816,6 @@ footer {
 }
 
 @media (max-width: 768px) {
-
   header,
   #secao-resumo {
     flex-direction: column;
@@ -899,8 +904,7 @@ footer {
 }
 
 /* NOVO: Estilos para o overlay de carregamento */
-/* NOVO: Estilos para o overlay de carregamento */
-/* NOVO: Estilos para o overlay de carregamento */
+.splash-overlay,
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -918,15 +922,11 @@ footer {
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-.loading-overlay.oculto {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.loading-overlay.oculto {
+.loading-overlay.oculto,
+.splash-overlay.oculto {
   opacity: 0;
   visibility: hidden;
 }
@@ -962,8 +962,6 @@ footer {
 .logo-header:hover {
   transform: scale(1.03);
 }
-
-/* style.css - Adicione ou ajuste esta seção */
 
 /* Oculta os ícones por padrão */
 .icone-loading,

@@ -46,42 +46,56 @@ function exibirMensagem(tipo, mensagem) {
     }, 5000);
 }
 
-// Função para resetar o botão para o estado padrão
-function resetarBotao() {
-    const btnConsultar = document.getElementById('btn-consultar');
-    const btnTexto = btnConsultar.querySelector('.btn-texto');
-    btnConsultar.classList.remove('loading', 'success', 'error');
-    btnConsultar.disabled = false;
-    btnTexto.textContent = 'Consultar';
+//---------------------------------------------------------
+// NOVO: Função para habilitar/desabilitar o formulário
+//---------------------------------------------------------
+/**
+ * Altera o estado de todos os campos de entrada e do botão de consulta.
+ * @param {boolean} disabled Indica se os elementos devem ser desabilitados (true) ou habilitados (false).
+ */
+function setFormState(disabled) {
+    const inputs = document.querySelectorAll('#numero-projeto, #primeiro-nome');
+    const button = document.getElementById('btn-consultar');
+    
+    inputs.forEach(input => {
+        input.disabled = disabled;
+    });
+    
+    button.disabled = disabled;
+    
+    // Altera o texto e o ícone do botão
+    const btnTexto = button.querySelector('.btn-texto');
+    const loadingIcon = button.querySelector('.icone-loading');
+
+    if (disabled) {
+        button.classList.add('loading');
+        if (btnTexto) btnTexto.style.display = 'none';
+        if (loadingIcon) loadingIcon.style.display = 'inline-block';
+    } else {
+        button.classList.remove('loading', 'success', 'error');
+        if (btnTexto) btnTexto.style.display = 'inline-block';
+        if (loadingIcon) loadingIcon.style.display = 'none';
+        btnTexto.textContent = 'Consultar'; // Reseta o texto
+    }
 }
 
 // Aguarda o documento HTML ser totalmente carregado
 document.addEventListener('DOMContentLoaded', function () {
     const formConsulta = document.getElementById('form-consulta');
     const inputNumeroProjeto = document.getElementById('numero-projeto');
-    const inputPrimeiroNome = document.getElementById('primeiro-nome'); // NOVO: Captura o novo campo
-    const btnConsultar = document.getElementById('btn-consultar');
-
-    //---------------------------------------------------------
-    // NOVO: Adiciona listeners de validação em tempo real
-    //---------------------------------------------------------
+    const inputPrimeiroNome = document.getElementById('primeiro-nome');
+    
+    // **Ajustado:** Eventos de input para validação em tempo real
     inputPrimeiroNome.addEventListener('input', (event) => {
-        // Remove espaços do valor do campo para garantir que seja apenas um nome
         event.target.value = event.target.value.trim().split(' ')[0];
     });
 
-    // Ajuste aqui: Garante que apenas dígitos sejam aceitos e limita a 4 caracteres.
     inputNumeroProjeto.addEventListener('input', (event) => {
         event.target.value = event.target.value.replace(/[^0-9]/g, '').substring(0, 4);
     });
-
-
-    // Funções de controle do overlay (manter aqui ou mover para o escopo global)
-    // Para evitar duplicação, vamos assumir que as funções no escopo global são usadas.
-    // As funções repetidas abaixo foram removidas para clareza.
-
+    
     // Função que será executada ao submeter o formulário
-    async function handleFormSubmit(evento, numeroProjetoUrl = null, primeiroNomeUrl = null) { // NOVO: Recebe o nome da URL
+    async function handleFormSubmit(evento, numeroProjetoUrl = null, primeiroNomeUrl = null) {
         let sucesso = false;
 
         if (evento) {
@@ -89,72 +103,74 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const numeroProjeto = numeroProjetoUrl || inputNumeroProjeto.value.trim();
-        const primeiroNome = primeiroNomeUrl || inputPrimeiroNome.value.trim(); // NOVO: Captura o nome
+        const primeiroNome = primeiroNomeUrl || inputPrimeiroNome.value.trim();
 
         // ----------------------------------------------------
         // NOVO: Validação de Campos Vazios e Formato
         // ----------------------------------------------------
         if (!numeroProjeto || !primeiroNome) {
             exibirMensagem('erro', 'Por favor, preencha o número do projeto e o primeiro nome.');
-            esconderLoadingOverlay();
             return;
         }
 
         if (numeroProjeto.length !== 4) {
             exibirMensagem('erro', 'O número do projeto deve ter exatamente 4 dígitos.');
-            esconderLoadingOverlay();
             return;
         }
         
         if (primeiroNome.includes(' ')) {
             exibirMensagem('erro', 'Por favor, digite apenas o primeiro nome, sem espaços.');
-            esconderLoadingOverlay();
             return;
         }
-
-        btnConsultar.disabled = true;
-        btnConsultar.classList.add('loading');
+        
+        // **NOVA LÓGICA:** Desabilita o formulário e o botão
+        setFormState(true);
 
         try {
-            // NOVO: Passa o primeiro nome para a função do modelo
             const resposta = await buscarETratarProposta(numeroProjeto, primeiroNome);
             sucesso = resposta.sucesso;
 
             if (sucesso) {
+                // Remove a classe loading, adiciona a de sucesso
+                const btnConsultar = document.getElementById('btn-consultar');
                 btnConsultar.classList.remove('loading');
                 btnConsultar.classList.add('success');
                 exibirMensagem('sucesso', `Proposta #${numeroProjeto} encontrada!`);
                 
-                // NOVO: Redireciona com o ID e o primeiro nome na URL
+                // Redireciona
                 setTimeout(() => {
                     window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
                 }, 1500);
             } else {
+                const btnConsultar = document.getElementById('btn-consultar');
+                btnConsultar.classList.remove('loading');
                 btnConsultar.classList.add('error');
                 exibirMensagem('erro', `Erro: ${resposta.mensagem}`);
             }
         } catch (erro) {
             console.error('Ocorreu um erro na busca:', erro);
+            const btnConsultar = document.getElementById('btn-consultar');
+            btnConsultar.classList.remove('loading');
             btnConsultar.classList.add('error');
             exibirMensagem('erro', 'Ocorreu um erro inesperado ao consultar. Tente novamente.');
         } finally {
+            // **NOVA LÓGICA:** Habilita o formulário e o botão somente em caso de erro
             if (!sucesso) {
-                esconderLoadingOverlay();
-                setTimeout(resetarBotao, 2000);
+                setTimeout(() => setFormState(false), 2000);
             }
         }
     }
 
     formConsulta.addEventListener('submit', handleFormSubmit);
 
-    // NOVO: Lógica para verificar o ID e o nome na URL
+    // Lógica para verificar o ID e o nome na URL
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjetoDaUrl = urlParams.get('id');
-    const primeiroNomeDaUrl = urlParams.get('nome'); // NOVO: Pega o nome da URL
+    const primeiroNomeDaUrl = urlParams.get('nome');
 
-    if (numeroProjetoDaUrl && primeiroNomeDaUrl) { // NOVO: Valida ambos os parâmetros
+    if (numeroProjetoDaUrl && primeiroNomeDaUrl) {
         inputNumeroProjeto.value = numeroProjetoDaUrl;
-        inputPrimeiroNome.value = primeiroNomeDaUrl; // NOVO: Preenche o novo campo
+        inputPrimeiroNome.value = primeiroNomeDaUrl;
         handleFormSubmit(null, numeroProjetoDaUrl, primeiroNomeDaUrl);
     } else {
         esconderLoadingOverlay();
