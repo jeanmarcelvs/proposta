@@ -11,11 +11,32 @@ import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 //const apiToken = process.env.API_TOKEN;
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
-// Constantes para o cálculo do financiamento
-// Spread calculado para que a taxa anual seja 17,11% com a SELIC de 15%
-const SPREAD_ANUAL = 0.0221;
+// ======================================================================
+// NOVO: CONSTANTES AJUSTADAS PARA REFLETIR A TAXA DE 1,8% A 2,9% A.M.
+// ======================================================================
+
+// IOF é regulamentado, então não muda.
 const IOF_FIXO = 0.0038; // 0,38%
 const IOF_DIARIO = 0.000082; // 0,0082% ao dia
+
+// Spread-base anual por nível de valor do projeto
+// Ajustados para que a simulação reflita a realidade do mercado.
+const SPREAD_POR_VALOR = {
+    // Para projetos acima de R$ 50.000, taxa inicial mais competitiva (próximo de 1,8% a.m.)
+    faixa_1: 0.0887,
+    // Para projetos de R$ 20.001 a R$ 50.000, taxa média.
+    faixa_2: 0.12,
+    // Para projetos até R$ 20.000, taxa inicial mais alta (pode ser acima de 2,5% a.m.)
+    faixa_3: 0.18,
+};
+
+// Fator de risco que aumenta o spread com o número de parcelas.
+// Calculado para que o spread do pior cenário (2,9% a.m.) seja alcançado em 84 meses.
+const FATOR_RISCO_PRAZO = 0.00199;
+
+// ======================================================================
+// FIM DAS NOVAS CONSTANTES
+// ======================================================================
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
 let dadosProposta = {
@@ -195,41 +216,49 @@ function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
 function calcularFinanciamento(valorProjeto, selicAnual) {
     const selicDecimal = selicAnual / 100;
 
-    const jurosAnualNominal = selicDecimal + SPREAD_ANUAL;
-    const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
-
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {}; // Objeto para armazenar os resultados
 
     // Objeto para armazenar as taxas efetivas de cada opção de parcela
     const taxasEfetivas = {};
 
+    // Passo 1: Determinar o spread base do projeto com base no valor
+    let spreadBaseAnual;
+    if (valorProjeto > 50000) {
+        spreadBaseAnual = SPREAD_POR_VALOR.faixa_1;
+    } else if (valorProjeto > 20000) {
+        spreadBaseAnual = SPREAD_POR_VALOR.faixa_2;
+    } else {
+        spreadBaseAnual = SPREAD_POR_VALOR.faixa_3;
+    }
+
     opcoesParcelas.forEach(n => {
+        // Passo 2: Ajustar o spread base com o fator de risco do prazo
+        const spreadAnualAjustado = spreadBaseAnual + (n * FATOR_RISCO_PRAZO);
+
+        // Passo 3: Calcular a taxa nominal de juros anual
+        const jurosAnualNominal = selicDecimal + spreadAnualAjustado;
+        const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
+
+        // Passo 4: Calcular o valor total financiado com IOF
         const iofFixoCalculado = IOF_FIXO * valorProjeto;
         const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
         const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
 
+        // Passo 5: Calcular a parcela usando a Tabela Price
         if (jurosMensalNominal <= 0) {
             const valorParcela = (valorComIOF / n);
-            // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
-            simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-            // Para taxa zero, a taxa efetiva é zero
+            simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
             return;
         }
 
         const parcela = (valorComIOF * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
 
-        // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
-        simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
+        // Passo 6: Formatar a parcela
+        simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
-        // NOVO: Calcula a taxa de juros efetiva anual (TIR)
+        // Passo 7: Calcular a Taxa Efetiva de Retorno (TIR)
         const taxaMensalEfetiva = calcularTIRMensal(valorComIOF, parcela, n);
         const taxaAnualEfetiva = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
         taxasEfetivas[`taxaAnualEfetiva-${n}`] = taxaAnualEfetiva;
@@ -238,8 +267,6 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
     // NOVO: Retorna a simulação e as novas taxas
     return {
         parcelas: simulacao,
-        taxaAnualNominal: jurosAnualNominal,
-        taxaMensalNominal: jurosMensalNominal,
         taxasEfetivas: taxasEfetivas
     };
 }
@@ -288,7 +315,6 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const {
         parcelas: parcelasCalculadas,
         taxasEfetivas,
-        taxaMensalNominal // **CORREÇÃO AQUI:** Adicionei essa linha para pegar a taxa nominal
     } = calcularFinanciamento(valorTotal, selicAtual);
 
     // --- NOVA LÓGICA DE CÁLCULO E FORMATAÇÃO DA TAXA MENSAL ---
@@ -348,8 +374,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             payback: payback,
             parcelas: parcelasCalculadas,
             taxasPorParcela: taxasPorParcela, // **NOVO:** Adiciona as taxas individuais aqui
-            // **CORREÇÃO AQUI:** Adiciona a taxa nominal para o caso de o front-end precisar dela
-            taxaJurosMensal: `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`,
+            // **CORREÇÃO AQUI:** A taxa nominal é variável, então a removemos daqui.
+            taxaJurosMensal: `Varia conforme o prazo`,
             observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
