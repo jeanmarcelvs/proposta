@@ -200,7 +200,7 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
 
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {}; // Objeto para armazenar os resultados
-    
+
     // Objeto para armazenar as taxas efetivas de cada opção de parcela
     const taxasEfetivas = {};
 
@@ -211,20 +211,22 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
 
         if (jurosMensalNominal <= 0) {
             const valorParcela = (valorComIOF / n);
+            // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
             simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             });
-             // Para taxa zero, a taxa efetiva é zero
+            // Para taxa zero, a taxa efetiva é zero
             taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
             return;
         }
 
         const parcela = (valorComIOF * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
 
+        // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         });
 
         // NOVO: Calcula a taxa de juros efetiva anual (TIR)
@@ -234,7 +236,7 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
     });
 
     // NOVO: Retorna a simulação e as novas taxas
-    return { 
+    return {
         parcelas: simulacao,
         taxaAnualNominal: jurosAnualNominal,
         taxaMensalNominal: jurosMensalNominal,
@@ -282,7 +284,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-    
+
     // NOVO: Recebe as novas taxas da função de cálculo
     const {
         parcelas: parcelasCalculadas,
@@ -305,9 +307,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         sistema: {
             geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
             instalacaoPaineis: tipoEstrutura,
+            // **ALTERAÇÃO AQUI:** Removido as casas decimais do valor
             idealPara: idealParaValor.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             })
         },
         equipamentos: {
@@ -324,9 +327,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             resumoInstalacao: tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel
         },
         valores: {
+            // **ALTERAÇÃO AQUI:** Removido as casas decimais do valor total
             valorTotal: valorTotal.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }),
             valorResumo: valorResumo,
             payback: payback,
