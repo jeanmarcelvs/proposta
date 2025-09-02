@@ -180,3 +180,42 @@ export async function patch(endpoint, dados, accessToken) {
         };
     }
 }
+
+// NOVO: Função para buscar a taxa Selic na API do Banco Central
+/**
+ * Busca a taxa Selic mais recente na API do Banco Central do Brasil.
+ * @returns {Promise<number|null>} A taxa Selic anual em formato decimal ou null em caso de falha.
+ */
+export async function getSelicTaxa() {
+    const url = 'https://api.bcb.gov.br/dados/SGS/6/dados?formato=json';
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error('API BCB: Erro na resposta.', await response.text());
+            return null;
+        }
+
+        const dados = await response.json();
+
+        if (dados && dados.length > 0) {
+            // A API do BCB retorna os dados em ordem crescente de data,
+            // então o último item é o mais recente.
+            const dadoMaisRecente = dados[dados.length - 1];
+            
+            // O valor é um string no formato "XX,XX", precisamos converter para número
+            // e dividir por 100 para ter o formato decimal (ex: 15.00 -> 0.15)
+            const valorSelic = parseFloat(dadoMaisRecente.valor.replace(',', '.')) / 100;
+
+            console.log(`API BCB: Selic atual encontrada: ${valorSelic * 100}%`);
+            return valorSelic;
+        } else {
+            console.warn('API BCB: Não foram encontrados dados para a Selic.');
+            return null;
+        }
+
+    } catch (error) {
+        console.error('API BCB: Erro de rede ou na requisição.', error);
+        return null;
+    }
+}

@@ -4,12 +4,18 @@
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
 // Importa as funções da API, incluindo a nova 'authenticate' e 'patch'
-import { get, post, authenticate, patch } from './api.js';
+import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
 // Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
 //const apiToken = process.env.API_TOKEN;
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
+
+// NOVO: Constantes para o cálculo do financiamento
+// Spread médio calculado a partir da sua proposta: 2,21% ao ano
+const SPREAD_ANUAL = 0.0221;
+const IOF_FIXO = 0.0038; // 0,38%
+const IOF_DIARIO = 0.000082; // 0,0082% ao dia
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
 let dadosProposta = {
@@ -134,14 +140,60 @@ function formatarData(dataISO) {
     return `${dia}/${mes}/${ano}`;
 }
 
+// NOVO: Função para calcular o financiamento com a lógica da Tabela Price
+/**
+ * Calcula a simulação de financiamento com base na Selic e em um spread fixo.
+ * @param {number} valorProjeto O valor total do projeto a ser financiado.
+ * @param {number} selicAnual A taxa Selic anual em formato decimal (ex: 0.15).
+ * @returns {object} Um objeto com as parcelas calculadas.
+ */
+function calcularFinanciamento(valorProjeto, selicAnual) {
+    // 1. Calcular a taxa de juros de mercado
+    const jurosAnualTotal = selicAnual + SPREAD_ANUAL;
+    const jurosMensal = (Math.pow((1 + jurosAnualTotal), (1 / 12))) - 1;
+
+    // 2. Definir o range de parcelas para a simulação
+    const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
+    const simulacao = {}; // Objeto para armazenar os resultados
+
+    // 3. Iterar e calcular a parcela para cada opção
+    opcoesParcelas.forEach(n => {
+        // Calcular o valor total com IOF
+        const iofFixoCalculado = IOF_FIXO * valorProjeto;
+        // O cálculo do IOF Diário é sobre o valor principal da dívida
+        const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
+        const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
+
+        // Calcular a parcela com a Tabela Price
+        // Se a taxa de juros for 0, o cálculo é apenas a divisão simples
+        if (jurosMensal === 0) {
+            simulacao[`parcela-${n}`] = (valorComIOF / n).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            return;
+        }
+
+        const parcela = (valorComIOF * jurosMensal) / (1 - Math.pow((1 + jurosMensal), -n));
+
+        simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    });
+
+    return simulacao;
+}
+
 /**
  * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
  * Esta é a função principal de transformação.
  * @param {object} dadosApi O objeto de dados brutos recebido da API.
  * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
+ * @param {number} selicAtual A taxa Selic atual em formato decimal.
  * @returns {object} Um objeto com os dados formatados para a página.
  */
-function tratarDadosParaProposta(dadosApi, tipoProposta) {
+function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     if (!dadosApi || !dadosApi.dados) {
         console.error("Modelo: Dados da API não encontrados ou incompletos.");
         return null;
@@ -168,19 +220,16 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
     // Calcula o valor ideal para a conta de luz
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
-    const valorTotal = extrairValorVariavelPorChave(variables, 'preco') || 0;
+    const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-    const parcelas = {};
-    [1, 2, 3, 4, 5, 6, 7].forEach(p => {
-        const prazo = extrairValorVariavelPorChave(variables, `f_prazo_${p}`);
-        const valorParcela = extrairValorVariavelPorChave(variables, `f_parcela_${p}`);
-        if (prazo && valorParcela) {
-            parcelas[`parcela-${prazo}`] = valorParcela;
-        }
-    });
+    // NOVO: Chamada para a nova função de cálculo das parcelas
+    const parcelasCalculadas = calcularFinanciamento(valorTotal, selicAtual);
+    
+    // Apenas para mostrar no console
+    console.log("Parcelas Calculadas:", parcelasCalculadas);
 
     const retorno = {
         id: dados.project.id,
@@ -202,10 +251,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         equipamentos: {
             imagem: caminhosImagens.equipamentos[tipoProposta],
             quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
-            // CORREÇÃO: Adicionando ' W' ao final da string da potência do painel.
             descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
             quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
-            // CORREÇÃO: Adicionando ' W' ao final da string da potência do inversor.
             descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
         },
         instalacao: {
@@ -215,10 +262,9 @@ function tratarDadosParaProposta(dadosApi, tipoProposta) {
         valores: {
             valorTotal: valorTotal,
             valorResumo: valorResumo,
-            // REMOVIDO: A variável 'economiaMensal' não existe.
-            // A economia em kWh é o próprio 'geracaoMensal'.
             payback: payback,
-            parcelas: parcelas,
+            // ATUALIZADO: Usando as parcelas calculadas em vez das da API externa
+            parcelas: parcelasCalculadas,
             observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
@@ -243,6 +289,16 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
     const accessToken = authResponse.accessToken;
 
+    // NOVO: Busca a taxa Selic antes de buscar as propostas
+    const selicAtual = await getSelicTaxa();
+    if (selicAtual === null) {
+        // Se a Selic não puder ser obtida, retorne um erro ou use um valor padrão
+        return {
+            sucesso: false,
+            mensagem: 'Não foi possível obter a taxa Selic para o cálculo do financiamento.'
+        };
+    }
+
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
     const dadosApiPremium = await get(endpointPremium, accessToken);
 
@@ -266,10 +322,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    // ... (restante da lógica para buscar e tratar as propostas Premium e Acessível permanece igual) ...
-    // O resto do código abaixo não precisa de grandes mudanças, pois a validação já foi feita.
-
-    const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium');
+    const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
     if (!propostaPremium) {
         return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
     }
@@ -282,7 +335,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         const endpointAcessivel = `/projects/${idPropostaAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel, accessToken);
         if (dadosApiAcessivel.sucesso) {
-            propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel');
+            propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
         } else {
             return { sucesso: false, mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.' };
         }
