@@ -1100,7 +1100,7 @@ body.theme-acessivel .icone-resumo {
     align-items: stretch;
 }
 
-/* NOVO: Regras para evitar o overflow nos valores das parcelas */
+/* Regras para evitar o overflow nos valores das parcelas */
 .valor-parcela-proposta {
     font-size: 1.2rem;
     font-weight: bold;
@@ -1114,8 +1114,9 @@ body.theme-acessivel .icone-resumo {
     margin-right: 5px;
 }
 
-/* NOVO: Estiliza o card de observações */
+/* NOVO: Estiliza o card de observações para ter a largura total */
 .secao-observacao-financiamento {
+    grid-column: 1 / -1; /* Força o card a ocupar todas as colunas do grid */
     padding: 20px;
     background-color: #f9f9f9;
     border-left: 3px solid #ddd;
@@ -1135,7 +1136,7 @@ body.theme-acessivel .icone-resumo {
     flex-direction: column;
     align-items: flex-start; 
     gap: 5px; 
-    margin-bottom: 10px;
+    margin-top: 20px; /* Adiciona um espaço para separar do valor total */
 }
 
 /* Aprimora a legenda do payback para ter mais destaque */
