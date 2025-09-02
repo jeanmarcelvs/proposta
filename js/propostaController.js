@@ -93,15 +93,10 @@ function preencherDetalhesInstalacao(proposta) {
 }
 
 // Função para preencher a página com os dados da proposta
-// Função para preencher a página com os dados da proposta
 function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
 
     try {
-        // NOVO: Declarando as variáveis no início da função
-        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
-        const iconeResumoEl = document.getElementById('icone-resumo');
-
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
@@ -166,8 +161,8 @@ function preencherDadosProposta(dados) {
 
         const idealParaEl = document.getElementById('ideal-para');
         if (idealParaEl) {
-                const idealPara = dados.sistema?.idealPara || 'R$ 0,00';
-                idealParaEl.innerText = idealPara.replace('R$', '').trim();
+            const idealPara = dados.sistema?.idealPara || 'R$ 0,00';
+            idealParaEl.innerText = idealPara.replace('R$', '').trim();
         }
         console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
 
@@ -233,7 +228,8 @@ function preencherDadosProposta(dados) {
         console.log("DEBUG: Preenchendo observações e validade...");
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
-        
+        // NOVO: Elemento para o resumo da instalação
+        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
 
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
@@ -243,16 +239,17 @@ function preencherDadosProposta(dados) {
             validadeEl.innerText = dados.validade || "Não informada";
         }
 
+        // NOVO: Preenche o resumo da instalação e atualiza o ícone
         if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
-            if (dados.instalacao?.resumoInstalacao) {
-                if (dados.instalacao.resumoInstalacao.includes("premium")) {
-                    iconeResumoEl.classList.add('fa-circle-check');
-                    iconeResumoEl.classList.remove('fa-triangle-exclamation');
-                } else {
-                    iconeResumoEl.classList.add('fa-triangle-exclamation');
-                    iconeResumoEl.classList.remove('fa-circle-check');
-                }
+            // NOVO: Usa a propriedade 'tipo' para determinar o ícone,
+            // o que é mais robusto do que verificar a string de texto.
+            if (dados.tipo === 'premium') {
+                iconeResumoEl.classList.add('fa-circle-check');
+                iconeResumoEl.classList.remove('fa-triangle-exclamation');
+            } else {
+                iconeResumoEl.classList.add('fa-triangle-exclamation');
+                iconeResumoEl.classList.remove('fa-circle-check');
             }
         }
 

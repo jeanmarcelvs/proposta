@@ -239,6 +239,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     console.log("Parcelas Calculadas:", parcelasCalculadas);
 
     const retorno = {
+        // NOVO: Adiciona o tipo de proposta ao objeto
+        tipo: tipoProposta,
         id: dados.project.id,
         propostaId: idProposta,
         cliente: nomeCliente,
