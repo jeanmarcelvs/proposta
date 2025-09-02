@@ -32,7 +32,7 @@ app.get('/selic', async (req, res) => {
   }
 });
 
-// Inicia o servidor
+// Inicia o servidor--------
 app.listen(PORT, () => {
   console.log(`Servidor proxy rodando na porta ${PORT}`);
 });
