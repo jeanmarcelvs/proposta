@@ -287,7 +287,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
     const {
         parcelas: parcelasCalculadas,
-        taxasEfetivas
+        taxasEfetivas,
+        taxaMensalNominal // **CORREÇÃO AQUI:** Adicionei essa linha para pegar a taxa nominal
     } = calcularFinanciamento(valorTotal, selicAtual);
 
     // --- NOVA LÓGICA DE CÁLCULO E FORMATAÇÃO DA TAXA MENSAL ---
@@ -347,6 +348,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             payback: payback,
             parcelas: parcelasCalculadas,
             taxasPorParcela: taxasPorParcela, // **NOVO:** Adiciona as taxas individuais aqui
+            // **CORREÇÃO AQUI:** Adiciona a taxa nominal para o caso de o front-end precisar dela
+            taxaJurosMensal: `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`,
             observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
@@ -466,7 +469,7 @@ export async function atualizarStatusVisualizacao(dados) {
             console.error("Modelo: Falha ao atualizar status de visualização.");
         }
     } catch (erro) {
-        console.error("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
+        console.log("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
         return {
             sucesso: false,
             mensagem: 'Ocorreu um erro ao tentar atualizar o status de visualização.'
