@@ -223,7 +223,10 @@ function preencherDadosProposta(dados) {
         const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
 
         opcoesParcelas.forEach(n => {
+            // A chave para o valor da parcela é 'parcela-12', 'parcela-24', etc.
             const parcelaKey = `parcela-${n}`;
+
+            // A chave para a taxa efetiva é 'taxaAnualEfetiva-12', 'taxaAnualEfetiva-24', etc.
             const taxaKey = `taxaAnualEfetiva-${n}`;
 
             // Preenche o valor da parcela
@@ -237,12 +240,13 @@ function preencherDadosProposta(dados) {
             // Preenche a taxa de juros específica para a parcela
             const elementoTaxa = document.getElementById(`taxa-${n}`);
             if (elementoTaxa) {
+                // Acessa o objeto taxasPorParcela e usa a chave correta
                 elementoTaxa.innerText = dados.valores?.taxasPorParcela[taxaKey] || 'N/A';
             } else {
                 console.warn(`AVISO: Elemento de taxa 'taxa-${n}' não encontrado.`);
             }
         });
-        
+
         // --- FIM DA ALTERAÇÃO ---
 
         console.log("DEBUG: Parcelas preenchidas com sucesso.");
