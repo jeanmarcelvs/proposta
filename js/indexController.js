@@ -27,14 +27,6 @@ function esconderLoadingOverlay() {
     }
 }
 
-// Função para ocultar a tela de splash
-function esconderTelaSplash() {
-    const telaSplash = document.getElementById('tela-splash');
-    if (telaSplash) {
-        telaSplash.classList.add('oculto');
-    }
-}
-
 // Função para exibir mensagem de feedback
 function exibirMensagem(tipo, mensagem) {
     const mensagemFeedback = document.getElementById('mensagem-feedback');
@@ -63,60 +55,40 @@ function resetarBotao() {
     btnTexto.textContent = 'Consultar';
 }
 
-
-// Aguarda o documento HTML ser totalmente carregado
 // Aguarda o documento HTML ser totalmente carregado
 document.addEventListener('DOMContentLoaded', function () {
     const formConsulta = document.getElementById('form-consulta');
     const inputNumeroProjeto = document.getElementById('numero-projeto');
     const btnConsultar = document.getElementById('btn-consultar');
-    const btnTexto = btnConsultar.querySelector('.btn-texto');
 
-    // Funções de controle do overlay
-    function mostrarLoadingOverlay() {
-        const overlay = document.getElementById('loading-overlay');
-        if (overlay) {
-            overlay.classList.remove('oculto');
-        }
-    }
+    // Funções de controle do overlay (manter aqui ou mover para o escopo global)
+    // Para evitar duplicação, vamos assumir que as funções no escopo global são usadas.
+    // As funções repetidas abaixo foram removidas para clareza.
 
-    function esconderLoadingOverlay() {
-        const overlay = document.getElementById('loading-overlay');
-        const mainContent = document.querySelector('main');
-        if (mainContent) {
-            mainContent.classList.remove('main-oculto');
-            mainContent.classList.add('main-visivel');
-        }
-        if (overlay) {
-            overlay.classList.add('oculto');
-        }
-    }
-
-    // Função que será executada ao submeter o formulário
-    // Função que será executada ao submeter o formulário
     // Função que será executada ao submeter o formulário
     async function handleFormSubmit(evento, numeroProjetoUrl = null) {
         let sucesso = false;
 
+        // Se o evento existe, significa que foi um envio do formulário, então previne o comportamento padrão.
         if (evento) {
             evento.preventDefault();
         }
 
-        // Adicionado: Mostra o splash screen ao iniciar a consulta
+        // Mostra o loading-overlay ao iniciar a consulta
         mostrarLoadingOverlay();
 
-        const numeroProjeto = numeroProjetoUrl || document.getElementById('numero-projeto').value.trim();
+        // Pega o número do projeto da URL ou do input do formulário
+        const numeroProjeto = numeroProjetoUrl || inputNumeroProjeto.value.trim();
 
         if (!numeroProjeto) {
             if (!numeroProjetoUrl) {
                 exibirMensagem('erro', 'Por favor, digite o número do projeto.');
             }
-            // Adicionado: Esconde o splash screen se a validação falhar
+            // Esconde o splash screen se a validação falhar
             esconderLoadingOverlay();
             return;
         }
 
-        const btnConsultar = document.getElementById('btn-consultar');
         btnConsultar.disabled = true;
         btnConsultar.classList.add('loading');
 
@@ -151,6 +123,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     formConsulta.addEventListener('submit', handleFormSubmit);
 
-    // Esconde o overlay de carregamento após a página carregar
-    esconderLoadingOverlay();
+    // --- Nova Lógica Adicionada Aqui ---
+    // Verifica se há um ID de projeto na URL quando a página carrega
+    const urlParams = new URLSearchParams(window.location.search);
+    const numeroProjetoDaUrl = urlParams.get('id');
+
+    if (numeroProjetoDaUrl) {
+        // Preenche o campo de input e chama a função de envio
+        inputNumeroProjeto.value = numeroProjetoDaUrl;
+        // Chama a função de submissão do formulário, passando o valor da URL
+        // O primeiro parâmetro 'null' indica que não é um evento de formulário
+        handleFormSubmit(null, numeroProjetoDaUrl);
+    } else {
+        // Se não houver ID na URL, apenas esconde o overlay
+        esconderLoadingOverlay();
+    }
 });
