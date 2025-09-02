@@ -191,254 +191,163 @@ function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
  * @param {number} selicAnual A taxa Selic anual em formato de número (ex: 10.5).
  * @returns {object} Um objeto com as parcelas calculadas, taxa nominal e a nova taxa efetiva.
  */
-
 function calcularFinanciamento(valorProjeto, selicAnual) {
     const selicDecimal = selicAnual / 100;
-
     const jurosAnualNominal = selicDecimal + SPREAD_ANUAL;
     const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
-
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {}; // Objeto para armazenar os resultados
-
     // Objeto para armazenar as taxas efetivas de cada opção de parcela
     const taxasEfetivas = {};
-
     opcoesParcelas.forEach(n => {
         const iofFixoCalculado = IOF_FIXO * valorProjeto;
         const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
         const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
-
         if (jurosMensalNominal <= 0) {
             const valorParcela = (valorComIOF / n);
             // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
-            simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
+            simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             // Para taxa zero, a taxa efetiva é zero
-            taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
+            taxasEfetivas[`taxaMensalEfetiva-${n}`] = 0;
             return;
         }
-
         const parcela = (valorComIOF * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
-
         // **ALTERAÇÃO AQUI:** Removido as casas decimais das parcelas
-        simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
+        simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
-        // NOVO: Calcula a taxa de juros efetiva anual (TIR)
+        // **NOVO:** Calcula a taxa de juros efetiva (TIR) para cada simulação de financiamento
         const taxaMensalEfetiva = calcularTIRMensal(valorComIOF, parcela, n);
-        const taxaAnualEfetiva = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
-        taxasEfetivas[`taxaAnualEfetiva-${n}`] = taxaAnualEfetiva;
+        // **ALTERAÇÃO AQUI:** Armazena a taxa mensal efetiva, não a anual
+        taxasEfetivas[`taxaMensalEfetiva-${n}`] = taxaMensalEfetiva * 100;
     });
 
-    // NOVO: Retorna a simulação e as novas taxas
     return {
-        parcelas: simulacao,
-        taxaAnualNominal: jurosAnualNominal,
-        taxaMensalNominal: jurosMensalNominal,
-        taxasEfetivas: taxasEfetivas
+        ...simulacao,
+        ...taxasEfetivas,
+        jurosNominal: jurosAnualNominal * 100 // Retorna a taxa nominal para fins de exibição
     };
 }
 
-/**
- * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
- * Esta é a função principal de transformação.
- * @param {object} dadosApi O objeto de dados brutos recebido da API.
- * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
- * @param {number} selicAtual A taxa Selic atual em formato decimal.
- * @returns {object} Um objeto com os dados formatados para a página.
- */
-function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
-    if (!dadosApi || !dadosApi.dados) {
-        console.error("Modelo: Dados da API não encontrados ou incompletos.");
-        return null;
-    }
-
-    const { dados } = dadosApi;
-    const variables = dados.variables || [];
-    const pricingTable = dados.pricingTable || [];
-    const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
-    const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
-    const idProposta = dados.id || null;
-    const linkProposta = dados.linkPdf || '#';
-    const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
-    const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
-
-    console.log(`Modelo: Tratando dados para proposta ${tipoProposta}`);
-
-    const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
-    const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
-    const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
-    const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
-    const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
-
-    // Calcula o valor ideal para a conta de luz
-    const idealParaValor = geracaoMediaValor * tarifaEnergia;
-
-    const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
-    const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-
-    const {
-        parcelas: parcelasCalculadas,
-        taxasEfetivas,
-        taxaMensalNominal // **CORREÇÃO AQUI:** Adicionei essa linha para pegar a taxa nominal
-    } = calcularFinanciamento(valorTotal, selicAtual);
-
-    // --- NOVA LÓGICA DE CÁLCULO E FORMATAÇÃO DA TAXA MENSAL ---
-    const taxasPorParcela = {};
-    for (const key in taxasEfetivas) {
-        if (taxasEfetivas.hasOwnProperty(key)) {
-            const taxaAnualEfetiva = taxasEfetivas[key];
-            const taxaMensalEfetiva = (Math.pow(1 + taxaAnualEfetiva, 1/12) - 1);
-            taxasPorParcela[key] = `${(taxaMensalEfetiva * 100).toFixed(2).replace('.', ',')}% a.m.`;
-        }
-    }
-    // --- FIM DA NOVA LÓGICA ---
-
-    console.log("Parcelas Calculadas:", parcelasCalculadas);
-    console.log("Taxas por Parcela:", taxasPorParcela);
-
-    const retorno = {
-        // NOVO: Adiciona o tipo de proposta ao objeto
-        tipo: tipoProposta,
-        id: dados.project.id,
-        propostaId: idProposta,
-        cliente: nomeCliente,
-        consumoMensal: `${consumoMensal} kWh`,
-        geracaoMensal: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
-        local: `${cidade} / ${estado}`,
-        dataProposta: dataProposta,
-        linkProposta: linkProposta,
-        sistema: {
-            geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
-            instalacaoPaineis: tipoEstrutura,
-            // **ALTERAÇÃO AQUI:** Removido as casas decimais do valor
-            idealPara: idealParaValor.toLocaleString('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            })
-        },
-        equipamentos: {
-            imagem: caminhosImagens.equipamentos[tipoProposta],
-            quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
-            descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
-            quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
-            descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
-        },
-        instalacao: {
-            imagem: caminhosImagens.instalacao[tipoProposta],
-            detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
-            // NOVO: Adiciona o resumo de instalação ao objeto de retorno
-            resumoInstalacao: tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel
-        },
-        valores: {
-            // **ALTERAÇÃO AQUI:** Removido as casas decimais do valor total
-            valorTotal: valorTotal.toLocaleString('pt-BR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }),
-            valorResumo: valorResumo,
-            payback: payback,
-            parcelas: parcelasCalculadas,
-            taxasPorParcela: taxasPorParcela, // **NOVO:** Adiciona as taxas individuais aqui
-            // **CORREÇÃO AQUI:** Adiciona a taxa nominal para o caso de o front-end precisar dela
-            taxaJurosMensal: `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`,
-            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
-        },
-        validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
-    };
-
-    console.log("Modelo: Dados tratados para a página.", retorno);
-    return retorno;
-}
 
 /**
- * Função principal para buscar e processar os dados das propostas.
- * @param {string} numeroProjeto O ID do projeto.
- * @param {string} primeiroNomeCliente O primeiro nome do cliente para validação de segurança.
- * @returns {Promise<object>} Objeto com os dados das propostas Premium e Acessível.
+ * Função principal para buscar e processar os dados da proposta.
+ * Inclui o cálculo da simulação de financiamento.
+ * @param {string} numeroProjeto O número do projeto a ser buscado.
+ * @param {string} primeiroNome O primeiro nome do cliente.
+ * @returns {Promise<object>} Um objeto contendo os dados da proposta tratada.
  */
-export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    console.log(`Modelo: Iniciando busca e validação para o projeto: ${numeroProjeto} e cliente: ${primeiroNomeCliente}`);
-
+export async function buscarETratarProposta(numeroProjeto, primeiroNome) {
     const authResponse = await authenticate(apiToken);
     if (!authResponse.sucesso) {
+        console.error("Modelo: Falha na autenticação.", authResponse.mensagem);
         return authResponse;
     }
+
     const accessToken = authResponse.accessToken;
 
-    const selicAtual = await getSelicTaxa();
-    if (selicAtual === null) {
-        return {
-            sucesso: false,
-            mensagem: 'Não foi possível obter a taxa Selic para o cálculo do financiamento.'
-        };
-    }
+    try {
+        const params = new URLSearchParams({
+            project_number: numeroProjeto,
+            first_name: primeiroNome
+        });
 
-    const endpointPremium = `/projects/${numeroProjeto}/proposals`;
-    const dadosApiPremium = await get(endpointPremium, accessToken);
+        const respostaApi = await get(`/proposals?${params.toString()}`, accessToken);
 
-    if (!dadosApiPremium.sucesso) {
-        return {
-            sucesso: false,
-            mensagem: 'Projeto não encontrado ou dados inválidos.'
-        };
-    }
-
-    const nomeCompletoApi = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'cliente_nome');
-    const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
-
-    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
-        console.error("Modelo: Tentativa de acesso não autorizado. Nome não corresponde.");
-        return {
-            sucesso: false,
-            mensagem: 'Nome do cliente não corresponde ao projeto.'
-        };
-    }
-
-    const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
-    if (!propostaPremium) {
-        return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
-    }
-    dadosProposta.premium = propostaPremium;
-
-    const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
-    let propostaAcessivel = null;
-
-    if (idPropostaAcessivel) {
-        const endpointAcessivel = `/projects/${idPropostaAcessivel}/proposals`;
-        const dadosApiAcessivel = await get(endpointAcessivel, accessToken);
-        if (dadosApiAcessivel.sucesso) {
-            propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
-        } else {
-            return { sucesso: false, mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.' };
+        if (!respostaApi.sucesso) {
+            console.error("Modelo: Falha na busca da proposta.", respostaApi.mensagem);
+            return respostaApi;
         }
-    } else {
-        return { sucesso: false, mensagem: 'ID da proposta acessível não encontrado.' };
-    }
 
-    if (!propostaAcessivel) {
-        return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
-    }
-    dadosProposta.acessivel = propostaAcessivel;
+        const dadosOriginais = respostaApi.data[0];
 
-    return {
-        sucesso: true,
-        dados: dadosProposta
-    };
+        if (!dadosOriginais) {
+            return {
+                sucesso: false,
+                mensagem: "Proposta não encontrada."
+            };
+        }
+
+        // Busca a taxa Selic para o cálculo
+        const selicAnual = await getSelicTaxa();
+
+        if (selicAnual === null) {
+            console.error("Modelo: Falha ao obter a taxa Selic. Usando um valor padrão para cálculo.");
+        }
+
+        // Processa as duas propostas (Premium e Acessível)
+        dadosProposta.premium = processarProposta(dadosOriginais, 'premium', selicAnual);
+        dadosProposta.acessivel = processarProposta(dadosOriginais, 'acessivel', selicAnual);
+
+        // Retorna o objeto completo para o controlador
+        return {
+            sucesso: true,
+            propostas: dadosProposta,
+            mensagem: "Proposta processada com sucesso."
+        };
+
+    } catch (erro) {
+        console.error("Modelo: Erro no processamento da proposta.", erro);
+        return {
+            sucesso: false,
+            mensagem: 'Ocorreu um erro no processamento dos dados.'
+        };
+    }
 }
 
 /**
- * Função para atualizar o status de visualização da proposta na API.
- * @param {{propostaId: string, tipoVisualizacao: 'P'|'A'}} dados O ID da proposta e o tipo de visualização.
- * @returns {Promise<object>} Objeto de resposta da API.
+ * Função para processar os dados de uma proposta específica (premium ou acessível).
+ * @param {object} dadosOriginais Os dados originais da API.
+ * @param {string} tipo O tipo de proposta ('premium' ou 'acessivel').
+ * @param {number} selicAnual A taxa Selic anual.
+ * @returns {object} O objeto de proposta processado.
+ */
+function processarProposta(dadosOriginais, tipo, selicAnual) {
+    const propostaDoTipo = dadosOriginais.proposals.find(p => p.proposal_type === tipo);
+    const variables = propostaDoTipo?.variables || [];
+
+    // O valor do projeto é o preço do equipamento e da instalação, mas é armazenado no `valor_projeto`
+    const valorTotalProjeto = extrairValorNumericoPorChave(variables, 'valor_projeto');
+
+    const simulacaoFinanciamento = calcularFinanciamento(valorTotalProjeto, selicAnual || 13.75);
+
+    const propostaTratada = {
+        propostaId: dadosOriginais.id,
+        cliente: extrairValorVariavelPorChave(variables, 'nome_completo'),
+        local: extrairValorVariavelPorChave(variables, 'localidade_instalacao'),
+        dataProposta: formatarData(dadosOriginais.created_at),
+        sistema: {
+            geracaoMedia: extrairValorVariavelPorChave(variables, 'geracao_mensal_media'),
+            idealPara: extrairValorVariavelPorChave(variables, 'faixa_consumo'),
+            instalacaoPaineis: extrairValorVariavelPorChave(variables, 'tipo_instalacao')
+        },
+        equipamentos: {
+            descricaoInversor: extrairValorVariavelPorChave(variables, 'inversor'),
+            quantidadeInversor: extrairValorNumericoPorChave(variables, 'quantidade_inversor'),
+            descricaoPainel: extrairValorVariavelPorChave(variables, 'modulos'),
+            quantidadePainel: extrairValorNumericoPorChave(variables, 'quantidade_modulos'),
+            imagem: caminhosImagens.equipamentos[tipo]
+        },
+        instalacao: {
+            imagem: caminhosImagens.instalacao[tipo],
+            detalhesInstalacao: tipo === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
+            resumo: tipo === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel,
+        },
+        valores: {
+            valorTotal: extrairValorVariavelPorChave(variables, 'valor_projeto'),
+            desconto: extrairValorVariavelPorChave(variables, 'valor_desconto_aplicado'),
+            valorAVista: extrairValorVariavelPorChave(variables, 'valor_a_vista'),
+            simulacao: simulacaoFinanciamento,
+            economiaMensal: extrairValorVariavelPorChave(variables, 'economia_mensal_media'),
+            payback: formatarPayback(extrairValorNumericoPorChave(variables, 'payback_meses'))
+        }
+    };
+
+    return propostaTratada;
+}
+
+/**
+ * Atualiza o status de visualização de uma proposta na API.
+ * @param {object} dados Objeto com propostaId e tipoVisualizacao.
  */
 export async function atualizarStatusVisualizacao(dados) {
     try {
@@ -472,7 +381,7 @@ export async function atualizarStatusVisualizacao(dados) {
         console.log("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
         return {
             sucesso: false,
-            mensagem: 'Ocorreu um erro ao tentar atualizar o status de visualização.'
+            mensagem: 'Ocorreu um erro ao tentar atualizar o status.'
         };
     }
 }

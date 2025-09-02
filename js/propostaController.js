@@ -153,7 +153,6 @@ function preencherDadosProposta(dados) {
         if (instalacaoPaineisEl && iconeInstalacaoEl) {
             const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
             instalacaoPaineisEl.innerText = tipoInstalacao;
-
             if (tipoInstalacao.toLowerCase().includes('telhado')) {
                 iconeInstalacaoEl.className = 'fas fa-house-chimney';
             } else if (tipoInstalacao.toLowerCase().includes('solo')) {
@@ -174,13 +173,10 @@ function preencherDadosProposta(dados) {
         console.log("DEBUG: Preenchendo dados dos equipamentos...");
         const descricaoInversorEl = document.getElementById('descricao-inversor');
         if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
-
         const quantidadeInversorEl = document.getElementById('quantidade-inversor');
         if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
-
         const descricaoPainelEl = document.getElementById('descricao-painel');
         if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
-
         const quantidadePainelEl = document.getElementById('quantidade-painel');
         if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
         console.log("DEBUG: Dados de equipamentos preenchidos com sucesso.");
@@ -190,202 +186,190 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
-        // NOVO: Adiciona a informação de payback diretamente no span
+        const descontoEl = document.getElementById('valor-desconto');
+        if (descontoEl) descontoEl.innerText = dados.valores?.desconto || "Não informado";
+
+        const valorAVistaEl = document.getElementById('valor-a-vista');
+        if (valorAVistaEl) valorAVistaEl.innerText = dados.valores?.valorAVista || "Não informado";
+
+        const economiaMensalEl = document.getElementById('economia-mensal');
+        if (economiaMensalEl) economiaMensalEl.innerText = dados.valores?.economiaMensal || "Não informado";
+
         const paybackValorEl = document.getElementById('payback-valor');
-        if (paybackValorEl) {
-            paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
-        } else {
-            console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
-        }
+        if (paybackValorEl) paybackValorEl.innerText = dados.valores?.payback || "Não informado";
+        console.log("DEBUG: Valores financeiros preenchidos com sucesso.");
 
-        // --- INÍCIO DA ALTERAÇÃO ---
-        // REMOVIDO: A linha abaixo que preenche a taxa de juros mensal genérica,
-        // pois agora exibiremos a taxa específica para cada parcela.
-        // const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
-        // if (taxaMensalEl) {
-        //     taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
-        // }
+        // 5. Simulação de Financiamento
+        console.log("DEBUG: Preenchendo simulações de financiamento...");
+        const simulacao = dados.valores?.simulacao;
 
-        // REMOVIDO: Taxa Anual e Taxa SELIC
-        // const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
-        // const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
-        // if (taxaAnualEl) {
-        //     taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
-        // }
-        // if (taxaSelicEl) {
-        //     taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
-        // }
-
-        console.log("DEBUG: Taxas de juros e SELIC preenchidas com sucesso.");
-
-        // 5. Parcelas e Taxas
-        console.log("DEBUG: Preenchendo parcelas e taxas...");
+        // **ALTERADO:** Agora preenche a parcela e a taxa efetiva para cada opção
         const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
-
         opcoesParcelas.forEach(n => {
-            // A chave para o valor da parcela é 'parcela-12', 'parcela-24', etc.
-            const parcelaKey = `parcela-${n}`;
-
-            // A chave para a taxa efetiva é 'taxaAnualEfetiva-12', 'taxaAnualEfetiva-24', etc.
-            const taxaKey = `taxaAnualEfetiva-${n}`;
-
-            // Preenche o valor da parcela
-            const elementoParcela = document.getElementById(parcelaKey);
-            if (elementoParcela) {
-                elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
-            } else {
-                console.warn(`AVISO: Elemento de parcela '${parcelaKey}' não encontrado.`);
+            const parcelaEl = document.getElementById(`parcela-${n}`);
+            if (parcelaEl) {
+                parcelaEl.innerText = simulacao[`parcela-${n}`] || "N/A";
             }
-
-            // Preenche a taxa de juros específica para a parcela
-            const elementoTaxa = document.getElementById(`taxa-${n}`);
-            if (elementoTaxa) {
-                // Acessa o objeto taxasPorParcela e usa a chave correta
-                elementoTaxa.innerText = dados.valores?.taxasPorParcela[taxaKey] || 'N/A';
-            } else {
-                console.warn(`AVISO: Elemento de taxa 'taxa-${n}' não encontrado.`);
+            const taxaEl = document.getElementById(`taxa-${n}`);
+            if (taxaEl) {
+                // **ALTERAÇÃO AQUI:** Pega a taxa mensal e formata com 4 casas decimais para maior precisão
+                const taxaFormatada = (simulacao[`taxaMensalEfetiva-${n}`] || 0).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+                taxaEl.innerText = `${taxaFormatada}%`;
             }
         });
+        console.log("DEBUG: Simulações de financiamento preenchidas com sucesso.");
 
-        // --- FIM DA ALTERAÇÃO ---
-
-        console.log("DEBUG: Parcelas preenchidas com sucesso.");
-
-        // 6. Observações e Validade
-        console.log("DEBUG: Preenchendo observações e validade...");
-        const observacaoEl = document.getElementById('texto-observacao');
-        const validadeEl = document.getElementById('texto-validade');
-
-        if (observacaoEl) {
-            observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
+        // 6. Imagens e Detalhes de Instalação
+        console.log("DEBUG: Preenchendo imagens e detalhes de instalação...");
+        atualizarImagemEquipamentos(dados);
+        atualizarImagemInstalacao(dados);
+        preencherDetalhesInstalacao(dados);
+        // Preenche o resumo da instalação
+        if (resumoInstalacaoEl) {
+            resumoInstalacaoEl.innerText = dados.instalacao?.resumo || "";
+        }
+        if (iconeResumoEl) {
+            // Define o ícone com base no tipo de proposta
+            iconeResumoEl.className = dados.tipo === 'premium' ? 'icone-resumo fas fa-gem' : 'icone-resumo fas fa-star';
         }
 
-        if (validadeEl) {
-            validadeEl.innerText = dados.validade || "Não informada";
-        }
+        console.log("DEBUG: Preenchimento da página concluído com sucesso.");
 
-        if (resumoInstalacaoEl && iconeResumoEl) {
-            resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
-            if (dados.tipo === 'premium') {
-                // CORREÇÃO: Ícone de 'check' para proposta Premium
-                iconeResumoEl.classList.add('fa-circle-check');
-                iconeResumoEl.classList.remove('fa-triangle-exclamation');
-            } else {
-                // Ícone de 'exclamação' para proposta Acessível
-                iconeResumoEl.classList.add('fa-triangle-exclamation');
-                iconeResumoEl.classList.remove('fa-circle-check');
-            }
-        }
+        // Atualiza o status de visualização na API
+        atualizarStatusVisualizacao({
+            propostaId: dados.propostaId,
+            tipoVisualizacao: dados.tipo === 'premium' ? 'Proposta Premium Visualizada' : 'Proposta Acessível Visualizada'
+        });
 
-        console.log("DEBUG: Observações, validade e resumo de instalação preenchidos com sucesso.");
-    } catch (error) {
-        console.error("ERRO DENTRO DE preencherDadosProposta:", error);
+    } catch (erro) {
+        console.error("ERRO: Ocorreu um erro ao preencher os dados da proposta.", erro);
+        // Exibe uma mensagem de erro na página se possível
+        const mainContent = document.querySelector('main');
+        if (mainContent) {
+            mainContent.innerHTML = '<p class="erro-mensagem">Não foi possível carregar a proposta. Por favor, tente novamente.</p>';
+        }
     }
 }
 
-// Adiciona o event listener para garantir que o conteúdo está pronto
-document.addEventListener('DOMContentLoaded', async () => {
-    // Mostra o overlay de carregamento imediatamente
-    mostrarLoadingOverlay();
 
+document.addEventListener('DOMContentLoaded', async () => {
+    mostrarLoadingOverlay();
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
     const primeiroNome = urlParams.get('nome');
+    const tipoProposta = urlParams.get('tipo') || 'premium';
 
-    if (numeroProjeto && primeiroNome) {
-        try {
-            const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
+    if (!numeroProjeto || !primeiroNome) {
+        console.error("ERRO: Parâmetros 'id' e 'nome' ausentes na URL.");
+        document.body.innerHTML = '<div class="erro-container"><p class="erro-mensagem">Faltam informações para carregar a proposta. Por favor, retorne à página inicial e tente novamente.</p><a href="index.html" class="btn-voltar-proposta"><i class="fas fa-arrow-left"></i> Voltar</a></div>';
+        esconderLoadingOverlay();
+        return;
+    }
 
-            if (!propostas.sucesso) {
-                throw new Error(propostas.mensagem);
+    try {
+        const resposta = await buscarETratarProposta(numeroProjeto, primeiroNome);
+
+        if (resposta.sucesso) {
+            const propostas = resposta.propostas;
+            // Salva as propostas no localStorage para que o usuário possa alternar entre elas
+            localStorage.setItem('propostaData', JSON.stringify(propostas));
+
+            // Exibe a proposta correta com base no parâmetro `tipo` na URL
+            const propostaSelecionada = propostas[tipoProposta];
+            if (propostaSelecionada) {
+                // Adiciona o tipo ao objeto para que possa ser usado na função preencherDadosProposta
+                propostaSelecionada.tipo = tipoProposta;
+                preencherDadosProposta(propostaSelecionada);
+                atualizarImagemEquipamentos(propostaSelecionada);
+                atualizarImagemInstalacao(propostaSelecionada);
+                preencherDetalhesInstalacao(propostaSelecionada);
+                atualizarEtiquetasDinamicas(tipoProposta);
+
+                // Define o tema inicial da página
+                document.body.classList.add(`theme-${tipoProposta}`);
+                const btnSelecionado = document.getElementById(`btn-${tipoProposta}`);
+                if (btnSelecionado) {
+                    btnSelecionado.classList.add('selecionado');
+                }
+            } else {
+                throw new Error("Tipo de proposta inválido.");
             }
-
-            const propostaData = propostas.dados;
-            localStorage.setItem('propostaData', JSON.stringify(propostaData));
-
-            preencherDadosProposta(propostaData.premium);
-            atualizarImagemEquipamentos(propostaData.premium);
-            atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostaData.premium);
-            preencherDetalhesInstalacao(propostaData.premium);
-
-            const dadosVisualizacao = {
-                propostaId: numeroProjeto,
-                tipoVisualizacao: 'P'
-            };
-            await atualizarStatusVisualizacao(dadosVisualizacao);
-
-        } catch (error) {
-            console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
-            window.location.href = `index.html?erro=acesso-negado`;
-        } finally {
-            esconderLoadingOverlay();
+        } else {
+            console.error("ERRO: Falha ao carregar a proposta.", resposta.mensagem);
+            document.body.innerHTML = `<div class="erro-container"><p class="erro-mensagem">${resposta.mensagem}</p><a href="index.html" class="btn-voltar-proposta"><i class="fas fa-arrow-left"></i> Voltar</a></div>`;
         }
-    } else {
-        window.location.href = 'index.html?erro=parametros-ausentes';
-    }
-
-    const btnPremium = document.getElementById('btn-premium');
-    const btnAcessivel = document.getElementById('btn-acessivel');
-
-    if (btnPremium) {
-        btnPremium.addEventListener('click', () => {
-            mostrarLoadingOverlay();
-
-            const propostas = JSON.parse(localStorage.getItem('propostaData'));
-            if (propostas && propostas.premium) {
-                preencherDadosProposta(propostas.premium);
-                atualizarImagemEquipamentos(propostas.premium);
-                atualizarEtiquetasDinamicas('premium');
-                atualizarImagemInstalacao(propostas.premium);
-                preencherDetalhesInstalacao(propostas.premium);
-                document.body.classList.remove('theme-acessivel');
-                document.body.classList.add('theme-premium');
-                btnPremium.classList.add('selecionado');
-                btnAcessivel.classList.remove('selecionado');
-            } else {
-                console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
-            }
-
-            setTimeout(() => {
-                esconderLoadingOverlay();
-            }, 400);
-        });
-    }
-
-    if (btnAcessivel) {
-        btnAcessivel.addEventListener('click', () => {
-            mostrarLoadingOverlay();
-
-            const propostas = JSON.parse(localStorage.getItem('propostaData'));
-            if (propostas && propostas.acessivel) {
-                preencherDadosProposta(propostas.acessivel);
-                atualizarImagemEquipamentos(propostas.acessivel);
-                atualizarEtiquetasDinamicas('acessivel');
-                atualizarImagemInstalacao(propostas.acessivel);
-                preencherDetalhesInstalacao(propostas.acessivel);
-                document.body.classList.add('theme-acessivel');
-                document.body.classList.remove('theme-premium');
-                btnAcessivel.classList.add('selecionado');
-                btnPremium.classList.remove('selecionado');
-            } else {
-                console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
-            }
-
-            setTimeout(() => {
-                esconderLoadingOverlay();
-            }, 400);
-        });
-    }
-
-    const btnVoltar = document.querySelector('.btn-voltar-proposta');
-    if (btnVoltar) {
-        btnVoltar.addEventListener('click', (evento) => {
-            evento.preventDefault();
-            mostrarLoadingOverlay();
-            setTimeout(() => {
-                window.location.href = btnVoltar.href;
-            }, 500);
-        });
+    } catch (erro) {
+        console.error("ERRO: Ocorreu um erro inesperado ao carregar a proposta.", erro);
+        document.body.innerHTML = '<div class="erro-container"><p class="erro-mensagem">Ocorreu um erro inesperado. Por favor, tente novamente.</p><a href="index.html" class="btn-voltar-proposta"><i class="fas fa-arrow-left"></i> Voltar</a></div>';
+    } finally {
+        setTimeout(() => {
+            esconderLoadingOverlay();
+        }, 500);
     }
 });
+
+
+// Event Listeners para os botões de seleção (Premium/Acessível)
+const btnPremium = document.getElementById('btn-premium');
+const btnAcessivel = document.getElementById('btn-acessivel');
+
+if (btnPremium && btnAcessivel) {
+    btnPremium.addEventListener('click', () => {
+        mostrarLoadingOverlay();
+
+        const propostas = JSON.parse(localStorage.getItem('propostaData'));
+        if (propostas && propostas.premium) {
+            propostas.premium.tipo = 'premium';
+            preencherDadosProposta(propostas.premium);
+            atualizarImagemEquipamentos(propostas.premium);
+            atualizarEtiquetasDinamicas('premium');
+            atualizarImagemInstalacao(propostas.premium);
+            preencherDetalhesInstalacao(propostas.premium);
+            document.body.classList.add('theme-premium');
+            document.body.classList.remove('theme-acessivel');
+            btnPremium.classList.add('selecionado');
+            btnAcessivel.classList.remove('selecionado');
+        } else {
+            console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
+        }
+
+        setTimeout(() => {
+            esconderLoadingOverlay();
+        }, 400);
+    });
+
+    btnAcessivel.addEventListener('click', () => {
+        mostrarLoadingOverlay();
+
+        const propostas = JSON.parse(localStorage.getItem('propostaData'));
+        if (propostas && propostas.acessivel) {
+            propostas.acessivel.tipo = 'acessivel';
+            preencherDadosProposta(propostas.acessivel);
+            atualizarImagemEquipamentos(propostas.acessivel);
+            atualizarEtiquetasDinamicas('acessivel');
+            atualizarImagemInstalacao(propostas.acessivel);
+            preencherDetalhesInstalacao(propostas.acessivel);
+            document.body.classList.add('theme-acessivel');
+            document.body.classList.remove('theme-premium');
+            btnAcessivel.classList.add('selecionado');
+            btnPremium.classList.remove('selecionado');
+        } else {
+            console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
+        }
+
+        setTimeout(() => {
+            esconderLoadingOverlay();
+        }, 400);
+    });
+}
+
+const btnVoltar = document.querySelector('.btn-voltar-proposta');
+if (btnVoltar) {
+    btnVoltar.addEventListener('click', (evento) => {
+        evento.preventDefault();
+        mostrarLoadingOverlay();
+        setTimeout(() => {
+            window.location.href = btnVoltar.href;
+        }, 400);
+    });
+}
