@@ -1040,3 +1040,44 @@ footer {
   background-color: #f8f9fa;
   border-radius: 8px;
 }
+
+/* NOVO: Estilos para o container de resumo da instalação */
+#resumo-instalacao-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  /* Espaço entre o ícone e o texto */
+  margin-top: 40px;
+  /* Aumenta o espaço acima do container */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* NOVO: Estilos base para o ícone de resumo */
+.icone-resumo {
+  font-size: 2.2rem;
+  padding-top: 5px;
+  /* Alinha o ícone com o texto */
+}
+
+/* NOVO: Cor para o ícone da proposta Premium */
+body.theme-premium .icone-resumo {
+  color: #008000;
+  /* Verde para sucesso */
+}
+
+/* NOVO: Cor para o ícone da proposta Acessível */
+body.theme-acessivel .icone-resumo {
+  color: #ffc107;
+  /* Amarelo para atenção */
+}
+
+/* NOVO: Estilos para o texto do resumo */
+.texto-resumo-instalacao {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+}

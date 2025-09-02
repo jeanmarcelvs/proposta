@@ -239,9 +239,19 @@ function preencherDadosProposta(dados) {
             validadeEl.innerText = dados.validade || "Não informada";
         }
 
-        // NOVO: Preenche o resumo da instalação
-        if (resumoInstalacaoEl) {
+        /// NOVO: Preenche o resumo da instalação e atualiza o ícone
+        if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
+            if (dados.instalacao?.resumoInstalacao) {
+                // Adiciona a classe do ícone correto
+                if (dados.instalacao.resumoInstalacao.includes("premium")) {
+                    iconeResumoEl.classList.add('fa-circle-check');
+                    iconeResumoEl.classList.remove('fa-triangle-exclamation');
+                } else {
+                    iconeResumoEl.classList.add('fa-triangle-exclamation');
+                    iconeResumoEl.classList.remove('fa-circle-check');
+                }
+            }
         }
 
         console.log("DEBUG: Observações, validade e resumo de instalação preenchidos com sucesso.");

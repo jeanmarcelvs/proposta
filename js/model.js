@@ -36,23 +36,26 @@ const caminhosImagens = {
 };
 
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
+// Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 const detalhesInstalacaoPremium = [
-    { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado e Completo (Proteções CC e CA)' },
-    { icone: 'fa-bolt-lightning', texto: 'Infraestrutura Elétrica e Mecânica mais Segura e Durável' },
-    { icone: 'fa-gears', texto: 'Instalação projetada para garantir uma menor necessidade de manutenção ao longo da vida útil' }
+    { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado e Completo' },
+    { icone: 'fa-bolt-lightning', texto: 'Infraestrutura Elétrica e Mecânica mais Resistente' },
+    { icone: 'fa-gears', texto: 'Instalação com Padrão Otimizado' }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-triangle-exclamation', texto: 'Apenas proteções internas do inversor e as existentes na propriedade do cliente' },
-    { icone: 'fa-wrench', texto: 'Infraestrutura elétrica e mecânica básica de mercado' },
-    { icone: 'fa-plug', texto: 'Tipo de instalação básica de mercado, maior necessidade de manutenção ao longo da vida útil' }
+    { icone: 'fa-triangle-exclamation', texto: 'Apenas proteções internas do inversor' },
+    { icone: 'fa-wrench', texto: 'Infraestrutura Elétrica e Mecânica mais acessível' },
+    { icone: 'fa-plug', texto: 'Instalação mais acessível' }
 ];
 
-// NOVO: Resumos para a seção de instalação
-const resumoInstalacaoPremium = "Em resumo, a nossa instalação premium se traduz em maior segurança para o seu patrimônio, mais durabilidade do sistema e garantia de eficiência. Tudo isso resulta em maior tranquilidade e economia real a longo prazo.";
 
-const resumoInstalacaoAcessivel = "Em resumo, esta instalação é a opção funcional e de baixo custo, ideal para quem busca uma solução inicial. Ela atende aos requisitos básicos de um sistema fotovoltaico, mas não oferece a mesma segurança, durabilidade e baixa necessidade de manutenção do padrão premium.";
+
+// NOVO: Resumos para a seção de instalação
+const resumoInstalacaoPremium = "Nossa instalação Premium se traduz em maior segurança ao seu sistema e ao seu patrimônio, maior durabilidade e eficiência de geração de energia. Tudo isso resulta em maior tranquilidade e economia real a longo prazo.";
+
+const resumoInstalacaoAcessivel = "Esta instalação é a opção mais Acessível, ideal para quem busca uma solução de entrada. Porém, não oferece a mesma segurança e durabilidade, geralmente apresenta uma redução de eficiência em menos tempo e uma maior necessidade de manutenção.";
 
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
