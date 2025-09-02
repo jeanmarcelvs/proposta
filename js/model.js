@@ -147,28 +147,22 @@ function formatarData(dataISO) {
  * @param {number} selicAnual A taxa Selic anual em formato de número (ex: 10.5).
  * @returns {object} Um objeto com as parcelas calculadas.
  */
+
 function calcularFinanciamento(valorProjeto, selicAnual) {
-    // 1. Converter a taxa Selic para o formato decimal antes de usá-la
     const selicDecimal = selicAnual / 100;
 
-    // 2. Calcular a taxa de juros de mercado
     const jurosAnualTotal = selicDecimal + SPREAD_ANUAL;
     const jurosMensal = (Math.pow((1 + jurosAnualTotal), (1 / 12))) - 1;
 
-    // 3. Definir o range de parcelas para a simulação
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {}; // Objeto para armazenar os resultados
 
-    // 4. Iterar e calcular a parcela para cada opção
     opcoesParcelas.forEach(n => {
-        // Calcular o valor total com IOF
         const iofFixoCalculado = IOF_FIXO * valorProjeto;
-        // O cálculo do IOF Diário é sobre o valor principal da dívida
         const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
         const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
 
-        // Calcular a parcela com a Tabela Price
-        if (jurosMensal <= 0) { // Garante que a taxa não seja negativa ou zero
+        if (jurosMensal <= 0) {
             simulacao[`parcela-${n}`] = (valorComIOF / n).toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -184,7 +178,8 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
         });
     });
 
-    return simulacao;
+    // **NOVA LINHA:** Retorna a simulação e as duas taxas
+    return { parcelas: simulacao, taxaAnual: jurosAnualTotal, taxaMensal: jurosMensal };
 }
 
 /**
@@ -227,8 +222,12 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-    // NOVO: Chamada para a nova função de cálculo das parcelas
-    const parcelasCalculadas = calcularFinanciamento(valorTotal, selicAtual);
+    // NOVO: Chamada para a nova função de cálculo das parcelas e captura dos valores de retorno
+    const {
+        parcelas: parcelasCalculadas,
+        taxaAnual: taxaAnualCalculada,
+        taxaMensal: taxaMensalCalculada
+    } = calcularFinanciamento(valorTotal, selicAtual);
 
     // Apenas para mostrar no console
     console.log("Parcelas Calculadas:", parcelasCalculadas);
@@ -270,6 +269,9 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             payback: payback,
             // ATUALIZADO: Usando as parcelas calculadas em vez das da API externa
             parcelas: parcelasCalculadas,
+            // **NOVAS PROPRIEDADES:** As taxas de juros formatadas
+            taxaJurosAnual: (taxaAnualCalculada * 100).toFixed(2).replace('.', ',') + '%',
+            taxaJurosMensal: (taxaMensalCalculada * 100).toFixed(2).replace('.', ',') + '%',
             observacao: 'Os valores de financiamento são uma simulação e podem variar conforme o perfil do cliente e as condições do banco.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`

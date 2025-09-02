@@ -101,11 +101,9 @@ function preencherDadosProposta(dados) {
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
 
-        // NOVO: Lógica para pegar apenas os dois primeiros nomes
         const nomeCompleto = dados.cliente || "Não informado";
         let nomeCurto = nomeCompleto;
 
-        // Se o nome não for a string padrão "Não informado", processa
         if (nomeCompleto !== "Não informado") {
             const palavrasDoNome = nomeCompleto.split(' ');
             if (palavrasDoNome.length > 2) {
@@ -149,21 +147,14 @@ function preencherDadosProposta(dados) {
         const iconeInstalacaoEl = document.getElementById('icone-instalacao'); // Encontra o ícone pelo novo ID
 
         if (instalacaoPaineisEl && iconeInstalacaoEl) {
-            // **NOVA LÓGICA AQUI**
             const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
-
-            // Define o texto para o parágrafo
             instalacaoPaineisEl.innerText = tipoInstalacao;
 
-            // Define a classe do ícone com base no tipo de instalação
             if (tipoInstalacao.toLowerCase().includes('telhado')) {
-                // Altera apenas a classe do ícone para a casinha
                 iconeInstalacaoEl.className = 'fas fa-house-chimney';
             } else if (tipoInstalacao.toLowerCase().includes('solo')) {
-                // Altera apenas a classe do ícone para o painel solar
                 iconeInstalacaoEl.className = 'fas fa-solar-panel';
             } else {
-                // Caso a informação seja desconhecida
                 iconeInstalacaoEl.className = 'fas fa-question-circle';
             }
         }
@@ -171,7 +162,6 @@ function preencherDadosProposta(dados) {
         const idealParaEl = document.getElementById('ideal-para');
         if (idealParaEl) {
             const idealPara = dados.sistema?.idealPara || 'R$ 0,00';
-            // Garante que o valor venha sem o "R$" para o HTML
             idealParaEl.innerText = idealPara.replace('R$', '').trim();
         }
         console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
@@ -206,10 +196,23 @@ function preencherDadosProposta(dados) {
         }
         console.log("DEBUG: Valores finais preenchidos com sucesso.");
 
+        // **NOVO: 4.1. Taxas de Juros**
+        // Acessa as novas propriedades que preparamos no Model.js
+        const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
+        const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
+
+        if (taxaAnualEl) {
+            taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
+        }
+
+        if (taxaMensalEl) {
+            taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
+        }
+        console.log("DEBUG: Taxas de juros preenchidas com sucesso.");
+
         // 5. Parcelas
         console.log("DEBUG: Preenchendo parcelas...");
         for (const key in dados.valores?.parcelas || {}) {
-            // CORRIGIDO: Usa querySelector para maior compatibilidade e robustez
             const elemento = document.querySelector(`#parcela-${key.replace('parcela-', '')}`);
             if (elemento) {
                 elemento.innerText = dados.valores.parcelas[key] || 'N/A';

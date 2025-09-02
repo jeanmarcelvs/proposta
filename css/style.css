@@ -993,3 +993,32 @@ footer {
     opacity: 1;
     visibility: visible;
 }
+
+/* --- Estilos Adicionais para a Seção de Financiamento --- */
+.taxas-financiamento {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: -1.5rem; /* Ajuste para aproximar do título da seção */
+    margin-bottom: 3.5rem; /* Espaço entre as taxas e os cards de parcelas */
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--cor-texto-secundario);
+    text-align: center;
+}
+
+.taxas-financiamento .valor-taxa {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--cor-primaria);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 550px) {
+    .taxas-financiamento {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0;
+        margin-bottom: 2rem;
+    }
+}
