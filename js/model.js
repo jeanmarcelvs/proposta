@@ -285,17 +285,24 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         maximumFractionDigits: 2
     });
 
-    // NOVO: Recebe as novas taxas da função de cálculo
     const {
         parcelas: parcelasCalculadas,
         taxasEfetivas
     } = calcularFinanciamento(valorTotal, selicAtual);
 
-    // **NOVO CÓDIGO:** Calcula a taxa mensal efetiva com base na anual
-    const taxaAnualEfetiva = taxasEfetivas['taxaAnualEfetiva-60'];
-    const taxaMensalEfetiva = (Math.pow(1 + taxaAnualEfetiva, 1/12) - 1);
+    // --- NOVA LÓGICA DE CÁLCULO E FORMATAÇÃO DA TAXA MENSAL ---
+    const taxasPorParcela = {};
+    for (const key in taxasEfetivas) {
+        if (taxasEfetivas.hasOwnProperty(key)) {
+            const taxaAnualEfetiva = taxasEfetivas[key];
+            const taxaMensalEfetiva = (Math.pow(1 + taxaAnualEfetiva, 1/12) - 1);
+            taxasPorParcela[key] = `${(taxaMensalEfetiva * 100).toFixed(2).replace('.', ',')}% a.m.`;
+        }
+    }
+    // --- FIM DA NOVA LÓGICA ---
 
     console.log("Parcelas Calculadas:", parcelasCalculadas);
+    console.log("Taxas por Parcela:", taxasPorParcela);
 
     const retorno = {
         // NOVO: Adiciona o tipo de proposta ao objeto
@@ -339,8 +346,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             valorResumo: valorResumo,
             payback: payback,
             parcelas: parcelasCalculadas,
-            // **NOVO CÓDIGO:** Exibindo apenas a taxa mensal com novo rótulo e sufixo
-            taxaMedia: `${(taxaMensalEfetiva * 100).toFixed(2).replace('.', ',')}% a.m.`,
+            taxasPorParcela: taxasPorParcela, // **NOVO:** Adiciona as taxas individuais aqui
             observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
