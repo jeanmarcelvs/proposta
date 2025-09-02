@@ -14,7 +14,13 @@ const BCB_API_URL = process.env.BCB_API_URL;
 // Endpoint para buscar a taxa Selic
 app.get('/selic', async (req, res) => {
   try {
-    const response = await fetch(BCB_API_URL);
+    const response = await fetch(BCB_API_URL, {
+      // Adiciona o cabeçalho 'Accept' para garantir que a resposta seja JSON
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
     if (!response.ok) {
         throw new Error(`Erro na API do BCB: ${response.statusText}`);
     }
