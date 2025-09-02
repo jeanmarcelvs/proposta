@@ -568,39 +568,54 @@ header {
   color: var(--cor-texto-secundario);
 }
 
-/* Seção Valores e Condições */
+/* --- NOVO BLOCO: Seção Valores e Condições (Reorganizado) --- */
+
+.container-financiamento {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.taxas-financiamento {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
+  text-align: center;
+}
+
+.taxas-financiamento .valor-taxa {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--cor-primaria);
+}
+
 .valores-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  /* Responsividade aprimorada */
-  gap: 2rem;
-  text-align: center;
+  gap: 20px;
+  justify-content: center;
+  align-items: stretch;
 }
 
 .card-valores {
   padding: 2.5rem 2rem;
-  border-radius: 16px;
-  background-color: var(--cor-fundo-principal);
+  border-radius: 12px;
+  background-color: var(--cor-cartao-fundo);
   border: 1px solid var(--cor-cartao-borda);
   box-shadow: 0 5px 20px var(--cor-sombra-leve);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  text-align: center;
 }
 
 .card-valores:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 30px var(--cor-sombra-leve);
-}
-
-.card-total {
-  background-color: var(--cor-primaria);
-  color: #ffffff;
-  grid-column: 1 / -1;
-  box-shadow: 0 10px 30px var(--cor-primaria-clara);
-}
-
-.card-total .legenda-valores,
-.card-total .valor-total-proposta {
-  color: #ffffff;
 }
 
 .legenda-valores {
@@ -611,134 +626,118 @@ header {
   opacity: 0.9;
 }
 
-.valor-total-proposta {
-  font-size: 3.2rem;
+.valor-parcela-proposta {
+  font-size: 2rem;
   font-weight: 500;
   line-height: 1;
-}
-
-.valor-parcela-proposta {
-  font-size: 2.2rem;
-  font-weight: 400;
-  line-height: 1;
   color: var(--cor-primaria);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Nova classe para estilizar os símbolos de moeda */
 .moeda {
   font-size: 1.2rem;
   font-weight: 300;
   vertical-align: baseline;
   margin-right: 2px;
   color: var(--cor-primaria);
-  /* Alterado para seguir o tema principal */
 }
 
-.etiqueta-proposta-dinamica {
-  font-weight: 400;
-}
-
-/* Estilo para a Etiqueta de Fita "À Vista" com fundo laranja */
-#etiqueta-avista {
-  position: absolute;
-  top: 20px;
-  right: -50px;
-  padding: 0.8rem 6rem;
-  font-size: 1.1rem;
-  font-weight: 700;
+/* --- Estilos do Card Total --- */
+.card-total {
+  background-color: var(--cor-primaria);
   color: #ffffff;
-  background-color: #ff6c00;
-  /* Laranja forte e vibrante */
-  transform: rotate(45deg);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 10;
+  grid-column: 1 / -1;
+  box-shadow: 0 10px 30px var(--cor-primaria);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-total .legenda-valores,
+.card-total .valor-total-proposta,
+.card-total .moeda {
+  color: #ffffff;
+}
+
+.valor-total-proposta {
+  font-size: 3.2rem;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 15px;
+  /* Espaço para o payback */
+}
+
+/* NOVO: Estilos da Etiqueta "À Vista" */
+.etiqueta {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--cor-secundaria);
+  color: #fff;
+  padding: 8px 15px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-/* Oculta a etiqueta se o card não for "total" */
-.card-valores:not(.card-total) #etiqueta-avista {
-  display: none;
-}
-
-/* Garante que o card do total seja o ponto de referência */
-.card-total {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Estilo para a fita adesiva */
-#etiqueta-avista::before,
-#etiqueta-avista::after {
-  content: '';
-  position: absolute;
-  background: rgba(0, 0, 0, 0.2);
-  width: 20px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-/* Fita de cima */
-#etiqueta-avista::before {
-  top: -3px;
-  left: 10%;
-  transform: rotate(-10deg);
-}
-
-/* Fita de baixo */
-#etiqueta-avista::after {
-  bottom: -3px;
-  right: 10%;
-  transform: rotate(10deg);
-}
-
-/* FUNDO DO CARTÃO DE INVESTIMENTO CORRIGIDO */
-.card-investimento {
-  grid-column: span 2;
-  background-color: var(--cor-fundo-principal);
-  color: var(--cor-texto-principal);
-  padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid var(--cor-cartao-borda);
-  box-shadow: 0 10px 30px var(--cor-sombra);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.card-investimento:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px var(--cor-sombra);
+/* NOVO: Estilos do Payback */
+.container-payback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-top: 15px;
 }
 
 .legenda-investimento {
-  font-size: 1.1rem;
-  font-weight: 300;
-  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .valor-investimento {
-  font-size: 2.5rem;
-  font-weight: 500;
-  color: var(--cor-primaria);
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #fff;
 }
 
-.secao-observacao-financiamento {
-  margin-top: 2.5rem;
-  text-align: left;
-  border-top: 1px dashed var(--cor-cartao-borda);
-  padding-top: 2.5rem;
+/* --- Estilos da Seção de Observações (Não é um Card) --- */
+.secao-observacao-container {
+  grid-column: 1 / -1;
+  /* Força a ocupar a largura total no grid */
+  padding: 20px;
+  background-color: var(--cor-fundo-principal);
+  border-left: 5px solid var(--cor-primaria);
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .titulo-observacao {
-  font-weight: 400;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: var(--cor-texto-principal);
+  margin-bottom: 10px;
 }
 
 .texto-observacao {
-  font-size: 1rem;
-  font-weight: 300;
+  font-size: 0.9rem;
   color: var(--cor-texto-secundario);
-  line-height: 1.8;
+  line-height: 1.6;
+}
+
+/* --- Responsividade da Seção de Financiamento --- */
+@media (max-width: 768px) {
+  .valores-container {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Seção Validade */
@@ -997,50 +996,6 @@ footer {
   visibility: visible;
 }
 
-/* --- Estilos Adicionais para a Seção de Financiamento --- */
-.taxas-financiamento {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  margin-top: -1.5rem;
-  /* Ajuste para aproximar do título da seção */
-  margin-bottom: 3.5rem;
-  /* Espaço entre as taxas e os cards de parcelas */
-  font-size: 1.1rem;
-  font-weight: 300;
-  color: var(--cor-texto-secundario);
-  text-align: center;
-}
-
-.taxas-financiamento .valor-taxa {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--cor-primaria);
-}
-
-/* Responsividade para telas menores */
-@media (max-width: 550px) {
-  .taxas-financiamento {
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0;
-    margin-bottom: 2rem;
-  }
-}
-
-.payback-texto {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #007bff;
-  /* Ou a cor que você preferir */
-  text-align: center;
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-}
-
 /* NOVO: Estilos para o container de resumo da instalação */
 #resumo-instalacao-container {
   display: flex;
@@ -1058,20 +1013,22 @@ footer {
 /* NOVO: Estilos base para o ícone de resumo */
 /* Estilos base para o ícone de resumo */
 .icone-resumo {
-    font-size: 2.2rem;
-    padding-top: 5px; 
+  font-size: 2.2rem;
+  padding-top: 5px;
 }
 
 /* NOVO: Cor para o ícone da proposta Premium */
 /* Certifique-se de que esta regra existe no seu CSS. */
 body.theme-premium .icone-resumo {
-    color: #008000; /* Verde para sucesso */
+  color: #008000;
+  /* Verde para sucesso */
 }
 
 /* NOVO: Cor para o ícone da proposta Acessível */
 /* Mantenha esta regra para a proposta Acessível. */
 body.theme-acessivel .icone-resumo {
-    color: #ffc107; /* Amarelo para atenção */
+  color: #ffc107;
+  /* Amarelo para atenção */
 }
 
 /* NOVO: Estilos para o texto do resumo */
@@ -1080,68 +1037,4 @@ body.theme-acessivel .icone-resumo {
   line-height: 1.6;
   color: #555;
   margin: 0;
-}
-
-/* --- Estilos para o Payback e Observações --- */
-
-/* NOVO: Estiliza o container do payback para ter um fundo e padding */
-.payback-highlight {
-    background-color: rgba(255, 255, 255, 0.15); /* Cor clara e sutil para o fundo */
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 20px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Garante o layout vertical para o texto e valor do payback */
-.container-payback {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-}
-
-/* NOVO: Estilos para o bloco de observações */
-.secao-observacao-container {
-    grid-column: 1 / -1; /* Força o elemento a ocupar todas as colunas do grid */
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-left: 3px solid #ddd;
-    border-radius: 8px;
-}
-
-/* Estilos de texto da observação */
-.titulo-observacao {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.texto-observacao {
-    font-size: 0.9rem;
-    color: #777;
-    margin: 0;
-}
-
-/* --- Estilos Gerais de Cards e Layout --- */
-
-/* Garante que o layout use grid e alinhe os cards corretamente */
-.valores-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    justify-content: center;
-    align-items: stretch;
-}
-
-/* Restante do seu CSS ... */
-
-/* Remove a formatação antiga do payback */
-.payback-texto {
-    /* Novo estilo vai ser preenchido via JS, não precisa mais de CSS complexo aqui */
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--cor-primaria);
 }
