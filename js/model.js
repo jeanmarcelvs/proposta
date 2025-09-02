@@ -36,7 +36,6 @@ const caminhosImagens = {
 };
 
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
-// Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 const detalhesInstalacaoPremium = [
     { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado e Completo' },
     { icone: 'fa-bolt-lightning', texto: 'Infraestrutura Elétrica e Mecânica mais Resistente' },
@@ -49,8 +48,6 @@ const detalhesInstalacaoAcessivel = [
     { icone: 'fa-wrench', texto: 'Infraestrutura Elétrica e Mecânica mais acessível' },
     { icone: 'fa-plug', texto: 'Instalação mais acessível' }
 ];
-
-
 
 // NOVO: Resumos para a seção de instalação
 const resumoInstalacaoPremium = "Nossa instalação Premium se traduz em maior segurança ao seu sistema e ao seu patrimônio, maior durabilidade e eficiência de geração de energia. Tudo isso resulta em maior tranquilidade e economia real a longo prazo.";
@@ -148,46 +145,101 @@ function formatarData(dataISO) {
     return `${dia}/${mes}/${ano}`;
 }
 
+// **NOVA FUNÇÃO:** Calcula a Taxa Interna de Retorno (TIR) mensal
+/**
+ * Calcula a Taxa Interna de Retorno (TIR) mensal para um financiamento.
+ * Usa um método de busca binária para encontrar a taxa que zera o VPL.
+ * @param {number} valorFinanciado O valor total financiado (incluindo IOF).
+ * @param {number} valorParcela O valor de cada parcela.
+ * @param {number} numeroParcelas O número total de parcelas.
+ * @returns {number} A taxa de juros mensal em formato decimal.
+ */
+function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
+    let guess = 0.01; // Chute inicial para a taxa
+    const tolerance = 0.0000000001; // Tolerância para o cálculo
+    let low = 0;
+    let high = 1;
+    let i = 0;
+
+    while (i < 1000) { // Limite de 1000 iterações para evitar loops infinitos
+        let vpl = -valorFinanciado;
+        for (let j = 1; j <= numeroParcelas; j++) {
+            vpl += valorParcela / Math.pow(1 + guess, j);
+        }
+
+        if (Math.abs(vpl) < tolerance) {
+            return guess;
+        }
+
+        if (vpl > 0) {
+            low = guess;
+        } else {
+            high = guess;
+        }
+
+        guess = (low + high) / 2;
+        i++;
+    }
+
+    return guess; // Retorna o melhor chute encontrado
+}
+
 // NOVO: Função para calcular o financiamento com a lógica da Tabela Price
 /**
  * Calcula a simulação de financiamento com base na Selic e em um spread fixo.
  * @param {number} valorProjeto O valor total do projeto a ser financiado.
  * @param {number} selicAnual A taxa Selic anual em formato de número (ex: 10.5).
- * @returns {object} Um objeto com as parcelas calculadas.
+ * @returns {object} Um objeto com as parcelas calculadas, taxa nominal e a nova taxa efetiva.
  */
 
 function calcularFinanciamento(valorProjeto, selicAnual) {
     const selicDecimal = selicAnual / 100;
 
-    const jurosAnualTotal = selicDecimal + SPREAD_ANUAL;
-    const jurosMensal = (Math.pow((1 + jurosAnualTotal), (1 / 12))) - 1;
+    const jurosAnualNominal = selicDecimal + SPREAD_ANUAL;
+    const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
 
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {}; // Objeto para armazenar os resultados
+    
+    // Objeto para armazenar as taxas efetivas de cada opção de parcela
+    const taxasEfetivas = {};
 
     opcoesParcelas.forEach(n => {
         const iofFixoCalculado = IOF_FIXO * valorProjeto;
         const iofDiarioCalculado = IOF_DIARIO * n * 30 * valorProjeto;
         const valorComIOF = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
 
-        if (jurosMensal <= 0) {
-            simulacao[`parcela-${n}`] = (valorComIOF / n).toLocaleString('pt-BR', {
+        if (jurosMensalNominal <= 0) {
+            const valorParcela = (valorComIOF / n);
+            simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+             // Para taxa zero, a taxa efetiva é zero
+            taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
             return;
         }
 
-        const parcela = (valorComIOF * jurosMensal * Math.pow((1 + jurosMensal), n)) / (Math.pow((1 + jurosMensal), n) - 1);
+        const parcela = (valorComIOF * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
 
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
+
+        // NOVO: Calcula a taxa de juros efetiva anual (TIR)
+        const taxaMensalEfetiva = calcularTIRMensal(valorComIOF, parcela, n);
+        const taxaAnualEfetiva = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
+        taxasEfetivas[`taxaAnualEfetiva-${n}`] = taxaAnualEfetiva;
     });
 
-    // **NOVA LINHA:** Retorna a simulação e as duas taxas
-    return { parcelas: simulacao, taxaAnual: jurosAnualTotal, taxaMensal: jurosMensal };
+    // NOVO: Retorna a simulação e as novas taxas
+    return { 
+        parcelas: simulacao,
+        taxaAnualNominal: jurosAnualNominal,
+        taxaMensalNominal: jurosMensalNominal,
+        taxasEfetivas: taxasEfetivas
+    };
 }
 
 /**
@@ -230,10 +282,11 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
+    
+    // NOVO: Recebe as novas taxas da função de cálculo
     const {
         parcelas: parcelasCalculadas,
-        taxaAnual: taxaAnualCalculada,
-        taxaMensal: taxaMensalCalculada
+        taxasEfetivas
     } = calcularFinanciamento(valorTotal, selicAtual);
 
     console.log("Parcelas Calculadas:", parcelasCalculadas);
@@ -278,8 +331,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             valorResumo: valorResumo,
             payback: payback,
             parcelas: parcelasCalculadas,
-            taxaJurosAnual: (taxaAnualCalculada * 100).toFixed(2).replace('.', ',') + '%',
-            taxaJurosMensal: (taxaMensalCalculada * 100).toFixed(2).replace('.', ',') + '%',
+            // NOVO: Adiciona a nova taxa efetiva ao objeto de retorno
+            taxaJurosAnualEfetiva: (taxasEfetivas['taxaAnualEfetiva-60'] * 100).toFixed(2).replace('.', ',') + '%',
             selicTaxa: selicAtual.toLocaleString('pt-BR') + '%',
             observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
