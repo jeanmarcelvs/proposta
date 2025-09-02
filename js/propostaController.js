@@ -97,6 +97,10 @@ function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
 
     try {
+        // CORREÇÃO: Declarando as variáveis do resumo e ícone no topo da função.
+        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
+        const iconeResumoEl = document.getElementById('icone-resumo');
+
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
@@ -228,9 +232,7 @@ function preencherDadosProposta(dados) {
         console.log("DEBUG: Preenchendo observações e validade...");
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
-        // NOVO: Elemento para o resumo da instalação
-        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
-
+        
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         }
@@ -239,11 +241,8 @@ function preencherDadosProposta(dados) {
             validadeEl.innerText = dados.validade || "Não informada";
         }
 
-        // NOVO: Preenche o resumo da instalação e atualiza o ícone
         if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
-            // NOVO: Usa a propriedade 'tipo' para determinar o ícone,
-            // o que é mais robusto do que verificar a string de texto.
             if (dados.tipo === 'premium') {
                 iconeResumoEl.classList.add('fa-circle-check');
                 iconeResumoEl.classList.remove('fa-triangle-exclamation');

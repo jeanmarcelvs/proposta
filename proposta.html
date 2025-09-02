@@ -129,78 +129,80 @@
         <section id="secao-financiamento" class="secao-principal">
             <h2 class="titulo-secao">Valores e Condições</h2>
 
-            <div class="taxas-financiamento">
-                <p>Taxa de Juros Anual: <span id="taxa-anual-financiamento" class="valor-taxa"></span></p>
-                <p>Taxa de Juros Mensal: <span id="taxa-mensal-financiamento" class="valor-taxa"></span></p>
-                <p>Taxa SELIC: <span id="taxa-selic-financiamento" class="valor-taxa"></span></p>
-            </div>
-            <div class="valores-container">
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 12x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-12"></span>
-                    </p>
+            <div class="container-financiamento">
+                <div id="payback-texto" class="payback-texto"></div>
+
+                <div class="taxas-financiamento">
+                    <p>Taxa de Juros Anual: <span id="taxa-anual-financiamento" class="valor-taxa"></span></p>
+                    <p>Taxa de Juros Mensal: <span id="taxa-mensal-financiamento" class="valor-taxa"></span></p>
+                    <p>Taxa SELIC: <span id="taxa-selic-financiamento" class="valor-taxa"></span></p>
                 </div>
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 24x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-24"></span>
-                    </p>
-                </div>
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 36x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-36"></span>
-                    </p>
-                </div>
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 48x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-48"></span>
-                    </p>
-                </div>
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 60x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-60"></span>
-                    </p>
-                </div>
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 72x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-72"></span>
-                    </p>
-                </div>
-                <div class="card-valores">
-                    <p class="legenda-valores">Em 84x:</p>
-                    <p class="valor-parcela-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="parcela-84"></span>
-                    </p>
+
+                <div class="valores-container">
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 12x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-12"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 24x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-24"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 36x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-36"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 48x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-48"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 60x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-60"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 72x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-72"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores">
+                        <p class="legenda-valores">Em 84x:</p>
+                        <p class="valor-parcela-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="parcela-84"></span>
+                        </p>
+                    </div>
+                    <div class="card-valores card-total">
+                        <p class="legenda-valores">Valor total:</p>
+                        <p class="valor-total-proposta">
+                            <span class="moeda">R$</span>
+                            <span id="valor-total"></span>
+                        </p>
+                        <span class="etiqueta" id="etiqueta-avista">À Vista</span>
+                    </div>
                 </div>
 
                 <div id="secao-observacao" class="secao-observacao-financiamento">
                     <p class="titulo-observacao">Observações sobre Financiamento:</p>
                     <p id="texto-observacao" class="texto-observacao"></p>
                 </div>
-
-                <div class="card-valores card-total">
-                    <p class="legenda-valores">Valor total:</p>
-                    <p class="valor-total-proposta">
-                        <span class="moeda">R$</span>
-                        <span id="valor-total"></span>
-                    </p>
-                    <span class="etiqueta" id="etiqueta-avista">À Vista</span>
-                </div>
             </div>
-            <p id="payback-texto" class="payback-texto"></p>
-
         </section>
 
         <section id="secao-validade" class="secao-info validade-proposta">

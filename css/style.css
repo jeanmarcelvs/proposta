@@ -1081,3 +1081,54 @@ body.theme-acessivel .icone-resumo {
   color: #555;
   margin: 0;
 }
+
+/* --- Melhorias no Layout do Financiamento --- */
+
+/* Ajusta o container principal para organizar os elementos em coluna */
+.container-financiamento {
+    display: flex;
+    flex-direction: column; /* Organiza os elementos verticalmente */
+    gap: 30px; /* Adiciona espaço entre cada bloco */
+}
+
+/* Novo estilo para o container de taxas */
+.taxas-financiamento {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+/* Estilos para o container de valores */
+.valores-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    align-items: stretch;
+}
+
+/* NOVO: Estilos para o container da observação de financiamento */
+.secao-observacao-financiamento {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 3px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Garante que o texto da observação seja legível e não tenha margens desnecessárias */
+.texto-observacao {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0;
+}
+
+/* Remove a formatação antiga do payback */
+.payback-texto {
+    /* Novo estilo vai ser preenchido via JS, não precisa mais de CSS complexo aqui */
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--cor-primaria);
+}
