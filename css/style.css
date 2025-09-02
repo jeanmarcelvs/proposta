@@ -478,21 +478,23 @@ header {
 }
 
 .quantidade-equipamento {
-    font-size: 1.8rem;
-    font-weight: 500;
-    line-height: 1;
+  font-size: 1.8rem;
+  font-weight: 500;
+  line-height: 1;
 
-    /* CORRIGIDO: Propriedades para fixar o tamanho e centralizar */
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 55px; /* Tamanho mínimo para acomodar 2 ou 3 dígitos */
-    height: 40px; /* Altura fixa para manter a consistência */
-    
-    background-color: var(--cor-primaria);
-    color: #ffffff;
-    border-radius: 8px;
-    margin-right: 1.5rem;
+  /* CORRIGIDO: Propriedades para fixar o tamanho e centralizar */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 55px;
+  /* Tamanho mínimo para acomodar 2 ou 3 dígitos */
+  height: 40px;
+  /* Altura fixa para manter a consistência */
+
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border-radius: 8px;
+  margin-right: 1.5rem;
 }
 
 .info-equipamento {
@@ -513,57 +515,57 @@ header {
 
 /* Seção Instalação */
 .conteudo-instalacao {
- display: flex;
- align-items: flex-start;
- gap: 3.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5rem;
 }
 
 .imagem-instalacao {
- flex-shrink: 0;
- width: 350px;
- max-width: 100%;
- height: auto;
- border-radius: 16px;
- overflow: hidden;
- box-shadow: 0 10px 30px var(--cor-sombra);
- transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  flex-shrink: 0;
+  width: 350px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px var(--cor-sombra);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .imagem-instalacao:hover {
- transform: scale(1.02);
- box-shadow: 0 15px 40px var(--cor-sombra);
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px var(--cor-sombra);
 }
 
 #imagem-instalacao {
- width: 100%;
- display: block;
+  width: 100%;
+  display: block;
 }
 
 .detalhes-instalacao {
- flex-grow: 1;
- list-style: none;
- display: flex;
- flex-direction: column;
- gap: 1.8rem;
+  flex-grow: 1;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
 }
 
 /* NOVO: Ajustado para o nome da classe do JavaScript */
 .item-detalhe {
- display: flex;
- align-items: center;
- gap: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
 }
 
 /* NOVO: Ajustado para o nome da classe do JavaScript */
 .icone-detalhe {
- font-size: 1.6rem;
- color: var(--cor-primaria);
+  font-size: 1.6rem;
+  color: var(--cor-primaria);
 }
 
 .texto-detalhe {
- font-size: 1.1rem;
- font-weight: 300;
- color: var(--cor-texto-secundario);
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
 }
 
 /* Seção Valores e Condições */
@@ -638,54 +640,55 @@ header {
 
 /* Estilo para a Etiqueta de Fita "À Vista" com fundo laranja */
 #etiqueta-avista {
-    position: absolute;
-    top: 20px;
-    right: -50px;
-    padding: 0.8rem 6rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #ffffff;
-    background-color: #ff6c00; /* Laranja forte e vibrante */
-    transform: rotate(45deg);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-    letter-spacing: 1px;
+  position: absolute;
+  top: 20px;
+  right: -50px;
+  padding: 0.8rem 6rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #ff6c00;
+  /* Laranja forte e vibrante */
+  transform: rotate(45deg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  letter-spacing: 1px;
 }
 
 /* Oculta a etiqueta se o card não for "total" */
 .card-valores:not(.card-total) #etiqueta-avista {
-    display: none;
+  display: none;
 }
 
 /* Garante que o card do total seja o ponto de referência */
 .card-total {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Estilo para a fita adesiva */
 #etiqueta-avista::before,
 #etiqueta-avista::after {
-    content: '';
-    position: absolute;
-    background: rgba(0, 0, 0, 0.2);
-    width: 20px;
-    height: 6px;
-    border-radius: 50%;
+  content: '';
+  position: absolute;
+  background: rgba(0, 0, 0, 0.2);
+  width: 20px;
+  height: 6px;
+  border-radius: 50%;
 }
 
 /* Fita de cima */
 #etiqueta-avista::before {
-    top: -3px;
-    left: 10%;
-    transform: rotate(-10deg);
+  top: -3px;
+  left: 10%;
+  transform: rotate(-10deg);
 }
 
 /* Fita de baixo */
 #etiqueta-avista::after {
-    bottom: -3px;
-    right: 10%;
-    transform: rotate(10deg);
+  bottom: -3px;
+  right: 10%;
+  transform: rotate(10deg);
 }
 
 /* FUNDO DO CARTÃO DE INVESTIMENTO CORRIGIDO */
@@ -962,74 +965,78 @@ footer {
 .icone-loading,
 .icone-sucesso,
 .icone-erro {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    opacity: 0;
-    visibility: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* Mostra o ícone de loading quando a classe 'loading' é adicionada ao botão */
 .btn-primary.loading .icone-loading {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Esconde o texto do botão quando a classe 'loading' é adicionada */
 .btn-primary.loading .btn-texto {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 /* Mostra o ícone de sucesso quando a classe 'success' é adicionada ao botão */
 .btn-primary.success .icone-sucesso {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Mostra o ícone de erro quando a classe 'error' é adicionada ao botão */
 .btn-primary.error .icone-erro {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* --- Estilos Adicionais para a Seção de Financiamento --- */
 .taxas-financiamento {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    margin-top: -1.5rem; /* Ajuste para aproximar do título da seção */
-    margin-bottom: 3.5rem; /* Espaço entre as taxas e os cards de parcelas */
-    font-size: 1.1rem;
-    font-weight: 300;
-    color: var(--cor-texto-secundario);
-    text-align: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: -1.5rem;
+  /* Ajuste para aproximar do título da seção */
+  margin-bottom: 3.5rem;
+  /* Espaço entre as taxas e os cards de parcelas */
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--cor-texto-secundario);
+  text-align: center;
 }
 
 .taxas-financiamento .valor-taxa {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--cor-primaria);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--cor-primaria);
 }
 
 /* Responsividade para telas menores */
 @media (max-width: 550px) {
-    .taxas-financiamento {
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-top: 0;
-        margin-bottom: 2rem;
-    }
+  .taxas-financiamento {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
 }
 
 .payback-texto {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #007bff; /* Ou a cor que você preferir */
-    text-align: center;
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #007bff;
+  /* Ou a cor que você preferir */
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
 }

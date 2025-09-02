@@ -11,9 +11,9 @@ import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 //const apiToken = process.env.API_TOKEN;
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
-// NOVO: Constantes para o cálculo do financiamento
+// Constantes para o cálculo do financiamento
 // Spread calculado para que a taxa anual seja 17,11% com a SELIC de 15%
-const SPREAD_ANUAL = 0.0221; 
+const SPREAD_ANUAL = 0.0221;
 const IOF_FIXO = 0.0038; // 0,38%
 const IOF_DIARIO = 0.000082; // 0,0082% ao dia
 
@@ -38,16 +38,21 @@ const caminhosImagens = {
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 const detalhesInstalacaoPremium = [
     { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado e Completo (Proteções CC e CA)' },
-    { icone: 'fa-bolt', texto: 'Infraestrutura Elétrica e Mecânica mais Segura e Durável' },
-    { icone: 'fa-screwdriver-wrench', texto: 'Instalação projetada para garantir uma menor necessidade de manutenção ao longo da vida útil' }
+    { icone: 'fa-bolt-lightning', texto: 'Infraestrutura Elétrica e Mecânica mais Segura e Durável' },
+    { icone: 'fa-gears', texto: 'Instalação projetada para garantir uma menor necessidade de manutenção ao longo da vida útil' }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-shield-alt', texto: 'Apenas proteções internas do inversor e as existentes na propriedade do cliente' },
-    { icone: 'fa-bolt', texto: 'Infraestrutura elétrica e mecânica básica de mercado' },
+    { icone: 'fa-triangle-exclamation', texto: 'Apenas proteções internas do inversor e as existentes na propriedade do cliente' },
+    { icone: 'fa-wrench', texto: 'Infraestrutura elétrica e mecânica básica de mercado' },
     { icone: 'fa-plug', texto: 'Tipo de instalação básica de mercado, maior necessidade de manutenção ao longo da vida útil' }
 ];
+
+// NOVO: Resumos para a seção de instalação
+const resumoInstalacaoPremium = "Em resumo, a nossa instalação premium se traduz em maior segurança para o seu patrimônio, mais durabilidade do sistema e garantia de eficiência. Tudo isso resulta em maior tranquilidade e economia real a longo prazo.";
+
+const resumoInstalacaoAcessivel = "Em resumo, esta instalação é a opção funcional e de baixo custo, ideal para quem busca uma solução inicial. Ela atende aos requisitos básicos de um sistema fotovoltaico, mas não oferece a mesma segurança, durabilidade e baixa necessidade de manutenção do padrão premium.";
 
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
@@ -170,7 +175,6 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
             return;
         }
 
-        // CORREÇÃO APLICADA AQUI
         const parcela = (valorComIOF * jurosMensal * Math.pow((1 + jurosMensal), n)) / (Math.pow((1 + jurosMensal), n) - 1);
 
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', {
@@ -223,14 +227,12 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-    // NOVO: Chamada para a nova função de cálculo das parcelas e captura dos valores de retorno
     const {
         parcelas: parcelasCalculadas,
         taxaAnual: taxaAnualCalculada,
         taxaMensal: taxaMensalCalculada
     } = calcularFinanciamento(valorTotal, selicAtual);
 
-    // Apenas para mostrar no console
     console.log("Parcelas Calculadas:", parcelasCalculadas);
 
     const retorno = {
@@ -260,6 +262,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         instalacao: {
             imagem: caminhosImagens.instalacao[tipoProposta],
             detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
+            // NOVO: Adiciona o resumo de instalação ao objeto de retorno
+            resumoInstalacao: tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel
         },
         valores: {
             valorTotal: valorTotal.toLocaleString('pt-BR', {
@@ -268,14 +272,10 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             }),
             valorResumo: valorResumo,
             payback: payback,
-            // ATUALIZADO: Usando as parcelas calculadas em vez das da API externa
             parcelas: parcelasCalculadas,
-            // **NOVAS PROPRIEDADES:** As taxas de juros formatadas
             taxaJurosAnual: (taxaAnualCalculada * 100).toFixed(2).replace('.', ',') + '%',
             taxaJurosMensal: (taxaMensalCalculada * 100).toFixed(2).replace('.', ',') + '%',
-            // NOVO: Adicionando a taxa SELIC
             selicTaxa: selicAtual.toLocaleString('pt-BR') + '%',
-            // NOVO TEXTO DE OBSERVAÇÃO
             observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros médias consideradas no momento da consulta. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
@@ -300,10 +300,8 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
     const accessToken = authResponse.accessToken;
 
-    // NOVO: Busca a taxa Selic antes de buscar as propostas
     const selicAtual = await getSelicTaxa();
     if (selicAtual === null) {
-        // Se a Selic não puder ser obtida, retorne um erro ou use um valor padrão
         return {
             sucesso: false,
             mensagem: 'Não foi possível obter a taxa Selic para o cálculo do financiamento.'
@@ -320,11 +318,9 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    // NOVO: Extrai o primeiro nome do cliente dos dados da API
     const nomeCompletoApi = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
 
-    // NOVO: Realiza a validação de segurança
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
         console.error("Modelo: Tentativa de acesso não autorizado. Nome não corresponde.");
         return {
@@ -381,15 +377,11 @@ export async function atualizarStatusVisualizacao(dados) {
 
         const accessToken = authResponse.accessToken;
 
-        // Formata a data e hora para a mensagem da API
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
 
-        // Monta a mensagem para o campo 'description'
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
 
-        // O endpoint correto é o do projeto, e o método é PATCH
-        // CORRIGIDO: Agora usa dados.propostaId
         const endpoint = `/projects/${dados.propostaId}`;
         const body = {
             description: novaDescricao

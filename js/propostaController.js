@@ -186,7 +186,6 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
-        // **NOVO:** ATUALIZAÇÃO DO PAYBACK
         const paybackTextoEl = document.getElementById('payback-texto');
         if (paybackTextoEl) {
             paybackTextoEl.innerHTML = `
@@ -195,11 +194,8 @@ function preencherDadosProposta(dados) {
             `;
         }
 
-        // NOVO: 4.1. Taxas de Juros
-        // Acessa as novas propriedades que preparamos no Model.js
         const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
         const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
-        // NOVO: Elemento para a SELIC
         const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
 
         if (taxaAnualEl) {
@@ -210,12 +206,11 @@ function preencherDadosProposta(dados) {
             taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
         }
 
-        // NOVO: Preenche o valor da SELIC
         if (taxaSelicEl) {
             taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
         }
 
-        console.log("DEBUG: Taxas de juros preenchidas com sucesso.");
+        console.log("DEBUG: Taxas de juros e SELIC preenchidas com sucesso.");
 
         // 5. Parcelas
         console.log("DEBUG: Preenchendo parcelas...");
@@ -229,10 +224,12 @@ function preencherDadosProposta(dados) {
         }
         console.log("DEBUG: Parcelas preenchidas com sucesso.");
 
-        // 6. Observações e Validade (Seções atualizadas)
+        // 6. Observações e Validade
         console.log("DEBUG: Preenchendo observações e validade...");
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
+        // NOVO: Elemento para o resumo da instalação
+        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
 
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
@@ -241,7 +238,13 @@ function preencherDadosProposta(dados) {
         if (validadeEl) {
             validadeEl.innerText = dados.validade || "Não informada";
         }
-        console.log("DEBUG: Observações e validade preenchidas com sucesso.");
+
+        // NOVO: Preenche o resumo da instalação
+        if (resumoInstalacaoEl) {
+            resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
+        }
+
+        console.log("DEBUG: Observações, validade e resumo de instalação preenchidos com sucesso.");
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
     }
@@ -254,32 +257,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
-    const primeiroNome = urlParams.get('nome'); // NOVO: Captura o nome da URL
+    const primeiroNome = urlParams.get('nome');
 
-    // NOVO: A lógica agora depende de ambos os parâmetros
     if (numeroProjeto && primeiroNome) {
         try {
-            // AQUI OCORRE A MUDANÇA CRUCIAL
-            // A chamada de busca no model.js agora valida o nome do cliente
             const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
 
             if (!propostas.sucesso) {
                 throw new Error(propostas.mensagem);
             }
 
-            // A PARTIR DAQUI, O CÓDIGO PERMANECE O MESMO
             const propostaData = propostas.dados;
-            // Salva os dados no localStorage para alternar entre Premium e Acessível
             localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
-            // Preenche os dados iniciais da proposta Premium
             preencherDadosProposta(propostaData.premium);
             atualizarImagemEquipamentos(propostaData.premium);
             atualizarEtiquetasDinamicas('premium');
             atualizarImagemInstalacao(propostaData.premium);
             preencherDetalhesInstalacao(propostaData.premium);
 
-            // Tenta atualizar o status de visualização na API
             const dadosVisualizacao = {
                 propostaId: numeroProjeto,
                 tipoVisualizacao: 'P'
@@ -288,27 +284,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
-            // Redireciona em caso de erro grave (incluindo nome do cliente incorreto)
             window.location.href = `index.html?erro=acesso-negado`;
         } finally {
             esconderLoadingOverlay();
         }
     } else {
-        // Redireciona se não houver ID ou nome na URL
         window.location.href = 'index.html?erro=parametros-ausentes';
     }
 
-    // Captura os botões de tipo de proposta
     const btnPremium = document.getElementById('btn-premium');
     const btnAcessivel = document.getElementById('btn-acessivel');
 
-    // Event listener para o botão Premium
     if (btnPremium) {
         btnPremium.addEventListener('click', () => {
-            // Exibe o overlay imediatamente antes de processar
             mostrarLoadingOverlay();
 
-            // Obtém os dados da proposta do localStorage
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
                 preencherDadosProposta(propostas.premium);
@@ -324,20 +314,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
             }
 
-            // NOVO: Adiciona um pequeno atraso para que o splash seja visível
             setTimeout(() => {
                 esconderLoadingOverlay();
             }, 400);
         });
     }
 
-    // Event listener para o botão +Acessível
     if (btnAcessivel) {
         btnAcessivel.addEventListener('click', () => {
-            // Exibe o overlay imediatamente antes de processar
             mostrarLoadingOverlay();
 
-            // Obtém os dados da proposta do localStorage
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {
                 preencherDadosProposta(propostas.acessivel);
@@ -353,14 +339,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
             }
 
-            // NOVO: Adiciona um pequeno atraso para que o splash seja visível
             setTimeout(() => {
                 esconderLoadingOverlay();
             }, 400);
         });
     }
 
-    // Lógica para o botão "Voltar"
     const btnVoltar = document.querySelector('.btn-voltar-proposta');
     if (btnVoltar) {
         btnVoltar.addEventListener('click', (evento) => {
