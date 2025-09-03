@@ -12,24 +12,22 @@ import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
 
 // ======================================================================
-// CONSTANTES AJUSTADAS PARA SIMULAR A TAXA EFETIVA DE 2,55% a 3,41%
+// CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
 // ======================================================================
 
 const IOF_FIXO = 0.0038;
 const IOF_DIARIO = 0.000082;
-const DIAS_CARENCIA = 120; // 120 dias de carência
+const DIAS_CARENCIA = 120; // 120 dias de carência (apenas para cálculo do IOF Diário)
 
-// NOVO: Spread-base anual por nível de valor do projeto.
-// Ajustados para que a simulação se inicie em 2,55% a.m. (considerando carência).
+// AJUSTADO: Valores de spread recalibrados para simular a tabela do Banco BV.
 const SPREAD_POR_VALOR = {
-    faixa_1: 0.08, // Reduzido para aproximar as parcelas
-    faixa_2: 0.12, // Reduzido para aproximar as parcelas
-    faixa_3: 0.16, // Reduzido para aproximar as parcelas
+    faixa_1: 0.2515,
+    faixa_2: 0.2515, // AJUSTADO
+    faixa_3: 0.2515, // AJUSTADO
 };
 
-// NOVO: Fator de risco que aumenta o spread com o número de parcelas.
-// Este valor é calculado para que o spread do pior cenário seja alcançado em 84 meses.
-const FATOR_RISCO_PRAZO = (0.16 - 0.08) / 84; // Recalculado com os novos spreads
+// AJUSTADO: Fator de risco recalibrado para simular a tabela do Banco BV.
+const FATOR_RISCO_PRAZO = 0.00046; // AJUSTADO
 
 // ======================================================================
 // FIM DAS CONSTANTES
@@ -62,7 +60,7 @@ const detalhesInstalacaoPremium = [
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-triangle-exclamatio', texto: 'Apenas proteções internas do inversor' },
+    { icone: 'fa-triangle-exclamation', texto: 'Apenas proteções internas do inversor' },
     { icone: 'fa-wrench', texto: 'Infraestrutura Elétrica e Mecânica mais acessível' },
     { icone: 'fa-plug', texto: 'Instalação mais acessível' }
 ];
@@ -180,7 +178,7 @@ export function validarValidadeProposta(proposta) {
     // Ajusta o fuso horário para a data de expiração, garantindo que a comparação seja precisa.
     // O `Date` do JavaScript já faz o ajuste automático, mas é bom ter certeza.
     // O `expirationDate` do JSON já vem em UTC, então a comparação é direta.
-    
+
     const estaAtiva = dataAtual <= dataExpiracao;
 
     if (!estaAtiva) {
@@ -222,8 +220,14 @@ function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
     return guess;
 }
 
-// NOVO: Função para calcular o financiamento com a lógica da Tabela Price
+// ALTERADO: Função para calcular o financiamento com a lógica da Tabela Price
 function calcularFinanciamento(valorProjeto, selicAnual) {
+    // PONTO DE LOG: Exibir as entradas do cálculo
+    console.log('--- INÍCIO DO CÁLCULO DE FINANCIAMENTO ---');
+    console.log(`Valor do Projeto: R$ ${valorProjeto}`);
+    console.log(`Taxa SELIC Anual: ${selicAnual}%`);
+    console.log('---');
+
     const selicDecimal = selicAnual / 100;
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {};
@@ -231,6 +235,7 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
     const taxasEfetivas = {};
 
     let spreadBaseAnual;
+    // A lógica das faixas de valor foi alterada para refletir os spreads corrigidos.
     if (valorProjeto > 50000) {
         spreadBaseAnual = SPREAD_POR_VALOR.faixa_1;
     } else if (valorProjeto > 20000) {
@@ -239,38 +244,49 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
         spreadBaseAnual = SPREAD_POR_VALOR.faixa_3;
     }
 
-    opcoesParcelas.forEach(n => {
-        const spreadAnualAjustado = spreadBaseAnual + (n * FATOR_RISCO_PRAZO);
-        const jurosAnualNominal = selicDecimal + spreadAnualAjustado;
-        const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
+    // Adiciona o IOF ao valor financiado
+    const iofFixoCalculado = IOF_FIXO * valorProjeto;
+    const iofDiarioCalculado = IOF_DIARIO * DIAS_CARENCIA * valorProjeto;
+    const valorFinanciado = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
 
-        // Adiciona o IOF e os juros da carência ao valor financiado
-        const iofFixoCalculado = IOF_FIXO * valorProjeto;
-        const iofDiarioCalculado = IOF_DIARIO * DIAS_CARENCIA * valorProjeto;
-        
-        // Valor principal para cálculo do juro da carência
-        const valorPrincipalParaCarência = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
-        
-        // Juros que acumulam durante a carência (4 meses)
-        const valorComJurosCarência = valorPrincipalParaCarência * Math.pow(1 + jurosMensalNominal, DIAS_CARENCIA / 30);
-        
-        const valorFinanciadoComJuros = valorComJurosCarência;
+    console.log(`Valor do Projeto: R$ ${valorProjeto.toFixed(2)}`);
+    console.log(`IOF Fixo: R$ ${iofFixoCalculado.toFixed(2)}`);
+    console.log(`IOF Diário (120 dias): R$ ${iofDiarioCalculado.toFixed(2)}`);
+    console.log(`Valor Total Financiado (Projeto + IOF): R$ ${valorFinanciado.toFixed(2)}`);
+    console.log('---');
+
+    opcoesParcelas.forEach(n => {
+        // PONTO DE LOG: Exibir os valores intermediários para cada parcela
+        console.log(`\n--- Cálculo para ${n} parcelas ---`);
+
+        // A nova lógica de spread agora inclui o fator de risco.
+        const jurosAnualNominal = selicDecimal + spreadBaseAnual + (n * FATOR_RISCO_PRAZO);
+        console.log(`Juros Anual Nominal: ${jurosAnualNominal.toFixed(6)}`);
+
+        const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
+        console.log(`Juros Mensal Nominal: ${jurosMensalNominal.toFixed(6)}`);
 
         if (jurosMensalNominal <= 0) {
-            const valorParcela = (valorFinanciadoComJuros / n);
+            const valorParcela = (valorFinanciado / n);
             simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             taxasNominais[`taxaNominal-${n}`] = 0;
             taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
             return;
         }
 
-        const parcela = (valorFinanciadoComJuros * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
+        // CORREÇÃO: Usando o valor financiado SEM os juros de carência.
+        const parcela = (valorFinanciado * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
+
+        // PONTO DE LOG: O valor final da parcela
+        console.log(`VALOR DA PARCELA FINAL: R$ ${parcela.toFixed(2)}`);
 
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         taxasNominais[`taxaNominal-${n}`] = jurosMensalNominal;
-        const taxaMensalEfetiva = calcularTIRMensal(valorFinanciadoComJuros, parcela, n);
+        const taxaMensalEfetiva = calcularTIRMensal(valorFinanciado, parcela, n);
         taxasEfetivas[`taxaAnualEfetiva-${n}`] = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
     });
+    
+    console.log('\n--- FIM DO CÁLCULO ---');
 
     return {
         parcelas: simulacao,
@@ -310,6 +326,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     // NOVO: Extrai a data de expiração diretamente da propriedade 'expirationDate'
     const dataExpiracao = dados.expirationDate || 'Não informado';
+
 
     const { parcelas: parcelasCalculadas, taxasNominais } = calcularFinanciamento(valorTotal, selicAtual);
 
