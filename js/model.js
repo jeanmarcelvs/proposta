@@ -62,7 +62,7 @@ const detalhesInstalacaoPremium = [
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-triangle-exclamation', texto: 'Apenas proteções internas do inversor' },
+    { icone: 'fa-triangle-exclamatio', texto: 'Apenas proteções internas do inversor' },
     { icone: 'fa-wrench', texto: 'Infraestrutura Elétrica e Mecânica mais acessível' },
     { icone: 'fa-plug', texto: 'Instalação mais acessível' }
 ];
@@ -162,6 +162,34 @@ function formatarData(dataISO) {
     const ano = data.getFullYear();
     return `${dia}/${mes}/${ano}`;
 }
+
+// **NOVO: Função para validar se a proposta está expirada, usando o formato ISO 8601.**
+/**
+ * @param {object} proposta O objeto de dados da proposta (versão premium ou acessivel).
+ * @returns {boolean} Retorna true se a proposta estiver ativa, false se estiver expirada.
+ */
+export function validarValidadeProposta(proposta) {
+    if (!proposta || !proposta.dataExpiracao) {
+        console.warn('Aviso: Data de expiração não encontrada na proposta.');
+        return false;
+    }
+
+    const dataAtual = new Date();
+    const dataExpiracao = new Date(proposta.dataExpiracao);
+
+    // Ajusta o fuso horário para a data de expiração, garantindo que a comparação seja precisa.
+    // O `Date` do JavaScript já faz o ajuste automático, mas é bom ter certeza.
+    // O `expirationDate` do JSON já vem em UTC, então a comparação é direta.
+    
+    const estaAtiva = dataAtual <= dataExpiracao;
+
+    if (!estaAtiva) {
+        console.warn(`Proposta expirada em: ${proposta.dataExpiracao}`);
+    }
+
+    return estaAtiva;
+}
+
 
 // **FUNÇÃO DE CÁLCULO DA TIR** (permanece inalterada)
 function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
@@ -280,6 +308,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
     const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // NOVO: Extrai a data de expiração diretamente da propriedade 'expirationDate'
+    const dataExpiracao = dados.expirationDate || 'Não informado';
 
     const { parcelas: parcelasCalculadas, taxasNominais } = calcularFinanciamento(valorTotal, selicAtual);
 
@@ -301,6 +331,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         geracaoMensal: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
         local: `${cidade} / ${estado}`,
         dataProposta: dataProposta,
+        // NOVO: Adiciona a data de expiração ao objeto de retorno
+        dataExpiracao: dataExpiracao,
         linkProposta: linkProposta,
         sistema: {
             geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,

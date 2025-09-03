@@ -3,7 +3,7 @@
  * * Este arquivo é o Controlador da página proposta.html. Ele gerencia
  * a interface do usuário e coordena a exibição dos dados do Modelo.
  */
-import { buscarETratarProposta, atualizarStatusVisualizacao } from './model.js';
+import { buscarETratarProposta, atualizarStatusVisualizacao, validarValidadeProposta } from './model.js';
 
 // Funções para o novo loading-overlay
 function mostrarLoadingOverlay() {
@@ -263,38 +263,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     const numeroProjeto = urlParams.get('id');
     const primeiroNome = urlParams.get('nome');
 
-    if (numeroProjeto && primeiroNome) {
-        try {
-            const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
-
-            if (!propostas.sucesso) {
-                throw new Error(propostas.mensagem);
-            }
-
-            const propostaData = propostas.dados;
-            localStorage.setItem('propostaData', JSON.stringify(propostaData));
-
-            preencherDadosProposta(propostaData.premium);
-            atualizarImagemEquipamentos(propostaData.premium);
-            atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostaData.premium);
-            preencherDetalhesInstalacao(propostaData.premium);
-
-            const dadosVisualizacao = {
-                propostaId: numeroProjeto,
-                tipoVisualizacao: 'P'
-            };
-            await atualizarStatusVisualizacao(dadosVisualizacao);
-
-        } catch (error) {
-            console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
-            window.location.href = `index.html?erro=acesso-negado`;
-        } finally {
-            esconderLoadingOverlay();
-        }
-    } else {
-        window.location.href = 'index.html?erro=parametros-ausentes';
+    if (!numeroProjeto || !primeiroNome) {
+        window.location.href = 'index.html?error=parametrosInvalidos';
+        return;
     }
+
+    try {
+        const resposta = await buscarETratarProposta(numeroProjeto, primeiroNome);
+
+        if (!resposta.sucesso) {
+            // Em caso de erro na API, redireciona com a mensagem da API
+            window.location.href = `index.html?error=apiError&msg=${encodeURIComponent(resposta.mensagem)}`;
+            return;
+        }
+
+        const propostaData = resposta.dados;
+        
+        // **INSERIDO: Validação de data de expiração**
+        if (!validarValidadeProposta(propostaData.premium)) {
+            // Proposta expirada, redireciona para a página inicial com um erro
+            window.location.href = 'index.html?error=propostaExpirada';
+            return;
+        }
+
+        // Armazena os dados no localStorage para alternância entre propostas
+        localStorage.setItem('propostaData', JSON.stringify(propostaData));
+
+        // Inicializa com a proposta premium
+        preencherDadosProposta(propostaData.premium);
+        atualizarImagemEquipamentos(propostaData.premium);
+        atualizarEtiquetasDinamicas('premium');
+        atualizarImagemInstalacao(propostaData.premium);
+        preencherDetalhesInstalacao(propostaData.premium);
+        document.body.classList.remove('theme-acessivel');
+        document.body.classList.add('theme-premium');
+        
+        // Atualiza o status de visualização na API
+        const dadosVisualizacao = {
+            propostaId: numeroProjeto,
+            tipoVisualizacao: 'P'
+        };
+        await atualizarStatusVisualizacao(dadosVisualizacao);
+
+    } catch (error) {
+        console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
+        window.location.href = `index.html?error=acesso-negado`;
+    } finally {
+        esconderLoadingOverlay();
+    }
+    
+    // O seu código original tinha um event listener dentro da função.
+    // Movi-os para fora, para o escopo global do document.addEventListener
+    // para melhor organização e para garantir que só sejam adicionados uma vez.
 
     const btnPremium = document.getElementById('btn-premium');
     const btnAcessivel = document.getElementById('btn-acessivel');

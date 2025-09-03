@@ -3,7 +3,7 @@
  * Este arquivo é o Controlador da página index.html. Ele gerencia a
  * interação do usuário com o formulário e coordena a comunicação com o Modelo.
  */
-import { buscarETratarProposta } from './model.js';
+import { buscarETratarProposta, validarValidadeProposta } from './model.js';
 
 // Funções para o novo loading-overlay
 function mostrarLoadingOverlay() {
@@ -131,16 +131,28 @@ document.addEventListener('DOMContentLoaded', function () {
             sucesso = resposta.sucesso;
 
             if (sucesso) {
-                // Remove a classe loading, adiciona a de sucesso
-                const btnConsultar = document.getElementById('btn-consultar');
-                btnConsultar.classList.remove('loading');
-                btnConsultar.classList.add('success');
-                exibirMensagem('sucesso', `Proposta #${numeroProjeto} encontrada!`);
-                
-                // Redireciona
-                setTimeout(() => {
-                    window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
-                }, 1500);
+                // **NOVO:** Verificação da validade da proposta ANTES de redirecionar
+                if (validarValidadeProposta(resposta.dados.premium)) {
+                    // Proposta VÁLIDA: prossegue para a página da proposta
+                    const btnConsultar = document.getElementById('btn-consultar');
+                    btnConsultar.classList.remove('loading');
+                    btnConsultar.classList.add('success');
+                    exibirMensagem('sucesso', `Proposta #${numeroProjeto} encontrada! Redirecionando...`);
+                    
+                    setTimeout(() => {
+                        window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
+                    }, 1500);
+                } else {
+                    // Proposta EXPIRADA: exibe mensagem de erro na própria página
+                    const btnConsultar = document.getElementById('btn-consultar');
+                    btnConsultar.classList.remove('loading');
+                    btnConsultar.classList.add('error');
+                    exibirMensagem('erro', `Erro: A proposta #${numeroProjeto} está expirada e não pode ser acessada.`);
+                    
+                    // Permite que o usuário tente novamente após o erro
+                    setTimeout(() => setFormState(false), 2000);
+                    return; // Importante para não continuar o fluxo de sucesso
+                }
             } else {
                 const btnConsultar = document.getElementById('btn-consultar');
                 btnConsultar.classList.remove('loading');
@@ -154,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
             btnConsultar.classList.add('error');
             exibirMensagem('erro', 'Ocorreu um erro inesperado ao consultar. Tente novamente.');
         } finally {
-            // **NOVA LÓGICA:** Habilita o formulário e o botão somente em caso de erro
+            // Habilita o formulário e o botão somente em caso de erro
             if (!sucesso) {
                 setTimeout(() => setFormState(false), 2000);
             }
