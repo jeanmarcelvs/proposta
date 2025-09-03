@@ -198,24 +198,6 @@ function preencherDadosProposta(dados) {
             console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
         }
 
-        // --- INÍCIO DA ALTERAÇÃO ---
-        // REMOVIDO: A linha abaixo que preenche a taxa de juros mensal genérica,
-        // pois agora exibiremos a taxa específica para cada parcela.
-        // const taxaMensalEl = document.getElementById('taxa-mensal-financiamento');
-        // if (taxaMensalEl) {
-        //     taxaMensalEl.innerText = dados.valores?.taxaJurosMensal || 'N/A';
-        // }
-
-        // REMOVIDO: Taxa Anual e Taxa SELIC
-        // const taxaAnualEl = document.getElementById('taxa-anual-financiamento');
-        // const taxaSelicEl = document.getElementById('taxa-selic-financiamento');
-        // if (taxaAnualEl) {
-        //     taxaAnualEl.innerText = dados.valores?.taxaJurosAnual || 'N/A';
-        // }
-        // if (taxaSelicEl) {
-        //     taxaSelicEl.innerText = dados.valores?.selicTaxa || 'N/A';
-        // }
-
         console.log("DEBUG: Taxas de juros e SELIC preenchidas com sucesso.");
 
         // 5. Parcelas e Taxas
@@ -223,12 +205,7 @@ function preencherDadosProposta(dados) {
         const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
 
         opcoesParcelas.forEach(n => {
-            // A chave para o valor da parcela é 'parcela-12', 'parcela-24', etc.
             const parcelaKey = `parcela-${n}`;
-            // CORREÇÃO: A chave correta para a taxa nominal é 'taxaNominal-N', não a efetiva
-            const taxaKey = `taxaNominal-${n}`;
-
-            // Preenche o valor da parcela
             const elementoParcela = document.getElementById(parcelaKey);
             if (elementoParcela) {
                 elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
@@ -236,17 +213,12 @@ function preencherDadosProposta(dados) {
                 console.warn(`AVISO: Elemento de parcela '${parcelaKey}' não encontrado.`);
             }
 
-            // Preenche a taxa de juros específica para a parcela
+            // Removido: O preenchimento da taxa de juros específica para a parcela
             const elementoTaxa = document.getElementById(`taxa-${n}`);
             if (elementoTaxa) {
-                // CORREÇÃO: Acessa o objeto taxasPorParcela com a nova chave corrigida
-                elementoTaxa.innerText = dados.valores?.taxasPorParcela[taxaKey] || 'N/A';
-            } else {
-                console.warn(`AVISO: Elemento de taxa 'taxa-${n}' não encontrado.`);
+                elementoTaxa.innerText = ''; // Limpa o conteúdo, se existir
             }
         });
-
-        // --- FIM DA ALTERAÇÃO ---
 
         console.log("DEBUG: Parcelas preenchidas com sucesso.");
 
