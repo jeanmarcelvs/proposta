@@ -1119,3 +1119,109 @@ body.theme-acessivel .icone-resumo {
     display: block !important;
     margin: 0 auto !important;
 }
+
+/* --- Ajuste para Telas Ultra-Pequenas (smartphones < 320px) --- */
+/* --- Ajuste para Telas Ultra-Pequenas (smartphones < 320px) --- */
+@media (max-width: 320px) {
+    /* Ajustes Gerais de Espaçamento e Conteineres */
+    .container-centralizado .container {
+        margin: 1rem 0.5rem;
+        padding: 2rem 1rem;
+    }
+    
+    .secao-principal,
+    .secao-info,
+    #secao-resumo {
+        margin: 1.5rem 1rem;
+        padding: 1.5rem;
+    }
+
+    /* 1. Ajuste dos Botões do Cabeçalho */
+    header {
+        flex-direction: column; /* Força o alinhamento em coluna */
+        align-items: center;
+        padding: 1.5rem 1rem;
+    }
+
+    .seletor-tipo-proposta {
+        flex-direction: column; /* Botões um sobre o outro */
+        width: 100%; /* Ocupam a largura total do container pai */
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    .btn-proposta {
+        width: 100%; /* Cada botão ocupa a largura total */
+        font-size: 0.9rem;
+        padding: 0.8rem 1rem;
+    }
+
+    /* 2. Ajuste dos Cartões de Dados */
+    .cards-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .card-detalhe {
+        padding: 2rem 1.5rem;
+        /* Centraliza o conteúdo para aproveitar o espaço */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    /* 3. Ajuste da Observação da Instalação */
+    .secao-observacao-container {
+        padding: 1rem;
+        /* Altera o alinhamento para o texto ficar mais centralizado */
+        text-align: left;
+        border-left: none; /* Remove a borda, que consome espaço em telas pequenas */
+    }
+
+    /* Redução de Fontes */
+    .nome-cliente {
+        font-size: 2rem;
+    }
+
+    .titulo-secao {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .valor-total-proposta, .valor-card {
+        font-size: 2rem;
+    }
+
+    .unidade-card, .legenda-card {
+        font-size: 1rem;
+    }
+
+    /* Outros Ajustes */
+    .localizacao-data {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .conteudo-equipamentos, .conteudo-instalacao {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .detalhes-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    #imagem-marca {
+        width: 150px;
+    }
+    
+    footer {
+        padding: 1.5rem 1rem;
+    }
+}
