@@ -67,7 +67,6 @@ main {
     flex-grow: 1;
 }
 
-/* NOVO: Classe para centralizar o conteúdo do formulário */
 .container-centralizado {
     display: flex;
     flex-direction: column;
@@ -88,19 +87,11 @@ main {
     transition: all 0.5s ease;
 }
 
-/* NOVO: Ajuste do container para a centralização */
-.container-centralizado .container {
-    margin: 2rem auto;
-}
-
-/* --- Responsividade do Formulário (Aprimorado) --- */
 @media (max-width: 576px) {
     .container-centralizado .container {
-        /* Mantém o ajuste para a maioria dos celulares */
         margin: 2rem 1rem;
         padding: 2rem;
     }
-
     .container-centralizado h1 {
         font-size: 2rem;
     }
@@ -108,21 +99,17 @@ main {
 
 @media (max-width: 480px) {
     .container-centralizado .container {
-        /* Ajuste específico para telas menores que 480px */
         margin: 1.5rem 0.5rem;
         padding: 1.5rem 1rem;
     }
-
     .container-centralizado .logo {
         width: 150px;
     }
-
     .container-centralizado #btn-consultar {
         font-size: 1rem;
         padding: 1rem 2rem;
     }
 }
-
 
 .logo {
     width: 180px;
@@ -183,18 +170,11 @@ input[type="text"]:focus {
     box-shadow: 0 0 0 4px var(--cor-primaria-clara);
 }
 
-/* * CORREÇÃO PRINCIPAL AQUI:
-* O display: flex no botão centraliza o conteúdo.
-* A remoção de 'position: relative' e 'overflow: hidden'
-* permite que os ícones fiquem no fluxo normal.
-*/
 #btn-consultar {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* ALINHAMENTO CORRIGIDO */
     gap: 8px;
-    /* Espaço entre o texto e o ícone */
     padding: 1.2rem 3rem;
     border: none;
     border-radius: 12px;
@@ -209,7 +189,6 @@ input[type="text"]:focus {
     letter-spacing: 2px;
 }
 
-/* Adicionado: Estilo para o botão desabilitado */
 #btn-consultar:disabled {
     cursor: not-allowed;
     background-color: #ccc;
@@ -228,11 +207,6 @@ input[type="text"]:focus {
     box-shadow: 0 4px 15px var(--cor-primaria-clara);
 }
 
-/*
-* CORREÇÃO PRINCIPAL AQUI:
-* As propriedades de position: absolute foram removidas.
-* O display: flex do botão agora gerencia o alinhamento.
-*/
 .icone-loading,
 .icone-sucesso,
 .icone-erro {
@@ -242,7 +216,6 @@ input[type="text"]:focus {
     font-size: 1.2rem;
 }
 
-/* Mostra o ícone de loading e esconde o texto quando a classe 'loading' é adicionada ao botão */
 #btn-consultar.loading .btn-texto {
     display: none;
 }
@@ -253,7 +226,6 @@ input[type="text"]:focus {
     animation: spin 1s linear infinite;
 }
 
-/* Mostra o ícone de sucesso */
 #btn-consultar.success .btn-texto,
 #btn-consultar.success .icone-loading,
 #btn-consultar.success .icone-erro {
@@ -265,7 +237,6 @@ input[type="text"]:focus {
     visibility: visible;
 }
 
-/* Mostra o ícone de erro */
 #btn-consultar.error .btn-texto,
 #btn-consultar.error .icone-loading,
 #btn-consultar.error .icone-sucesso {
@@ -317,9 +288,7 @@ header {
     align-items: center;
     padding: 1.5rem 4rem;
     background-color: rgba(255, 255, 255, 0.95);
-    /* Deixa o fundo quase sólido, mas transparente */
     backdrop-filter: blur(15px);
-    /* Adiciona um desfoque suave */
     border-bottom: 1px solid var(--cor-cartao-borda);
     z-index: 1000;
     box-shadow: 0 4px 15px var(--cor-sombra-leve);
@@ -356,10 +325,8 @@ header {
 .secao-info {
     margin: 3rem 4rem;
     padding: 3.5rem;
-    /* ALTERAÇÃO AQUI: Altera o fundo para semi-transparente */
     background-color: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
-
     border-radius: 20px;
     border: 1px solid var(--cor-cartao-borda);
     box-shadow: 0 15px 40px var(--cor-sombra);
@@ -378,11 +345,8 @@ header {
     align-items: flex-start;
     margin: 3rem 4rem;
     padding: 3.5rem;
-
-    /* ALTERAÇÃO AQUI: Fundo transparente para a animação aparecer */
     background-color: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
-
     border-radius: 20px;
     border: 1px solid var(--cor-cartao-borda);
     box-shadow: 0 15px 40px var(--cor-sombra);
@@ -451,11 +415,8 @@ header {
     justify-content: center;
     padding: 3rem;
     border-radius: 16px;
-    /* ALTERAÇÃO AQUI: Fundo semi-transparente para o card */
     background-color: rgba(243, 245, 248, 0.7);
-    /* ou use rgba(var(--cor-fundo-principal-rgb), 0.7); */
-
-    border: 1px solid rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--cor-cartao-borda);
     box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02), 0 5px 20px var(--cor-sombra-leve);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
@@ -619,8 +580,6 @@ header {
     color: var(--cor-texto-secundario);
 }
 
-/* --- NOVO BLOCO: Seção Valores e Condições (Reorganizado) --- */
-
 .container-financiamento {
     display: flex;
     flex-direction: column;
@@ -695,11 +654,9 @@ header {
     color: var(--cor-primaria);
 }
 
-/* --- Estilos do Card Total --- */
 .card-total {
     background-color: rgba(var(--cor-primaria-rgb), 0.9);
     backdrop-filter: blur(10px);
-
     color: #ffffff;
     grid-column: 1 / -1;
     box-shadow: 0 10px 30px var(--cor-primaria);
@@ -723,7 +680,6 @@ header {
     margin-bottom: 15px;
 }
 
-/* NOVO: Estilos da Etiqueta "À Vista" */
 .etiqueta {
     position: absolute;
     top: 0;
@@ -739,7 +695,6 @@ header {
     letter-spacing: 1px;
 }
 
-/* NOVO: Estilos do Payback */
 .container-payback {
     display: flex;
     flex-direction: column;
@@ -760,7 +715,6 @@ header {
     color: #fff;
 }
 
-/* --- Estilos da Seção de Observações (Não é um Card) --- */
 .secao-observacao-container {
     grid-column: 1 / -1;
     padding: 20px;
@@ -784,14 +738,12 @@ header {
     line-height: 1.6;
 }
 
-/* --- Responsividade da Seção de Financiamento --- */
 @media (max-width: 768px) {
     .valores-container {
         grid-template-columns: 1fr;
     }
 }
 
-/* Seção Validade */
 .validade-proposta {
     text-align: center;
 }
@@ -807,7 +759,6 @@ header {
     margin-right: 0.8rem;
 }
 
-/* Botão de Voltar */
 .secao-voltar-proposta {
     text-align: center;
     margin-bottom: 3rem;
@@ -828,7 +779,6 @@ header {
     transform: translateX(-8px);
 }
 
-/* Footer */
 footer {
     background-color: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
@@ -856,7 +806,6 @@ footer {
     color: var(--cor-primaria);
 }
 
-/* Responsividade Geral */
 @media (max-width: 768px) {
 
     header,
@@ -871,11 +820,8 @@ footer {
     .secao-info {
         margin: 3rem 4rem;
         padding: 3.5rem;
-
-        /* ALTERAÇÃO AQUI: Fundo transparente para a animação aparecer */
         background-color: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(10px);
-
         border-radius: 20px;
         border: 1px solid var(--cor-cartao-borda);
         box-shadow: 0 15px 40px var(--cor-sombra);
@@ -947,6 +893,7 @@ footer {
     visibility: visible;
 }
 
+/* NOVO: Estilos para o overlay de carregamento com a logo e a barra de carregamento */
 .splash-overlay,
 .loading-overlay {
     position: fixed;
@@ -958,6 +905,7 @@ footer {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     display: flex;
+    flex-direction: column; /* Coloca os itens em coluna */
     justify-content: center;
     align-items: center;
     z-index: 10000;
@@ -970,22 +918,48 @@ footer {
     visibility: hidden;
 }
 
-.spinner {
-    width: 60px;
-    height: 60px;
-    border: 6px solid var(--cor-primaria-clara);
-    border-top: 6px solid var(--cor-primaria);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+/* NOVO: Estilo para a logo no splash */
+#splash-logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 25px; /* Espaço entre a logo e a barra */
 }
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
+/* NOVO: Estilo para a barra de carregamento */
+.loading-bar {
+    width: 150px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: var(--cor-primaria-clara);
+    position: relative;
+    overflow: hidden;
+}
 
+.loading-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50%;
+    background-color: var(--cor-primaria);
+    border-radius: 3px;
+    animation: bar-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animação da barra de carregamento */
+@keyframes bar-pulse {
+    0% {
+        transform: scaleX(0.1);
+        left: 0;
+    }
+    50% {
+        transform: scaleX(1);
+        left: 0;
+    }
     100% {
-        transform: rotate(360deg);
+        transform: scaleX(0.1);
+        left: 100%;
     }
 }
 
@@ -1000,7 +974,6 @@ footer {
     transform: scale(1.03);
 }
 
-/* Oculta os ícones por padrão */
 .icone-loading,
 .icone-sucesso,
 .icone-erro {
@@ -1009,31 +982,26 @@ footer {
     visibility: hidden;
 }
 
-/* Mostra o ícone de loading quando a classe 'loading' é adicionada ao botão */
 #btn-consultar.loading .icone-loading {
     opacity: 1;
     visibility: visible;
     animation: spin 1s linear infinite;
 }
 
-/* Esconde o texto do botão quando a classe 'loading' é adicionada */
 #btn-consultar.loading .btn-texto {
     display: none;
 }
 
-/* Mostra o ícone de sucesso quando a classe 'success' é adicionada ao botão */
 #btn-consultar.success .icone-sucesso {
     opacity: 1;
     visibility: visible;
 }
 
-/* Mostra o ícone de erro quando a classe 'error' é adicionada ao botão */
 #btn-consultar.error .icone-erro {
     opacity: 1;
     visibility: visible;
 }
 
-/* NOVO: Estilos para o container de resumo da instalação */
 #resumo-instalacao-container {
     display: flex;
     align-items: flex-start;
@@ -1065,7 +1033,6 @@ body.theme-acessivel .icone-resumo {
     margin: 0;
 }
 
-/* Animação de Fundo de Tecnologia */
 .background-animation {
     position: fixed;
     top: 0;
@@ -1073,7 +1040,6 @@ body.theme-acessivel .icone-resumo {
     width: 100%;
     height: 100%;
     z-index: -1;
-    /* Fica atrás de todo o conteúdo */
     background: var(--cor-fundo-principal);
     overflow: hidden;
 }
@@ -1085,13 +1051,11 @@ body.theme-acessivel .icone-resumo {
     left: 0;
     width: 100%;
     height: 100%;
-    /* ALTERAÇÃO AQUI: Usa a nova variável para a cor da animação */
     background: radial-gradient(circle at 10% 10%, var(--cor-animacao) 0%, transparent 40%),
         radial-gradient(circle at 90% 90%, var(--cor-animacao) 0%, transparent 40%),
         radial-gradient(circle at 50% 50%, var(--cor-animacao) 0%, transparent 40%);
 
     background-size: 200% 200%;
-    /* ALTERAÇÃO AQUI: Diminua o tempo de 20s para um valor menor */
     animation: moveGradient 5s linear infinite alternate;
 }
 
@@ -1099,128 +1063,94 @@ body.theme-acessivel .icone-resumo {
     from {
         background-position: 0 0;
     }
-
     to {
         background-position: 100% 100%;
     }
 }
 
-/* --- Efeito de Fundo Transparente para a Página de Consulta --- */
-/* Garante que o container no index.html tenha um fundo semi-transparente para que a animação seja visível */
 .container-index-com-transparencia {
     background-color: rgba(255, 255, 255, 0.75);
-    /* Branco semi-transparente (75% de opacidade) */
     backdrop-filter: blur(10px);
 }
-
-/* style.css - Adicione esta classe ao final do arquivo */
 
 .icone-loading-centralizado {
     display: block !important;
     margin: 0 auto !important;
 }
 
-/* --- Ajuste para Telas Ultra-Pequenas (smartphones < 320px) --- */
-/* --- Ajuste para Telas Ultra-Pequenas (smartphones < 320px) --- */
 @media (max-width: 320px) {
-    /* Ajustes Gerais de Espaçamento e Conteineres */
     .container-centralizado .container {
         margin: 1rem 0.5rem;
         padding: 2rem 1rem;
     }
-    
     .secao-principal,
     .secao-info,
     #secao-resumo {
-        margin: 1.5rem 1rem;
-        padding: 1.5rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
     }
-
-    /* 1. Ajuste dos Botões do Cabeçalho */
-    header {
-        flex-direction: column; /* Força o alinhamento em coluna */
-        align-items: center;
-        padding: 1.5rem 1rem;
+    .secao-principal + .secao-principal,
+    .secao-principal + .secao-info,
+    .secao-info + .secao-principal {
+        margin-top: 2rem;
     }
-
-    .seletor-tipo-proposta {
-        flex-direction: column; /* Botões um sobre o outro */
-        width: 100%; /* Ocupam a largura total do container pai */
-        gap: 0.8rem;
-        margin-top: 1rem;
+    .secao-principal:not(:last-child)::after {
+        content: '';
+        display: block;
+        width: 80%;
+        height: 1px;
+        background-color: var(--cor-cartao-borda);
+        margin: 2rem auto 0;
     }
-
-    .btn-proposta {
-        width: 100%; /* Cada botão ocupa a largura total */
-        font-size: 0.9rem;
-        padding: 0.8rem 1rem;
-    }
-
-    /* 2. Ajuste dos Cartões de Dados */
     .cards-container {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
     }
-
     .card-detalhe {
-        padding: 2rem 1.5rem;
-        /* Centraliza o conteúdo para aproveitar o espaço */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        padding: 1.5rem 1rem;
+        border: 1px solid var(--cor-cartao-borda);
+        box-shadow: 0 5px 15px var(--cor-sombra-leve);
     }
-    
-    /* 3. Ajuste da Observação da Instalação */
     .secao-observacao-container {
         padding: 1rem;
-        /* Altera o alinhamento para o texto ficar mais centralizado */
         text-align: left;
-        border-left: none; /* Remove a borda, que consome espaço em telas pequenas */
+        border-left: none;
     }
-
-    /* Redução de Fontes */
     .nome-cliente {
         font-size: 2rem;
     }
-
     .titulo-secao {
         font-size: 1.5rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
-
     .valor-total-proposta, .valor-card {
         font-size: 2rem;
     }
-
     .unidade-card, .legenda-card {
         font-size: 1rem;
     }
-
-    /* Outros Ajustes */
     .localizacao-data {
         flex-direction: column;
         align-items: center;
         gap: 1rem;
     }
-
     .conteudo-equipamentos, .conteudo-instalacao {
         flex-direction: column;
         align-items: center;
         gap: 1.5rem;
     }
-    
     .detalhes-item {
         flex-direction: column;
         align-items: center;
         text-align: center;
         gap: 0.5rem;
     }
-    
     #imagem-marca {
         width: 150px;
     }
-    
     footer {
         padding: 1.5rem 1rem;
     }

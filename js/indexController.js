@@ -1,8 +1,6 @@
 import { buscarETratarProposta } from './model.js';
 
 // Função para centralizar a atualização do estado do botão
-// Função para centralizar a atualização do estado do botão
-// Função para centralizar a atualização do estado do botão
 function atualizarEstadoBotao(estado, mensagem = '') {
     const btnConsultar = document.getElementById('btn-consultar');
     const numeroProjetoInput = document.getElementById('numero-projeto');
@@ -28,7 +26,7 @@ function atualizarEstadoBotao(estado, mensagem = '') {
     if (btnTexto) btnTexto.classList.remove('oculto');
     if (iconeLoading) {
         iconeLoading.classList.add('oculto');
-        iconeLoading.classList.remove('icone-loading-centralizado'); // Remove a classe auxiliar
+        iconeLoading.classList.remove('icone-loading-centralizado');
     }
     if (iconeSucesso) iconeSucesso.classList.add('oculto');
     if (iconeErro) iconeErro.classList.add('oculto');
@@ -46,7 +44,7 @@ function atualizarEstadoBotao(estado, mensagem = '') {
             if (btnTexto) btnTexto.classList.add('oculto');
             if (iconeLoading) {
                 iconeLoading.classList.remove('oculto');
-                iconeLoading.classList.add('icone-loading-centralizado'); // Adiciona a classe auxiliar
+                iconeLoading.classList.add('icone-loading-centralizado');
             }
             break;
         case 'sucesso':
@@ -71,14 +69,44 @@ function atualizarEstadoBotao(estado, mensagem = '') {
     }
 }
 
+// NOVO: Função que executa a consulta
+async function executarConsulta(numeroProjeto, primeiroNome) {
+    atualizarEstadoBotao('carregando');
+    
+    try {
+        const resultado = await buscarETratarProposta(numeroProjeto, primeiroNome);
+
+        if (resultado.sucesso) {
+            atualizarEstadoBotao('sucesso', 'Proposta encontrada! Redirecionando...');
+            setTimeout(() => {
+                window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
+            }, 1000);
+        } else {
+            atualizarEstadoBotao('erro', resultado.mensagem || 'Ocorreu um erro desconhecido.');
+            setTimeout(() => {
+                atualizarEstadoBotao('normal');
+            }, 3000);
+        }
+    } catch (erro) {
+        console.error('Erro na consulta:', erro);
+        atualizarEstadoBotao('erro', 'Ocorreu um erro na consulta. Tente novamente.');
+        setTimeout(() => {
+            atualizarEstadoBotao('normal');
+        }, 3000);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form-consulta');
     const mainContent = document.querySelector('main');
     const urlParams = new URLSearchParams(window.location.search);
     const parametroErro = urlParams.get('erro');
+    
+    const numeroProjetoInput = document.getElementById('numero-projeto');
+    const primeiroNomeInput = document.getElementById('primeiro-nome');
 
-    if (!form) {
-        console.error("ERRO: O formulário com o ID 'form-consulta' não foi encontrado.");
+    if (!form || !numeroProjetoInput || !primeiroNomeInput) {
+        console.error("ERRO: O formulário ou seus elementos não foram encontrados.");
         return;
     }
 
@@ -88,7 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContent.classList.add('main-visivel');
         }, 300);
     }
-
+    
+    // NOVO: Verifica os parâmetros e chama a função diretamente, sem simular um evento
+    const idProjetoURL = urlParams.get('id');
+    const nomeURL = urlParams.get('nome');
+    
+    if (idProjetoURL && nomeURL) {
+        numeroProjetoInput.value = idProjetoURL;
+        primeiroNomeInput.value = nomeURL;
+        
+        executarConsulta(idProjetoURL, nomeURL);
+    }
+    
     if (parametroErro) {
         let mensagem = '';
         switch (parametroErro) {
@@ -105,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 mensagem = 'Ocorreu um erro desconhecido.';
         }
         atualizarEstadoBotao('erro', mensagem);
-        // NOVO: Temporizador para limpar o estado de erro após 3 segundos
         setTimeout(() => {
             atualizarEstadoBotao('normal');
         }, 3000);
@@ -113,35 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('submit', async (evento) => {
         evento.preventDefault();
-
-        atualizarEstadoBotao('carregando');
-
-        const numeroProjeto = document.getElementById('numero-projeto').value;
-        const primeiroNome = document.getElementById('primeiro-nome').value;
-
-        try {
-            const resultado = await buscarETratarProposta(numeroProjeto, primeiroNome);
-
-            if (resultado.sucesso) {
-                atualizarEstadoBotao('sucesso', 'Proposta encontrada! Redirecionando...');
-                setTimeout(() => {
-                    window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
-                }, 1000);
-            } else {
-                atualizarEstadoBotao('erro', resultado.mensagem || 'Ocorreu um erro desconhecido.');
-                // NOVO: Temporizador para limpar o estado de erro após 3 segundos
-                setTimeout(() => {
-                    atualizarEstadoBotao('normal');
-                }, 3000);
-            }
-        } catch (erro) {
-            console.error('Erro na consulta:', erro);
-            atualizarEstadoBotao('erro', 'Ocorreu um erro na consulta. Tente novamente.');
-            // NOVO: Temporizador para limpar o estado de erro após 3 segundos
-            setTimeout(() => {
-                atualizarEstadoBotao('normal');
-            }, 3000);
-        }
+        
+        const numeroProjeto = numeroProjetoInput.value;
+        const primeiroNome = primeiroNomeInput.value;
+        
+        // NOVO: Chama a função de consulta a partir do evento de submit
+        executarConsulta(numeroProjeto, primeiroNome);
     });
-    
 });
