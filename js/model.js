@@ -325,7 +325,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             payback: payback,
             parcelas: parcelasCalculadas,
             taxasPorParcela: taxasPorParcela,
-            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros (nominais) médias de mercado, com um período de carência de 120 dias. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
+            observacao: 'Simulação com taxas nominais médias de mercado e carência de 120 dias. As parcelas são estimativas e podem sofrer variação conforme a análise de crédito da instituição financeira, com base em seu CPF ou CNPJ.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
     };
