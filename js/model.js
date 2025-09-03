@@ -388,14 +388,6 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     if (!authResponse.sucesso) { return authResponse; }
     const accessToken = authResponse.accessToken;
 
-    const selicAtual = await getSelicTaxa();
-    if (selicAtual === null) {
-        return {
-            sucesso: false,
-            mensagem: 'Não foi possível obter a taxa Selic para o cálculo do financiamento.'
-        };
-    }
-
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
     const dadosApiPremium = await get(endpointPremium, accessToken);
 
@@ -414,27 +406,70 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
     }
 
+    // --- NOVA LÓGICA DE VALIDAÇÃO ANTECIPADA DA PROPOSTA PREMIUM ---
+    // Cria um objeto temporário para a verificação de validade
+    const propostaParaValidarPremium = {
+        dataExpiracao: dadosApiPremium.dados.expirationDate,
+    };
+    if (!validarValidadeProposta(propostaParaValidarPremium)) {
+        return {
+            sucesso: false,
+            mensagem: 'Proposta premium expirada. Por favor, solicite uma nova.'
+        };
+    }
+    // --- FIM DA NOVA LÓGICA ---
+
+    const selicAtual = await getSelicTaxa();
+    if (selicAtual === null) {
+        return {
+            sucesso: false,
+            mensagem: 'Não foi possível obter a taxa Selic para o cálculo do financiamento.'
+        };
+    }
+
+    // Trata a proposta Premium, já validada
     const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
     if (!propostaPremium) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' }; }
     dadosProposta.premium = propostaPremium;
 
-    const idPropostaAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
-    let propostaAcessivel = null;
+    // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
+    const idProjetoAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
+    
+    // Reseta a proposta acessível para 'null' para garantir o estado inicial
+    dadosProposta.acessivel = null;
 
-    if (idPropostaAcessivel) {
-        const endpointAcessivel = `/projects/${idPropostaAcessivel}/proposals`;
+    if (idProjetoAcessivel) {
+        const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel, accessToken);
+
         if (dadosApiAcessivel.sucesso) {
-            propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
+            // Cria um objeto temporário para a verificação de validade da proposta acessível
+            const propostaParaValidarAcessivel = {
+                dataExpiracao: dadosApiAcessivel.dados.expirationDate
+            };
+            
+            // Valida a data de expiração da proposta acessível
+            if (validarValidadeProposta(propostaParaValidarAcessivel)) {
+                // Se estiver ativa, trata e armazena os dados
+                const propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
+                if (propostaAcessivel) {
+                    dadosProposta.acessivel = propostaAcessivel;
+                } else {
+                    console.error("Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
+                    // Continua o fluxo, mas apenas com a proposta premium
+                }
+            } else {
+                console.warn("Proposta acessível encontrada, mas está expirada. Carregando apenas a proposta premium.");
+                // Continua o fluxo, mas apenas com a proposta premium
+            }
         } else {
-            return { sucesso: false, mensagem: dadosApiAcessivel.mensagem || 'Falha ao buscar dados da proposta Acessível.' };
+            console.warn("Falha ao buscar dados da proposta acessível. Carregando apenas a proposta premium.");
+            // Continua o fluxo, mas apenas com a proposta premium
         }
     } else {
-        return { sucesso: false, mensagem: 'ID da proposta acessível não encontrado.' };
+        console.log("ID do projeto acessível não encontrado na proposta premium. Carregando apenas a proposta premium.");
+        // Continua o fluxo, pois não há uma proposta acessível para buscar
     }
-
-    if (!propostaAcessivel) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' }; }
-    dadosProposta.acessivel = propostaAcessivel;
 
     return { sucesso: true, dados: dadosProposta };
 }

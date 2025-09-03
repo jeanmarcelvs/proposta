@@ -12,32 +12,38 @@
 </head>
 
 <body class="theme-premium">
+
+    <div class="background-animation"></div>
+
     <div id="loading-overlay" class="loading-overlay oculto">
         <div class="spinner"></div>
     </div>
 
+    <div class="container-centralizado">
 
-    <main class="container main-oculto">
-        <img src="imagens/logo-gdis-2.png" alt="Logo da empresa GDIS" class="logo">
-        <h1>Consultar Proposta</h1>
-        <form id="form-consulta" class="form-container">
-            <div class="input-group">
-                <label for="numero-projeto">Número do Projeto</label>
-                <input type="text" id="numero-projeto" name="numero-projeto" placeholder="Ex: 1234" required>
-            </div>
-            <div class="input-group">
-                <label for="primeiro-nome">Primeiro Nome do Cliente</label>
-                <input type="text" id="primeiro-nome" name="primeiro-nome" placeholder="Ex: João" required>
-            </div>
-            <button id="btn-consultar" class="btn-primary">
-                <span class="btn-texto">Consultar</span>
-                <i class="fas fa-spinner fa-spin icone-loading oculto"></i>
-                <i class="fas fa-check icone-sucesso oculto"></i>
-                <i class="fas fa-times icone-erro oculto"></i>
-            </button>
-            <div id="mensagem-feedback" class="mensagem-feedback"></div>
-        </form>
-    </main>
+        <main class="container container-index-com-transparencia main-oculto">
+            <img src="imagens/logo-gdis-2.png" alt="Logo da empresa GDIS" class="logo">
+            <h1>Consultar Proposta</h1>
+            <form id="form-consulta" class="form-container">
+                <div class="input-group">
+                    <label for="numero-projeto">Número do Projeto</label>
+                    <input type="text" id="numero-projeto" name="numero-projeto" placeholder="Ex: 1234" required>
+                </div>
+                <div class="input-group">
+                    <label for="primeiro-nome">Primeiro Nome do Cliente</label>
+                    <input type="text" id="primeiro-nome" name="primeiro-nome" placeholder="Ex: João" required>
+                </div>
+                <button id="btn-consultar" class="btn-primary">
+                    <span class="btn-texto">Consultar</span>
+                    <i class="fas fa-spinner fa-spin icone-loading oculto"></i>
+                    <i class="fas fa-check icone-sucesso oculto"></i>
+                    <i class="fas fa-times icone-erro oculto"></i>
+                </button>
+                <div id="mensagem-feedback" class="mensagem-feedback"></div>
+            </form>
+        </main>
+
+    </div>
 
     <script src="js/indexController.js" type="module"></script>
 </body>

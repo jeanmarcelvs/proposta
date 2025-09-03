@@ -1,9 +1,4 @@
-/**
- * propostaController.js
- * * Este arquivo é o Controlador da página proposta.html. Ele gerencia
- * a interface do usuário e coordena a exibição dos dados do Modelo.
- */
-import { buscarETratarProposta, atualizarStatusVisualizacao } from './model.js';
+import { buscarETratarProposta, atualizarStatusVisualizacao, validarValidadeProposta } from './model.js';
 
 // Funções para o novo loading-overlay
 function mostrarLoadingOverlay() {
@@ -97,7 +92,6 @@ function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
 
     try {
-        // CORREÇÃO: Declarando as variáveis do resumo e ícone no topo da função.
         const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
         const iconeResumoEl = document.getElementById('icone-resumo');
 
@@ -148,7 +142,7 @@ function preencherDadosProposta(dados) {
         }
 
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
-        const iconeInstalacaoEl = document.getElementById('icone-instalacao'); // Encontra o ícone pelo novo ID
+        const iconeInstalacaoEl = document.getElementById('icone-instalacao');
 
         if (instalacaoPaineisEl && iconeInstalacaoEl) {
             const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
@@ -190,7 +184,6 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
 
-        // NOVO: Adiciona a informação de payback diretamente no span
         const paybackValorEl = document.getElementById('payback-valor');
         if (paybackValorEl) {
             paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
@@ -213,10 +206,9 @@ function preencherDadosProposta(dados) {
                 console.warn(`AVISO: Elemento de parcela '${parcelaKey}' não encontrado.`);
             }
 
-            // Removido: O preenchimento da taxa de juros específica para a parcela
             const elementoTaxa = document.getElementById(`taxa-${n}`);
             if (elementoTaxa) {
-                elementoTaxa.innerText = ''; // Limpa o conteúdo, se existir
+                elementoTaxa.innerText = '';
             }
         });
 
@@ -238,11 +230,9 @@ function preencherDadosProposta(dados) {
         if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
             if (dados.tipo === 'premium') {
-                // CORREÇÃO: Ícone de 'check' para proposta Premium
                 iconeResumoEl.classList.add('fa-circle-check');
                 iconeResumoEl.classList.remove('fa-triangle-exclamation');
             } else {
-                // Ícone de 'exclamação' para proposta Acessível
                 iconeResumoEl.classList.add('fa-triangle-exclamation');
                 iconeResumoEl.classList.remove('fa-circle-check');
             }
@@ -254,25 +244,43 @@ function preencherDadosProposta(dados) {
     }
 }
 
-// Adiciona o event listener para garantir que o conteúdo está pronto
+// Função principal de inicialização
 document.addEventListener('DOMContentLoaded', async () => {
-    // Mostra o overlay de carregamento imediatamente
     mostrarLoadingOverlay();
 
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
     const primeiroNome = urlParams.get('nome');
 
+    const seletorTipoProposta = document.querySelector('.seletor-tipo-proposta');
+    const btnPremium = document.getElementById('btn-premium');
+    const btnAcessivel = document.getElementById('btn-acessivel');
+    const btnVoltar = document.querySelector('.btn-voltar-proposta');
+
     if (numeroProjeto && primeiroNome) {
         try {
             const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
 
             if (!propostas.sucesso) {
-                throw new Error(propostas.mensagem);
+                window.location.href = `index.html?erro=${encodeURIComponent(propostas.mensagem)}`;
+                return;
             }
 
             const propostaData = propostas.dados;
             localStorage.setItem('propostaData', JSON.stringify(propostaData));
+
+            const temPropostaAcessivelValida = propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
+
+            if (seletorTipoProposta) {
+                if (temPropostaAcessivelValida) {
+                    // Se a proposta acessível existe e é válida, mostra os botões.
+                    seletorTipoProposta.classList.remove('oculto');
+                } else {
+                    // Caso contrário, esconde o container inteiro.
+                    seletorTipoProposta.classList.add('oculto');
+                    console.warn("Apenas uma proposta encontrada. Os botões de alternância foram ocultados.");
+                }
+            }
 
             preencherDadosProposta(propostaData.premium);
             atualizarImagemEquipamentos(propostaData.premium);
@@ -288,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
-            window.location.href = `index.html?erro=acesso-negado`;
+            window.location.href = 'index.html?erro=acesso-negado';
         } finally {
             esconderLoadingOverlay();
         }
@@ -296,13 +304,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = 'index.html?erro=parametros-ausentes';
     }
 
-    const btnPremium = document.getElementById('btn-premium');
-    const btnAcessivel = document.getElementById('btn-acessivel');
-
     if (btnPremium) {
         btnPremium.addEventListener('click', () => {
             mostrarLoadingOverlay();
-
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
                 preencherDadosProposta(propostas.premium);
@@ -313,21 +317,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.body.classList.remove('theme-acessivel');
                 document.body.classList.add('theme-premium');
                 btnPremium.classList.add('selecionado');
-                btnAcessivel.classList.remove('selecionado');
+                if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
             } else {
                 console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
             }
-
-            setTimeout(() => {
-                esconderLoadingOverlay();
-            }, 400);
+            setTimeout(() => esconderLoadingOverlay(), 400);
         });
     }
 
     if (btnAcessivel) {
         btnAcessivel.addEventListener('click', () => {
             mostrarLoadingOverlay();
-
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {
                 preencherDadosProposta(propostas.acessivel);
@@ -338,18 +338,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.body.classList.add('theme-acessivel');
                 document.body.classList.remove('theme-premium');
                 btnAcessivel.classList.add('selecionado');
-                btnPremium.classList.remove('selecionado');
+                if (btnPremium) btnPremium.classList.remove('selecionado');
             } else {
                 console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
             }
-
-            setTimeout(() => {
-                esconderLoadingOverlay();
-            }, 400);
+            setTimeout(() => esconderLoadingOverlay(), 400);
         });
     }
 
-    const btnVoltar = document.querySelector('.btn-voltar-proposta');
     if (btnVoltar) {
         btnVoltar.addEventListener('click', (evento) => {
             evento.preventDefault();
