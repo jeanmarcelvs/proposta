@@ -19,17 +19,17 @@ const IOF_FIXO = 0.0038;
 const IOF_DIARIO = 0.000082;
 const DIAS_CARENCIA = 120; // 120 dias de carência
 
-// Spread-base anual por nível de valor do projeto.
-// Ajustados para que a simulação inicie em 2,55% a.m. (considerando carência).
+// NOVO: Spread-base anual por nível de valor do projeto.
+// Ajustados para que a simulação se inicie em 2,55% a.m. (considerando carência).
 const SPREAD_POR_VALOR = {
-    faixa_1: 0.2046,
-    faixa_2: 0.25,
-    faixa_3: 0.30,
+    faixa_1: 0.08, // Reduzido para aproximar as parcelas
+    faixa_2: 0.12, // Reduzido para aproximar as parcelas
+    faixa_3: 0.16, // Reduzido para aproximar as parcelas
 };
 
-// Fator de risco que aumenta o spread com o número de parcelas.
-// Este valor é calculado para que o spread do pior cenário (35,15% a.a.) seja alcançado em 84 meses.
-const FATOR_RISCO_PRAZO = (0.3515 - 0.2046) / 84;
+// NOVO: Fator de risco que aumenta o spread com o número de parcelas.
+// Este valor é calculado para que o spread do pior cenário seja alcançado em 84 meses.
+const FATOR_RISCO_PRAZO = (0.16 - 0.08) / 84; // Recalculado com os novos spreads
 
 // ======================================================================
 // FIM DAS CONSTANTES
@@ -221,27 +221,26 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
         const iofDiarioCalculado = IOF_DIARIO * DIAS_CARENCIA * valorProjeto;
         
         // Valor principal para cálculo do juro da carência
-        const valorPrincipalParaCarência = valorProjeto + iofFixoCalculado;
+        const valorPrincipalParaCarência = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
         
-        // Juros que acumulam durante a carência. Assume que a carência é de 4 meses.
-        const jurosCarência = valorPrincipalParaCarência * Math.pow(1 + jurosMensalNominal, DIAS_CARENCIA / 30);
+        // Juros que acumulam durante a carência (4 meses)
+        const valorComJurosCarência = valorPrincipalParaCarência * Math.pow(1 + jurosMensalNominal, DIAS_CARENCIA / 30);
         
-        // O valor total que será financiado e pago em n parcelas
-        const valorComIOF = jurosCarência + iofDiarioCalculado;
+        const valorFinanciadoComJuros = valorComJurosCarência;
 
         if (jurosMensalNominal <= 0) {
-            const valorParcela = (valorComIOF / n);
+            const valorParcela = (valorFinanciadoComJuros / n);
             simulacao[`parcela-${n}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             taxasNominais[`taxaNominal-${n}`] = 0;
             taxasEfetivas[`taxaAnualEfetiva-${n}`] = 0;
             return;
         }
 
-        const parcela = (valorComIOF * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
+        const parcela = (valorFinanciadoComJuros * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
 
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         taxasNominais[`taxaNominal-${n}`] = jurosMensalNominal;
-        const taxaMensalEfetiva = calcularTIRMensal(valorComIOF, parcela, n);
+        const taxaMensalEfetiva = calcularTIRMensal(valorFinanciadoComJuros, parcela, n);
         taxasEfetivas[`taxaAnualEfetiva-${n}`] = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
     });
 
@@ -288,6 +287,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     for (const key in taxasNominais) {
         if (taxasNominais.hasOwnProperty(key)) {
             const taxaMensalNominal = taxasNominais[key];
+            // CORREÇÃO: Formatação correta da taxa nominal para exibição
             taxasPorParcela[key] = `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`;
         }
     }
@@ -325,7 +325,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             payback: payback,
             parcelas: parcelasCalculadas,
             taxasPorParcela: taxasPorParcela,
-            observacao: 'Simulação com taxas nominais médias de mercado e carência de 120 dias. As parcelas são estimativas e podem sofrer variação conforme a análise de crédito da instituição financeira, com base em seu CPF ou CNPJ.'
+            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros (nominais) médias de mercado, com um período de carência de 120 dias. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
         },
         validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
     };
