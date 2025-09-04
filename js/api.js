@@ -2,15 +2,11 @@
 const WORKER_URL = 'https://gdis-api-service.jeanmarcel-vs.workers.dev';
 
 // As funções agora são simples wrappers para chamar o seu Worker
-export async function authenticate() {
-    // A autenticação é gerenciada no Worker. O front-end apenas recebe o sucesso.
-    const response = await fetch(`${WORKER_URL}/solarmarket/auth/signin`, { method: 'POST' });
-    const data = await response.json();
-    return data;
-}
-
 export async function get(endpoint) {
     const response = await fetch(`${WORKER_URL}/solarmarket${endpoint}`);
+    if (!response.ok) {
+        throw new Error(`Erro na requisição GET para ${endpoint}: ${response.statusText}`);
+    }
     return await response.json();
 }
 
@@ -20,6 +16,9 @@ export async function post(endpoint, dados) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
     });
+    if (!response.ok) {
+        throw new Error(`Erro na requisição POST para ${endpoint}: ${response.statusText}`);
+    }
     return await response.json();
 }
 
@@ -29,6 +28,9 @@ export async function patch(endpoint, dados) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
     });
+    if (!response.ok) {
+        throw new Error(`Erro na requisição PATCH para ${endpoint}: ${response.statusText}`);
+    }
     return await response.json();
 }
 

@@ -285,7 +285,7 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
         const taxaMensalEfetiva = calcularTIRMensal(valorFinanciado, parcela, n);
         taxasEfetivas[`taxaAnualEfetiva-${n}`] = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
     });
-    
+
     console.log('\n--- FIM DO CÁLCULO ---');
 
     return {
@@ -384,9 +384,9 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    
+
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
-    const dadosApiPremium = await get(endpointPremium, accessToken);
+    const dadosApiPremium = await get(endpointPremium);
 
     if (!dadosApiPremium.sucesso) {
         return {
@@ -431,7 +431,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
     // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
     const idProjetoAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
-    
+
     // Reseta a proposta acessível para 'null' para garantir o estado inicial
     dadosProposta.acessivel = null;
 
@@ -444,7 +444,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
             const propostaParaValidarAcessivel = {
                 dataExpiracao: dadosApiAcessivel.dados.expirationDate
             };
-            
+
             // Valida a data de expiração da proposta acessível
             if (validarValidadeProposta(propostaParaValidarAcessivel)) {
                 // Se estiver ativa, trata e armazena os dados
@@ -473,20 +473,13 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
 export async function atualizarStatusVisualizacao(dados) {
     try {
-        const authResponse = await authenticate();
-        if (!authResponse.sucesso) {
-            console.error("Modelo: Falha na autenticação para atualizar status.", authResponse.mensagem);
-            return authResponse;
-        }
-
-        const accessToken = authResponse.accessToken;
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
         const endpoint = `/projects/${dados.propostaId}`;
         const body = { description: novaDescricao };
 
-        const respostaApi = await patch(endpoint, body, accessToken);
+        const respostaApi = await patch(endpoint, body);
         if (respostaApi.sucesso) {
             console.log("Modelo: Status de visualização atualizado com sucesso!");
         } else {
