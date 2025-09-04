@@ -64,15 +64,13 @@ body {
 }
 
 main {
-    flex-grow: 1;
+    width: 100%;
+    /* Garante que o conteúdo principal ocupe toda a largura */
 }
 
 .container-centralizado {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    display: block;
+    /* Remove a centralização flex */
 }
 
 .container {
@@ -92,6 +90,7 @@ main {
         margin: 2rem 1rem;
         padding: 2rem;
     }
+
     .container-centralizado h1 {
         font-size: 2rem;
     }
@@ -102,9 +101,11 @@ main {
         margin: 1.5rem 0.5rem;
         padding: 1.5rem 1rem;
     }
+
     .container-centralizado .logo {
         width: 150px;
     }
+
     .container-centralizado #btn-consultar {
         font-size: 1rem;
         padding: 1rem 2rem;
@@ -287,6 +288,7 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 4rem;
+    /* Alinha o padding com o das seções */
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--cor-cartao-borda);
@@ -296,9 +298,11 @@ header {
 
 .seletor-tipo-proposta {
     display: flex;
-    background-color: var(--cor-header-botoes-fundo);
+    background-color: transparent;
+    /* Fundo transparente */
     border-radius: 15px;
-    padding: 0.5rem;
+    padding: 0;
+    /* Margens internas zeradas */
     border: 1px solid var(--cor-header-botoes-borda);
 }
 
@@ -321,47 +325,53 @@ header {
     transform: scale(1.05);
 }
 
+/* --- Estilos das Seções com Margens e Sombras Removidas --- */
+
 .secao-principal,
-.secao-info {
-    margin: 3rem 4rem;
-    padding: 3.5rem;
+.secao-info,
+#secao-resumo {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    padding: 3.5rem 4rem;
+    /* Adiciona padding interno para o conteúdo não colar nas bordas */
+    box-shadow: none;
+    /* Remove a sombra principal da seção */
+    border-top: 1px solid var(--cor-cartao-borda);
+    border-bottom: 1px solid var(--cor-cartao-borda);
     background-color: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid var(--cor-cartao-borda);
-    box-shadow: 0 15px 40px var(--cor-sombra);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: none;
 }
 
 .secao-principal:hover,
-.secao-info:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 50px var(--cor-sombra);
+.secao-info:hover,
+#secao-resumo:hover {
+    transform: none;
+    box-shadow: none;
 }
 
+/* Ajuste específico para a seção de resumo, caso precise de um tratamento diferente */
 #secao-resumo {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin: 3rem 4rem;
-    padding: 3.5rem;
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid var(--cor-cartao-borda);
-    box-shadow: 0 15px 40px var(--cor-sombra);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    /* A maioria dos estilos já foi herdada, mas você pode adicionar algo específico aqui se necessário */
 }
 
-#secao-resumo:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 50px var(--cor-sombra);
+/* Ajuste para o cabeçalho para alinhar com as seções sem margem */
+header {
+    padding: 1.5rem 4rem;
+    /* Alinha o padding com o das seções */
 }
+
+
+
 
 .titulo-secao {
     font-size: 2rem;
     color: var(--cor-primaria);
-    margin-bottom: 2.5rem;
+    margin-bottom: 3.5rem;
+    /* Margem inferior aumentada de 2.5rem para 3.5rem */
     position: relative;
     display: inline-block;
     font-weight: 500;
@@ -477,6 +487,16 @@ header {
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
 }
 
+.card-lista-equipamentos {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Fundo sutil para agrupar */
+    border: 1px solid var(--cor-cartao-borda);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px var(--cor-sombra-leve);
+}
+
 .lista-equipamentos {
     flex-grow: 1;
     display: flex;
@@ -537,10 +557,13 @@ header {
 .imagem-instalacao {
     flex-shrink: 0;
     width: 350px;
+    /* Largura fixa como no design original */
     max-width: 100%;
-    height: auto;
+    height: 300px;
+    /* ALTURA FIXA: Este é o passo crucial. Escolha uma altura que funcione bem para ambas as imagens. */
     border-radius: 16px;
     overflow: hidden;
+    /* Essencial para "cortar" o excesso da imagem */
     box-shadow: 0 10px 30px var(--cor-sombra);
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -552,6 +575,12 @@ header {
 
 #imagem-instalacao {
     width: 100%;
+    height: 100%;
+    /* Faz a imagem preencher a altura e largura do contêiner pai */
+    object-fit: cover;
+    /* Redimensiona a imagem para cobrir o espaço, mantendo a proporção e cortando o excesso */
+    object-position: center;
+    /* Centraliza a imagem antes de cortar, garantindo que o foco principal seja mantido */
     display: block;
 }
 
@@ -655,6 +684,8 @@ header {
 }
 
 .card-total {
+    margin-top: 20px;
+    margin-bottom: 40px;
     background-color: rgba(var(--cor-primaria-rgb), 0.9);
     backdrop-filter: blur(10px);
     color: #ffffff;
@@ -684,15 +715,17 @@ header {
     position: absolute;
     top: 0;
     right: 0;
-    background-color: var(--cor-secundaria);
-    color: #fff;
-    padding: 8px 15px;
-    border-top-right-radius: 12px;
+    background-color: #ffffff;
+    color: var(--cor-primaria);
+    padding: 8px 20px;
     border-bottom-left-radius: 12px;
+    border-top-right-radius: 12px;
+    /* ADICIONADO: Arredonda o canto superior direito */
     font-size: 0.9rem;
-    font-weight: bold;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .container-payback {
@@ -742,11 +775,33 @@ header {
     .valores-container {
         grid-template-columns: 1fr;
     }
-}
 
-.validade-proposta {
-    text-align: center;
-}
+    .imagem-instalacao {
+        flex-shrink: 0;
+        width: 100%;
+        /* A imagem ocupará toda a largura disponível */
+        max-height: 250px;
+        /* DEFINIMOS UMA ALTURA MÁXIMA */
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px var(--cor-sombra);
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    #imagem-instalacao {
+        /* O seletor para a tag <img> em si */
+        width: 100%;
+        height: 100%;
+        /* A imagem preencherá a altura do container (250px) */
+        object-fit: cover;
+        /* MÁGICA ACONTECE AQUI */
+        object-position: center;
+        /* Centraliza a imagem antes de cortar */
+        display: block;
+    }
+
+
+
 
 .etiqueta-info {
     font-weight: 400;
@@ -806,75 +861,69 @@ footer {
     color: var(--cor-primaria);
 }
 
-@media (max-width: 768px) {
+header,
+#secao-resumo {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+}
 
-    header,
-    #secao-resumo {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 1.5rem;
-    }
+.secao-principal,
+.secao-info {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    padding: 3.5rem;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--cor-cartao-borda);
+    box-shadow: 0 15px 40px var(--cor-sombra);
+}
 
-    .secao-principal,
-    .secao-info {
-        margin: 3rem 4rem;
-        padding: 3.5rem;
-        background-color: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        border: 1px solid var(--cor-cartao-borda);
-        box-shadow: 0 15px 40px var(--cor-sombra);
-        transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
+#secao-cliente {
+    text-align: center;
+    margin-top: 1.5rem;
+}
 
-    #secao-cliente {
-        text-align: center;
-        margin-top: 1.5rem;
-    }
+.localizacao-data {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
 
-    .localizacao-data {
-        flex-direction: column;
-        align-items: center;
-        padding: 1rem;
-    }
+.conteudo-equipamentos,
+.conteudo-instalacao {
+    flex-direction: column;
+    gap: 2rem;
+}
 
-    .conteudo-equipamentos,
-    .conteudo-instalacao {
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-    }
+#imagem-marca {
+    margin-bottom: 1rem;
+}
 
-    #imagem-marca {
-        margin-bottom: 1rem;
-    }
 
-    .detalhes-instalacao {
-        text-align: center;
-    }
 
-    .item-detalhe-instalacao {
-        flex-direction: column;
-        text-align: center;
-    }
+.item-detalhe-instalacao {
+    flex-direction: column;
+    text-align: center;
+}
 
-    .valores-container {
-        grid-template-columns: 1fr;
-    }
+.valores-container {
+    grid-template-columns: 1fr;
+}
 
-    .valor-total-proposta,
-    .valor-card {
-        font-size: 2.5rem;
-    }
+.valor-total-proposta,
+.valor-card {
+    font-size: 2.5rem;
+}
 
-    .valor-parcela-proposta {
-        font-size: 1.6rem;
-    }
+.valor-parcela-proposta {
+    font-size: 1.6rem;
+}
 
-    .card-investimento {
-        grid-column: auto;
-    }
+.card-investimento {
+    grid-column: auto;
+}
 }
 
 .icone-instalacao {
@@ -905,7 +954,8 @@ footer {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     display: flex;
-    flex-direction: column; /* Coloca os itens em coluna */
+    flex-direction: column;
+    /* Coloca os itens em coluna */
     justify-content: center;
     align-items: center;
     z-index: 10000;
@@ -922,7 +972,8 @@ footer {
 #splash-logo {
     width: 200px;
     height: auto;
-    margin-bottom: 25px; /* Espaço entre a logo e a barra */
+    margin-bottom: 25px;
+    /* Espaço entre a logo e a barra */
 }
 
 /* NOVO: Estilo para a barra de carregamento */
@@ -953,10 +1004,12 @@ footer {
         transform: scaleX(0.1);
         left: 0;
     }
+
     50% {
         transform: scaleX(1);
         left: 0;
     }
+
     100% {
         transform: scaleX(0.1);
         left: 100%;
@@ -1004,33 +1057,38 @@ footer {
 
 #resumo-instalacao-container {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
     gap: 15px;
     margin-top: 40px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    padding: 0;
+    /* Zera o padding para que o alinhamento seja controlado pelo container pai */
+    background-color: transparent;
+    border-left: none;
+    /* Remove a linha vertical */
 }
 
 .icone-resumo {
-    font-size: 2.2rem;
-    padding-top: 5px;
-}
-
-body.theme-premium .icone-resumo {
-    color: #008000;
-}
-
-body.theme-acessivel .icone-resumo {
-    color: #ffc107;
+    font-size: 1.6rem;
+    /* Tamanho ajustado para harmonia */
+    padding-top: 0;
+    color: var(--cor-primaria);
+    /* Cor unificada para o ícone */
 }
 
 .texto-resumo-instalacao {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    /* Mesmo tamanho de fonte */
+    color: var(--cor-texto-secundario);
+    /* Mesma cor de texto */
     line-height: 1.6;
-    color: #555;
+    /* Mesma altura de linha */
     margin: 0;
+}
+
+body.theme-premium .icone-resumo,
+body.theme-acessivel .icone-resumo {
+    color: var(--cor-primaria);
 }
 
 .background-animation {
@@ -1063,6 +1121,7 @@ body.theme-acessivel .icone-resumo {
     from {
         background-position: 0 0;
     }
+
     to {
         background-position: 100% 100%;
     }
@@ -1078,25 +1137,28 @@ body.theme-acessivel .icone-resumo {
     margin: 0 auto !important;
 }
 
-@media (max-width: 320px) {
-    .container-centralizado .container {
-        margin: 1rem 0.5rem;
-        padding: 2rem 1rem;
-    }
+/* --- Bloco de Mídia Corrigido para Telas Pequenas --- */
+
+@media (max-width: 600px) {
+
+
     .secao-principal,
     .secao-info,
     #secao-resumo {
-        margin: 1rem 0;
+        margin-top: 20px;
+        margin-bottom: 40px;
         padding: 1rem;
-        border: none;
-        box-shadow: none;
-        background-color: transparent;
+        width: 100%;
+        /* ocupa toda a largura */
     }
-    .secao-principal + .secao-principal,
-    .secao-principal + .secao-info,
-    .secao-info + .secao-principal {
-        margin-top: 2rem;
+
+    .secao-principal+.secao-principal,
+    .secao-principal+.secao-info,
+    .secao-info+.secao-principal {
+        margin-top: 20px;
+        margin-bottom: 40px;
     }
+
     .secao-principal:not(:last-child)::after {
         content: '';
         display: block;
@@ -1105,52 +1167,130 @@ body.theme-acessivel .icone-resumo {
         background-color: var(--cor-cartao-borda);
         margin: 2rem auto 0;
     }
+
     .cards-container {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
+
     .card-detalhe {
         padding: 1.5rem 1rem;
         border: 1px solid var(--cor-cartao-borda);
         box-shadow: 0 5px 15px var(--cor-sombra-leve);
     }
+
     .secao-observacao-container {
-        padding: 1rem;
-        text-align: left;
+        grid-column: 1 / -1;
+        padding: 20px 0 0 0;
         border-left: none;
+        border-radius: 0;
+        background-color: transparent;
+        box-shadow: none;
+        margin-top: 20px;
+        text-align: left;
     }
+
     .nome-cliente {
         font-size: 2rem;
     }
+
     .titulo-secao {
         font-size: 1.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 2.5rem;
+        text-align: center;
+        display: block;
     }
-    .valor-total-proposta, .valor-card {
+
+    .titulo-secao::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    #resumo-instalacao-container {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--cor-cartao-borda);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0;
+        background-color: transparent;
+        border-left: none;
+    }
+
+    .valor-total-proposta,
+    .valor-card {
         font-size: 2rem;
     }
-    .unidade-card, .legenda-card {
+
+    .unidade-card,
+    .legenda-card {
         font-size: 1rem;
     }
+
     .localizacao-data {
         flex-direction: column;
         align-items: center;
         gap: 1rem;
     }
-    .conteudo-equipamentos, .conteudo-instalacao {
+
+    .conteudo-equipamentos,
+    .conteudo-instalacao {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
+        /* MUDANÇA 1: Alinha tudo à esquerda */
         gap: 1.5rem;
+        width: 100%;
+        /* Garante que o container ocupe toda a largura */
     }
+
+    .card-lista-equipamentos {
+        padding: 1.5rem;
+    }
+
+    .lista-equipamentos {
+        align-items: flex-start;
+        /* Alinha os itens à esquerda */
+        width: 100%;
+        gap: 2.5rem;
+    }
+
+    .item-equipamento {
+        padding-left: 0;
+        /* Garante que não haja recuo interno */
+    }
+
     .detalhes-item {
-        flex-direction: column;
+        flex-direction: row;
+        /* MUDANÇA 3: Volta ao layout de linha (quantidade ao lado do texto) */
         align-items: center;
-        text-align: center;
-        gap: 0.5rem;
+        /* Alinha verticalmente a quantidade com o texto */
+        gap: 1.5rem;
+        width: 100%;
     }
+
+    .quantidade-equipamento {
+        margin-right: 0;
+        /* Remove a margem extra para um alinhamento limpo */
+    }
+
+    .info-equipamento {
+        text-align: left;
+        /* MUDANÇA 4: Alinha o texto (título e descrição) à esquerda */
+        width: auto;
+        /* Permite que o bloco de texto cresça naturalmente */
+    }
+
     #imagem-marca {
+        display: block;
+        margin: 0 auto 1rem;
+        /* centraliza em todas as telas */
         width: 150px;
     }
+
     footer {
         padding: 1.5rem 1rem;
     }

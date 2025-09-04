@@ -48,22 +48,22 @@ const caminhosImagens = {
 
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 const detalhesInstalacaoPremium = [
-    { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado e Completo' },
-    { icone: 'fa-bolt-lightning', texto: 'Infraestrutura Elétrica e Mecânica mais Resistente' },
-    { icone: 'fa-gears', texto: 'Instalação com Padrão Otimizado' }
+    { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado completo' },
+    { icone: 'fa-plug', texto: 'Infraestrutura com materiais de maior durabilidade' },
+    { icone: 'fa-wrench', texto: 'Instalação padronizada para uma menor necessidade de manutenção' }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-triangle-exclamation', texto: 'Apenas proteções internas do inversor' },
-    { icone: 'fa-wrench', texto: 'Infraestrutura Elétrica e Mecânica mais acessível' },
-    { icone: 'fa-plug', texto: 'Instalação mais acessível' }
+    { icone: 'fa-triangle-exclamation', texto: 'Proteções limitadas' },
+    { icone: 'fa-triangle-exclamation', texto: 'Infraestrutura mais acessível' },
+    { icone: 'fa-triangle-exclamation', texto: 'Instalação mais acessível' }
 ];
 
 // NOVO: Resumos para a seção de instalação
-const resumoInstalacaoPremium = "Nossa instalação Premium se traduz em maior segurança ao seu sistema e ao seu patrimônio, maior durabilidade e eficiência de geração de energia. Tudo isso resulta em maior tranquilidade e economia real a longo prazo.";
+const resumoInstalacaoPremium = "O Projeto Premium garante maior segurança ao patrimônio, durabilidade dos equipamentos e eficiência na geração de energia, proporcionando tranquilidade e economia sustentável a longo prazo.";
 
-const resumoInstalacaoAcessivel = "Esta instalação é a opção mais Acessível, ideal para quem busca uma solução de entrada. Porém, não oferece a mesma segurança e durabilidade, geralmente apresenta uma redução de eficiência em menos tempo e uma maior necessidade de manutenção.";
+const resumoInstalacaoAcessivel = "A opção +Acessível é conhecida no mercado como solução de entrada, com menor investimento inicial. No entanto, demanda manutenções mais frequentes e apresenta redução de eficiência em menos tempo.";
 
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
@@ -298,15 +298,25 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
  * @returns {object} Um objeto com os dados formatados para a página.
  */
 function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
+    console.log(`\n--- INÍCIO DO TRATAMENTO DE DADOS para a proposta ${tipoProposta.toUpperCase()} ---`);
+    console.log('Dados brutos da API recebidos:', dadosApi);
+
     if (!dadosApi || !dadosApi.dados) {
-        console.error("Modelo: Dados da API não encontrados ou incompletos.");
+        console.error("DEBUG: Modelo: Dados da API não encontrados ou incompletos.");
         return null;
     }
 
     const dados = dadosApi.dados.data;
     const variables = dados.variables || [];
+
+    // PONTOS DE DEBUG: Valores extraídos das variáveis
+    console.log('DEBUG: Dados do objeto "data":', dados);
+    console.log('DEBUG: Array de "variables":', variables);
+
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
+    console.log('DEBUG: Nome do cliente extraído:', nomeCliente);
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
+    console.log('DEBUG: Data da proposta extraída:', dataProposta);
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
     const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
@@ -318,12 +328,17 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
     const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
+    console.log('DEBUG: Valor total extraído:', valorTotal);
     const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    console.log('DEBUG: salesValue da API:', dados.salesValue);
+    console.log('DEBUG: Valor resumo calculado:', valorResumo);
     // NOVO: Extrai a data de expiração diretamente da propriedade 'expirationDate'
     const dataExpiracao = dados.expirationDate || 'Não informado';
+    console.log('DEBUG: Data de expiração extraída:', dataExpiracao);
 
 
     const { parcelas: parcelasCalculadas, taxasNominais } = calcularFinanciamento(valorTotal, selicAtual);
+    console.log('DEBUG: Simulação de parcelas calculada:', parcelasCalculadas);
 
     const taxasPorParcela = {};
     for (const key in taxasNominais) {
@@ -333,6 +348,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             taxasPorParcela[key] = `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`;
         }
     }
+    console.log('DEBUG: Taxas formatadas por parcela:', taxasPorParcela);
+
 
     const retorno = {
         tipo: tipoProposta,
@@ -369,21 +386,29 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             payback: payback,
             parcelas: parcelasCalculadas,
             taxasPorParcela: taxasPorParcela,
-            observacao: 'Os valores de financiamento apresentados são uma simulação e utilizam as taxas de juros (nominais) médias de mercado, com um período de carência de 120 dias. O resultado final pode variar conforme o perfil de crédito do cliente e as condições da instituição financeira.'
+            observacao: 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
         },
-        validade: `Proposta válida por até 3 dias corridos ou enquanto durarem os estoques.`
+        validade: `Proposta válida por até 3 dias corridos ou enquanto houver disponibilidade em estoque.`
     };
+    
+    console.log('DEBUG: Objeto de retorno final:', retorno);
+    console.log(`--- FIM DO TRATAMENTO de DADOS para a proposta ${tipoProposta.toUpperCase()} ---\n`);
 
     return retorno;
 }
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
+    console.log('\n--- INÍCIO DA EXECUÇÃO: buscarETratarProposta ---');
+    console.log('DEBUG: Parâmetros recebidos: numeroProjeto =', numeroProjeto, '| primeiroNomeCliente =', primeiroNomeCliente);
 
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
     const dadosApiPremium = await get(endpointPremium);
 
+    console.log('DEBUG: Resposta da API Premium:', dadosApiPremium);
+
     if (!dadosApiPremium.sucesso) {
+        console.error('DEBUG: Falha na busca da proposta premium.');
         return {
             sucesso: false,
             mensagem: 'Projeto não encontrado ou dados inválidos.'
@@ -391,13 +416,15 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     const proposta = dadosApiPremium.dados.data;
+    console.log('DEBUG: Objeto da proposta premium extraído:', proposta);
 
     // Acessa o nome do cliente a partir das variáveis
     const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
+    console.log('DEBUG: Primeiro nome extraído da API:', primeiroNomeApi);
 
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
-        console.error("Modelo: Tentativa de acesso não autorizado. Nome não corresponde.");
+        console.error("DEBUG: Tentativa de acesso não autorizado. Nome não corresponde.");
         return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
     }
 
@@ -406,7 +433,9 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     const propostaParaValidarPremium = {
         dataExpiracao: proposta.expirationDate,
     };
+    console.log('DEBUG: Objeto de validação da proposta premium:', propostaParaValidarPremium);
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
+        console.warn('DEBUG: Proposta premium expirada.');
         return {
             sucesso: false,
             mensagem: 'Proposta premium expirada. Por favor, solicite uma nova.'
@@ -415,6 +444,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     // --- FIM DA NOVA LÓGICA ---
 
     const selicAtual = await getSelicTaxa();
+    console.log('DEBUG: Taxa SELIC atual:', selicAtual);
     if (selicAtual === null) {
         return {
             sucesso: false,
@@ -428,6 +458,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
     // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
     const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.variables, 'vc_projeto_acessivel');
+    console.log('DEBUG: ID do projeto acessível extraído:', idProjetoAcessivel);
 
     // Reseta a proposta acessível para 'null' para garantir o estado inicial
     dadosProposta.acessivel = null;
@@ -435,12 +466,15 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     if (idProjetoAcessivel) {
         const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel);
+        console.log('DEBUG: Resposta da API Acessível:', dadosApiAcessivel);
 
         if (dadosApiAcessivel.sucesso) {
             // Cria um objeto temporário para a verificação de validade da proposta acessível
             const propostaParaValidarAcessivel = {
                 dataExpiracao: dadosApiAcessivel.dados.data.expirationDate
             };
+            console.log('DEBUG: Objeto de validação da proposta acessível:', propostaParaValidarAcessivel);
+
 
             // Valida a data de expiração da proposta acessível
             if (validarValidadeProposta(propostaParaValidarAcessivel)) {
@@ -449,17 +483,20 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
                 if (propostaAcessivel) {
                     dadosProposta.acessivel = propostaAcessivel;
                 } else {
-                    console.error("Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
+                    console.error("DEBUG: Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
                 }
             } else {
-                console.warn("Proposta acessível encontrada, mas está expirada. Carregando apenas a proposta premium.");
+                console.warn("DEBUG: Proposta acessível encontrada, mas está expirada. Carregando apenas a proposta premium.");
             }
         } else {
-            console.warn("Falha ao buscar dados da proposta acessível. Carregando apenas a proposta premium.");
+            console.warn("DEBUG: Falha ao buscar dados da proposta acessível. Carregando apenas a proposta premium.");
         }
     } else {
-        console.log("ID do projeto acessível não encontrado na proposta premium. Carregando apenas a proposta premium.");
+        console.log("DEBUG: ID do projeto acessível não encontrado na proposta premium. Carregando apenas a proposta premium.");
     }
+
+    console.log('DEBUG: Objeto final `dadosProposta`:', dadosProposta);
+    console.log('--- FIM DA EXECUÇÃO: buscarETratarProposta ---\n');
 
     return { sucesso: true, dados: dadosProposta };
 }
@@ -471,6 +508,8 @@ export async function atualizarStatusVisualizacao(dados) {
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
         const endpoint = `/projects/${dados.propostaId}`;
         const body = { description: novaDescricao };
+        
+        console.log('DEBUG: Dados enviados para atualizar status:', body);
 
         const respostaApi = await patch(endpoint, body);
         if (respostaApi.sucesso) {
