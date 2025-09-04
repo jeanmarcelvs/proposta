@@ -308,7 +308,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         return null;
     }
 
-    const { dados } = dadosApi;
+    // Corrigido: Acessa a propriedade 'data' dentro de 'dados'
+    const dados = dadosApi.dados.data;
     const variables = dados.variables || [];
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
@@ -395,7 +396,11 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    const nomeCompletoApi = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'cliente_nome');
+    // Corrigido: Acessa a proposta dentro da propriedade 'data'
+    const proposta = dadosApiPremium.dados.data;
+
+    // Acessa o nome do cliente a partir das variáveis
+    const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
 
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
@@ -406,7 +411,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     // --- NOVA LÓGICA DE VALIDAÇÃO ANTECIPADA DA PROPOSTA PREMIUM ---
     // Cria um objeto temporário para a verificação de validade
     const propostaParaValidarPremium = {
-        dataExpiracao: dadosApiPremium.dados.expirationDate,
+        dataExpiracao: proposta.expirationDate,
     };
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
         return {
@@ -425,24 +430,25 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     // Trata a proposta Premium, já validada
+    // Corrigido: Passa o objeto `dadosApiPremium` completo, pois a função agora trata o aninhamento
     const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
     if (!propostaPremium) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' }; }
     dadosProposta.premium = propostaPremium;
 
     // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
-    const idProjetoAcessivel = extrairValorVariavelPorChave(dadosApiPremium.dados.variables, 'vc_projeto_acessivel');
+    const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.variables, 'vc_projeto_acessivel');
 
     // Reseta a proposta acessível para 'null' para garantir o estado inicial
     dadosProposta.acessivel = null;
 
     if (idProjetoAcessivel) {
         const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
-        const dadosApiAcessivel = await get(endpointAcessivel, accessToken);
+        const dadosApiAcessivel = await get(endpointAcessivel);
 
         if (dadosApiAcessivel.sucesso) {
             // Cria um objeto temporário para a verificação de validade da proposta acessível
             const propostaParaValidarAcessivel = {
-                dataExpiracao: dadosApiAcessivel.dados.expirationDate
+                dataExpiracao: dadosApiAcessivel.dados.data.expirationDate
             };
 
             // Valida a data de expiração da proposta acessível
