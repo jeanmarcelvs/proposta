@@ -3,13 +3,8 @@
  * * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios-,
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
-// Importa as funções da API, incluindo a nova 'authenticate' e 'patch'
-import { get, post, patch, getSelicTaxa } from './api.js';
-
-// **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
-// Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
-//const apiToken = process.env.API_TOKEN;
-
+// Importa as funções da API
+import { get, patch, getSelicTaxa } from './api.js';
 
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
@@ -167,13 +162,13 @@ function formatarData(dataISO) {
  * @returns {boolean} Retorna true se a proposta estiver ativa, false se estiver expirada.
  */
 export function validarValidadeProposta(proposta) {
-    if (!proposta || !proposta.dados.dataExpiracao) {
-        console.warn('Aviso: Data de expiração não encontrada na proposta');
+    if (!proposta || !proposta.dataExpiracao) {
+        console.warn('Aviso: Data de expiração não encontrada na proposta.');
         return false;
     }
 
     const dataAtual = new Date();
-    const dataExpiracao = new Date(proposta.dados.dataExpiracao);
+    const dataExpiracao = new Date(proposta.dataExpiracao);
 
     // Ajusta o fuso horário para a data de expiração, garantindo que a comparação seja precisa.
     // O `Date` do JavaScript já faz o ajuste automático, mas é bom ter certeza.
@@ -182,7 +177,7 @@ export function validarValidadeProposta(proposta) {
     const estaAtiva = dataAtual <= dataExpiracao;
 
     if (!estaAtiva) {
-        console.warn(`Proposta expirada em: ${proposta.dados.dataExpiracao}`);
+        console.warn(`Proposta expirada em: ${proposta.dataExpiracao}`);
     }
 
     return estaAtiva;
@@ -308,8 +303,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         return null;
     }
 
-    // Corrigido: Acessa a propriedade 'data' dentro de 'dados'
-    const dados = dadosApi.data;
+    const dados = dadosApi.dados.data;
     const variables = dados.variables || [];
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
@@ -396,11 +390,10 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    // Corrigido: Acessa a proposta dentro da propriedade 'data'
-    const proposta = dadosApiPremium.dados;
+    const proposta = dadosApiPremium.dados.data;
 
     // Acessa o nome do cliente a partir das variáveis
-    const nomeCompletoApi = extrairValorVariavelPorChave(proposta.dados.variables, 'cliente_nome');
+    const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
 
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
@@ -411,7 +404,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     // --- NOVA LÓGICA DE VALIDAÇÃO ANTECIPADA DA PROPOSTA PREMIUM ---
     // Cria um objeto temporário para a verificação de validade
     const propostaParaValidarPremium = {
-        dataExpiracao: proposta.dados.expirationDate,
+        dataExpiracao: proposta.expirationDate,
     };
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
         return {
@@ -429,14 +422,12 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    // Trata a proposta Premium, já validada
-    // Corrigido: Passa o objeto `dadosApiPremium` completo, pois a função agora trata o aninhamento
     const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
     if (!propostaPremium) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' }; }
     dadosProposta.premium = propostaPremium;
 
     // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
-    const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.dados.variables, 'vc_projeto_acessivel');
+    const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.variables, 'vc_projeto_acessivel');
 
     // Reseta a proposta acessível para 'null' para garantir o estado inicial
     dadosProposta.acessivel = null;
@@ -459,19 +450,15 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
                     dadosProposta.acessivel = propostaAcessivel;
                 } else {
                     console.error("Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
-                    // Continua o fluxo, mas apenas com a proposta premium
                 }
             } else {
                 console.warn("Proposta acessível encontrada, mas está expirada. Carregando apenas a proposta premium.");
-                // Continua o fluxo, mas apenas com a proposta premium
             }
         } else {
             console.warn("Falha ao buscar dados da proposta acessível. Carregando apenas a proposta premium.");
-            // Continua o fluxo, mas apenas com a proposta premium
         }
     } else {
         console.log("ID do projeto acessível não encontrado na proposta premium. Carregando apenas a proposta premium.");
-        // Continua o fluxo, pois não há uma proposta acessível para buscar
     }
 
     return { sucesso: true, dados: dadosProposta };
