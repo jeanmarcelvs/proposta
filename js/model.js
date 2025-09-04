@@ -4,7 +4,7 @@
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
 // Importa as funções da API, incluindo a nova 'authenticate' e 'patch'
-import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
+import { get, post, patch, getSelicTaxa } from './api.js';
 
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
 // Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
