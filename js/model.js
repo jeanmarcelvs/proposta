@@ -9,7 +9,7 @@ import { get, post, authenticate, patch, getSelicTaxa } from './api.js';
 // **ATENÇÃO: SUBSTITUA COM A SUA TOKEN DE API PESSOAL**
 // Para fins de teste, ela está aqui. Em produção, use um método mais seguro.
 //const apiToken = process.env.API_TOKEN;
-const apiToken = "3649:y915jaWXevVcFJWaIdzNZJHlYfXL3MdbOwXX041T"
+
 
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
@@ -384,7 +384,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    const authResponse = await authenticate(apiToken);
+    const authResponse = await authenticate();
     if (!authResponse.sucesso) { return authResponse; }
     const accessToken = authResponse.accessToken;
 
@@ -476,7 +476,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
 export async function atualizarStatusVisualizacao(dados) {
     try {
-        const authResponse = await authenticate(apiToken);
+        const authResponse = await authenticate();
         if (!authResponse.sucesso) {
             console.error("Modelo: Falha na autenticação para atualizar status.", authResponse.mensagem);
             return authResponse;
