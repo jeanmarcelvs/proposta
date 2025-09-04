@@ -167,13 +167,13 @@ function formatarData(dataISO) {
  * @returns {boolean} Retorna true se a proposta estiver ativa, false se estiver expirada.
  */
 export function validarValidadeProposta(proposta) {
-    if (!proposta || !proposta.dataExpiracao) {
-        console.warn('Aviso: Data de expiração não encontrada na proposta.');
+    if (!proposta || !proposta.dados.dataExpiracao) {
+        console.warn('Aviso: Data de expiração não encontrada na proposta');
         return false;
     }
 
     const dataAtual = new Date();
-    const dataExpiracao = new Date(proposta.dataExpiracao);
+    const dataExpiracao = new Date(proposta.dados.dataExpiracao);
 
     // Ajusta o fuso horário para a data de expiração, garantindo que a comparação seja precisa.
     // O `Date` do JavaScript já faz o ajuste automático, mas é bom ter certeza.
@@ -182,7 +182,7 @@ export function validarValidadeProposta(proposta) {
     const estaAtiva = dataAtual <= dataExpiracao;
 
     if (!estaAtiva) {
-        console.warn(`Proposta expirada em: ${proposta.dataExpiracao}`);
+        console.warn(`Proposta expirada em: ${proposta.dados.dataExpiracao}`);
     }
 
     return estaAtiva;
@@ -397,10 +397,10 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     // Corrigido: Acessa a proposta dentro da propriedade 'data'
-    const proposta = dadosApiPremium.data;
+    const proposta = dadosApiPremium.dados;
 
     // Acessa o nome do cliente a partir das variáveis
-    const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
+    const nomeCompletoApi = extrairValorVariavelPorChave(proposta.dados.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
 
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
@@ -411,7 +411,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     // --- NOVA LÓGICA DE VALIDAÇÃO ANTECIPADA DA PROPOSTA PREMIUM ---
     // Cria um objeto temporário para a verificação de validade
     const propostaParaValidarPremium = {
-        dataExpiracao: proposta.expirationDate,
+        dataExpiracao: proposta.dados.expirationDate,
     };
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
         return {
@@ -436,7 +436,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     dadosProposta.premium = propostaPremium;
 
     // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
-    const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.variables, 'vc_projeto_acessivel');
+    const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.dados.variables, 'vc_projeto_acessivel');
 
     // Reseta a proposta acessível para 'null' para garantir o estado inicial
     dadosProposta.acessivel = null;
