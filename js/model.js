@@ -309,7 +309,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     }
 
     // Corrigido: Acessa a propriedade 'data' dentro de 'dados'
-    const dados = dadosApi.dados.data;
+    const dados = dadosApi.data;
     const variables = dados.variables || [];
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
@@ -397,7 +397,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     // Corrigido: Acessa a proposta dentro da propriedade 'data'
-    const proposta = dadosApiPremium.dados.data;
+    const proposta = dadosApiPremium.data;
 
     // Acessa o nome do cliente a partir das variáveis
     const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
