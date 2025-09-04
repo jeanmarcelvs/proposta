@@ -246,6 +246,27 @@ function preencherDadosProposta(dados) {
 
 // Função principal de inicialização
 document.addEventListener('DOMContentLoaded', async () => {
+    // --- INÍCIO: CÓDIGO DE SEGURANÇA ADICIONADO ---
+    
+    // 1. Desabilita o botão direito do mouse para evitar cópias e impressão
+    document.addEventListener('contextmenu', function(evento) {
+        evento.preventDefault();
+    });
+
+    // 2. Desabilita os atalhos de teclado para impressão (Ctrl+P) e ferramentas do desenvolvedor (F12)
+    document.addEventListener('keydown', function(evento) {
+        // Bloqueia Ctrl+P / Cmd+P
+        if ((evento.ctrlKey || evento.metaKey) && evento.key === 'p') {
+            evento.preventDefault();
+        }
+        // Bloqueia F12
+        if (evento.key === 'F12') {
+            evento.preventDefault();
+        }
+    });
+
+    // --- FIM: CÓDIGO DE SEGURANÇA ADICIONADO ---
+
     mostrarLoadingOverlay();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -306,6 +327,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnPremium) {
         btnPremium.addEventListener('click', () => {
+            // VERIFICAÇÃO ADICIONADA: Se o botão já estiver selecionado, não faz nada.
+            if (btnPremium.classList.contains('selecionado')) {
+                return;
+            }
+            
             mostrarLoadingOverlay();
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
@@ -327,6 +353,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnAcessivel) {
         btnAcessivel.addEventListener('click', () => {
+            // VERIFICAÇÃO ADICIONADA: Se o botão já estiver selecionado, não faz nada.
+            if (btnAcessivel.classList.contains('selecionado')) {
+                return;
+            }
+
             mostrarLoadingOverlay();
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {

@@ -1044,3 +1044,11 @@ footer {
         left: 100%;
     }
 }
+
+
+body {
+    -webkit-user-select: none; /* Para navegadores WebKit (Chrome, Safari, etc.) */
+    -moz-user-select: none; /* Para Firefox */
+    -ms-user-select: none; /* Para Internet Explorer/Edge */
+    user-select: none; /* Padrão */
+}

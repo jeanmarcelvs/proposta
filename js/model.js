@@ -37,12 +37,12 @@ let dadosProposta = {
 // Objeto que centraliza os caminhos das imagens
 const caminhosImagens = {
     equipamentos: {
-        premium: 'imagens/huawei.png',
-        acessivel: 'imagens/auxsolar.png'
+        premium: 'imagens/huawei.webp',
+        acessivel: 'imagens/auxsolar.webp'
     },
     instalacao: {
-        premium: 'imagens/instalacao-premium.png',
-        acessivel: 'imagens/instalacao-acessivel.png'
+        premium: 'imagens/instalacao-premium.webp',
+        acessivel: 'imagens/instalacao-acessivel.webp'
     }
 };
 
