@@ -914,6 +914,10 @@ footer {
 
 @media (max-width: 600px) {
 
+    .seletor-tipo-proposta {
+        margin-top: 1.5rem;
+    }
+
     .secao-principal,
     .secao-info,
     #secao-resumo {
@@ -1047,8 +1051,12 @@ footer {
 
 
 body {
-    -webkit-user-select: none; /* Para navegadores WebKit (Chrome, Safari, etc.) */
-    -moz-user-select: none; /* Para Firefox */
-    -ms-user-select: none; /* Para Internet Explorer/Edge */
-    user-select: none; /* Padrão */
+    -webkit-user-select: none;
+    /* Para navegadores WebKit (Chrome, Safari, etc.) */
+    -moz-user-select: none;
+    /* Para Firefox */
+    -ms-user-select: none;
+    /* Para Internet Explorer/Edge */
+    user-select: none;
+    /* Padrão */
 }
