@@ -814,53 +814,6 @@ header {
     margin-right: 0.8rem;
 }
 
-.secao-voltar-proposta {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.btn-voltar-proposta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    text-decoration: none;
-    color: var(--cor-texto-secundario);
-    font-weight: 400;
-    transition: color 0.4s ease, transform 0.4s ease;
-}
-
-.btn-voltar-proposta:hover {
-    color: var(--cor-primaria);
-    transform: translateX(-8px);
-}
-
-footer {
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    padding: 2.5rem;
-    text-align: center;
-    border-top: 1px solid var(--cor-cartao-borda);
-}
-
-.footer-contact-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2.5rem;
-}
-
-.footer-contact-item {
-    color: var(--cor-texto-secundario);
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 300;
-    transition: color 0.4s ease;
-}
-
-.footer-contact-item:hover {
-    color: var(--cor-primaria);
-}
-
 header,
 #secao-resumo {
     flex-direction: column;
@@ -1294,4 +1247,51 @@ body.theme-acessivel .icone-resumo {
     footer {
         padding: 1.5rem 1rem;
     }
+}
+
+.secao-voltar-proposta {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.btn-voltar-proposta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--cor-texto-secundario);
+    font-weight: 400;
+    transition: color 0.4s ease, transform 0.4s ease;
+}
+
+.btn-voltar-proposta:hover {
+    color: var(--cor-primaria);
+    transform: translateX(-8px);
+}
+
+footer {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    text-align: center;
+    border-top: 1px solid var(--cor-cartao-borda);
+}
+
+.footer-contact-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
+}
+
+.footer-contact-item {
+    color: var(--cor-texto-secundario);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 300;
+    transition: color 0.4s ease;
+}
+
+.footer-contact-item:hover {
+    color: var(--cor-primaria);
 }
