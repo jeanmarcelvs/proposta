@@ -55,12 +55,19 @@
 }
 
 body {
+    /* Garante que o body ocupe 100% da altura da tela */
+    min-height: 100vh; 
+
+    /* Centraliza o conteúdo verticalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     font-family: 'Poppins', sans-serif;
     background-color: transparent;
     background-image: none;
     color: var(--cor-texto-principal);
     transition: background-color 0.5s ease, color 0.5s ease;
-    min-height: 100vh;
 }
 
 main {
@@ -74,9 +81,13 @@ main {
 }
 
 .container {
+    /* Altera a margem para auto, removendo o valor fixo */
+    margin: auto; 
     max-width: 500px;
-    margin: 4rem auto;
-    padding: 3rem;
+
+    /* Reduz o padding vertical para evitar o overflow */
+    padding: 2rem; 
+
     background-color: var(--cor-cartao-fundo);
     border-radius: 20px;
     border: 1px solid var(--cor-cartao-borda);
@@ -85,38 +96,9 @@ main {
     transition: all 0.5s ease;
 }
 
-@media (max-width: 576px) {
-    .container-centralizado .container {
-        margin: 2rem 1rem;
-        padding: 2rem;
-    }
-
-    .container-centralizado h1 {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .container-centralizado .container {
-        margin: 1.5rem 0.5rem;
-        padding: 1.5rem 1rem;
-    }
-
-    .container-centralizado .logo {
-        width: 150px;
-    }
-
-    .container-centralizado #btn-consultar {
-        font-size: 1rem;
-        padding: 1rem 2rem;
-    }
-}
-
 .logo {
-    width: 180px;
-    margin-bottom: 3rem;
-    filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    margin: 0;
+    padding: 0;
 }
 
 .logo:hover {
@@ -163,6 +145,12 @@ input[type="text"] {
     font-weight: 300;
     transition: border-color 0.4s ease, box-shadow 0.4s ease;
     box-shadow: inset 0 2px 5px var(--cor-sombra-leve);
+
+    /* --- Novo estilo para o texto de exemplo (placeholder) --- */
+    &::placeholder {
+        color: #c7c7c7; /* Cor cinza mais clara */
+        opacity: 1; /* Garante que a cor seja a mesma em todos os navegadores, especialmente no Firefox */
+    }
 }
 
 input[type="text"]:focus {
@@ -282,13 +270,18 @@ input[type="text"]:focus {
 
 /* --- Estilos da Proposta (proposta.html) --- */
 header {
-    position: sticky;
-    top: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* A propriedade que garante o alinhamento vertical */
     padding: 1.5rem 4rem;
-    /* Alinha o padding com o das seções */
+    /* Garante margens superior e inferior iguais */
+    width: 100%;
+    /* Ocupa toda a largura */
+
+    /* Outros estilos que você já tinha */
+    position: sticky;
+    top: 0;
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--cor-cartao-borda);
@@ -356,12 +349,6 @@ header {
     justify-content: space-between;
     align-items: flex-start;
     /* A maioria dos estilos já foi herdada, mas você pode adicionar algo específico aqui se necessário */
-}
-
-/* Ajuste para o cabeçalho para alinhar com as seções sem margem */
-header {
-    padding: 1.5rem 4rem;
-    /* Alinha o padding com o das seções */
 }
 
 
@@ -772,6 +759,13 @@ header {
 }
 
 @media (max-width: 768px) {
+
+    .logo {
+        margin-bottom: 2rem;
+        filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
     .valores-container {
         grid-template-columns: 1fr;
     }
@@ -803,80 +797,80 @@ header {
 
 
 
-.etiqueta-info {
-    font-weight: 400;
-    color: var(--cor-texto-secundario);
-    font-size: 1.1rem;
-}
+    .etiqueta-info {
+        font-weight: 400;
+        color: var(--cor-texto-secundario);
+        font-size: 1.1rem;
+    }
 
-.icone-info-proposta {
-    color: var(--cor-primaria);
-    margin-right: 0.8rem;
-}
+    .icone-info-proposta {
+        color: var(--cor-primaria);
+        margin-right: 0.8rem;
+    }
 
-header,
-#secao-resumo {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 1.5rem;
-}
+    header,
+    #secao-resumo {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1.5rem;
+    }
 
-.secao-principal,
-.secao-info {
-    margin-top: 20px;
-    margin-bottom: 40px;
-    padding: 3.5rem;
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--cor-cartao-borda);
-    box-shadow: 0 15px 40px var(--cor-sombra);
-}
+    .secao-principal,
+    .secao-info {
+        margin-top: 20px;
+        margin-bottom: 40px;
+        padding: 3.5rem;
+        background-color: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--cor-cartao-borda);
+        box-shadow: 0 15px 40px var(--cor-sombra);
+    }
 
-#secao-cliente {
-    text-align: center;
-    margin-top: 1.5rem;
-}
+    #secao-cliente {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
 
-.localizacao-data {
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-}
+    .localizacao-data {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+    }
 
-.conteudo-equipamentos,
-.conteudo-instalacao {
-    flex-direction: column;
-    gap: 2rem;
-}
+    .conteudo-equipamentos,
+    .conteudo-instalacao {
+        flex-direction: column;
+        gap: 2rem;
+    }
 
-#imagem-marca {
-    margin-bottom: 1rem;
-}
+    #imagem-marca {
+        margin-bottom: 1rem;
+    }
 
 
 
-.item-detalhe-instalacao {
-    flex-direction: column;
-    text-align: center;
-}
+    .item-detalhe-instalacao {
+        flex-direction: column;
+        text-align: center;
+    }
 
-.valores-container {
-    grid-template-columns: 1fr;
-}
+    .valores-container {
+        grid-template-columns: 1fr;
+    }
 
-.valor-total-proposta,
-.valor-card {
-    font-size: 2.5rem;
-}
+    .valor-total-proposta,
+    .valor-card {
+        font-size: 2.5rem;
+    }
 
-.valor-parcela-proposta {
-    font-size: 1.6rem;
-}
+    .valor-parcela-proposta {
+        font-size: 1.6rem;
+    }
 
-.card-investimento {
-    grid-column: auto;
-}
+    .card-investimento {
+        grid-column: auto;
+    }
 }
 
 .icone-instalacao {
@@ -923,7 +917,6 @@ header,
 
 /* NOVO: Estilo para a logo no splash */
 #splash-logo {
-    width: 200px;
     height: auto;
     margin-bottom: 25px;
     /* Espaço entre a logo e a barra */
@@ -967,17 +960,6 @@ header,
         transform: scaleX(0.1);
         left: 100%;
     }
-}
-
-.logo-header {
-    width: 150px;
-    height: auto;
-    filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.logo-header:hover {
-    transform: scale(1.03);
 }
 
 .icone-loading,
@@ -1094,6 +1076,11 @@ body.theme-acessivel .icone-resumo {
 
 @media (max-width: 600px) {
 
+    .logo {
+        margin-bottom: 2rem;
+        filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
 
     .secao-principal,
     .secao-info,
