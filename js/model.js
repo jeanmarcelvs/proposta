@@ -384,10 +384,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    const authResponse = await authenticate();
-    if (!authResponse.sucesso) { return authResponse; }
-    const accessToken = authResponse.accessToken;
-
+    
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
     const dadosApiPremium = await get(endpointPremium, accessToken);
 

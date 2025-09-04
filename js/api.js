@@ -1,5 +1,5 @@
 // A URL base agora é a do seu Worker, não mais a API externa.
-const WORKER_URL = 'gdis-api-service.jeanmarcel-vs.workers.dev';
+const WORKER_URL = 'https://gdis-api-service.jeanmarcel-vs.workers.dev';
 
 // As funções agora são simples wrappers para chamar o seu Worker
 export async function authenticate() {
