@@ -1,6 +1,7 @@
 import { buscarETratarProposta } from './model.js';
 
 // Função para centralizar a atualização do estado do botão
+// Função para centralizar a atualização do estado do botão
 function atualizarEstadoBotao(estado, mensagem = '') {
     const btnConsultar = document.getElementById('btn-consultar');
     const numeroProjetoInput = document.getElementById('numero-projeto');
@@ -23,13 +24,10 @@ function atualizarEstadoBotao(estado, mensagem = '') {
     primeiroNomeInput.disabled = false;
     btnConsultar.classList.remove('loading', 'success', 'error');
 
-    if (btnTexto) btnTexto.classList.remove('oculto');
+    // Remove a classe do botão de loading
     if (iconeLoading) {
-        iconeLoading.classList.add('oculto');
         iconeLoading.classList.remove('icone-loading-centralizado');
     }
-    if (iconeSucesso) iconeSucesso.classList.add('oculto');
-    if (iconeErro) iconeErro.classList.add('oculto');
 
     mensagemFeedback.classList.remove('show', 'success-msg', 'error-msg');
     mensagemFeedback.innerText = '';
@@ -41,15 +39,9 @@ function atualizarEstadoBotao(estado, mensagem = '') {
             numeroProjetoInput.disabled = true;
             primeiroNomeInput.disabled = true;
             btnConsultar.classList.add('loading');
-            if (btnTexto) btnTexto.classList.add('oculto');
-            if (iconeLoading) {
-                iconeLoading.classList.remove('oculto');
-                iconeLoading.classList.add('icone-loading-centralizado');
-            }
             break;
         case 'sucesso':
             btnConsultar.classList.add('success');
-            if (iconeSucesso) iconeSucesso.classList.remove('oculto');
             if (mensagemFeedback) {
                 mensagemFeedback.innerText = mensagem;
                 mensagemFeedback.classList.add('show', 'success-msg');
@@ -57,7 +49,6 @@ function atualizarEstadoBotao(estado, mensagem = '') {
             break;
         case 'erro':
             btnConsultar.classList.add('error');
-            if (iconeErro) iconeErro.classList.remove('oculto');
             if (mensagemFeedback) {
                 mensagemFeedback.innerText = mensagem;
                 mensagemFeedback.classList.add('show', 'error-msg');
