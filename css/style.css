@@ -563,15 +563,17 @@ header {
 }
 
 .titulo-equipamento {
-    font-size: 1.8rem;
-    font-weight: 500;
-    color: var(--cor-texto-principal);
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--cor-texto-secundario);
+    margin-top: 0.5rem;
 }
 
 .descricao-equipamento {
-    font-size: 1.2rem;
-    font-weight: 300;
-    color: var(--cor-texto-secundario);
+    font-size: 2.5rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--cor-primaria);
 }
 
 .conteudo-instalacao {
