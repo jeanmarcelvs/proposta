@@ -29,19 +29,19 @@ const FATOR_RISCO_PRAZO = 0.00046; // AJUSTADO
 // ======================================================================
 
 const detalhesInstalacaoPremiumVE = [
-    { icone: 'fa-charging-station', texto: 'Carregador de alta potência e tecnologia de ponta' },
-    { icone: 'fa-bolt', texto: 'Instalação elétrica com infraestrutura dedicada e segura' },
-    { icone: 'fa-check-circle', texto: 'Solução completa, pronta para uso imediato' }
+    { icone: 'fa-pen-ruler', texto: 'Projeto Elétrico da instalação conforme normas ABNT (NBR 5410/2004 e NBR 17019/2022)' },
+    { icone: 'fa-check-circle', texto: 'Instalação com infraestrutura elétrica reforçada com padrão de sobrepor em aço zincado' },
+    { icone: 'fa-bolt', texto: 'Sistema de proteção completo e coordenado contra surtos da rede de energia, desde o Quadro Geral até o ponto de recarga' }
 ];
 
 const detalhesInstalacaoAcessivelVE = [
-    { icone: 'fa-triangle-exclamation', texto: 'Carregador de entrada com potência padrão' },
-    { icone: 'fa-triangle-exclamation', texto: 'Instalação elétrica básica, sem infraestrutura dedicada' },
-    { icone: 'fa-triangle-exclamation', texto: 'Pode requerer adaptações futuras' }
+    { icone: 'fa-pen-ruler', texto: 'Projeto Elétrico da instalação conforme normas ABNT (NBR 5410/2004 e NBR 17019/2022)' },
+    { icone: 'fa-triangle-exclamation', texto: 'Instalação elétrica básica com padrão de sobrepor em PVC' },
+    { icone: 'fa-triangle-exclamation', texto: 'Dispositivo de proteção simples apenas no ponto de recarga' }
 ];
 
-const resumoInstalacaoPremiumVE = 'O projeto inclui um carregador de última geração, garantindo a máxima velocidade e segurança no carregamento do seu veículo elétrico.';
-const resumoInstalacaoAcessivelVE = 'Uma solução de carregamento básica, ideal para necessidades iniciais, com possibilidade de upgrade futuro.';
+const resumoInstalacaoPremiumVE = 'Uma infraestrutura que garante máxima segurança e conformidade para o seu Wallbox, preparada para proteger seu investimento com materiais de alta qualidade.';
+const resumoInstalacaoAcessivelVE = 'Uma solução básica mas em conformidade com os requisitos mínimos normativos.';
 
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões

@@ -599,36 +599,25 @@ header {
 }
 
 #imagem-instalacao {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* ALTERADO: Isso fará a imagem se ajustar mantendo a proporção */
+    object-position: center;
+    display: block;
 }
 
 /* NOVO: Estilos para o card da imagem de marca */
-.imagem-marca {
-  flex-shrink: 0;
-  width: 350px; /* Ajuste para ter a mesma largura */
-  max-width: 100%;
-  height: 300px; /* Ajuste para ter a mesma altura */
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px var(--cor-sombra);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+#imagem-marca-ve {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Essencial para que a imagem mantenha sua proporção */
+  object-position: center;
+  display: block;
 }
 
 .imagem-marca:hover {
   transform: scale(1.02);
   box-shadow: 0 15px 40px var(--cor-sombra);
-}
-
-#imagem-marca-ve {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
 }
 
 /* Container para alinhar os cards de imagem */
