@@ -64,12 +64,12 @@ const caminhosImagens = {
     },
     ve: {
         equipamentos: {
-            premium: 'imagens/carregador-premium.webp', // Exemplo de imagem para VE Premium
-            acessivel: 'imagens/carregador-acessivel.webp' // Exemplo de imagem para VE Acessível
+            premium: 'imagens/marca-ve-premium.webp',
+            acessivel: 'imagens/marca-ve-acessivel.webp'
         },
         instalacao: {
-            premium: 'imagens/instalacao-ve-premium.webp', // Exemplo de imagem de instalação VE Premium
-            acessivel: 'imagens/instalacao-ve-acessivel.webp' // Exemplo de imagem de instalação VE Acessível
+            premium: 'imagens/instalacao-ve-premium.webp',
+            acessivel: 'imagens/instalacao-ve-acessivel.webp'
         }
     }
 };
