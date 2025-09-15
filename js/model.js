@@ -28,6 +28,22 @@ const FATOR_RISCO_PRAZO = 0.00046; // AJUSTADO
 // FIM DAS CONSTANTES
 // ======================================================================
 
+const detalhesInstalacaoPremiumVE = [
+    { icone: 'fa-charging-station', texto: 'Carregador de alta potência e tecnologia de ponta' },
+    { icone: 'fa-bolt', texto: 'Instalação elétrica com infraestrutura dedicada e segura' },
+    { icone: 'fa-check-circle', texto: 'Solução completa, pronta para uso imediato' }
+];
+
+const detalhesInstalacaoAcessivelVE = [
+    { icone: 'fa-triangle-exclamation', texto: 'Carregador de entrada com potência padrão' },
+    { icone: 'fa-triangle-exclamation', texto: 'Instalação elétrica básica, sem infraestrutura dedicada' },
+    { icone: 'fa-triangle-exclamation', texto: 'Pode requerer adaptações futuras' }
+];
+
+const resumoInstalacaoPremiumVE = 'O projeto inclui um carregador de última geração, garantindo a máxima velocidade e segurança no carregamento do seu veículo elétrico.';
+const resumoInstalacaoAcessivelVE = 'Uma solução de carregamento básica, ideal para necessidades iniciais, com possibilidade de upgrade futuro.';
+
+
 // Objeto que armazena os dados da proposta, incluindo as duas versões
 let dadosProposta = {
     premium: null,
@@ -36,13 +52,25 @@ let dadosProposta = {
 
 // Objeto que centraliza os caminhos das imagens
 const caminhosImagens = {
-    equipamentos: {
-        premium: 'imagens/huawei.webp',
-        acessivel: 'imagens/auxsolar.webp'
+    solar: {
+        equipamentos: {
+            premium: 'imagens/huawei.webp',
+            acessivel: 'imagens/auxsolar.webp'
+        },
+        instalacao: {
+            premium: 'imagens/instalacao-premium.webp',
+            acessivel: 'imagens/instalacao-acessivel.webp'
+        }
     },
-    instalacao: {
-        premium: 'imagens/instalacao-premium.webp',
-        acessivel: 'imagens/instalacao-acessivel.webp'
+    ve: {
+        equipamentos: {
+            premium: 'imagens/carregador-premium.webp', // Exemplo de imagem para VE Premium
+            acessivel: 'imagens/carregador-acessivel.webp' // Exemplo de imagem para VE Acessível
+        },
+        instalacao: {
+            premium: 'imagens/instalacao-ve-premium.webp', // Exemplo de imagem de instalação VE Premium
+            acessivel: 'imagens/instalacao-ve-acessivel.webp' // Exemplo de imagem de instalação VE Acessível
+        }
     }
 };
 
@@ -309,88 +337,89 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const dados = dadosApi.dados.data;
     const variables = dados.variables || [];
 
+    // --- CORRIGIDO: Extração da visualização do array 'variables' ---
+    const tipoVisualizacao = extrairValorVariavelPorChave(variables, 'cap_visualizacao') || 'SOLAR';
+    const isVE = tipoVisualizacao.toUpperCase() === 'VE';
+
     // PONTOS DE DEBUG: Valores extraídos das variáveis
     console.log('DEBUG: Dados do objeto "data":', dados);
     console.log('DEBUG: Array de "variables":', variables);
+    console.log('DEBUG: Tipo de visualização identificado:', tipoVisualizacao);
 
+    // Variáveis comuns a ambos os tipos de proposta
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
-    console.log('DEBUG: Nome do cliente extraído:', nomeCliente);
     const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
-    console.log('DEBUG: Data da proposta extraída:', dataProposta);
     const idProposta = dados.id || null;
     const linkProposta = dados.linkPdf || '#';
     const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
     const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
-    const consumoMensal = extrairValorVariavelPorChave(variables, 'consumo_mensal') || 'N/A';
-    const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
-    const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
-    const tipoEstrutura = extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado';
-    const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
-    const idealParaValor = geracaoMediaValor * tarifaEnergia;
     const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
-    console.log('DEBUG: Valor total extraído:', valorTotal);
-    const valorResumo = (dados.salesValue * 0.95).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    console.log('DEBUG: salesValue da API:', dados.salesValue);
-    console.log('DEBUG: Valor resumo calculado:', valorResumo);
-    // NOVO: Extrai a data de expiração diretamente da propriedade 'expirationDate'
     const dataExpiracao = dados.expirationDate || 'Não informado';
-    console.log('DEBUG: Data de expiração extraída:', dataExpiracao);
 
+    // Lógica para extração de dados específicos de cada tipo
+    let sistema = {};
+    let equipamentos = {};
+    let valores = {};
+    let instalacao = {};
+
+    // --- CORREÇÃO: A lógica para extração de dados de VE foi unificada com a de Solar ---
+    const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
+    const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
+    const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
+    const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
     const { parcelas: parcelasCalculadas, taxasNominais } = calcularFinanciamento(valorTotal, selicAtual);
-    console.log('DEBUG: Simulação de parcelas calculada:', parcelasCalculadas);
-
     const taxasPorParcela = {};
     for (const key in taxasNominais) {
         if (taxasNominais.hasOwnProperty(key)) {
             const taxaMensalNominal = taxasNominais[key];
-            // CORREÇÃO: Formatação correta da taxa nominal para exibição
             taxasPorParcela[key] = `${(taxaMensalNominal * 100).toFixed(2).replace('.', ',')}% a.m.`;
         }
     }
-    console.log('DEBUG: Taxas formatadas por parcela:', taxasPorParcela);
 
+    sistema = {
+        geracaoMedia: isVE ? `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês` : `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
+        unidadeGeracao: 'kWh',
+        instalacaoPaineis: extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado',
+        idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    };
+    equipamentos = {
+        imagem: isVE ? caminhosImagens.ve.equipamentos[tipoProposta] : caminhosImagens.solar.equipamentos[tipoProposta],
+        quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
+        descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
+        quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
+        descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
+    };
+    instalacao = {
+        imagem: isVE ? caminhosImagens.ve.instalacao[tipoProposta] : caminhosImagens.solar.instalacao[tipoProposta],
+        detalhesInstalacao: isVE ? (tipoProposta === 'premium' ? detalhesInstalacaoPremiumVE : detalhesInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
+        resumoInstalacao: isVE ? (tipoProposta === 'premium' ? resumoInstalacaoPremiumVE : resumoInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel)
+    };
+    valores = {
+        valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+        payback: payback,
+        parcelas: isVE ? {} : parcelasCalculadas,
+        taxasPorParcela: isVE ? {} : taxasPorParcela,
+        observacao: isVE ? ' ' : 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
+    };
 
     const retorno = {
         tipo: tipoProposta,
+        tipoVisualizacao: tipoVisualizacao.toLowerCase(),
         id: dados.project.id,
         propostaId: idProposta,
         cliente: nomeCliente,
-        consumoMensal: `${consumoMensal} kWh`,
-        geracaoMensal: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
         local: `${cidade} / ${estado}`,
         dataProposta: dataProposta,
-        // NOVO: Adiciona a data de expiração ao objeto de retorno
         dataExpiracao: dataExpiracao,
         linkProposta: linkProposta,
-        sistema: {
-            geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
-            instalacaoPaineis: tipoEstrutura,
-            idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-        },
-        equipamentos: {
-            imagem: caminhosImagens.equipamentos[tipoProposta],
-            quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
-            descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
-            quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
-            descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
-        },
-        instalacao: {
-            imagem: caminhosImagens.instalacao[tipoProposta],
-            detalhesInstalacao: tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel,
-            resumoInstalacao: tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel
-        },
-        valores: {
-            valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-            valorResumo: valorResumo,
-            payback: payback,
-            parcelas: parcelasCalculadas,
-            taxasPorParcela: taxasPorParcela,
-            observacao: 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
-        },
+        sistema,
+        equipamentos,
+        instalacao,
+        valores,
         validade: `Proposta válida por até 3 dias corridos ou enquanto houver disponibilidade em estoque.`
     };
-    
+
     console.log('DEBUG: Objeto de retorno final:', retorno);
     console.log(`--- FIM DO TRATAMENTO de DADOS para a proposta ${tipoProposta.toUpperCase()} ---\n`);
 
@@ -508,7 +537,7 @@ export async function atualizarStatusVisualizacao(dados) {
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
         const endpoint = `/projects/${dados.propostaId}`;
         const body = { description: novaDescricao };
-        
+
         console.log('DEBUG: Dados enviados para atualizar status:', body);
 
         const respostaApi = await patch(endpoint, body);

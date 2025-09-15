@@ -60,30 +60,43 @@ function atualizarEstadoBotao(estado, mensagem = '') {
     }
 }
 
-// NOVO: Função que executa a consulta
+// AQUI: Adicione esta função para manipular o redirecionamento
+// AQUI: Adicione esta função para manipular o redirecionamento
 async function executarConsulta(numeroProjeto, primeiroNome) {
-    atualizarEstadoBotao('carregando');
-    
-    try {
-        const resultado = await buscarETratarProposta(numeroProjeto, primeiroNome);
+    if (!numeroProjeto || !primeiroNome) {
+        atualizarEstadoBotao('erro', 'Por favor, preencha todos os campos.');
+        setTimeout(() => atualizarEstadoBotao('normal'), 3000);
+        return;
+    }
 
-        if (resultado.sucesso) {
-            atualizarEstadoBotao('sucesso', 'Proposta encontrada! Redirecionando...');
-            setTimeout(() => {
+    try {
+        atualizarEstadoBotao('carregando');
+        const propostaData = await buscarETratarProposta(numeroProjeto, primeiroNome);
+
+        if (propostaData.sucesso) {
+            // Acessa o tipo de visualização da proposta premium
+            const tipoProposta = propostaData.dados.premium.tipoVisualizacao;
+            
+            if (tipoProposta === 've') {
+                // Redireciona para a página de propostas de VE
+                window.location.href = `propostaVE.html?id=${numeroProjeto}&nome=${primeiroNome}`;
+            } else if (tipoProposta === 'solar') {
+                // Redireciona para a página de propostas Solar
                 window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
-            }, 1000);
+            } else {
+                // Caso o tipo seja desconhecido, mostra um erro
+                atualizarEstadoBotao('erro', 'Tipo de proposta desconhecido.');
+                setTimeout(() => atualizarEstadoBotao('normal'), 3000);
+            }
         } else {
-            atualizarEstadoBotao('erro', resultado.mensagem || 'Ocorreu um erro desconhecido.');
-            setTimeout(() => {
-                atualizarEstadoBotao('normal');
-            }, 3000);
+            // Se a busca falhar, exibe a mensagem de erro
+            atualizarEstadoBotao('erro', propostaData.mensagem);
+            setTimeout(() => atualizarEstadoBotao('normal'), 3000);
         }
     } catch (erro) {
         console.error('Erro na consulta:', erro);
-        atualizarEstadoBotao('erro', 'Ocorreu um erro na consulta. Tente novamente.');
-        setTimeout(() => {
-            atualizarEstadoBotao('normal');
-        }, 3000);
+        atualizarEstadoBotao('erro', 'Erro ao carregar a proposta.');
+        setTimeout(() => atualizarEstadoBotao('normal'), 3000);
     }
 }
 
@@ -116,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         numeroProjetoInput.value = idProjetoURL;
         primeiroNomeInput.value = nomeURL;
         
+        // CORRETO: Chama a função de consulta a partir do evento de URL
         executarConsulta(idProjetoURL, nomeURL);
     }
     
@@ -146,7 +160,72 @@ document.addEventListener('DOMContentLoaded', () => {
         const numeroProjeto = numeroProjetoInput.value;
         const primeiroNome = primeiroNomeInput.value;
         
-        // NOVO: Chama a função de consulta a partir do evento de submit
+        // CORRETO: Chama a função de consulta a partir do evento de submit
+        executarConsulta(numeroProjeto, primeiroNome);
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('form-consulta');
+    const mainContent = document.querySelector('main');
+    const urlParams = new URLSearchParams(window.location.search);
+    const parametroErro = urlParams.get('erro');
+    
+    const numeroProjetoInput = document.getElementById('numero-projeto');
+    const primeiroNomeInput = document.getElementById('primeiro-nome');
+
+    if (!form || !numeroProjetoInput || !primeiroNomeInput) {
+        console.error("ERRO: O formulário ou seus elementos não foram encontrados.");
+        return;
+    }
+
+    if (mainContent) {
+        setTimeout(() => {
+            mainContent.classList.remove('main-oculto');
+            mainContent.classList.add('main-visivel');
+        }, 300);
+    }
+    
+    // NOVO: Verifica os parâmetros e chama a função diretamente, sem simular um evento
+    const idProjetoURL = urlParams.get('id');
+    const nomeURL = urlParams.get('nome');
+    
+    if (idProjetoURL && nomeURL) {
+        numeroProjetoInput.value = idProjetoURL;
+        primeiroNomeInput.value = nomeURL;
+        
+        // CORRETO: Chama a função de consulta a partir do evento de URL
+        executarConsulta(idProjetoURL, nomeURL);
+    }
+    
+    if (parametroErro) {
+        let mensagem = '';
+        switch (parametroErro) {
+            case 'parametros-ausentes':
+                mensagem = 'Os parâmetros da URL estão ausentes.';
+                break;
+            case 'proposta-expirada':
+                mensagem = 'A proposta consultada está expirada.';
+                break;
+            case 'acesso-negado':
+                mensagem = 'A proposta não pode ser acessada. Verifique os dados.';
+                break;
+            default:
+                mensagem = 'Ocorreu um erro desconhecido.';
+        }
+        atualizarEstadoBotao('erro', mensagem);
+        setTimeout(() => {
+            atualizarEstadoBotao('normal');
+        }, 3000);
+    }
+
+    form.addEventListener('submit', async (evento) => {
+        evento.preventDefault();
+        
+        const numeroProjeto = numeroProjetoInput.value;
+        const primeiroNome = primeiroNomeInput.value;
+        
+        // CORRETO: Chama a função de consulta a partir do evento de submit
         executarConsulta(numeroProjeto, primeiroNome);
     });
 });

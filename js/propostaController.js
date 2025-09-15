@@ -22,17 +22,41 @@ function esconderLoadingOverlay() {
     }
 }
 
-// CORRIGIDO: A função agora recebe a proposta completa e usa o caminho da imagem dela
+// FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
+// FUNÇÃO CORRIGIDA: Gerencia as imagens de equipamentos de forma inteligente
 function atualizarImagemEquipamentos(proposta) {
-    const imagemMarca = document.getElementById('imagem-marca');
-    if (!imagemMarca) {
-        console.error("ERRO: Elemento com ID 'imagem-marca' não encontrado.");
+    let imagemEquipamentos;
+
+    // Acessa o elemento HTML baseado no tipo de visualização da proposta
+    if (proposta.tipoVisualizacao === 've') {
+        imagemEquipamentos = document.getElementById('imagem-marca-ve');
+    } else {
+        imagemEquipamentos = document.getElementById('imagem-marca-equipamento');
+    }
+
+    if (!imagemEquipamentos) {
+        console.warn(`AVISO: Elemento de imagem para equipamentos não encontrado.`);
         return;
     }
-    imagemMarca.src = proposta.equipamentos?.imagem || '';
+
+    // Lógica para carregar a imagem da marca
+    if (proposta.tipoVisualizacao === 've') {
+        imagemEquipamentos.src = proposta.equipamentos?.imagem || '';
+        console.log("DEBUG: Imagem de marca de VE preenchida com sucesso.");
+    } else if (proposta.tipoVisualizacao === 'solar') {
+        if (proposta.tipo === 'premium') {
+            imagemEquipamentos.src = 'imagens/huawei.webp';
+            console.log("DEBUG: Imagem de marca SOLAR (PREMIUM) preenchida com sucesso.");
+        } else if (proposta.tipo === 'acessivel') {
+            imagemEquipamentos.src = 'imagens/auxsolar.webp';
+            console.log("DEBUG: Imagem de marca SOLAR (+ACESSÍVEL) preenchida com sucesso.");
+        } else {
+            console.warn("AVISO: Tipo de proposta solar desconhecido para carregar a imagem de marca.");
+            imagemEquipamentos.src = '';
+        }
+    }
 }
 
-// CORRIGIDO: A função agora recebe a proposta completa e usa o caminho da imagem dela
 function atualizarImagemInstalacao(proposta) {
     const imagemInstalacao = document.getElementById('imagem-instalacao');
     if (!imagemInstalacao) {
@@ -42,8 +66,6 @@ function atualizarImagemInstalacao(proposta) {
     imagemInstalacao.src = proposta.instalacao?.imagem || '';
 }
 
-// Função para atualizar as etiquetas das seções dinâmicas,
-// ignorando a etiqueta do card "À Vista".
 function atualizarEtiquetasDinamicas(tipo) {
     const etiquetas = document.querySelectorAll('.etiqueta-proposta-dinamica:not(.etiqueta-a-vista)');
     const texto = tipo === 'premium' ? 'Premium' : '+Acessível';
@@ -52,7 +74,6 @@ function atualizarEtiquetasDinamicas(tipo) {
     });
 }
 
-// Função para preencher a nova seção de detalhes da instalação
 function preencherDetalhesInstalacao(proposta) {
     const secaoDetalhes = document.getElementById('detalhes-instalacao');
     if (!secaoDetalhes) {
@@ -60,20 +81,15 @@ function preencherDetalhesInstalacao(proposta) {
         return;
     }
 
-    // Limpa os detalhes anteriores para evitar duplicatas ao trocar de proposta
     secaoDetalhes.innerHTML = '';
-
-    // Acessa o array de detalhes diretamente do objeto de proposta
     const detalhes = proposta.instalacao?.detalhesInstalacao;
 
     if (!detalhes || detalhes.length === 0) {
         console.warn("AVISO: Detalhes da instalação não encontrados na proposta.");
-        // Opcional: exibe uma mensagem no HTML se não houver detalhes
         secaoDetalhes.innerHTML = '<p>Nenhum detalhe de instalação disponível.</p>';
         return;
     }
 
-    // Itera sobre o array de detalhes e cria os elementos HTML
     detalhes.forEach(item => {
         const div = document.createElement('div');
         div.className = 'item-detalhe';
@@ -87,18 +103,16 @@ function preencherDetalhesInstalacao(proposta) {
     console.log("DEBUG: Detalhes de instalação preenchidos com sucesso.");
 }
 
-// Função para preencher a página com os dados da proposta
+// --- FUNÇÃO CENTRAL DE PREENCHIMENTO ATUALIZADA ---
 function preencherDadosProposta(dados) {
     console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
 
     try {
-        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
-        const iconeResumoEl = document.getElementById('icone-resumo');
-
+        const isVE = dados.tipoVisualizacao === 've';
+        
         // 1. Dados do Cliente
         console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
-
         const nomeCompleto = dados.cliente || "Não informado";
         let nomeCurto = nomeCompleto;
 
@@ -108,7 +122,6 @@ function preencherDadosProposta(dados) {
                 nomeCurto = `${palavrasDoNome[0]} ${palavrasDoNome[1]}`;
             }
         }
-
         if (nomeClienteEl) {
             nomeClienteEl.innerText = nomeCurto;
         }
@@ -119,114 +132,125 @@ function preencherDadosProposta(dados) {
         const dataPropostaEl = document.getElementById('data-proposta');
         if (dataPropostaEl) dataPropostaEl.innerText = dados.dataProposta || "Não informado";
         console.log("DEBUG: Dados do cliente preenchidos com sucesso.");
-
-        // 2. Sistema Proposto (Separa valor e unidade)
+        
+        // 2. Sistema Proposto (Lógica adaptada para VE e Solar)
         console.log("DEBUG: Preenchendo dados do sistema...");
         const geracaoMediaEl = document.getElementById('geracao-media');
-        if (geracaoMediaEl) {
-            const geracaoMedia = dados.sistema?.geracaoMedia;
-            if (typeof geracaoMedia === 'string' && geracaoMedia.trim() !== '') {
-                const geracaoMediaSplit = geracaoMedia.split(' ');
-                geracaoMediaEl.innerText = geracaoMediaSplit[0];
-                const unidadeGeracaoEl = document.getElementById('unidade-geracao');
-                if (unidadeGeracaoEl) {
-                    unidadeGeracaoEl.innerText = geracaoMediaSplit.slice(1).join(' ');
-                }
-            } else {
-                geracaoMediaEl.innerText = 'N/A';
-                const unidadeGeracaoEl = document.getElementById('unidade-geracao');
-                if (unidadeGeracaoEl) {
-                    unidadeGeracaoEl.innerText = 'kWh/mês';
-                }
-            }
-        }
-
+        const unidadeGeracaoEl = document.getElementById('unidade-geracao');
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
         const iconeInstalacaoEl = document.getElementById('icone-instalacao');
-
-        if (instalacaoPaineisEl && iconeInstalacaoEl) {
-            const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
-            instalacaoPaineisEl.innerText = tipoInstalacao;
-
-            if (tipoInstalacao.toLowerCase().includes('telhado')) {
-                iconeInstalacaoEl.className = 'fas fa-house-chimney';
-            } else if (tipoInstalacao.toLowerCase().includes('solo')) {
-                iconeInstalacaoEl.className = 'fas fa-solar-panel';
-            } else {
-                iconeInstalacaoEl.className = 'fas fa-question-circle';
-            }
-        }
-
         const idealParaEl = document.getElementById('ideal-para');
-        if (idealParaEl) {
-            const idealPara = dados.sistema?.idealPara || 'R$ 0,00';
-            idealParaEl.innerText = idealPara.replace('R$', '').trim();
+        const tituloSistemaEl = document.getElementById('titulo-sistema');
+
+        if (isVE) {
+            if (tituloSistemaEl) tituloSistemaEl.innerText = 'Carregador Proposto';
+            if (geracaoMediaEl) geracaoMediaEl.innerText = dados.sistema?.geracaoMedia || 'N/A';
+            if (unidadeGeracaoEl) unidadeGeracaoEl.innerText = dados.sistema?.unidadeGeracao || '';
+            if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || 'Não informado';
+            if (iconeInstalacaoEl) iconeInstalacaoEl.className = 'fas fa-charging-station';
+            if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'Não informado';
+            
+        } else { // Lógica para o sistema Solar
+            if (tituloSistemaEl) tituloSistemaEl.innerText = 'Sistema Proposto';
+            if (geracaoMediaEl) {
+                const geracaoMedia = dados.sistema?.geracaoMedia;
+                const geracaoMediaSplit = typeof geracaoMedia === 'string' ? geracaoMedia.split(' ') : ['N/A', ''];
+                geracaoMediaEl.innerText = geracaoMediaSplit[0];
+                if (unidadeGeracaoEl) unidadeGeracaoEl.innerText = geracaoMediaSplit.slice(1).join(' ');
+            }
+            if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || 'Não informado';
+            if (iconeInstalacaoEl) {
+                const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
+                if (tipoInstalacao.toLowerCase().includes('telhado')) {
+                    iconeInstalacaoEl.className = 'fas fa-house-chimney';
+                } else if (tipoInstalacao.toLowerCase().includes('solo')) {
+                    iconeInstalacaoEl.className = 'fas fa-solar-panel';
+                } else {
+                    iconeInstalacaoEl.className = 'fas fa-question-circle';
+                }
+            }
+            if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'R$ 0,00';
         }
         console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
 
-        // 3. Equipamentos
+        // 3. Equipamentos (Lógica adaptada para VE e Solar)
         console.log("DEBUG: Preenchendo dados dos equipamentos...");
+        const tituloEquipamentosEl = document.getElementById('titulo-equipamentos');
         const descricaoInversorEl = document.getElementById('descricao-inversor');
-        if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
-
         const quantidadeInversorEl = document.getElementById('quantidade-inversor');
-        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
-
         const descricaoPainelEl = document.getElementById('descricao-painel');
-        if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
-
         const quantidadePainelEl = document.getElementById('quantidade-painel');
-        if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
+        const painelBox = document.getElementById('painel-box');
+        const inversorBox = document.getElementById('inversor-box');
+
+        if (isVE) {
+            if (tituloEquipamentosEl) tituloEquipamentosEl.innerText = 'Equipamentos';
+            if (painelBox) painelBox.classList.add('oculto');
+            if (inversorBox) inversorBox.classList.remove('oculto');
+            if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
+            if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
+        } else {
+            if (tituloEquipamentosEl) tituloEquipamentosEl.innerText = 'Equipamentos do Sistema';
+            if (painelBox) painelBox.classList.remove('oculto');
+            if (inversorBox) inversorBox.classList.remove('oculto');
+            if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
+            if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
+            if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
+            if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
+        }
         console.log("DEBUG: Dados de equipamentos preenchidos com sucesso.");
 
-        // 4. Valores Finais
+        // 4. Valores Finais e Financiamento (Lógica adaptada para VE e Solar)
         console.log("DEBUG: Preenchendo valores financeiros...");
         const valorTotalEl = document.getElementById('valor-total');
-        if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
+        const paybackContainer = document.getElementById('payback-container');
+        const financiamentoContainer = document.getElementById('financiamento-container');
 
-        const paybackValorEl = document.getElementById('payback-valor');
-        if (paybackValorEl) {
-            paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
+        if (isVE) {
+            if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
+            if (paybackContainer) paybackContainer.classList.add('oculto');
+            if (financiamentoContainer) financiamentoContainer.classList.add('oculto');
         } else {
-            console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
-        }
-
-        console.log("DEBUG: Taxas de juros e SELIC preenchidas com sucesso.");
-
-        // 5. Parcelas e Taxas
-        console.log("DEBUG: Preenchendo parcelas e taxas...");
-        const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
-
-        opcoesParcelas.forEach(n => {
-            const parcelaKey = `parcela-${n}`;
-            const elementoParcela = document.getElementById(parcelaKey);
-            if (elementoParcela) {
-                elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
+            if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
+            const paybackValorEl = document.getElementById('payback-valor');
+            if (paybackValorEl) {
+                paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
             } else {
-                console.warn(`AVISO: Elemento de parcela '${parcelaKey}' não encontrado.`);
+                console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
             }
+            if (paybackContainer) paybackContainer.classList.remove('oculto');
+            if (financiamentoContainer) financiamentoContainer.classList.remove('oculto');
+            
+            const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
+            opcoesParcelas.forEach(n => {
+                const parcelaKey = `parcela-${n}`;
+                const elementoParcela = document.getElementById(parcelaKey);
+                if (elementoParcela) {
+                    elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
+                } else {
+                    console.warn(`AVISO: Elemento de parcela '${parcelaKey}' não encontrado.`);
+                }
+                const elementoTaxa = document.getElementById(`taxa-${n}`);
+                if (elementoTaxa) {
+                    elementoTaxa.innerText = '';
+                }
+            });
+        }
+        console.log("DEBUG: Valores financeiros e financiamento preenchidos com sucesso.");
 
-            const elementoTaxa = document.getElementById(`taxa-${n}`);
-            if (elementoTaxa) {
-                elementoTaxa.innerText = '';
-            }
-        });
-
-        console.log("DEBUG: Parcelas preenchidas com sucesso.");
-
-        // 6. Observações e Validade
+        // 5. Observações e Validade
         console.log("DEBUG: Preenchendo observações e validade...");
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
+        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
+        const iconeResumoEl = document.getElementById('icone-resumo');
 
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         }
-
         if (validadeEl) {
             validadeEl.innerText = dados.validade || "Não informada";
         }
-
         if (resumoInstalacaoEl && iconeResumoEl) {
             resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
             if (dados.tipo === 'premium') {
@@ -237,35 +261,25 @@ function preencherDadosProposta(dados) {
                 iconeResumoEl.classList.remove('fa-circle-check');
             }
         }
-
         console.log("DEBUG: Observações, validade e resumo de instalação preenchidos com sucesso.");
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
     }
 }
 
-// Função principal de inicialização
+// --- Função principal de inicialização ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- INÍCIO: CÓDIGO DE SEGURANÇA ADICIONADO ---
-    
-    // 1. Desabilita o botão direito do mouse para evitar cópias e impressão
     document.addEventListener('contextmenu', function(evento) {
         evento.preventDefault();
     });
-
-    // 2. Desabilita os atalhos de teclado para impressão (Ctrl+P) e ferramentas do desenvolvedor (F12)
     document.addEventListener('keydown', function(evento) {
-        // Bloqueia Ctrl+P / Cmd+P
         if ((evento.ctrlKey || evento.metaKey) && evento.key === 'p') {
             evento.preventDefault();
         }
-        // Bloqueia F12
         if (evento.key === 'F12') {
             evento.preventDefault();
         }
     });
-
-    // --- FIM: CÓDIGO DE SEGURANÇA ADICIONADO ---
 
     mostrarLoadingOverlay();
 
@@ -292,23 +306,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const temPropostaAcessivelValida = propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
 
-            if (seletorTipoProposta) {
+            // Lógica para esconder o seletor quando é uma proposta VE
+            if (propostaData.premium.tipoVisualizacao === 've' && seletorTipoProposta) {
+                seletorTipoProposta.classList.add('oculto');
+                console.warn("Proposta de VE, seletor de proposta ocultado.");
+            } else if (seletorTipoProposta) {
                 if (temPropostaAcessivelValida) {
-                    // Se a proposta acessível existe e é válida, mostra os botões.
                     seletorTipoProposta.classList.remove('oculto');
                 } else {
-                    // Caso contrário, esconde o container inteiro.
                     seletorTipoProposta.classList.add('oculto');
                     console.warn("Apenas uma proposta encontrada. Os botões de alternância foram ocultados.");
                 }
             }
-
-            preencherDadosProposta(propostaData.premium);
-            atualizarImagemEquipamentos(propostaData.premium);
+            
+            // Lógica unificada para preenchimento dos dados
+            const propostaInicial = propostaData.premium;
+            preencherDadosProposta(propostaInicial);
+            atualizarImagemEquipamentos(propostaInicial);
+            atualizarImagemInstalacao(propostaInicial);
+            preencherDetalhesInstalacao(propostaInicial);
             atualizarEtiquetasDinamicas('premium');
-            atualizarImagemInstalacao(propostaData.premium);
-            preencherDetalhesInstalacao(propostaData.premium);
+            document.body.classList.add('theme-premium');
 
+            // A chamada para `atualizarStatusVisualizacao` agora está no lugar certo
             const dadosVisualizacao = {
                 propostaId: numeroProjeto,
                 tipoVisualizacao: 'P'
@@ -327,11 +347,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnPremium) {
         btnPremium.addEventListener('click', () => {
-            // VERIFICAÇÃO ADICIONADA: Se o botão já estiver selecionado, não faz nada.
             if (btnPremium.classList.contains('selecionado')) {
                 return;
             }
-            
             mostrarLoadingOverlay();
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
@@ -353,11 +371,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnAcessivel) {
         btnAcessivel.addEventListener('click', () => {
-            // VERIFICAÇÃO ADICIONADA: Se o botão já estiver selecionado, não faz nada.
             if (btnAcessivel.classList.contains('selecionado')) {
                 return;
             }
-
             mostrarLoadingOverlay();
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {

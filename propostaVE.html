@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta Comercial | GDIS</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+  <div class="background-animation"></div>
+
+  <div id="loading-overlay" class="loading-overlay oculto">
+    <img id="splash-logo" src="imagens/logo-gdis-2.png" alt="Logo da GDIS">
+    <div class="loading-bar"></div>
+  </div>
+
+
+  <main class="main-oculto">
+    <header>
+      <div class="logo-container">
+        <img src="imagens/logo-gdis-2.png" alt="Logo da GDIS" class="logo">
+      </div>
+      <div class="seletor-tipo-proposta oculto">
+        <button id="btn-premium" class="btn-proposta selecionado">Premium</button>
+        <button id="btn-acessivel" class="btn-proposta">+Acessível</button>
+      </div>
+    </header>
+
+    <section id="secao-resumo">
+      <div id="secao-cliente">
+        <h2 id="nome-cliente" class="nome-cliente"></h2>
+        <div class="localizacao-data">
+          <p class="local-proposta">
+            <i class="fas fa-map-marker-alt icone-local"></i>
+            <span id="local-cliente"></span>
+          </p>
+          <p class="data-proposta">
+            <i class="fas fa-calendar-alt icone-data"></i>
+            <span id="data-proposta"></span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="secao-instalacao" class="secao-principal">
+      <h2 class="titulo-secao">Padrão de Instalação</h2>
+
+      <div class="conteudo-principal">
+
+                <div class="cards-ve-container">
+          <div class="card-imagem-ve imagem-instalacao">
+            <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação">
+          </div>
+
+          <div class="card-imagem-ve imagem-marca">
+            <img id="imagem-marca-ve" src="" alt="Imagem da marca do carregador VE">
+          </div>
+        </div>
+                
+      </div>
+
+      <div id="detalhes-instalacao" class="detalhes-instalacao">
+      </div>
+
+      <div id="resumo-instalacao-container">
+        <i id="icone-resumo" class="icone-resumo fas"></i>
+        <p id="resumo-instalacao" class="texto-resumo-instalacao"></p>
+      </div>
+    </section>
+
+    <section id="secao-valores-ve" class="secao-principal">
+      <h2 class="titulo-secao">Valores e Condições</h2>
+      <div class="container-financiamento">
+        <div class="card-valores card-total">
+          <p class="legenda-valores">Valor total:</p>
+          <p class="valor-total-proposta">
+            <span class="moeda">R$</span>
+            <span id="valor-total"></span>
+          </p>
+          <span class="etiqueta" id="etiqueta-avista">À Vista</span>
+        </div>
+        <div class="secao-observacao-container">
+          <p class="titulo-observacao">Validade da Proposta:</p>
+          <p id="texto-validade" class="texto-observacao"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao-voltar-proposta">
+      <a href="index.html" class="btn-voltar-proposta"><i class="fas fa-arrow-left"></i> Voltar</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-contact-container">
+      <a href="https://wa.me/5582994255946" target="_blank" class="footer-contact-item">
+        <i class="fab fa-whatsapp"></i> (82) 99425-5946
+      </a>
+      <a href="mailto:gdis.solar@gmail.com" class="footer-contact-item">
+        <i class="fas fa-envelope"></i> gdis.solar@gmail.com
+      </a>
+      <a href="https://www.instagram.com/gdis.solar/" target="_blank" class="footer-contact-item">
+        <i class="fab fa-instagram"></i> @gdis.solar
+      </a>
+    </div>
+  </footer>
+
+  <script type="module" src="js/propostaController.js"></script>
+
+</body>
+
+</html>
