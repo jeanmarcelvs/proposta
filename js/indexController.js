@@ -76,7 +76,7 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
         if (propostaData.sucesso) {
             // Acessa o tipo de visualização da proposta premium
             const tipoProposta = propostaData.dados.premium.tipoVisualizacao;
-            
+
             if (tipoProposta === 've') {
                 // Redireciona para a página de propostas de VE
                 window.location.href = `propostaVE.html?id=${numeroProjeto}&nome=${primeiroNome}`;
@@ -86,17 +86,17 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
             } else {
                 // Caso o tipo seja desconhecido, mostra um erro
                 atualizarEstadoBotao('erro', 'Tipo de proposta desconhecido.');
-                setTimeout(() => atualizarEstadoBotao('normal'), 3000);
+                setTimeout(() => atualizarEstadoBotao('normal'), 5000);
             }
         } else {
             // Se a busca falhar, exibe a mensagem de erro
             atualizarEstadoBotao('erro', propostaData.mensagem);
-            setTimeout(() => atualizarEstadoBotao('normal'), 3000);
+            setTimeout(() => atualizarEstadoBotao('normal'), 5000);
         }
     } catch (erro) {
         console.error('Erro na consulta:', erro);
         atualizarEstadoBotao('erro', 'Erro ao carregar a proposta.');
-        setTimeout(() => atualizarEstadoBotao('normal'), 3000);
+        setTimeout(() => atualizarEstadoBotao('normal'), 5000);
     }
 }
 
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.querySelector('main');
     const urlParams = new URLSearchParams(window.location.search);
     const parametroErro = urlParams.get('erro');
-    
+
     const numeroProjetoInput = document.getElementById('numero-projeto');
     const primeiroNomeInput = document.getElementById('primeiro-nome');
 
@@ -120,27 +120,28 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContent.classList.add('main-visivel');
         }, 300);
     }
-    
+
     // NOVO: Verifica os parâmetros e chama a função diretamente, sem simular um evento
     const idProjetoURL = urlParams.get('id');
     const nomeURL = urlParams.get('nome');
-    
+
     if (idProjetoURL && nomeURL) {
         numeroProjetoInput.value = idProjetoURL;
         primeiroNomeInput.value = nomeURL;
-        
+
         // CORRETO: Chama a função de consulta a partir do evento de URL
         executarConsulta(idProjetoURL, nomeURL);
     }
-    
+
     if (parametroErro) {
         let mensagem = '';
         switch (parametroErro) {
             case 'parametros-ausentes':
                 mensagem = 'Os parâmetros da URL estão ausentes.';
                 break;
+            // CORREÇÃO: O caso 'proposta-expirada' agora exibe a mensagem completa e profissional
             case 'proposta-expirada':
-                mensagem = 'A proposta consultada está expirada.';
+                mensagem = 'Esta proposta encontra-se expirada. Por favor, solicite uma nova proposta.';
                 break;
             case 'acesso-negado':
                 mensagem = 'A proposta não pode ser acessada. Verifique os dados.';
@@ -151,15 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarEstadoBotao('erro', mensagem);
         setTimeout(() => {
             atualizarEstadoBotao('normal');
-        }, 3000);
+        }, 5000);
     }
 
     form.addEventListener('submit', async (evento) => {
         evento.preventDefault();
-        
+
         const numeroProjeto = numeroProjetoInput.value;
         const primeiroNome = primeiroNomeInput.value;
-        
+
         // CORRETO: Chama a função de consulta a partir do evento de submit
         executarConsulta(numeroProjeto, primeiroNome);
     });
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.querySelector('main');
     const urlParams = new URLSearchParams(window.location.search);
     const parametroErro = urlParams.get('erro');
-    
+
     const numeroProjetoInput = document.getElementById('numero-projeto');
     const primeiroNomeInput = document.getElementById('primeiro-nome');
 
@@ -185,19 +186,19 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContent.classList.add('main-visivel');
         }, 300);
     }
-    
+
     // NOVO: Verifica os parâmetros e chama a função diretamente, sem simular um evento
     const idProjetoURL = urlParams.get('id');
     const nomeURL = urlParams.get('nome');
-    
+
     if (idProjetoURL && nomeURL) {
         numeroProjetoInput.value = idProjetoURL;
         primeiroNomeInput.value = nomeURL;
-        
+
         // CORRETO: Chama a função de consulta a partir do evento de URL
         executarConsulta(idProjetoURL, nomeURL);
     }
-    
+
     if (parametroErro) {
         let mensagem = '';
         switch (parametroErro) {
@@ -216,15 +217,15 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarEstadoBotao('erro', mensagem);
         setTimeout(() => {
             atualizarEstadoBotao('normal');
-        }, 3000);
+        }, 5000);
     }
 
     form.addEventListener('submit', async (evento) => {
         evento.preventDefault();
-        
+
         const numeroProjeto = numeroProjetoInput.value;
         const primeiroNome = primeiroNomeInput.value;
-        
+
         // CORRETO: Chama a função de consulta a partir do evento de submit
         executarConsulta(numeroProjeto, primeiroNome);
     });

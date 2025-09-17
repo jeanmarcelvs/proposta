@@ -297,7 +297,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
 
             if (!propostas.sucesso) {
-                window.location.href = `index.html?erro=${encodeURIComponent(propostas.mensagem)}`;
+                // Determine o código de erro a ser passado na URL
+                let codigoErro = 'acesso-negado'; // Valor padrão
+                if (propostas.mensagem && propostas.mensagem.includes('expirada')) {
+                    codigoErro = 'proposta-expirada';
+                }
+                
+                // Redireciona para a página inicial com o código de erro correto
+                window.location.href = `index.html?erro=${codigoErro}`;
                 return;
             }
 

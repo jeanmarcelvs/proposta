@@ -467,7 +467,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         console.warn('DEBUG: Proposta premium expirada.');
         return {
             sucesso: false,
-            mensagem: 'Proposta premium expirada. Por favor, solicite uma nova.'
+            mensagem: 'Proposta expirada. Por favor, solicite uma nova.'
         };
     }
     // --- FIM DA NOVA LÓGICA ---
