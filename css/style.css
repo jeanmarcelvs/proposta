@@ -509,7 +509,9 @@ header {
 }
 
 #imagem-marca {
-    max-width: 246px;
+    max-width: 200px;
+    width: 100%;
+    height: auto;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
 }
 
@@ -581,49 +583,54 @@ header {
 }
 
 .imagem-instalacao {
-  flex-shrink: 0;
-  width: 350px;
-  max-width: 100%;
-  height: 300px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px var(--cor-sombra);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    flex-shrink: 0;
+    width: 350px;
+    max-width: 100%;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px var(--cor-sombra);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .imagem-instalacao:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 40px var(--cor-sombra);
+    transform: scale(1.02);
+    box-shadow: 0 15px 40px var(--cor-sombra);
 }
 
 #imagem-instalacao {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* ALTERADO: Isso fará a imagem se ajustar mantendo a proporção */
+    object-fit: contain;
+    /* ALTERADO: Isso fará a imagem se ajustar mantendo a proporção */
     object-position: center;
     display: block;
 }
 
 /* NOVO: Estilos para o card da imagem de marca */
 #imagem-marca-ve {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Essencial para que a imagem mantenha sua proporção */
-  object-position: center;
-  display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Essencial para que a imagem mantenha sua proporção */
+    object-position: center;
+    display: block;
 }
 
 .imagem-marca:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 40px var(--cor-sombra);
+    transform: scale(1.02);
+    box-shadow: 0 15px 40px var(--cor-sombra);
 }
 
 /* Container para alinhar os cards de imagem */
 .cards-ve-container {
     display: flex;
-    flex-wrap: wrap; /* Permite que os cards quebrem a linha em telas menores */
-    justify-content: center; /* Centraliza os cards */
-    gap: 3.5rem; /* Adiciona o espaço lateral e vertical entre os cards */
+    flex-wrap: wrap;
+    /* Permite que os cards quebrem a linha em telas menores */
+    justify-content: center;
+    /* Centraliza os cards */
+    gap: 3.5rem;
+    /* Adiciona o espaço lateral e vertical entre os cards */
     margin-bottom: 2rem;
 }
 
@@ -1036,7 +1043,9 @@ footer {
     #imagem-marca {
         display: block;
         margin: 0 auto 1rem;
-        max-width: 246px;
+        max-width: 200px;
+        width: 100%;
+        height: auto;
     }
 
     footer {
