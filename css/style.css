@@ -509,8 +509,7 @@ header {
 }
 
 #imagem-marca {
-    max-width: 247px;
-    height: auto;
+    max-width: 246px;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
 }
 
@@ -1037,7 +1036,7 @@ footer {
     #imagem-marca {
         display: block;
         margin: 0 auto 1rem;
-        max-width: 247px;
+        max-width: 246px;
     }
 
     footer {
