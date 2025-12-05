@@ -1108,3 +1108,26 @@ body {
     user-select: none;
     /* Padrão */
 }
+
+/* --- Estilos para o vídeo do Instagram --- */
+.conteudo-video {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.video-somente-container {
+    /* Define o tamanho da "janela" que queremos mostrar */
+    width: 326px; /* Largura exata do conteúdo do Reel */
+    height: 400px; /* Altura reduzida ainda mais para cortar totalmente a descrição */
+    overflow: hidden; /* Corta o conteúdo que excede as dimensões */
+    margin: 0 auto; /* Centraliza o container */
+    border-radius: 12px;
+    box-shadow: 0 5px 20px var(--cor-sombra-leve);
+}
+
+.video-somente-container .instagram-media {
+    /* Move o embed para cima para esconder o cabeçalho */
+    margin-top: -60px !important;
+}
