@@ -393,9 +393,9 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
-    const dadosApiPremium = await get(endpointPremium);
+    const dadosApiPrincipal = await get(endpointPremium); // Renomeado para 'Principal'
 
-    if (!dadosApiPremium.sucesso) {
+    if (!dadosApiPrincipal.sucesso) {
         console.error('Falha na busca da proposta premium.');
         return {
             sucesso: false,
@@ -403,13 +403,13 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    const proposta = dadosApiPremium.dados.data;
+    const propostaPrincipal = dadosApiPrincipal.dados.data;
 
     // Acessa o nome do cliente a partir das variáveis
-    const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
+    const nomeCompletoApi = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
 
-    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
+    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) { // Correção: usar propostaPrincipal
         console.error("Tentativa de acesso não autorizado. Nome não corresponde.");
         return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
     }
@@ -417,7 +417,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     // --- NOVA LÓGICA DE VALIDAÇÃO ANTECIPADA DA PROPOSTA PREMIUM ---
     // Cria um objeto temporário para a verificação de validade
     const propostaParaValidarPremium = {
-        dataExpiracao: proposta.expirationDate,
+        dataExpiracao: propostaPrincipal.expirationDate, // Correção: usar propostaPrincipal
     };
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
         console.warn('DEBUG: Proposta premium expirada.');
@@ -436,26 +436,28 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         };
     }
 
-    const propostaPremium = tratarDadosParaProposta(dadosApiPremium, 'premium', selicAtual);
-    if (!propostaPremium) { return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' }; }
-    dadosProposta.premium = propostaPremium;
-
-    // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
-    const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.variables, 'vc_projeto_acessivel');
-
-    // Reseta a proposta acessível para 'null' para garantir o estado inicial
+    // Resetar dadosProposta para garantir um estado limpo antes de popular
+    dadosProposta.premium = null;
     dadosProposta.acessivel = null;
 
-    if (idProjetoAcessivel) {
+    const idProjetoAcessivel = extrairValorVariavelPorChave(propostaPrincipal.variables, 'vc_projeto_acessivel');
+
+    if (idProjetoAcessivel && idProjetoAcessivel > 0) {
+        // Cenário 1: A proposta principal é uma Premium que referencia uma Acessível
+        const propostaPremiumTratada = tratarDadosParaProposta(dadosApiPrincipal, 'premium', selicAtual);
+        if (!propostaPremiumTratada) {
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium (principal).' };
+        }
+        dadosProposta.premium = propostaPremiumTratada;
+
         const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel);
 
         if (dadosApiAcessivel.sucesso) {
             // Cria um objeto temporário para a verificação de validade da proposta acessível
             const propostaParaValidarAcessivel = {
-                dataExpiracao: dadosApiAcessivel.dados.data.expirationDate
+                dataExpiracao: dadosApiAcessivel.dados.data.expirationDate // Correção: usar dadosApiAcessivel.dados.data
             };
-
 
             // Valida a data de expiração da proposta acessível
             if (validarValidadeProposta(propostaParaValidarAcessivel)) {
@@ -464,16 +466,28 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
                 if (propostaAcessivel) {
                     dadosProposta.acessivel = propostaAcessivel;
                 } else {
-                    console.error("Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
+                    console.error("Falha ao processar dados da proposta Acessível vinculada.");
                 }
             } else {
-                // A proposta acessível existe, mas está expirada. Não faz nada, apenas a premium será retornada.
+                console.warn("Proposta acessível vinculada expirada.");
             }
         } else {
-            // Falha ao buscar a proposta acessível. Não faz nada, apenas a premium será retornada.
+            console.error("Falha ao buscar a proposta acessível vinculada.");
         }
     } else {
-        // Não há proposta acessível vinculada. Não faz nada, apenas a premium será retornada.
+        // Cenário 2: A proposta principal NÃO é uma Premium que referencia uma Acessível.
+        // Assumimos que ela é uma proposta Acessível (ou standalone) que deve ser exibida como tal.
+        const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiPrincipal, 'acessivel', selicAtual);
+        if (!propostaAcessivelTratada) {
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível (principal).' };
+        }
+        dadosProposta.acessivel = propostaAcessivelTratada;
+        // dadosProposta.premium permanece null, o que é o comportamento desejado neste cenário.
+    }
+
+    // Se nenhuma proposta (nem premium nem acessível) foi definida, algo deu errado.
+    if (!dadosProposta.premium && !dadosProposta.acessivel) {
+        return { sucesso: false, mensagem: 'Não foi possível carregar nenhuma proposta válida.' };
     }
 
     return { sucesso: true, dados: dadosProposta };

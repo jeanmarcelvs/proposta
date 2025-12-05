@@ -1128,18 +1128,21 @@ body {
     overflow: hidden;
     border-radius: 16px;
     background-color: var(--cor-fundo-input);
-    min-height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* CORREÇÃO: Define uma proporção fixa (quadrada) para o contêiner */
+    aspect-ratio: 1 / 1;
 }
 
 .current-installation-image {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
     border-radius: 16px;
     transition: opacity 0.4s ease-in-out; /* Transição suave para o spinner */
+    /* CORREÇÃO: Garante que a imagem caiba inteira sem distorcer */
+    object-fit: contain;
 }
 
 .carousel-nav-btn {
@@ -1159,7 +1162,7 @@ body {
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s ease, opacity 0.4s ease;
-    opacity: 0.4; /* Começa visível com transparência */
+    opacity: 0.7; /* Aumenta a opacidade inicial para ser visível em todos os dispositivos */
 }
 
 .imagem-instalacao-container:hover .carousel-nav-btn {

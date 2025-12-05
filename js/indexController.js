@@ -73,10 +73,11 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
         const propostaData = await buscarETratarProposta(numeroProjeto, primeiroNome);
 
         if (propostaData.sucesso) {
-            // Acessa o tipo de visualização da proposta premium
-            const tipoProposta = propostaData.dados.premium.tipoVisualizacao;
+            // CORREÇÃO: Determina o tipo de visualização a partir da proposta que existe (premium ou acessível)
+            const propostaDisponivel = propostaData.dados.premium || propostaData.dados.acessivel;
+            const tipoProposta = propostaDisponivel ? propostaDisponivel.tipoVisualizacao : null;
 
-            if (tipoProposta === 've') {
+            if (tipoProposta === 've') { // tipoVisualizacao é 've' ou 'solar'
                 // Redireciona para a página de propostas de VE
                 window.location.href = `propostaVE.html?id=${numeroProjeto}&nome=${primeiroNome}`;
             } else if (tipoProposta === 'solar') {

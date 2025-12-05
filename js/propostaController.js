@@ -51,16 +51,7 @@ function atualizarImagemEquipamentos(proposta) {
         }
 
         // 2. Define o caminho da imagem
-        let imageUrl = '';
-        if (isVE) {
-            imageUrl = proposta.equipamentos?.imagem || '';
-        } else if (proposta.tipoVisualizacao === 'solar') {
-            if (proposta.tipo === 'premium') {
-                imageUrl = 'imagens/huawei.webp';
-            } else if (proposta.tipo === 'acessivel') {
-                imageUrl = 'imagens/auxsolar.webp';
-            }
-        }
+        const imageUrl = proposta.equipamentos?.imagem || '';
 
         // Se a URL não mudou e não está vazia, resolve imediatamente.
         if (imagemEquipamentos.src && imagemEquipamentos.src.endsWith(imageUrl) && imageUrl !== '') {
@@ -337,6 +328,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     let currentProposalType = 'premium';
+    let carouselInterval; // Variável para armazenar o ID do intervalo do carrossel
     let currentImageIndex = 0;
     const preloadedImages = {};
 
@@ -407,14 +399,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function mostrarModal() {
+        // CORREÇÃO: A função stopCarouselAutoPlay precisa ser definida antes de ser chamada aqui.
+        function stopCarouselAutoPlay() {
+            clearInterval(carouselInterval);
+        }
+
+        // NOVO: Funções para controlar o avanço automático do carrossel
+        function startCarouselAutoPlay() {
+            stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
+            const currentImageSet = imagePaths[currentProposalType];
+            if (currentImageSet && currentImageSet.length > 1) { // Só inicia se houver mais de uma imagem
+                carouselInterval = setInterval(() => {
+                    showImage(currentImageIndex + 1);
+                }, 3000); // Avança a cada 3 segundos
+            }
+        }
         if (modalCarrossel) {
             modalCarrossel.classList.remove('oculto');
+            stopCarouselAutoPlay(); // Pausa o carrossel automático ao abrir o modal
             document.body.classList.add('modal-aberta'); // Bloqueia o scroll de fundo
         }
     }
 
     function esconderModal() {
+        // CORREÇÃO: A função startCarouselAutoPlay precisa ser definida antes de ser chamada aqui.
+        function stopCarouselAutoPlay() {
+            clearInterval(carouselInterval);
+        }
+
+        // NOVO: Funções para controlar o avanço automático do carrossel
+        function startCarouselAutoPlay() {
+            stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
+            const currentImageSet = imagePaths[currentProposalType];
+            if (currentImageSet && currentImageSet.length > 1) { // Só inicia se houver mais de uma imagem
+                carouselInterval = setInterval(() => {
+                    showImage(currentImageIndex + 1);
+                }, 3000); // Avança a cada 3 segundos
+            }
+        }
         if (modalCarrossel) {
+            startCarouselAutoPlay(); // Retoma o carrossel automático ao fechar o modal
             modalCarrossel.classList.add('oculto');
             document.body.classList.remove('modal-aberta');
         }
@@ -449,9 +473,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 🚦 INÍCIO DA LÓGICA DE CARREGAMENTO DA PÁGINA
     // =================================================================
 
+    // CORREÇÃO: Mover a declaração de 'propostas' para fora do try para ser acessível no 'finally'
+    let propostas;
+
+    // CORREÇÃO: Mover a definição das funções do carrossel para o escopo principal do DOMContentLoaded
+    function stopCarouselAutoPlay() {
+        clearInterval(carouselInterval);
+    }
+
+    function startCarouselAutoPlay() {
+        stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
+        const currentImageSet = imagePaths[currentProposalType];
+        if (currentImageSet && currentImageSet.length > 1) {
+            carouselInterval = setInterval(() => {
+                showImage(currentImageIndex + 1);
+            }, 5000);
+        }
+    }
+
     if (numeroProjeto && primeiroNome) {
         try {
-            const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
+            propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
 
             if (!propostas.sucesso) {
                 // Determine o código de erro a ser passado na URL
@@ -468,42 +510,78 @@ document.addEventListener('DOMContentLoaded', async () => {
             const propostaData = propostas.dados;
             localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
-            const temPropostaAcessivelValida = propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
+            let propostaParaExibir;
+            let initialThemeClass;
+            let initialButtonToSelect;
 
-            // Lógica para esconder o seletor quando é uma proposta VE
-            if (propostaData.premium.tipoVisualizacao === 've' && seletorTipoProposta) {
-                seletorTipoProposta.classList.add('oculto');
-            } else if (seletorTipoProposta) {
-                if (temPropostaAcessivelValida) {
+            // Determine which proposal to display initially
+            if (propostaData.premium) {
+                propostaParaExibir = propostaData.premium;
+                initialThemeClass = 'theme-premium';
+                initialButtonToSelect = btnPremium;
+            } else if (propostaData.acessivel) {
+                // If no premium, but accessible exists, display accessible
+                propostaParaExibir = propostaData.acessivel;
+                initialThemeClass = 'theme-acessivel';
+                initialButtonToSelect = btnAcessivel;
+            } else {
+                // This case should ideally be caught by !propostas.sucesso earlier
+                console.error("Nenhuma proposta válida para exibir após buscar.");
+                window.location.href = 'index.html?erro=acesso-negado';
+                return;
+            }
+
+            // CORREÇÃO: Define o tipo de proposta atual para o carrossel de imagens
+            currentProposalType = propostaParaExibir.tipo;
+
+            // Preencher dados
+            preencherDadosProposta(propostaParaExibir);
+            await atualizarImagemEquipamentos(propostaParaExibir);
+            preencherDetalhesInstalacao(propostaParaExibir);
+            atualizarEtiquetasDinamicas(propostaParaExibir.tipo);
+            document.body.classList.add(initialThemeClass);
+
+            // Gerenciar visibilidade e estado dos botões
+            const hasPremium = !!propostaData.premium;
+            const hasAcessivel = !!propostaData.acessivel;
+
+            if (seletorTipoProposta) {
+                if (hasPremium && hasAcessivel) {
                     seletorTipoProposta.classList.remove('oculto');
+                    if (btnPremium) btnPremium.disabled = false;
+                    if (btnAcessivel) btnAcessivel.disabled = false;
                 } else {
                     seletorTipoProposta.classList.add('oculto');
                 }
             }
-            
-            // Lógica unificada para preenchimento dos dados
-            const propostaInicial = propostaData.premium;
-            preencherDadosProposta(propostaInicial);
-            await atualizarImagemEquipamentos(propostaInicial);
-            preencherDetalhesInstalacao(propostaInicial);
-            atualizarEtiquetasDinamicas('premium');
-            document.body.classList.add('theme-premium');
 
-            // A chamada para `atualizarStatusVisualizacao` agora está no lugar certo
+            if (initialButtonToSelect) {
+                initialButtonToSelect.classList.add('selecionado');
+                if (initialButtonToSelect === btnPremium && btnAcessivel) btnAcessivel.classList.remove('selecionado');
+                if (initialButtonToSelect === btnAcessivel && btnPremium) btnPremium.classList.remove('selecionado');
+            }
+
+            // Update status visualization
             const dadosVisualizacao = {
                 propostaId: numeroProjeto,
-                tipoVisualizacao: 'P'
+                tipoVisualizacao: propostaParaExibir.tipo === 'premium' ? 'P' : 'A'
             };
             await atualizarStatusVisualizacao(dadosVisualizacao);
 
-            // 🌟 CORREÇÃO: Inicia e ESPERA a imagem do carrossel carregar antes de prosseguir para o 'finally'
-            await showImage(0); 
-
+            // 🌟 Inicia e ESPERA a imagem do carrossel carregar antes de prosseguir para o 'finally'
+            await showImage(0);
+            startCarouselAutoPlay(); // Inicia o avanço automático do carrossel
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
             window.location.href = 'index.html?erro=acesso-negado';
         } finally {
             esconderLoadingOverlay();
+            // Garante que o carrossel automático seja iniciado mesmo se houver um erro
+            // e a página não redirecionar, mas a proposta for exibida.
+            // Isso é um fallback, o ideal é que startCarouselAutoPlay() seja chamado após o sucesso.
+            if (propostas && propostas.sucesso) {
+                startCarouselAutoPlay();
+            }
         }
     } else {
         window.location.href = 'index.html?erro=parametros-ausentes';
@@ -512,8 +590,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =================================================================
     // 🖱️ EVENT LISTENERS
     // =================================================================
-    if (nextImageBtn) nextImageBtn.addEventListener('click', () => showImage(currentImageIndex + 1));
-    if (prevImageBtn) prevImageBtn.addEventListener('click', () => showImage(currentImageIndex - 1));
+    if (nextImageBtn) nextImageBtn.addEventListener('click', () => {
+        stopCarouselAutoPlay();
+        showImage(currentImageIndex + 1);
+        startCarouselAutoPlay();
+    });
+    if (prevImageBtn) prevImageBtn.addEventListener('click', () => {
+        stopCarouselAutoPlay();
+        showImage(currentImageIndex - 1);
+        startCarouselAutoPlay();
+    });
 
 
     if (btnPremium) {
@@ -525,12 +611,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
                 try {
+                    stopCarouselAutoPlay(); // Pausa o carrossel antes de trocar
                     preencherDadosProposta(propostas.premium);
                     atualizarEtiquetasDinamicas('premium');
                     await switchProposalType('premium');
                     preencherDetalhesInstalacao(propostas.premium);
                     await atualizarImagemEquipamentos(propostas.premium); // Espera a imagem carregar
                     document.body.classList.remove('theme-acessivel');
+                    startCarouselAutoPlay(); // Reinicia o carrossel após a troca
                     document.body.classList.add('theme-premium');
                     btnPremium.classList.add('selecionado');
                     if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
@@ -555,12 +643,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {
                 try {
+                    stopCarouselAutoPlay(); // Pausa o carrossel antes de trocar
                     preencherDadosProposta(propostas.acessivel);
                     atualizarEtiquetasDinamicas('acessivel');
                     await switchProposalType('acessivel');
                     preencherDetalhesInstalacao(propostas.acessivel);
                     await atualizarImagemEquipamentos(propostas.acessivel); // Espera a imagem carregar
                     document.body.classList.add('theme-acessivel');
+                    startCarouselAutoPlay(); // Reinicia o carrossel após a troca
                     document.body.classList.remove('theme-premium');
                     btnAcessivel.classList.add('selecionado');
                     if (btnPremium) btnPremium.classList.remove('selecionado');
