@@ -428,6 +428,14 @@ header {
     border-radius: 2px;
 }
 
+/* NOVO: Estilo para o destaque no título da seção (ex: Premium/Básico) */
+#tipo-instalacao-destaque {
+    color: var(--cor-primaria); /* Usa a cor de destaque do tema */
+    font-weight: 700; /* Deixa o texto um pouco mais forte */
+    opacity: 0.9; /* Leve transparência para suavizar */
+    margin-left: 0.5rem; /* Pequeno espaço */
+}
+
 #secao-cliente {
     text-align: left;
 }
@@ -1150,16 +1158,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s ease, opacity 0.3s ease;
-    opacity: 0; /* Começa invisível */
+    transition: background-color 0.3s ease, opacity 0.4s ease;
+    opacity: 0.4; /* Começa visível com transparência */
 }
 
 .imagem-instalacao-container:hover .carousel-nav-btn {
-    opacity: 1; /* Mostra os botões ao passar o mouse */
+    opacity: 1; /* Torna os botões totalmente visíveis ao passar o mouse */
 }
 
 .carousel-nav-btn:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 .prev-btn { left: 15px; }
@@ -1177,9 +1185,11 @@ body {
 
 /* --- Estilos para o vídeo do Instagram --- */
 .conteudo-video {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; /* Mantém como flexbox */
+    flex-wrap: wrap; /* Permite que os vídeos quebrem a linha em telas menores */
+    justify-content: center; /* Centraliza os vídeos */
+    align-items: center; /* Alinha verticalmente */
+    gap: 2rem; /* Adiciona um espaço entre os vídeos */
     padding: 20px 0;
 }
 

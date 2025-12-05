@@ -257,6 +257,10 @@ function preencherDadosProposta(dados) {
         const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
         const iconeResumoEl = document.getElementById('icone-resumo');
 
+        // NOVO: Atualiza o destaque do título da seção de instalação
+        const tipoInstalacaoDestaqueEl = document.getElementById('tipo-instalacao-destaque');
+        if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.innerText = dados.tipo === 'premium' ? 'Premium' : 'Básico';
+
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         }
