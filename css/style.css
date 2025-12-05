@@ -48,10 +48,10 @@
     --cor-header-fundo: rgba(255, 255, 255, 0.9);
     --cor-header-botoes-fundo: #e9eff5;
     --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
-    --cor-primaria: #FFCC00; /* Amarelo Energético como cor primária */
-    --cor-primaria-rgb: 255, 204, 0;
-    --cor-primaria-clara: rgba(255, 204, 0, 0.3); /* Sombra amarela */
-    --cor-primaria-hover: #e6b800; /* Amarelo mais escuro para hover */
+    --cor-primaria: #DAB900; /* Amarelo dessaturado para conforto visual */
+    --cor-primaria-rgb: 218, 185, 0;
+    --cor-primaria-clara: rgba(218, 185, 0, 0.3); /* Sombra amarela ajustada */
+    --cor-primaria-hover: #c2a500; /* Amarelo mais escuro para hover (ajustado) */
     --cor-fundo-input: #FFFFFF; /* Fundo branco para inputs */
     --cor-texto-principal: #1a1a1a; /* Preto para textos principais */
     --cor-texto-secundario: #555555; /* Cinza escuro para textos secundários */
