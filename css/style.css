@@ -21,6 +21,7 @@
     --cor-fundo-principal: #1a1a1a; /* Cinza Escuro para o fundo geral */
     --cor-fundo-principal-rgb: 26, 26, 26; /* RGB do Cinza Escuro */
     --cor-fundo-secao: #222222; /* Cinza escuro para seções e header */
+    --cor-fundo-logo-contraste: #222222; /* NOVO: Cor escura fixa para o fundo da logo no tema claro */
     --cor-cartao-fundo: #000000; /* Preto para containers de destaque (login, cards de valor) */
     --cor-cartao-borda: #FFCC00; /* Amarelo Energético */
     --cor-header-fundo: rgba(34, 34, 34, 0.85); /* Fundo do header com transparência */
@@ -109,17 +110,36 @@ main {
     transition: all 0.5s ease;
 }
 
+/* NOVO: Transforma o contêiner da logo em um contêiner de posicionamento */
+.logo-container {
+    position: relative;
+    display: inline-block; /* Ajusta o tamanho do contêiner ao da logo */
+}
+
 .logo,
 .logo-header {
     max-width: 120px;
     height: auto;
     filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative; /* Garante que a logo fique acima do fundo */
+    z-index: 2;
 }
 
 .logo:hover,
 .logo-header:hover {
     transform: scale(1.03);
+}
+/* SOLUÇÃO DEFINITIVA: Cria um fundo para a logo no tema claro usando um pseudo-elemento. */
+/* Isso não afeta o tamanho ou a cor da imagem original. */
+.theme-acessivel .logo-container::before {
+    content: '';
+    position: absolute;
+    inset: -0.8rem; /* Cria um espaçamento de 0.8rem ao redor da logo */
+    background-color: var(--cor-fundo-logo-contraste);
+    border-radius: 12px;
+    z-index: 1; /* Posiciona o fundo atrás da logo */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* NOVO: Estilo para a logo no splash */
