@@ -13,9 +13,8 @@
 <body>
   <div class="background-animation"></div>
 
-  <div id="loading-overlay" class="loading-overlay oculto">
-    <img id="splash-logo" src="imagens/logo-belenergy.png" alt="Logo da GDIS">
-    <div class="loading-bar"></div>
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
   </div>
 
 
@@ -50,17 +49,17 @@
       <h2 class="titulo-secao">Padrão de Instalação</h2>
 
       <div class="conteudo-principal">
-
-                <div class="cards-ve-container">
-          <div class="card-imagem-ve imagem-instalacao">
-            <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação">
+        <div class="cards-ve-container">
+          <!-- Container do Carrossel (agora igual ao de proposta.html) -->
+          <div class="imagem-instalacao-container">
+            <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação" class="current-installation-image">
+            <button id="prev-image-btn" class="carousel-nav-btn prev-btn oculto"><i class="fas fa-chevron-left"></i></button>
+            <button id="next-image-btn" class="carousel-nav-btn next-btn oculto"><i class="fas fa-chevron-right"></i></button>
           </div>
-
           <div class="card-imagem-ve imagem-marca">
             <img id="imagem-marca-ve" src="" alt="Imagem da marca do carregador VE">
           </div>
         </div>
-                
       </div>
 
       <div id="detalhes-instalacao" class="detalhes-instalacao">

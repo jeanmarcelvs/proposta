@@ -75,17 +75,20 @@ const caminhosImagens = {
 };
 
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
+// ATUALIZADO: Foco em Risco Zero, Durabilidade e Padrão Industrial.
 const detalhesInstalacaoPremium = [
-    { icone: 'fa-shield-alt', texto: 'Sistema de Proteção Elétrica Coordenado completo' },
-    { icone: 'fa-plug', texto: 'Infraestrutura com materiais de maior durabilidade' },
-    { icone: 'fa-wrench', texto: 'Instalação padronizada para uma menor necessidade de manutenção' }
+    { icone: 'fa-box-open', titulo: 'Infraestrutura Metálica: Feita para Durar', texto: 'Eletrocalhas galvanizadas em metal robusto garantem a proteção física total do cabeamento e, por gestão térmica, **auxiliam na dissipação de calor**, minimizando a dilatação e folga das conexões.' },
+    { icone: 'fa-shield-alt', titulo: 'Sistema de Proteção Elétrica Coordenada', texto: 'Proteção robusta com sistemas de proteção dedicados, garantindo a **proteção total do sistema de geração e de toda a instalação elétrica interna do imóvel** contra anomalias da rede pública.' },
+    { icone: 'fa-wrench', titulo: 'Instalação Padrão Ouro', texto: 'Cabos, conexões e quadros organizados e selados, o que minimiza o risco de falhas elétricas, devido por exemplo à entrada de umidade, resultando em um **sistema mais seguro e mais estável** ao longo de sua vida útil.' },
+    { icone: 'fa-dollar-sign', titulo: 'Custo Real Baixo no Longo Prazo', texto: 'O investimento em durabilidade e segurança agora resulta em um **menor custo total de operação** do sistema, pois a infraestrutura reduz a necessidade de reparos e ajustes corretivos no futuro.' }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
+// ATUALIZADO: Foco em Viabilidade, Economia Imediata e Acompanhamento.
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-triangle-exclamation', texto: 'Proteções limitadas' },
-    { icone: 'fa-triangle-exclamation', texto: 'Infraestrutura mais acessível' },
-    { icone: 'fa-triangle-exclamation', texto: 'Instalação mais acessível' }
+    { icone: 'fa-dollar-sign', titulo: 'Investimento Inicial Reduzido', texto: 'Configuração que prioriza o custo mais baixo inicialmente.' },
+    { icone: 'fa-bolt', titulo: 'Proteção Limitada e Focada no Inversor', texto: 'O sistema conta somente com as proteções internas que acompanham o Inversor. A ausência de sistemas de proteção coordenados e dedicados (externos) deixa o sistema de geração e os aparelhos elétricos do imóvel vulneráveis a surtos e anomalias provenientes da rede pública de energia.' },
+    { icone: 'fa-search', titulo: 'Exige Manutenção Ativa e Custo Recorrente', texto: 'A infraestrutura mais simples (PVC) está sujeita a um desgaste mais rápido devido à mudança de temperatura. Além de não promover dissipação de calor para os cabos e conexões. Este fato aumenta a probabilidade de folgas, pontos quentes e desarmes indesejados, que interrompem a geração e geram custos extras com reparos.' }
 ];
 
 // NOVO: Resumos para a seção de instalação
@@ -191,7 +194,6 @@ function formatarData(dataISO) {
  */
 export function validarValidadeProposta(proposta) {
     if (!proposta || !proposta.dataExpiracao) {
-        console.warn('Aviso: Data de expiração não encontrada na proposta.');
         return false;
     }
 
@@ -203,10 +205,6 @@ export function validarValidadeProposta(proposta) {
     // O `expirationDate` do JSON já vem em UTC, então a comparação é direta.
 
     const estaAtiva = dataAtual <= dataExpiracao;
-
-    if (!estaAtiva) {
-        console.warn(`Proposta expirada em: ${proposta.dataExpiracao}`);
-    }
 
     return estaAtiva;
 }
@@ -245,12 +243,6 @@ function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
 
 // ALTERADO: Função para calcular o financiamento com a lógica da Tabela Price
 function calcularFinanciamento(valorProjeto, selicAnual) {
-    // PONTO DE LOG: Exibir as entradas do cálculo
-    console.log('--- INÍCIO DO CÁLCULO DE FINANCIAMENTO ---');
-    console.log(`Valor do Projeto: R$ ${valorProjeto}`);
-    console.log(`Taxa SELIC Anual: ${selicAnual}%`);
-    console.log('---');
-
     const selicDecimal = selicAnual / 100;
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {};
@@ -272,22 +264,11 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
     const iofDiarioCalculado = IOF_DIARIO * DIAS_CARENCIA * valorProjeto;
     const valorFinanciado = valorProjeto + iofFixoCalculado + iofDiarioCalculado;
 
-    console.log(`Valor do Projeto: R$ ${valorProjeto.toFixed(2)}`);
-    console.log(`IOF Fixo: R$ ${iofFixoCalculado.toFixed(2)}`);
-    console.log(`IOF Diário (120 dias): R$ ${iofDiarioCalculado.toFixed(2)}`);
-    console.log(`Valor Total Financiado (Projeto + IOF): R$ ${valorFinanciado.toFixed(2)}`);
-    console.log('---');
-
     opcoesParcelas.forEach(n => {
-        // PONTO DE LOG: Exibir os valores intermediários para cada parcela
-        console.log(`\n--- Cálculo para ${n} parcelas ---`);
-
         // A nova lógica de spread agora inclui o fator de risco.
         const jurosAnualNominal = selicDecimal + spreadBaseAnual + (n * FATOR_RISCO_PRAZO);
-        console.log(`Juros Anual Nominal: ${jurosAnualNominal.toFixed(6)}`);
 
         const jurosMensalNominal = (Math.pow((1 + jurosAnualNominal), (1 / 12))) - 1;
-        console.log(`Juros Mensal Nominal: ${jurosMensalNominal.toFixed(6)}`);
 
         if (jurosMensalNominal <= 0) {
             const valorParcela = (valorFinanciado / n);
@@ -300,16 +281,11 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
         // CORREÇÃO: Usando o valor financiado SEM os juros de carência.
         const parcela = (valorFinanciado * jurosMensalNominal * Math.pow((1 + jurosMensalNominal), n)) / (Math.pow((1 + jurosMensalNominal), n) - 1);
 
-        // PONTO DE LOG: O valor final da parcela
-        console.log(`VALOR DA PARCELA FINAL: R$ ${parcela.toFixed(2)}`);
-
         simulacao[`parcela-${n}`] = parcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         taxasNominais[`taxaNominal-${n}`] = jurosMensalNominal;
         const taxaMensalEfetiva = calcularTIRMensal(valorFinanciado, parcela, n);
         taxasEfetivas[`taxaAnualEfetiva-${n}`] = Math.pow(1 + taxaMensalEfetiva, 12) - 1;
     });
-
-    console.log('\n--- FIM DO CÁLCULO ---');
 
     return {
         parcelas: simulacao,
@@ -326,25 +302,16 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
  * @returns {object} Um objeto com os dados formatados para a página.
  */
 function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
-    console.log(`\n--- INÍCIO DO TRATAMENTO DE DADOS para a proposta ${tipoProposta.toUpperCase()} ---`);
-    console.log('Dados brutos da API recebidos:', dadosApi);
-
     if (!dadosApi || !dadosApi.dados) {
-        console.error("DEBUG: Modelo: Dados da API não encontrados ou incompletos.");
+        console.error("Modelo: Dados da API não encontrados ou incompletos.");
         return null;
     }
 
     const dados = dadosApi.dados.data;
     const variables = dados.variables || [];
 
-    // --- CORRIGIDO: Extração da visualização do array 'variables' ---
     const tipoVisualizacao = extrairValorVariavelPorChave(variables, 'cap_visualizacao') || 'SOLAR';
     const isVE = tipoVisualizacao.toUpperCase() === 'VE';
-
-    // PONTOS DE DEBUG: Valores extraídos das variáveis
-    console.log('DEBUG: Dados do objeto "data":', dados);
-    console.log('DEBUG: Array de "variables":', variables);
-    console.log('DEBUG: Tipo de visualização identificado:', tipoVisualizacao);
 
     // Variáveis comuns a ambos os tipos de proposta
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
@@ -420,24 +387,16 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         validade: `Proposta válida por até 3 dias corridos ou enquanto houver disponibilidade em estoque.`
     };
 
-    console.log('DEBUG: Objeto de retorno final:', retorno);
-    console.log(`--- FIM DO TRATAMENTO de DADOS para a proposta ${tipoProposta.toUpperCase()} ---\n`);
-
     return retorno;
 }
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    console.log('\n--- INÍCIO DA EXECUÇÃO: buscarETratarProposta ---');
-    console.log('DEBUG: Parâmetros recebidos: numeroProjeto =', numeroProjeto, '| primeiroNomeCliente =', primeiroNomeCliente);
-
     const endpointPremium = `/projects/${numeroProjeto}/proposals`;
     const dadosApiPremium = await get(endpointPremium);
 
-    console.log('DEBUG: Resposta da API Premium:', dadosApiPremium);
-
     if (!dadosApiPremium.sucesso) {
-        console.error('DEBUG: Falha na busca da proposta premium.');
+        console.error('Falha na busca da proposta premium.');
         return {
             sucesso: false,
             mensagem: 'Projeto não encontrado ou dados inválidos.'
@@ -445,15 +404,13 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     const proposta = dadosApiPremium.dados.data;
-    console.log('DEBUG: Objeto da proposta premium extraído:', proposta);
 
     // Acessa o nome do cliente a partir das variáveis
     const nomeCompletoApi = extrairValorVariavelPorChave(proposta.variables, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
-    console.log('DEBUG: Primeiro nome extraído da API:', primeiroNomeApi);
 
     if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
-        console.error("DEBUG: Tentativa de acesso não autorizado. Nome não corresponde.");
+        console.error("Tentativa de acesso não autorizado. Nome não corresponde.");
         return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
     }
 
@@ -462,7 +419,6 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     const propostaParaValidarPremium = {
         dataExpiracao: proposta.expirationDate,
     };
-    console.log('DEBUG: Objeto de validação da proposta premium:', propostaParaValidarPremium);
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
         console.warn('DEBUG: Proposta premium expirada.');
         return {
@@ -473,7 +429,6 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     // --- FIM DA NOVA LÓGICA ---
 
     const selicAtual = await getSelicTaxa();
-    console.log('DEBUG: Taxa SELIC atual:', selicAtual);
     if (selicAtual === null) {
         return {
             sucesso: false,
@@ -487,7 +442,6 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
     // --- NOVA LÓGICA PARA BUSCAR E VALIDAR A PROPOSTA ACESSÍVEL ---
     const idProjetoAcessivel = extrairValorVariavelPorChave(proposta.variables, 'vc_projeto_acessivel');
-    console.log('DEBUG: ID do projeto acessível extraído:', idProjetoAcessivel);
 
     // Reseta a proposta acessível para 'null' para garantir o estado inicial
     dadosProposta.acessivel = null;
@@ -495,14 +449,12 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     if (idProjetoAcessivel) {
         const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel);
-        console.log('DEBUG: Resposta da API Acessível:', dadosApiAcessivel);
 
         if (dadosApiAcessivel.sucesso) {
             // Cria um objeto temporário para a verificação de validade da proposta acessível
             const propostaParaValidarAcessivel = {
                 dataExpiracao: dadosApiAcessivel.dados.data.expirationDate
             };
-            console.log('DEBUG: Objeto de validação da proposta acessível:', propostaParaValidarAcessivel);
 
 
             // Valida a data de expiração da proposta acessível
@@ -512,20 +464,17 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
                 if (propostaAcessivel) {
                     dadosProposta.acessivel = propostaAcessivel;
                 } else {
-                    console.error("DEBUG: Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
+                    console.error("Falha ao processar dados da proposta Acessível, mas a premium foi carregada.");
                 }
             } else {
-                console.warn("DEBUG: Proposta acessível encontrada, mas está expirada. Carregando apenas a proposta premium.");
+                // A proposta acessível existe, mas está expirada. Não faz nada, apenas a premium será retornada.
             }
         } else {
-            console.warn("DEBUG: Falha ao buscar dados da proposta acessível. Carregando apenas a proposta premium.");
+            // Falha ao buscar a proposta acessível. Não faz nada, apenas a premium será retornada.
         }
     } else {
-        console.log("DEBUG: ID do projeto acessível não encontrado na proposta premium. Carregando apenas a proposta premium.");
+        // Não há proposta acessível vinculada. Não faz nada, apenas a premium será retornada.
     }
-
-    console.log('DEBUG: Objeto final `dadosProposta`:', dadosProposta);
-    console.log('--- FIM DA EXECUÇÃO: buscarETratarProposta ---\n');
 
     return { sucesso: true, dados: dadosProposta };
 }
@@ -537,8 +486,6 @@ export async function atualizarStatusVisualizacao(dados) {
         const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
         const endpoint = `/projects/${dados.propostaId}`;
         const body = { description: novaDescricao };
-
-        console.log('DEBUG: Dados enviados para atualizar status:', body);
 
         const respostaApi = await patch(endpoint, body);
         if (respostaApi.sucesso) {

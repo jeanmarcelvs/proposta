@@ -9,7 +9,6 @@ function atualizarEstadoBotao(estado, mensagem = '') {
     const mensagemFeedback = document.getElementById('mensagem-feedback');
 
     if (!btnConsultar || !numeroProjetoInput || !primeiroNomeInput || !mensagemFeedback) {
-        console.error("ERRO: Elementos HTML do formulário não encontrados.");
         return;
     }
 
@@ -110,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const primeiroNomeInput = document.getElementById('primeiro-nome');
 
     if (!form || !numeroProjetoInput || !primeiroNomeInput) {
-        console.error("ERRO: O formulário ou seus elementos não foram encontrados.");
         return;
     }
 
@@ -176,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const primeiroNomeInput = document.getElementById('primeiro-nome');
 
     if (!form || !numeroProjetoInput || !primeiroNomeInput) {
-        console.error("ERRO: O formulário ou seus elementos não foram encontrados.");
         return;
     }
 

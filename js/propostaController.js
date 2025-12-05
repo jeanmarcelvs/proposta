@@ -2,14 +2,23 @@ import { buscarETratarProposta, atualizarStatusVisualizacao, validarValidadeProp
 
 // Funções para o novo loading-overlay
 function mostrarLoadingOverlay() {
-    const overlay = document.getElementById('loading-overlay');
+    // CORREÇÃO: Usa querySelector para pegar o elemento pela CLASSE.
+    const overlay = document.querySelector('.loading-overlay');
+    const mainContent = document.querySelector('main');
+
+    if (mainContent) {
+        mainContent.classList.add('main-oculto');
+        mainContent.classList.remove('main-visivel');
+    }
+
     if (overlay) {
         overlay.classList.remove('oculto');
     }
 }
 
 function esconderLoadingOverlay() {
-    const overlay = document.getElementById('loading-overlay');
+    // CORREÇÃO: Usa querySelector para pegar o elemento pela CLASSE.
+    const overlay = document.querySelector('.loading-overlay');
     const mainContent = document.querySelector('main');
 
     if (mainContent) {
@@ -25,45 +34,64 @@ function esconderLoadingOverlay() {
 // FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
 // FUNÇÃO CORRIGIDA: Gerencia as imagens de equipamentos de forma inteligente
 function atualizarImagemEquipamentos(proposta) {
-    let imagemEquipamentos;
+    return new Promise((resolve, reject) => {
+        let imagemEquipamentos;
+        const isVE = proposta.tipoVisualizacao === 've';
 
-    // Acessa o elemento HTML baseado no tipo de visualização da proposta
-    if (proposta.tipoVisualizacao === 've') {
-        imagemEquipamentos = document.getElementById('imagem-marca-ve');
-    } else {
-        imagemEquipamentos = document.getElementById('imagem-marca-equipamento');
-    }
-
-    if (!imagemEquipamentos) {
-        console.warn(`AVISO: Elemento de imagem para equipamentos não encontrado.`);
-        return;
-    }
-
-    // Lógica para carregar a imagem da marca
-    if (proposta.tipoVisualizacao === 've') {
-        imagemEquipamentos.src = proposta.equipamentos?.imagem || '';
-        console.log("DEBUG: Imagem de marca de VE preenchida com sucesso.");
-    } else if (proposta.tipoVisualizacao === 'solar') {
-        if (proposta.tipo === 'premium') {
-            imagemEquipamentos.src = 'imagens/huawei.webp';
-            console.log("DEBUG: Imagem de marca SOLAR (PREMIUM) preenchida com sucesso.");
-        } else if (proposta.tipo === 'acessivel') {
-            imagemEquipamentos.src = 'imagens/auxsolar.webp';
-            console.log("DEBUG: Imagem de marca SOLAR (+ACESSÍVEL) preenchida com sucesso.");
+        // 1. Acessa o elemento HTML
+        if (isVE) {
+            // Para propostas VE, o elemento pode não existir, então não tratamos como erro.
+            imagemEquipamentos = document.getElementById('imagem-marca-ve');
         } else {
-            console.warn("AVISO: Tipo de proposta solar desconhecido para carregar a imagem de marca.");
-            imagemEquipamentos.src = '';
+            imagemEquipamentos = document.getElementById('imagem-marca-equipamento');
         }
-    }
-}
 
-function atualizarImagemInstalacao(proposta) {
-    const imagemInstalacao = document.getElementById('imagem-instalacao');
-    if (!imagemInstalacao) {
-        console.error("ERRO: Elemento com ID 'imagem-instalacao' não encontrado.");
-        return;
-    }
-    imagemInstalacao.src = proposta.instalacao?.imagem || '';
+        if (!imagemEquipamentos) {
+            return resolve(); // Resolve a promise se o elemento não existe, para não travar a aplicação.
+        }
+
+        // 2. Define o caminho da imagem
+        let imageUrl = '';
+        if (isVE) {
+            imageUrl = proposta.equipamentos?.imagem || '';
+        } else if (proposta.tipoVisualizacao === 'solar') {
+            if (proposta.tipo === 'premium') {
+                imageUrl = 'imagens/huawei.webp';
+            } else if (proposta.tipo === 'acessivel') {
+                imageUrl = 'imagens/auxsolar.webp';
+            }
+        }
+
+        // Se a URL não mudou e não está vazia, resolve imediatamente.
+        if (imagemEquipamentos.src && imagemEquipamentos.src.endsWith(imageUrl) && imageUrl !== '') {
+            return resolve();
+        }
+
+        // 3. Define os Handlers (Load e Error)
+        const handleLoad = () => {
+            imagemEquipamentos.removeEventListener('load', handleLoad);
+            imagemEquipamentos.removeEventListener('error', handleError);
+            resolve(); // Resolve a Promise com sucesso
+        };
+
+        const handleError = () => {
+            console.error(`ERRO: Falha ao carregar a imagem de marca: ${imageUrl}`);
+            imagemEquipamentos.removeEventListener('load', handleLoad);
+            imagemEquipamentos.removeEventListener('error', handleError);
+            reject(new Error('Falha no carregamento da imagem de marca.')); // Rejeita a Promise com erro
+        };
+
+        imagemEquipamentos.addEventListener('load', handleLoad);
+        imagemEquipamentos.addEventListener('error', handleError);
+
+        // 4. Inicia o Carregamento
+        imagemEquipamentos.src = imageUrl;
+
+        // 5. Verificação de Cache (Robusta)
+        if (imagemEquipamentos.complete && imagemEquipamentos.naturalWidth !== 0) {
+            setTimeout(handleLoad, 10);
+        }
+    });
 }
 
 function atualizarEtiquetasDinamicas(tipo) {
@@ -77,7 +105,6 @@ function atualizarEtiquetasDinamicas(tipo) {
 function preencherDetalhesInstalacao(proposta) {
     const secaoDetalhes = document.getElementById('detalhes-instalacao');
     if (!secaoDetalhes) {
-        console.warn("AVISO: Elemento 'detalhes-instalacao' não encontrado. Não é possível preencher.");
         return;
     }
 
@@ -85,7 +112,6 @@ function preencherDetalhesInstalacao(proposta) {
     const detalhes = proposta.instalacao?.detalhesInstalacao;
 
     if (!detalhes || detalhes.length === 0) {
-        console.warn("AVISO: Detalhes da instalação não encontrados na proposta.");
         secaoDetalhes.innerHTML = '<p>Nenhum detalhe de instalação disponível.</p>';
         return;
     }
@@ -99,19 +125,14 @@ function preencherDetalhesInstalacao(proposta) {
         `;
         secaoDetalhes.appendChild(div);
     });
-
-    console.log("DEBUG: Detalhes de instalação preenchidos com sucesso.");
 }
 
 // --- FUNÇÃO CENTRAL DE PREENCHIMENTO ATUALIZADA ---
 function preencherDadosProposta(dados) {
-    console.log("DEBUG: Iniciando preenchimento dos dados da proposta. Conteúdo recebido:", dados);
-
     try {
         const isVE = dados.tipoVisualizacao === 've';
         
         // 1. Dados do Cliente
-        console.log("DEBUG: Preenchendo dados do cliente...");
         const nomeClienteEl = document.getElementById('nome-cliente');
         const nomeCompleto = dados.cliente || "Não informado";
         let nomeCurto = nomeCompleto;
@@ -131,10 +152,8 @@ function preencherDadosProposta(dados) {
 
         const dataPropostaEl = document.getElementById('data-proposta');
         if (dataPropostaEl) dataPropostaEl.innerText = dados.dataProposta || "Não informado";
-        console.log("DEBUG: Dados do cliente preenchidos com sucesso.");
         
         // 2. Sistema Proposto (Lógica adaptada para VE e Solar)
-        console.log("DEBUG: Preenchendo dados do sistema...");
         const geracaoMediaEl = document.getElementById('geracao-media');
         const unidadeGeracaoEl = document.getElementById('unidade-geracao');
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
@@ -171,10 +190,8 @@ function preencherDadosProposta(dados) {
             }
             if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'R$ 0,00';
         }
-        console.log("DEBUG: Dados do sistema preenchidos com sucesso.");
 
         // 3. Equipamentos (Lógica adaptada para VE e Solar)
-        console.log("DEBUG: Preenchendo dados dos equipamentos...");
         const tituloEquipamentosEl = document.getElementById('titulo-equipamentos');
         const descricaoInversorEl = document.getElementById('descricao-inversor');
         const quantidadeInversorEl = document.getElementById('quantidade-inversor');
@@ -198,10 +215,8 @@ function preencherDadosProposta(dados) {
             if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
             if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
         }
-        console.log("DEBUG: Dados de equipamentos preenchidos com sucesso.");
 
         // 4. Valores Finais e Financiamento (Lógica adaptada para VE e Solar)
-        console.log("DEBUG: Preenchendo valores financeiros...");
         const valorTotalEl = document.getElementById('valor-total');
         const paybackContainer = document.getElementById('payback-container');
         const financiamentoContainer = document.getElementById('financiamento-container');
@@ -228,7 +243,6 @@ function preencherDadosProposta(dados) {
                 if (elementoParcela) {
                     elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
                 } else {
-                    console.warn(`AVISO: Elemento de parcela '${parcelaKey}' não encontrado.`);
                 }
                 const elementoTaxa = document.getElementById(`taxa-${n}`);
                 if (elementoTaxa) {
@@ -236,10 +250,8 @@ function preencherDadosProposta(dados) {
                 }
             });
         }
-        console.log("DEBUG: Valores financeiros e financiamento preenchidos com sucesso.");
 
         // 5. Observações e Validade
-        console.log("DEBUG: Preenchendo observações e validade...");
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
         const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
@@ -261,7 +273,6 @@ function preencherDadosProposta(dados) {
                 iconeResumoEl.classList.remove('fa-circle-check');
             }
         }
-        console.log("DEBUG: Observações, validade e resumo de instalação preenchidos com sucesso.");
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
     }
@@ -292,6 +303,148 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnAcessivel = document.getElementById('btn-acessivel');
     const btnVoltar = document.querySelector('.btn-voltar-proposta');
 
+    // =================================================================
+    // 🌟 REESTRUTURAÇÃO: Variáveis do Carrossel e Modal (Corrigindo ReferenceError)
+    // =================================================================
+    const installationImage = document.getElementById('imagem-instalacao');
+    const prevImageBtn = document.getElementById('prev-image-btn');
+    const nextImageBtn = document.getElementById('next-image-btn');
+
+    // Elementos do MODAL (Popup)
+    const modalCarrossel = document.getElementById('modal-carrossel');
+    const imagemModal = document.getElementById('imagem-modal');
+    const fecharModalBtn = document.getElementById('fechar-modal-btn');
+    const prevModalBtn = document.getElementById('prev-modal-btn');
+    const nextModalBtn = document.getElementById('next-modal-btn');
+
+    const imagePaths = {
+        premium: [
+            'imagens/instalacao-premium.webp',
+            'imagens/inst_premium_1.webp',
+            'imagens/inst_premium_2.webp',
+            'imagens/inst_premium_3.webp'
+        ],
+        acessivel: [
+            'imagens/instalacao-acessivel.webp',
+            'imagens/inst_acessível_1.webp',
+            'imagens/inst_acessível_2.webp',
+            'imagens/inst_acessível_3.webp'
+        ]
+    };
+
+    let currentProposalType = 'premium';
+    let currentImageIndex = 0;
+    const preloadedImages = {};
+
+    // =================================================================
+    // 🌟 FUNÇÕES DO CARROSSEL E MODAL
+    // =================================================================
+
+    function showImage(index) {
+        return new Promise((resolve) => { // AGORA RETORNA UMA PROMISE!
+            const currentImageSet = imagePaths[currentProposalType];
+            if (!currentImageSet || currentImageSet.length === 0) return resolve(); // Se não houver imagens, resolve imediatamente.
+
+            currentImageIndex = (index + currentImageSet.length) % currentImageSet.length;
+            const imageUrl = currentImageSet[currentImageIndex];
+
+            // Transição suave ao trocar a imagem
+            if (installationImage) installationImage.style.opacity = '0.5';
+
+            // Remove quaisquer listeners anteriores para evitar múltiplas execuções
+            if (installationImage._handleLoad) {
+                installationImage.removeEventListener('load', installationImage._handleLoad);
+                installationImage.removeEventListener('error', installationImage._handleError);
+            }
+
+            // Define os handlers (usando arrow functions para manter o 'this' implícito para o resolve)
+            const handleLoad = () => {
+                if (installationImage) installationImage.style.opacity = '1';
+                installationImage.removeEventListener('load', handleLoad);
+                installationImage.removeEventListener('error', handleError);
+                resolve(); // 👈🏼 RESOLVE A PROMISE AQUI!
+            };
+
+            const handleError = () => {
+                console.error("ERRO: Falha ao carregar a imagem:", imageUrl);                
+                if (installationImage) installationImage.style.opacity = '1'; // Mostra mesmo se quebrar
+                installationImage.removeEventListener('load', handleLoad);
+                installationImage.removeEventListener('error', handleError);
+                resolve(); // 👈🏼 RESOLVE A PROMISE MESMO COM ERRO para não travar o app.
+            };
+
+            // Armazena os handlers no elemento
+            installationImage._handleLoad = handleLoad;
+            installationImage._handleError = handleError;
+
+            // 2. Anexa os Event Listeners ANTES de mudar o src
+            installationImage.addEventListener('load', handleLoad);
+            installationImage.addEventListener('error', handleError);
+
+            // 3. Inicia o Carregamento
+            installationImage.src = imageUrl;
+
+            // 4. VERIFICAÇÃO DE CACHE ROBUSTA
+            if (installationImage.complete && installationImage.naturalWidth !== 0) {
+                setTimeout(handleLoad, 10);
+            }
+
+            // Atualiza a visibilidade dos botões de navegação.
+            const showNav = currentImageSet.length > 1;
+            prevImageBtn.classList.toggle('oculto', !showNav);
+            nextImageBtn.classList.toggle('oculto', !showNav);
+        });
+    }
+
+    function switchProposalType(type) {
+        if (currentProposalType === type && installationImage.src) return Promise.resolve(); // Adiciona Promise
+        currentProposalType = type;
+        return showImage(0); // Retorna a Promise de showImage
+    }
+
+    function mostrarModal() {
+        if (modalCarrossel) {
+            modalCarrossel.classList.remove('oculto');
+            document.body.classList.add('modal-aberta'); // Bloqueia o scroll de fundo
+        }
+    }
+
+    function esconderModal() {
+        if (modalCarrossel) {
+            modalCarrossel.classList.add('oculto');
+            document.body.classList.remove('modal-aberta');
+        }
+    }
+
+    // Adaptação da função showImage para o Modal
+    function showImageInModal(index) {
+        const currentImageSet = imagePaths[currentProposalType];
+        if (!currentImageSet || currentImageSet.length === 0) return;
+
+        currentImageIndex = (index + currentImageSet.length) % currentImageSet.length;
+        const imageUrl = currentImageSet[currentImageIndex];
+
+        // Aqui usamos a imagem do modal
+        if (imagemModal) imagemModal.src = imageUrl;
+
+        // Atualiza a visibilidade dos botões de navegação do modal
+        const showNav = currentImageSet.length > 1;
+        if (prevModalBtn) prevModalBtn.classList.toggle('oculto', !showNav);
+        if (nextModalBtn) nextModalBtn.classList.toggle('oculto', !showNav);
+    }
+
+    // Inicia o pré-carregamento em segundo plano
+    Object.values(imagePaths).flat().forEach(url => {
+        if (!preloadedImages[url]) {
+            const img = new Image();
+            img.src = url;
+            preloadedImages[url] = img;
+        }
+    });
+    // =================================================================
+    // 🚦 INÍCIO DA LÓGICA DE CARREGAMENTO DA PÁGINA
+    // =================================================================
+
     if (numeroProjeto && primeiroNome) {
         try {
             const propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
@@ -316,21 +469,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Lógica para esconder o seletor quando é uma proposta VE
             if (propostaData.premium.tipoVisualizacao === 've' && seletorTipoProposta) {
                 seletorTipoProposta.classList.add('oculto');
-                console.warn("Proposta de VE, seletor de proposta ocultado.");
             } else if (seletorTipoProposta) {
                 if (temPropostaAcessivelValida) {
                     seletorTipoProposta.classList.remove('oculto');
                 } else {
                     seletorTipoProposta.classList.add('oculto');
-                    console.warn("Apenas uma proposta encontrada. Os botões de alternância foram ocultados.");
                 }
             }
             
             // Lógica unificada para preenchimento dos dados
             const propostaInicial = propostaData.premium;
             preencherDadosProposta(propostaInicial);
-            atualizarImagemEquipamentos(propostaInicial);
-            atualizarImagemInstalacao(propostaInicial);
+            await atualizarImagemEquipamentos(propostaInicial);
             preencherDetalhesInstalacao(propostaInicial);
             atualizarEtiquetasDinamicas('premium');
             document.body.classList.add('theme-premium');
@@ -342,6 +492,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
             await atualizarStatusVisualizacao(dadosVisualizacao);
 
+            // 🌟 CORREÇÃO: Inicia e ESPERA a imagem do carrossel carregar antes de prosseguir para o 'finally'
+            await showImage(0); 
+
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
             window.location.href = 'index.html?erro=acesso-negado';
@@ -352,51 +505,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = 'index.html?erro=parametros-ausentes';
     }
 
+    // =================================================================
+    // 🖱️ EVENT LISTENERS
+    // =================================================================
+    if (nextImageBtn) nextImageBtn.addEventListener('click', () => showImage(currentImageIndex + 1));
+    if (prevImageBtn) prevImageBtn.addEventListener('click', () => showImage(currentImageIndex - 1));
+
+
     if (btnPremium) {
-        btnPremium.addEventListener('click', () => {
+        btnPremium.addEventListener('click', async () => {
             if (btnPremium.classList.contains('selecionado')) {
                 return;
             }
             mostrarLoadingOverlay();
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.premium) {
-                preencherDadosProposta(propostas.premium);
-                atualizarImagemEquipamentos(propostas.premium);
-                atualizarEtiquetasDinamicas('premium');
-                atualizarImagemInstalacao(propostas.premium);
-                preencherDetalhesInstalacao(propostas.premium);
-                document.body.classList.remove('theme-acessivel');
-                document.body.classList.add('theme-premium');
-                btnPremium.classList.add('selecionado');
-                if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
+                try {
+                    preencherDadosProposta(propostas.premium);
+                    atualizarEtiquetasDinamicas('premium');
+                    await switchProposalType('premium');
+                    preencherDetalhesInstalacao(propostas.premium);
+                    await atualizarImagemEquipamentos(propostas.premium); // Espera a imagem carregar
+                    document.body.classList.remove('theme-acessivel');
+                    document.body.classList.add('theme-premium');
+                    btnPremium.classList.add('selecionado');
+                    if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
+                } catch (error) {
+                    console.error("ERRO ao trocar para proposta Premium:", error);
+                } finally {
+                    esconderLoadingOverlay(); // Esconde o overlay após tudo, incluindo a imagem
+                }
             } else {
                 console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
+                esconderLoadingOverlay();
             }
-            setTimeout(() => esconderLoadingOverlay(), 400);
         });
     }
 
     if (btnAcessivel) {
-        btnAcessivel.addEventListener('click', () => {
+        btnAcessivel.addEventListener('click', async () => {
             if (btnAcessivel.classList.contains('selecionado')) {
                 return;
             }
             mostrarLoadingOverlay();
             const propostas = JSON.parse(localStorage.getItem('propostaData'));
             if (propostas && propostas.acessivel) {
-                preencherDadosProposta(propostas.acessivel);
-                atualizarImagemEquipamentos(propostas.acessivel);
-                atualizarEtiquetasDinamicas('acessivel');
-                atualizarImagemInstalacao(propostas.acessivel);
-                preencherDetalhesInstalacao(propostas.acessivel);
-                document.body.classList.add('theme-acessivel');
-                document.body.classList.remove('theme-premium');
-                btnAcessivel.classList.add('selecionado');
-                if (btnPremium) btnPremium.classList.remove('selecionado');
+                try {
+                    preencherDadosProposta(propostas.acessivel);
+                    atualizarEtiquetasDinamicas('acessivel');
+                    await switchProposalType('acessivel');
+                    preencherDetalhesInstalacao(propostas.acessivel);
+                    await atualizarImagemEquipamentos(propostas.acessivel); // Espera a imagem carregar
+                    document.body.classList.add('theme-acessivel');
+                    document.body.classList.remove('theme-premium');
+                    btnAcessivel.classList.add('selecionado');
+                    if (btnPremium) btnPremium.classList.remove('selecionado');
+                } catch (error) {
+                    console.error("ERRO ao trocar para proposta Acessível:", error);
+                } finally {
+                    esconderLoadingOverlay(); // Esconde o overlay após tudo, incluindo a imagem
+                }
             } else {
                 console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
+                esconderLoadingOverlay();
             }
-            setTimeout(() => esconderLoadingOverlay(), 400);
         });
     }
 
@@ -409,4 +581,50 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 500);
         });
     }
+
+    // --- Event Listeners do Carrossel e Modal ---
+
+    // 1. Abertura do Modal ao clicar na imagem
+    if (installationImage) {
+        installationImage.style.cursor = 'pointer'; // Dá uma dica visual
+        installationImage.addEventListener('click', () => {
+            // Abre o modal na imagem que estava sendo visualizada na página principal
+            showImageInModal(currentImageIndex);
+            mostrarModal();
+        });
+    }
+
+    // 2. Navegação no Modal
+    if (nextModalBtn) {
+        nextModalBtn.addEventListener('click', () => {
+            showImageInModal(currentImageIndex + 1);
+        });
+    }
+
+    if (prevModalBtn) {
+        prevModalBtn.addEventListener('click', () => {
+            showImageInModal(currentImageIndex - 1);
+        });
+    }
+
+    // 3. Fechar Modal
+    if (fecharModalBtn) {
+        fecharModalBtn.addEventListener('click', esconderModal);
+    }
+
+    // Fechar Modal ao clicar fora
+    if (modalCarrossel) {
+        modalCarrossel.addEventListener('click', (e) => {
+            if (e.target === modalCarrossel) {
+                esconderModal();
+            }
+        });
+    }
+
+    // Fechar Modal com ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalCarrossel && !modalCarrossel.classList.contains('oculto')) {
+            esconderModal();
+        }
+    });
 });

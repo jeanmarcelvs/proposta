@@ -13,9 +13,8 @@
 <body>
     <div class="background-animation"></div>
 
-    <div id="loading-overlay" class="loading-overlay oculto">
-        <img id="splash-logo" src="imagens/logo-belenergy.png" alt="Logo da GDIS">
-        <div class="loading-bar"></div>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
     </div>
 
 
@@ -117,8 +116,10 @@
         <section id="secao-instalacao" class="secao-principal">
             <h2 class="titulo-secao">Padrão de Instalação</h2>
             <div class="conteudo-instalacao">
-                <div class="imagem-instalacao">
-                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação">
+                <div class="imagem-instalacao-container">
+                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação" class="current-installation-image">
+                    <button id="prev-image-btn" class="carousel-nav-btn prev-btn oculto"><i class="fas fa-chevron-left"></i></button>
+                    <button id="next-image-btn" class="carousel-nav-btn next-btn oculto"><i class="fas fa-chevron-right"></i></button>
                 </div>
                 <div id="detalhes-instalacao" class="detalhes-instalacao">
                 </div>
@@ -247,13 +248,25 @@
             </a>
             
             <a href="https://www.instagram.com/belenus_ltda/" target="_blank" rel="noopener noreferrer" class="footer-contact-item">
-                <i class="fab fa-instagram"></i> belenus
+                <i class="fab fa-instagram"></i> BelEnergy
             </a>
         </div>
     </footer>
 
     <script type="module" src="js/propostaController.js"></script>
     <script async src="//www.instagram.com/embed.js"></script>
+
+    <!-- Estrutura do Modal/Popup para o Carrossel de Imagens -->
+    <div id="modal-carrossel" class="modal-overlay oculto">
+        <div class="modal-conteudo">
+            <button id="fechar-modal-btn" class="fechar-modal-btn">&times;</button>
+            <div class="carrossel-modal">
+                <img id="imagem-modal" src="" alt="Padrão de Instalação em Tamanho Real">
+                <button id="prev-modal-btn" class="nav-modal-btn left"><i class="fas fa-chevron-left"></i></button>
+                <button id="next-modal-btn" class="nav-modal-btn right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
