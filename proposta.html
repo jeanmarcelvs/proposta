@@ -139,12 +139,6 @@
                         data-instgrm-permalink="https://www.instagram.com/reel/DKKVdw6yUyx/?utm_source=ig_embed&amp;utm_campaign=loading"
                         data-instgrm-version="14"></blockquote>
                 </div>
-                <!-- Vídeo 2 -->
-                <div class="video-somente-container">
-                    <blockquote class="instagram-media" data-instgrm-captioned
-                        data-instgrm-permalink="https://www.instagram.com/reel/DPMN5E8jc0C/?utm_source=ig_embed&amp;utm_campaign=loading"
-                        data-instgrm-version="14"></blockquote>
-                </div>
                 <!-- Vídeo 3 -->
                 <div class="video-somente-container">
                     <blockquote class="instagram-media" data-instgrm-captioned
@@ -273,6 +267,17 @@
 
     <script type="module" src="js/propostaController.js"></script>
     <script async src="//www.instagram.com/embed.js"></script>
+
+    <!-- Script para forçar o recarregamento dos vídeos do Instagram -->
+    <script>
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                if (window.instgrm) {
+                    window.instgrm.Embeds.process();
+                }
+            }, 1000); // Aguarda 1 segundo para garantir que tudo carregou
+        });
+    </script>
 
     <!-- Estrutura do Modal/Popup para o Carrossel de Imagens -->
     <div id="modal-carrossel" class="modal-overlay oculto">
