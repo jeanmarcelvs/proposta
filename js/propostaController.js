@@ -87,7 +87,7 @@ function atualizarImagemEquipamentos(proposta) {
 
 function atualizarEtiquetasDinamicas(tipo) {
     const etiquetas = document.querySelectorAll('.etiqueta-proposta-dinamica:not(.etiqueta-a-vista)');
-    const texto = tipo === 'premium' ? 'Premium' : '+Acessível';
+    const texto = tipo === 'premium' ? 'Premium' : 'Standard';
     etiquetas.forEach(etiqueta => {
         etiqueta.innerText = texto;
     });
@@ -250,7 +250,7 @@ function preencherDadosProposta(dados) {
 
         // NOVO: Atualiza o destaque do título da seção de instalação
         const tipoInstalacaoDestaqueEl = document.getElementById('tipo-instalacao-destaque');
-        if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.innerText = dados.tipo === 'premium' ? 'Premium' : 'Básico';
+        if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.innerText = dados.tipo === 'premium' ? 'Premium' : 'Standard';
 
         if (observacaoEl) {
             observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
