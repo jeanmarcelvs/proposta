@@ -77,18 +77,42 @@ const caminhosImagens = {
 // Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
 // ATUALIZADO: Foco em Risco Zero, Durabilidade e Padrão Industrial.
 const detalhesInstalacaoPremium = [
-    { icone: 'fa-box-open', titulo: 'Infraestrutura Metálica: Feita para Durar', texto: 'Eletrocalhas galvanizadas em metal robusto garantem a proteção física total do cabeamento e, por gestão térmica, **auxiliam na dissipação de calor**, minimizando a dilatação e folga das conexões.' },
-    { icone: 'fa-shield-alt', titulo: 'Sistema de Proteção Elétrica Coordenada', texto: 'Proteção robusta com sistemas de proteção dedicados, garantindo a **proteção total do sistema de geração e de toda a instalação elétrica interna do imóvel** contra anomalias da rede pública.' },
-    { icone: 'fa-wrench', titulo: 'Instalação Padrão Ouro', texto: 'Cabos, conexões e quadros organizados e selados, o que minimiza o risco de falhas elétricas, devido por exemplo à entrada de umidade, resultando em um **sistema mais seguro e mais estável** ao longo de sua vida útil.' },
-    { icone: 'fa-dollar-sign', titulo: 'Custo Real Baixo no Longo Prazo', texto: 'O investimento em durabilidade e segurança agora resulta em um **menor custo total de operação** do sistema, pois a infraestrutura reduz a necessidade de reparos e ajustes corretivos no futuro.' }
+    {
+        icone: 'fa-industry',
+        titulo: 'Infraestrutura Metálica: Blindagem, Dissipação e Estabilidade',
+        texto: 'Utilização de eletrocalhas galvanizadas robustas e perfuradas. O metal padronizadamente perfurado oferece **blindagem eletromagnética (EMI)** e alta dissipação de calor, o que **reduz perdas por Efeito Joule (perda de energia devido ao aquecimento excessivo do cabeamento e conexões)**. A estabilidade térmica é crucial para **minimizar a dilatação e folga** das conexões, garantindo a integridade do sistema por longo prazo.'
+    },
+    {
+        icone: 'fa-shield-alt',
+        titulo: 'Sistema de Proteção Elétrica Coordenada e Robusta',
+        texto: 'Sistema de proteção dedicado e coordenado em múltiplos estágios que atua para proteger o sistema de geração e reforçar as proteções existentes da instalação interna do imóvel. O foco é na **máxima segurança** e na **redução de paradas** causadas por surtos e anomalias da rede pública de energia.'
+    },
+    {
+        icone: 'fa-box-open',
+        titulo: 'Quadros com Proteção IP65: Isolamento Total de Componentes',
+        texto: 'Utilização de quadros elétricos com **Proteção IP65**, que garante o **isolamento total** dos dispositivos de proteção contra poeira e jatos d\'água. Isso é vital para **minimizar a oxidação e a penetração de umidade nas conexões,** prolongando a vida útil de todo o sistema.'
+    },
+    {
+        icone: 'fa-dollar-sign',
+        titulo: 'Durabilidade: Menor Custo de Manutenção no Longo Prazo',
+        texto: 'O investimento superior em materiais e infraestrutura robusta garante um **sistema de alta durabilidade**. Isso se traduz em um benefício direto para você: **custos de manutenção e reparos significativamente menores** ao longo dos anos. Um menor número de paradas e a menor necessidade de manutenção torna o investimento mais econômico ao longo de sua vida útil.'
+    }
 ];
 
 // Detalhes de instalação fixos para a proposta Acessível (dados corrigidos)
 // ATUALIZADO: Foco em Viabilidade, Economia Imediata e Acompanhamento.
 const detalhesInstalacaoAcessivel = [
-    { icone: 'fa-dollar-sign', titulo: 'Investimento Inicial Reduzido', texto: 'Configuração que prioriza o custo mais baixo inicialmente.' },
-    { icone: 'fa-bolt', titulo: 'Proteção Limitada e Focada no Inversor', texto: 'O sistema conta somente com as proteções internas que acompanham o Inversor. A ausência de sistemas de proteção coordenados e dedicados (externos) deixa o sistema de geração e os aparelhos elétricos do imóvel vulneráveis a surtos e anomalias provenientes da rede pública de energia.' },
-    { icone: 'fa-search', titulo: 'Exige Manutenção Ativa e Custo Recorrente', texto: 'A infraestrutura mais simples (PVC) está sujeita a um desgaste mais rápido devido à mudança de temperatura. Além de não promover dissipação de calor para os cabos e conexões. Este fato aumenta a probabilidade de folgas, pontos quentes e desarmes indesejados, que interrompem a geração e geram custos extras com reparos.' }
+    {
+        icone: 'fa-dollar-sign',
+        titulo: 'Solução Ideal para Baixo Investimento Inicial',
+        texto: 'Esta é a opção perfeita para quem busca um **investimento inicial mais baixo**, garantindo a funcionalidade básica de geração de energia. Este padrão, devido à sua **natureza mais simplificada**, é ideal para **residências que possuem um local de instalação ventilado (arejado)** e onde não haja a presença de equipamentos industriais/pesados que possam gerar interferências eletromagnéticas significativas.'
+    },
+    
+    {
+        icone: 'fa-home',
+        titulo: 'Infraestrutura Mais Leve: Estética Residencial',
+        texto: 'Utilização de Infraestrutura mais leve. É uma escolha de infraestrutura **visual e esteticamente mais discreta** para o ambiente residencial.'
+    }
 ];
 
 // NOVO: Resumos para a seção de instalação
@@ -360,7 +384,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     instalacao = {
         imagem: isVE ? caminhosImagens.ve.instalacao[tipoProposta] : caminhosImagens.solar.instalacao[tipoProposta],
         detalhesInstalacao: isVE ? (tipoProposta === 'premium' ? detalhesInstalacaoPremiumVE : detalhesInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
-        resumoInstalacao: isVE ? (tipoProposta === 'premium' ? resumoInstalacaoPremiumVE : resumoInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel)
+        resumoInstalacao: (tipoProposta === 'premium') ? (isVE ? resumoInstalacaoPremiumVE : resumoInstalacaoPremium) : '' // Oculta o resumo para propostas acessíveis
     };
     valores = {
         valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
@@ -440,52 +464,65 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     dadosProposta.premium = null;
     dadosProposta.acessivel = null;
 
+    // NOVO: Determina o tipo da proposta principal (Premium ou Basic/Acessível)
+    const tipoPropostaPrincipal = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cape_padrao_instalacao');
     const idProjetoAcessivel = extrairValorVariavelPorChave(propostaPrincipal.variables, 'vc_projeto_acessivel');
 
-    if (idProjetoAcessivel && idProjetoAcessivel > 0) {
-        // Cenário 1: A proposta principal é uma Premium que referencia uma Acessível
+    // Cenário 1: A proposta principal é PREMIUM e tem uma proposta acessível vinculada.
+    if (tipoPropostaPrincipal === 'PREMIUM' && idProjetoAcessivel && idProjetoAcessivel > 0) {
         const propostaPremiumTratada = tratarDadosParaProposta(dadosApiPrincipal, 'premium', selicAtual);
         if (!propostaPremiumTratada) {
-            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium (principal).' };
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
         }
         dadosProposta.premium = propostaPremiumTratada;
 
+        // Busca a proposta acessível vinculada
         const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
         const dadosApiAcessivel = await get(endpointAcessivel);
 
         if (dadosApiAcessivel.sucesso) {
-            // Cria um objeto temporário para a verificação de validade da proposta acessível
             const propostaParaValidarAcessivel = {
-                dataExpiracao: dadosApiAcessivel.dados.data.expirationDate // Correção: usar dadosApiAcessivel.dados.data
+                dataExpiracao: dadosApiAcessivel.dados.data.expirationDate
             };
 
-            // Valida a data de expiração da proposta acessível
             if (validarValidadeProposta(propostaParaValidarAcessivel)) {
-                // Se estiver ativa, trata e armazena os dados
                 const propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
                 if (propostaAcessivel) {
                     dadosProposta.acessivel = propostaAcessivel;
                 } else {
-                    console.error("Falha ao processar dados da proposta Acessível vinculada.");
+                    console.warn("Falha ao processar dados da proposta Acessível vinculada.");
                 }
             } else {
                 console.warn("Proposta acessível vinculada expirada.");
             }
         } else {
-            console.error("Falha ao buscar a proposta acessível vinculada.");
+            console.warn("Falha ao buscar a proposta acessível vinculada.");
         }
-    } else {
-        // Cenário 2: A proposta principal NÃO é uma Premium que referencia uma Acessível.
-        // Assumimos que ela é uma proposta Acessível (ou standalone) que deve ser exibida como tal.
+
+    // Cenário 2: A proposta principal é PREMIUM, mas é única (standalone).
+    } else if (tipoPropostaPrincipal === 'PREMIUM') {
+        const propostaPremiumTratada = tratarDadosParaProposta(dadosApiPrincipal, 'premium', selicAtual);
+        if (!propostaPremiumTratada) {
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
+        }
+        dadosProposta.premium = propostaPremiumTratada;
+        // dadosProposta.acessivel permanece null, o que está correto.
+
+    // Cenário 3: A proposta principal é BASIC (Acessível) e é única.
+    } else if (tipoPropostaPrincipal === 'BASIC') {
         const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiPrincipal, 'acessivel', selicAtual);
         if (!propostaAcessivelTratada) {
-            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível (principal).' };
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
         }
         dadosProposta.acessivel = propostaAcessivelTratada;
-        // dadosProposta.premium permanece null, o que é o comportamento desejado neste cenário.
+        // dadosProposta.premium permanece null, o que está correto.
+
+    // Cenário 4: Tipo de proposta desconhecido ou não definido.
+    } else {
+        return { sucesso: false, mensagem: 'Padrão de instalação da proposta não reconhecido (nem PREMIUM, nem BASIC).' };
     }
 
-    // Se nenhuma proposta (nem premium nem acessível) foi definida, algo deu errado.
+    // Validação final: se nenhuma proposta foi carregada, retorna erro.
     if (!dadosProposta.premium && !dadosProposta.acessivel) {
         return { sucesso: false, mensagem: 'Não foi possível carregar nenhuma proposta válida.' };
     }

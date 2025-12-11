@@ -77,6 +77,13 @@ body {
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
+/* --- Classe de Utilidade para Ocultar Elementos --- */
+.oculto {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
 .body-centralizado {
     display: flex;
     justify-content: center;

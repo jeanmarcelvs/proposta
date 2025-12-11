@@ -245,29 +245,31 @@ function preencherDadosProposta(dados) {
         // 5. Observações e Validade
         const observacaoEl = document.getElementById('texto-observacao');
         const validadeEl = document.getElementById('texto-validade');
-        const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
-        const iconeResumoEl = document.getElementById('icone-resumo');
+        const resumoContainerEl = document.getElementById('resumo-instalacao-container');
 
         // NOVO: Atualiza o destaque do título da seção de instalação
         const tipoInstalacaoDestaqueEl = document.getElementById('tipo-instalacao-destaque');
         if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.innerText = dados.tipo === 'premium' ? 'Premium' : 'Standard';
 
-        if (observacaoEl) {
-            observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
-        }
-        if (validadeEl) {
-            validadeEl.innerText = dados.validade || "Não informada";
-        }
-        if (resumoInstalacaoEl && iconeResumoEl) {
-            resumoInstalacaoEl.innerText = dados.instalacao?.resumoInstalacao || "";
-            if (dados.tipo === 'premium') {
-                iconeResumoEl.classList.add('fa-circle-check');
-                iconeResumoEl.classList.remove('fa-triangle-exclamation');
+        if (observacaoEl) observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
+        if (validadeEl) validadeEl.innerText = dados.validade || "Não informada";
+
+        // CORREÇÃO: Oculta todo o container do resumo se não houver texto.
+        if (resumoContainerEl) {
+            const resumoTexto = dados.instalacao?.resumoInstalacao;
+            if (resumoTexto) {
+                resumoContainerEl.classList.remove('oculto');
+                const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
+                const iconeResumoEl = document.getElementById('icone-resumo');
+                if (resumoInstalacaoEl) resumoInstalacaoEl.innerText = resumoTexto;
+                if (iconeResumoEl) {
+                    iconeResumoEl.className = `icone-resumo fas ${dados.tipo === 'premium' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`;
+                }
             } else {
-                iconeResumoEl.classList.add('fa-triangle-exclamation');
-                iconeResumoEl.classList.remove('fa-circle-check');
+                resumoContainerEl.classList.add('oculto');
             }
         }
+
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
     }
@@ -515,12 +517,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             let initialButtonToSelect;
 
             // Determine which proposal to display initially
-            if (propostaData.premium) {
+            // CORREÇÃO: Prioriza a premium, mas se não existir, usa a acessível.
+            if (propostaData.premium && validarValidadeProposta(propostaData.premium)) {
                 propostaParaExibir = propostaData.premium;
                 initialThemeClass = 'theme-premium';
                 initialButtonToSelect = btnPremium;
-            } else if (propostaData.acessivel) {
-                // If no premium, but accessible exists, display accessible
+            } else if (propostaData.acessivel && validarValidadeProposta(propostaData.acessivel)) {
                 propostaParaExibir = propostaData.acessivel;
                 initialThemeClass = 'theme-acessivel';
                 initialButtonToSelect = btnAcessivel;
@@ -542,16 +544,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.body.classList.add(initialThemeClass);
 
             // Gerenciar visibilidade e estado dos botões
-            const hasPremium = !!propostaData.premium;
-            const hasAcessivel = !!propostaData.acessivel;
+            const premiumIsValid = !!propostaData.premium && validarValidadeProposta(propostaData.premium);
+            const acessivelIsValid = !!propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
+            const tipoInstalacaoDestaqueEl = document.getElementById('tipo-instalacao-destaque');
 
             if (seletorTipoProposta) {
-                if (hasPremium && hasAcessivel) {
+                if (premiumIsValid && acessivelIsValid) {
                     seletorTipoProposta.classList.remove('oculto');
+                    // NOVO: Mostra o destaque do título apenas se houver duas propostas
+                    if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.classList.remove('oculto');
                     if (btnPremium) btnPremium.disabled = false;
                     if (btnAcessivel) btnAcessivel.disabled = false;
                 } else {
                     seletorTipoProposta.classList.add('oculto');
+                    // NOVO: Oculta o destaque do título se houver apenas uma proposta
+                    if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.classList.add('oculto');
                 }
             }
 
