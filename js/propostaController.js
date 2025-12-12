@@ -107,12 +107,24 @@ function preencherDetalhesInstalacao(proposta) {
         return;
     }
 
-    detalhes.forEach(item => {
+    // NOVO: Adiciona um título interno à seção de detalhes
+    const tituloDetalhes = document.createElement('h3');
+    tituloDetalhes.className = 'titulo-interno-detalhes';
+    tituloDetalhes.innerText = 'O que está incluso:';
+    secaoDetalhes.appendChild(tituloDetalhes);
+
+    detalhes.forEach(detalhe => {
+        // NOVO: Processa o texto para destacar partes entre asteriscos
+        const textoFormatado = detalhe.texto.replace(/\*\*(.*?)\*\*/g, '<strong class="texto-destaque">$1</strong>');
+
         const div = document.createElement('div');
-        div.className = 'item-detalhe';
+        div.className = 'card-item-detalhe';
+        // NOVO: Estrutura de card com ícone, título e texto
         div.innerHTML = `
-            <i class="fas ${item.icone} icone-detalhe"></i>
-            <p class="texto-detalhe">${item.texto}</p>
+            <div class="icone-container-detalhe">
+                <i class="fas ${detalhe.icone} icone-detalhe"></i>
+            </div>
+            <p class="texto-detalhe">${textoFormatado}</p>
         `;
         secaoDetalhes.appendChild(div);
     });
@@ -319,13 +331,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             'imagens/instalacao-premium.webp',
             'imagens/inst_premium_1.webp',
             'imagens/inst_premium_2.webp',
-            'imagens/inst_premium_3.webp'
+            'imagens/inst_premium_3.webp',
+            'imagens/inst_premium_4.webp',
+            'imagens/mod_1.webp',
+            'imagens/mod_2.webp',
+            'imagens/mod_3.webp'
         ],
         acessivel: [
             'imagens/instalacao-acessivel.webp',
             'imagens/inst_acessível_1.webp',
             'imagens/inst_acessível_2.webp',
-            'imagens/inst_acessível_3.webp'
+            'imagens/inst_acessível_3.webp',
+            'imagens/inst_acessível_4.webp',
+            'imagens/mod_1.webp',
+            'imagens/mod_2.webp',
+            'imagens/mod_3.webp'
         ]
     };
 

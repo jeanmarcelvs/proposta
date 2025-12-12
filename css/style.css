@@ -686,25 +686,51 @@ header {
 
 .detalhes-instalacao {
     flex-grow: 1;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 1.8rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
 }
 
-#resumo-instalacao-container {
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--cor-cartao-borda);
+/* NOVO: Título interno para a lista de detalhes */
+.titulo-interno-detalhes {
+    grid-column: 1 / -1; /* Ocupa toda a largura do grid */
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--cor-texto-principal);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--cor-cartao-borda);
+}
+
+/* NOVO: Estilo para o card de cada item de detalhe */
+.card-item-detalhe {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-    padding-left: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    background-color: transparent;
-    border-left: none;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--cor-fundo-secao);
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 1px solid var(--cor-cartao-borda);
+    box-shadow: 0 4px 15px var(--cor-sombra-leve);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-item-detalhe:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px var(--cor-sombra);
+}
+
+/* NOVO: Container para o ícone */
+.icone-container-detalhe {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--cor-primaria-clara);
+    border-radius: 50%;
 }
 
 .item-detalhe {
@@ -715,14 +741,40 @@ header {
 
 .icone-detalhe {
     font-size: 1.6rem;
-    color: var(--cor-primaria);
+    color: var(--cor-primaria); /* Mantém a cor do ícone */
 }
 
 .texto-detalhe {
-    font-size: 1.1rem;
-    font-weight: 300;
+    font-size: 1rem; /* Levemente menor para caber melhor no card */
+    font-weight: 400;
     color: var(--cor-texto-secundario);
+    line-height: 1.5;
 }
+
+/* NOVO: Estilo para destacar partes do texto dentro dos cards de detalhes */
+.texto-destaque {
+    /* Estilo "marcador de texto" para alto contraste, mantendo na mesma linha */
+    display: inline; /* Garante que o texto permaneça no fluxo normal */
+    padding: 0.2em 0.5em; /* Espaçamento sutil ao redor do texto */
+    margin: 0 0.1em; /* Pequeno espaço lateral para não colar nas outras palavras */
+    background-color: var(--cor-primaria); /* Fundo amarelo sólido */
+    color: #000000; /* Texto preto para máxima legibilidade */
+    border-radius: 5px; /* Bordas levemente arredondadas */
+    font-weight: 500;
+}
+
+#resumo-instalacao-container {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--cor-cartao-borda);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 0;
+    background-color: transparent;
+}
+
 
 .container-financiamento {
     display: flex;
@@ -1355,4 +1407,21 @@ body.modal-aberta {
 
 .nav-modal-btn.oculto {
     display: none;
+}
+
+/* Estilos para as imagens de garantia e ranking */
+.imagem-garantia-container {
+    /* Usa a mesma largura dos vídeos para consistência */
+    width: 324px;
+    max-width: 100%; /* Garante que não ultrapasse a tela em dispositivos menores */
+    margin: 0 auto; /* Centraliza o container */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px var(--cor-sombra-leve);
+}
+
+.imagem-garantia {
+    width: 100%;
+    height: auto; /* Mantém a proporção da imagem */
+    display: block; /* Remove espaços extras abaixo da imagem */
 }
