@@ -78,24 +78,29 @@ const caminhosImagens = {
 // ATUALIZADO: Foco em Risco Zero, Durabilidade e Padrão Industrial.
 const detalhesInstalacaoPremium = [
     {
+        icone: 'fa-user-shield',
+        titulo: '',
+        texto: 'Este padrão foi desenvolvido para clientes que não aceitam risco oculto em instalações elétricas. É a escolha de quem prefere eliminar incertezas técnicas agora para não lidar com falhas, manutenções e correções no futuro.'
+    },
+    {
         icone: 'fa-industry',
-        titulo: 'Infraestrutura Metálica: Blindagem, Dissipação e Estabilidade',
-        texto: 'Utilização de eletrodutos de aço zincado, conforme padrão industrial. O aço oferece **blindagem eletromagnética (EMI)** e alta dissipação de calor, o que **reduz perdas por Efeito Joule (perda de energia devido ao aquecimento excessivo do cabeamento e conexões)**. A estabilidade térmica é crucial para **minimizar a dilatação e folga** das conexões, garantindo a integridade do sistema por longo prazo.'
+        titulo: 'Infraestrutura de Padrão Industrial',
+        texto: 'Infraestrutura metálica dimensionada para operação contínua e estável ao longo dos anos. Esse padrão reduz drasticamente a probabilidade de aquecimento excessivo, degradação de conexões e falhas que costumam surgir após o período de garantia.'
     },
     {
         icone: 'fa-shield-alt',
-        titulo: 'Sistema de Proteção Elétrica Coordenada e Robusta',
-        texto: 'Sistema de proteção dedicado e coordenado em múltiplos estágios que atua para proteger o sistema de geração e reforçar as proteções existentes da instalação interna do imóvel. O foco é na **máxima segurança** e na **redução de paradas** causadas por surtos e anomalias da rede pública de energia.'
+        titulo: 'Proteção Elétrica Coordenada',
+        texto: 'Sistema de proteção projetado para reduzir a exposição do sistema a surtos e distúrbios da rede elétrica. O objetivo é preservar os equipamentos, evitar paradas inesperadas e reduzir perdas silenciosas de desempenho ao longo do tempo.'
     },
     {
         icone: 'fa-box-open',
-        titulo: 'Quadros com Proteção IP65: Isolamento Total de Componentes',
-        texto: 'Utilização de quadros elétricos com **Proteção IP65**, que garante o **isolamento total** dos dispositivos de proteção contra poeira e jatos d\'água. Isso é vital para **minimizar a oxidação e a penetração de umidade nas conexões,** prolongando a vida útil de todo o sistema.'
+        titulo: 'Vedação e Isolamento dos Componentes',
+        texto: 'Componentes instalados com nível de vedação adequado para minimizar a entrada de umidade e poeira, reduzindo processos de oxidação e aumentando a vida útil das conexões elétricas.'
     },
     {
         icone: 'fa-dollar-sign',
-        titulo: 'Durabilidade: Menor Custo de Manutenção no Longo Prazo',
-        texto: 'O investimento superior em materiais e infraestrutura robusta garante um **sistema de alta durabilidade**. Isso se traduz em um benefício direto para você: **custos de manutenção e reparos significativamente menores** ao longo dos anos. Um menor número de paradas e a menor necessidade de manutenção torna o investimento mais econômico ao longo de sua vida útil.'
+        titulo: 'Menor Custo Total ao Longo do Tempo',
+        texto: 'O investimento maior neste padrão reduz a probabilidade de manutenções corretivas, retrabalho e substituição prematura de componentes, tornando o sistema mais previsível e econômico no longo prazo.'
     }
 ];
 
@@ -103,22 +108,28 @@ const detalhesInstalacaoPremium = [
 // ATUALIZADO: Foco em Viabilidade, Economia Imediata e Acompanhamento.
 const detalhesInstalacaoAcessivel = [
     {
-        icone: 'fa-dollar-sign',
-        titulo: 'Solução Ideal para Baixo Investimento Inicial',
-        texto: 'Esta é a opção perfeita para quem busca um **investimento inicial mais baixo**, garantindo a funcionalidade básica de geração de energia. Este padrão, devido à sua **natureza mais simplificada**, é ideal para **residências que possuem um local de instalação ventilado (arejado)** e onde não haja a presença de equipamentos industriais/pesados que possam gerar interferências eletromagnéticas significativas.'
+        icone: 'fa-info-circle',
+        titulo: '',
+        texto: 'O padrão Standard foi desenvolvido com foco exclusivo em reduzir o investimento inicial. Para isso, são adotadas soluções construtivas mais simples e com menor nível de proteção quando comparadas ao padrão Premium.'
     },
-    
     {
         icone: 'fa-home',
-        titulo: 'Infraestrutura Mais Leve: Estética Residencial',
-        texto: 'Utilização de Infraestrutura mais leve. É uma escolha de infraestrutura **visual e esteticamente mais discreta** para o ambiente residencial.'
+        titulo: 'Infraestrutura Simplificada',
+        texto: 'Utilização de infraestrutura adequada ao uso residencial básico. Essa escolha reduz custo inicial, porém não oferece o mesmo nível de robustez, proteção mecânica e durabilidade de soluções de padrão industrial.'
+    },
+    {
+        icone: 'fa-exclamation-triangle',
+        titulo: '',
+        texto: 'Ao optar pelo padrão Standard, o cliente reconhece que esta solução envolve maior exposição a manutenções futuras, menor nível de proteção elétrica e menor previsibilidade de desempenho ao longo da vida útil do sistema.'
     }
 ];
 
 // NOVO: Resumos para a seção de instalação
-const resumoInstalacaoPremium = "O Projeto Premium garante maior segurança ao patrimônio, durabilidade dos equipamentos e eficiência na geração de energia, proporcionando tranquilidade e economia sustentável a longo prazo.";
+const resumoInstalacaoPremium = 
+"Esta proposta não foi criada para competir em preço. Ela foi projetada para reduzir riscos técnicos, aumentar a previsibilidade do sistema e evitar custos futuros decorrentes de falhas, manutenções ou retrabalho. É indicada para quem prefere resolver uma vez e não revisitar o problema.";
 
-const resumoInstalacaoAcessivel = "A opção +Acessível é conhecida no mercado como solução de entrada, com menor investimento inicial. No entanto, demanda manutenções mais frequentes e apresenta redução de eficiência em menos tempo.";
+const resumoInstalacaoAcessivel =
+"Esta proposta é indicada para clientes cujo principal critério de decisão é o menor custo inicial, cientes de que isso implica menor nível de proteção, durabilidade e maior dependência de manutenções futuras.";
 
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
@@ -368,6 +379,18 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         }
     }
 
+    // NOVO: Define os checklists para cada tipo de proposta
+    const checklistPremium = [
+        'Infraestrutura metálica de padrão industrial',
+        'Proteção elétrica coordenada em múltiplos níveis',
+        'Menor risco de manutenção futura'
+    ];
+    const checklistStandard = [
+        'Infraestrutura simplificada de uso residencial',
+        'Proteções básicas',
+        'Maior dependência de manutenção futura'
+    ];
+
     sistema = {
         geracaoMedia: isVE ? `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês` : `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
         unidadeGeracao: 'kWh',
@@ -384,7 +407,8 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     instalacao = {
         imagem: isVE ? caminhosImagens.ve.instalacao[tipoProposta] : caminhosImagens.solar.instalacao[tipoProposta],
         detalhesInstalacao: isVE ? (tipoProposta === 'premium' ? detalhesInstalacaoPremiumVE : detalhesInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
-        resumoInstalacao: (tipoProposta === 'premium') ? (isVE ? resumoInstalacaoPremiumVE : resumoInstalacaoPremium) : '' // Oculta o resumo para propostas acessíveis
+        resumoInstalacao: isVE ? (tipoProposta === 'premium' ? resumoInstalacaoPremiumVE : resumoInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel),
+        checklist: tipoProposta === 'premium' ? checklistPremium : checklistStandard
     };
     valores = {
         valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
@@ -408,7 +432,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         equipamentos,
         instalacao,
         valores,
-        validade: `Proposta válida por até 3 dias corridos ou enquanto houver disponibilidade em estoque.`
+        validade: `Proposta válida por até 3 dias corridos. Após esse prazo, condições técnicas, custos e disponibilidade podem ser reavaliados.`
     };
 
     return retorno;

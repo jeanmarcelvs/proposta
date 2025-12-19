@@ -107,6 +107,7 @@ function preencherDetalhesInstalacao(proposta) {
         return;
     }
 
+
     // NOVO: Adiciona um título interno à seção de detalhes
     const tituloDetalhes = document.createElement('h3');
     tituloDetalhes.className = 'titulo-interno-detalhes';
@@ -114,20 +115,41 @@ function preencherDetalhesInstalacao(proposta) {
     secaoDetalhes.appendChild(tituloDetalhes);
 
     detalhes.forEach(detalhe => {
-        // NOVO: Processa o texto para destacar partes entre asteriscos
-        const textoFormatado = detalhe.texto.replace(/\*\*(.*?)\*\*/g, '<strong class="texto-destaque">$1</strong>');
+        const textoFormatado = detalhe.texto
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="texto-destaque">$1</strong>') // Formata negrito
+            .replace(/<br><br>/g, '</p><p class="texto-detalhe">');
 
         const div = document.createElement('div');
         div.className = 'card-item-detalhe';
-        // NOVO: Estrutura de card com ícone, título e texto
+
+        // Estrutura de card com ícone, título (se houver) e texto. O ícone é dinâmico.
         div.innerHTML = `
             <div class="icone-container-detalhe">
                 <i class="fas ${detalhe.icone} icone-detalhe"></i>
             </div>
-            <p class="texto-detalhe">${textoFormatado}</p>
+            <div class="texto-container-detalhe">
+                ${detalhe.titulo ? `<h4 class="titulo-card-detalhe">${detalhe.titulo}</h4>` : ''}
+                <p class="texto-detalhe">${textoFormatado}</p>
+            </div>
         `;
         secaoDetalhes.appendChild(div);
     });
+}
+
+function preencherChecklistInstalacao(proposta) {
+    const container = document.getElementById('checklist-instalacao-container');
+    if (!container) return;
+
+    const checklist = proposta.instalacao?.checklist;
+    if (!checklist || checklist.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const tipoClasse = proposta.tipo === 'premium' ? 'checklist-premium' : 'checklist-standard';
+    const listaHTML = checklist.map(item => `<li>${item}</li>`).join('');
+
+    container.innerHTML = `<ul class="checklist ${tipoClasse}">${listaHTML}</ul>`;
 }
 
 // --- FUNÇÃO CENTRAL DE PREENCHIMENTO ATUALIZADA ---
@@ -259,14 +281,33 @@ function preencherDadosProposta(dados) {
         const validadeEl = document.getElementById('texto-validade');
         const resumoContainerEl = document.getElementById('resumo-instalacao-container');
 
+        // NOVO: Adiciona o selo premium
+        const seloPremiumEl = document.getElementById('selo-premium');
+        if (seloPremiumEl) {
+            seloPremiumEl.classList.toggle('oculto', dados.tipo !== 'premium');
+        }
+
+
         // NOVO: Atualiza o destaque do título da seção de instalação
-        const tipoInstalacaoDestaqueEl = document.getElementById('tipo-instalacao-destaque');
-        if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.innerText = dados.tipo === 'premium' ? 'Premium' : 'Standard';
+        const tituloSecaoInstalacaoEl = document.getElementById('titulo-secao-instalacao');
+        if (tituloSecaoInstalacaoEl) {
+            const tituloPremium = 'Padrão de Instalação Premium &mdash; <span>Projeto com Risco Técnico Mínimo</span>';
+            const tituloStandard = 'Padrão de Instalação Standard &mdash; <span>Solução Funcional com Concessões Técnicas</span>';
+            tituloSecaoInstalacaoEl.innerHTML = dados.tipo === 'premium' ? tituloPremium : tituloStandard;
+        }
+
 
         if (observacaoEl) observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         if (validadeEl) validadeEl.innerText = dados.validade || "Não informada";
 
         // CORREÇÃO: Oculta todo o container do resumo se não houver texto.
+        // NOVO: Adiciona o bloco de alerta para a proposta Standard
+        const alertaDecisaoEl = document.getElementById('alerta-decisao');
+        if (alertaDecisaoEl) {
+            alertaDecisaoEl.classList.toggle('oculto', dados.tipo !== 'acessivel');
+        }
+
+
         if (resumoContainerEl) {
             const resumoTexto = dados.instalacao?.resumoInstalacao;
             if (resumoTexto) {
@@ -275,7 +316,7 @@ function preencherDadosProposta(dados) {
                 const iconeResumoEl = document.getElementById('icone-resumo');
                 if (resumoInstalacaoEl) resumoInstalacaoEl.innerText = resumoTexto;
                 if (iconeResumoEl) {
-                    iconeResumoEl.className = `icone-resumo fas ${dados.tipo === 'premium' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`;
+                    iconeResumoEl.className = `icone-resumo fas ${dados.tipo === 'premium' ? 'fa-shield-halved' : 'fa-triangle-exclamation'}`;
                 }
             } else {
                 resumoContainerEl.classList.add('oculto');
@@ -562,24 +603,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             await atualizarImagemEquipamentos(propostaParaExibir);
             preencherDetalhesInstalacao(propostaParaExibir);
             atualizarEtiquetasDinamicas(propostaParaExibir.tipo);
+            preencherChecklistInstalacao(propostaParaExibir);
             document.body.classList.add(initialThemeClass);
 
             // Gerenciar visibilidade e estado dos botões
             const premiumIsValid = !!propostaData.premium && validarValidadeProposta(propostaData.premium);
             const acessivelIsValid = !!propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
-            const tipoInstalacaoDestaqueEl = document.getElementById('tipo-instalacao-destaque');
 
             if (seletorTipoProposta) {
                 if (premiumIsValid && acessivelIsValid) {
                     seletorTipoProposta.classList.remove('oculto');
-                    // NOVO: Mostra o destaque do título apenas se houver duas propostas
-                    if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.classList.remove('oculto');
                     if (btnPremium) btnPremium.disabled = false;
                     if (btnAcessivel) btnAcessivel.disabled = false;
                 } else {
-                    seletorTipoProposta.classList.add('oculto');
-                    // NOVO: Oculta o destaque do título se houver apenas uma proposta
-                    if (tipoInstalacaoDestaqueEl) tipoInstalacaoDestaqueEl.classList.add('oculto');
                 }
             }
 
@@ -644,9 +680,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     atualizarEtiquetasDinamicas('premium');
                     await switchProposalType('premium');
                     preencherDetalhesInstalacao(propostas.premium);
+                    preencherChecklistInstalacao(propostas.premium);
                     await atualizarImagemEquipamentos(propostas.premium); // Espera a imagem carregar
-                    document.body.classList.remove('theme-acessivel');
                     startCarouselAutoPlay(); // Reinicia o carrossel após a troca
+                    document.body.classList.remove('theme-acessivel');
                     document.body.classList.add('theme-premium');
                     btnPremium.classList.add('selecionado');
                     if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
@@ -676,9 +713,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     atualizarEtiquetasDinamicas('acessivel');
                     await switchProposalType('acessivel');
                     preencherDetalhesInstalacao(propostas.acessivel);
+                    preencherChecklistInstalacao(propostas.acessivel);
                     await atualizarImagemEquipamentos(propostas.acessivel); // Espera a imagem carregar
-                    document.body.classList.add('theme-acessivel');
                     startCarouselAutoPlay(); // Reinicia o carrossel após a troca
+                    document.body.classList.add('theme-acessivel');
                     document.body.classList.remove('theme-premium');
                     btnAcessivel.classList.add('selecionado');
                     if (btnPremium) btnPremium.classList.remove('selecionado');

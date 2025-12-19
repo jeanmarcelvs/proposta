@@ -535,6 +535,10 @@ header {
     color: var(--cor-primaria);
 }
 
+.theme-acessivel .valor-card {
+    color: var(--cor-texto-principal); /* Preto no tema claro */
+}
+
 .unidade-card {
     font-size: 1.2rem;
     font-weight: 300;
@@ -622,6 +626,10 @@ header {
     font-weight: 500;
     line-height: 1;
     color: var(--cor-primaria);
+}
+
+.theme-acessivel .descricao-equipamento {
+    color: var(--cor-texto-principal); /* Preto no tema claro */
 }
 
 .conteudo-instalacao {
@@ -742,6 +750,11 @@ header {
 .icone-detalhe {
     font-size: 1.6rem;
     color: var(--cor-primaria); /* Mantém a cor do ícone */
+}
+
+/* AJUSTE ESTRATÉGICO: No tema acessível, troca os ícones de detalhe para um alerta e cor neutra */
+.theme-acessivel .card-item-detalhe .icone-detalhe {
+    color: var(--cor-texto-secundario);
 }
 
 .texto-detalhe {
@@ -1424,4 +1437,57 @@ body.modal-aberta {
     width: 100%;
     height: auto; /* Mantém a proporção da imagem */
     display: block; /* Remove espaços extras abaixo da imagem */
+}
+
+.bloco-decisao-tecnica {
+    background: #f8fafc;
+    border-left: 6px solid #111827;
+    padding: 36px 32px;
+    margin: 48px auto; /* Adicionado para centralizar e dar espaço */
+    border-radius: 0 8px 8px 0;
+    max-width: 90%; /* Limita a largura em telas grandes */
+}
+
+.decisao-texto h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #020617;
+}
+
+.decisao-texto p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #334155;
+    margin-bottom: 14px;
+}
+
+.decisao-alerta {
+    font-weight: 600;
+    color: #020617;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 14px;
+}
+
+/* --- Bloco de Decisão Final --- */
+.bloco-decisao-final {
+    max-width: 90%;
+    margin: 48px auto;
+    padding: 24px;
+    text-align: center;
+    border-top: 1px dashed #ccc;
+    border-bottom: 1px dashed #ccc;
+}
+
+.bloco-decisao-final p {
+    font-size: 16px;
+    color: var(--cor-texto-secundario);
+    line-height: 1.6;
+}
+
+.decisao-final-alerta {
+    margin-top: 12px;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--cor-texto-principal);
 }
