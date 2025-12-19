@@ -80,7 +80,7 @@ const detalhesInstalacaoPremium = [
     {
         icone: 'fa-industry',
         titulo: 'Infraestrutura Metálica: Blindagem, Dissipação e Estabilidade',
-        texto: 'Utilização de eletrocalhas galvanizadas robustas e perfuradas. O metal padronizadamente perfurado oferece **blindagem eletromagnética (EMI)** e alta dissipação de calor, o que **reduz perdas por Efeito Joule (perda de energia devido ao aquecimento excessivo do cabeamento e conexões)**. A estabilidade térmica é crucial para **minimizar a dilatação e folga** das conexões, garantindo a integridade do sistema por longo prazo.'
+        texto: 'Utilização de eletrodutos de aço zincado, conforme padrão industrial. O aço oferece **blindagem eletromagnética (EMI)** e alta dissipação de calor, o que **reduz perdas por Efeito Joule (perda de energia devido ao aquecimento excessivo do cabeamento e conexões)**. A estabilidade térmica é crucial para **minimizar a dilatação e folga** das conexões, garantindo a integridade do sistema por longo prazo.'
     },
     {
         icone: 'fa-shield-alt',
