@@ -328,17 +328,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const imagePaths = {
         premium: [
-            'imagens/instalacao-premium.webp',
-            'imagens/inst_premium_1.webp',
-            'imagens/inst_premium_2.webp',
-            'imagens/inst_premium_3.webp',
-            'imagens/inst_premium_4.webp',
+            'imagens/inst_premium_1a.webp',
+            'imagens/inst_premium_2a.webp',
+            'imagens/inst_premium_3a.webp',
+            'imagens/inst_premium_4a.webp',
+            'imagens/inst_premium_5a.webp',
+            'imagens/inst_premium_6a.webp',
+            'imagens/inst_premium_7a.webp',
             'imagens/mod_1.webp',
             'imagens/mod_2.webp',
             'imagens/mod_3.webp'
         ],
         acessivel: [
-            'imagens/instalacao-acessivel.webp',
             'imagens/inst_acessível_1.webp',
             'imagens/inst_acessível_2.webp',
             'imagens/inst_acessível_3.webp',
