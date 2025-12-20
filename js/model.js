@@ -79,28 +79,28 @@ const caminhosImagens = {
 const detalhesInstalacaoPremium = [
     {
         icone: 'fa-user-shield',
-        titulo: '',
-        texto: 'Este padrão foi desenvolvido para clientes que não aceitam risco oculto em instalações elétricas. É a escolha de quem prefere eliminar incertezas técnicas agora para não lidar com falhas, manutenções e correções no futuro.'
+        titulo: 'Projeto Pensado para Redução de Incertezas',
+        texto: 'Este padrão foi desenvolvido para clientes que preferem eliminar incertezas desde o início. A concepção do sistema prioriza previsibilidade de funcionamento e estabilidade ao longo dos anos, evitando surpresas futuras.'
     },
     {
         icone: 'fa-industry',
-        titulo: 'Infraestrutura de Padrão Industrial',
-        texto: 'Infraestrutura metálica dimensionada para operação contínua e estável ao longo dos anos. Esse padrão reduz drasticamente a probabilidade de aquecimento excessivo, degradação de conexões e falhas que costumam surgir após o período de garantia.'
+        titulo: 'Infraestrutura com Conceito de Longa Vida Útil',
+        texto: 'A infraestrutura é concebida para operação contínua e estável ao longo do tempo. Esse padrão reduz o surgimento de desgastes progressivos que normalmente aparecem após alguns anos de uso.'
     },
     {
         icone: 'fa-shield-alt',
-        titulo: 'Proteção Elétrica Coordenada',
-        texto: 'Sistema de proteção projetado para reduzir a exposição do sistema a surtos e distúrbios da rede elétrica. O objetivo é preservar os equipamentos, evitar paradas inesperadas e reduzir perdas silenciosas de desempenho ao longo do tempo.'
+        titulo: 'Proteção Elétrica Integrada ao Projeto',
+        texto: 'O sistema de proteção é pensado de forma integrada ao conjunto da instalação, com o objetivo de preservar o desempenho do sistema e reduzir impactos causados por variações e distúrbios da rede elétrica.'
     },
     {
         icone: 'fa-box-open',
-        titulo: 'Vedação e Isolamento dos Componentes',
-        texto: 'Componentes instalados com nível de vedação adequado para minimizar a entrada de umidade e poeira, reduzindo processos de oxidação e aumentando a vida útil das conexões elétricas.'
+        titulo: 'Estabilidade Estrutural e das Conexões',
+        texto: 'O sistema é concebido para manter sua integridade mesmo diante de variações naturais de temperatura e condições externas, evitando esforços acumulativos nas conexões e preservando o desempenho ao longo da vida útil.'
     },
     {
-        icone: 'fa-dollar-sign',
-        titulo: 'Menor Custo Total ao Longo do Tempo',
-        texto: 'O investimento maior neste padrão reduz a probabilidade de manutenções corretivas, retrabalho e substituição prematura de componentes, tornando o sistema mais previsível e econômico no longo prazo.'
+        icone: 'fa-chart-line',
+        titulo: 'Previsibilidade de Retorno ao Longo dos Anos',
+        texto: 'Ao reduzir falhas ocultas, intervenções corretivas e perdas silenciosas de desempenho, este padrão torna o comportamento do investimento mais previsível e estável ao longo do tempo.'
     }
 ];
 
@@ -109,27 +109,46 @@ const detalhesInstalacaoPremium = [
 const detalhesInstalacaoAcessivel = [
     {
         icone: 'fa-info-circle',
-        titulo: '',
-        texto: 'O padrão Standard foi desenvolvido com foco exclusivo em reduzir o investimento inicial. Para isso, são adotadas soluções construtivas mais simples e com menor nível de proteção quando comparadas ao padrão Premium.'
+        titulo: 'Projeto com Foco no Investimento Inicial',
+        texto: 'Este padrão foi desenvolvido para clientes cujo principal critério é reduzir o investimento inicial, adotando uma concepção mais simples quando comparada ao padrão Premium.'
     },
     {
         icone: 'fa-home',
-        titulo: 'Infraestrutura Simplificada',
-        texto: 'Utilização de infraestrutura adequada ao uso residencial básico. Essa escolha reduz custo inicial, porém não oferece o mesmo nível de robustez, proteção mecânica e durabilidade de soluções de padrão industrial.'
+        titulo: 'Infraestrutura Funcional Simplificada',
+        texto: 'A infraestrutura atende às necessidades básicas de funcionamento do sistema, porém com menor nível de antecipação de desgastes e variações que podem surgir ao longo do tempo.'
     },
     {
-        icone: 'fa-exclamation-triangle',
-        titulo: '',
-        texto: 'Ao optar pelo padrão Standard, o cliente reconhece que esta solução envolve maior exposição a manutenções futuras, menor nível de proteção elétrica e menor previsibilidade de desempenho ao longo da vida útil do sistema.'
+        icone: 'fa-bolt',
+        titulo: 'Proteção Elétrica Essencial',
+        texto: 'O sistema conta com proteção elétrica básica, suficiente para operação inicial, porém com menor nível de integração e robustez quando comparado a soluções de padrão mais avançado.'
+    },
+    {
+        icone: 'fa-link',
+        titulo: 'Concepção Convencional das Conexões',
+        texto: 'As conexões seguem uma concepção tradicional de instalação, sem o mesmo nível de antecipação de variações naturais e esforços acumulativos ao longo dos anos.'
+    },
+    {
+        icone: 'fa-coins',
+        titulo: 'Menor Previsibilidade no Longo Prazo',
+        texto: 'A simplificação do projeto reduz o custo inicial, porém pode resultar em maior dependência de ajustes, manutenções ou intervenções ao longo da vida útil do sistema.'
     }
 ];
 
 // NOVO: Resumos para a seção de instalação
 const resumoInstalacaoPremium = 
-"Esta proposta não foi criada para competir em preço. Ela foi projetada para reduzir riscos técnicos, aumentar a previsibilidade do sistema e evitar custos futuros decorrentes de falhas, manutenções ou retrabalho. É indicada para quem prefere resolver uma vez e não revisitar o problema.";
+"Esta proposta foi concebida para clientes que valorizam previsibilidade, estabilidade e tranquilidade ao longo dos anos. O foco não é competir em preço, mas reduzir riscos técnicos e evitar custos ocultos que só aparecem com o tempo.";
 
 const resumoInstalacaoAcessivel =
-"Esta proposta é indicada para clientes cujo principal critério de decisão é o menor custo inicial, cientes de que isso implica menor nível de proteção, durabilidade e maior dependência de manutenções futuras.";
+"Esta proposta prioriza a redução do investimento inicial, adotando soluções mais simples quando comparadas ao padrão Premium.";
+
+// NOVO: Dados para o Aceite Consciente (Gate de Leitura)
+const dadosAceite = {
+    titulo: "Antes de visualizar a proposta",
+    paragrafo1: "Tratando-se de projeto fotovoltaico, a diferença no valor costuma ser pequena. O que muda é o comportamento do sistema ao longo do tempo.",
+    paragrafo2: "Algumas propostas priorizam apenas o custo inicial. Outras são pensadas para oferecer maior previsibilidade, estabilidade e tranquilidade ao longo dos anos.",
+    textoCheckbox: "Li e estou ciente dessas diferenças",
+    textoBotao: "Estou ciente"
+};
 
 /**
  * Função auxiliar para encontrar um objeto no array 'variables' pela chave
@@ -337,6 +356,9 @@ function calcularFinanciamento(valorProjeto, selicAnual) {
  * @returns {object} Um objeto com os dados formatados para a página.
  */
 function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
+    // Log para confirmar que a versão com os novos textos e Aceite Consciente foi carregada
+    console.log(`[Model] Processando proposta ${tipoProposta} - Versão atualizada com Aceite Consciente.`);
+
     if (!dadosApi || !dadosApi.dados) {
         console.error("Modelo: Dados da API não encontrados ou incompletos.");
         return null;
@@ -428,6 +450,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         dataProposta: dataProposta,
         dataExpiracao: dataExpiracao,
         linkProposta: linkProposta,
+        dadosAceite: dadosAceite,
         sistema,
         equipamentos,
         instalacao,

@@ -17,6 +17,63 @@
         <div class="spinner"></div>
     </div>
 
+    <!-- Modal de Aceite Consciente (Novo Layout Mobile-First) -->
+    <div id="proposalBlocker"></div>
+
+    <div id="proposalModal">
+
+        <div class="modal-header">
+            <i class="fas fa-info-circle"></i>
+            <h2>Antes de visualizar a proposta</h2>
+        </div>
+
+        <div class="modal-block highlight">
+            <strong>Não é só um produto.</strong>
+            <p>O equipamento é apenas uma parte do investimento.</p>
+        </div>
+
+        <div class="modal-block">
+            <p>
+                O que muda de um projeto para outro é
+                <strong>como o sistema é pensado e executado</strong>.
+            </p>
+            <ul>
+                <li><i class="fas fa-check-circle" style="color:#2e7d32; font-size: 12px; margin-top: 4px;"></i>
+                    decisões feitas antes da instalação</li>
+                <li><i class="fas fa-check-circle" style="color:#2e7d32; font-size: 12px; margin-top: 4px;"></i> forma
+                    de execução</li>
+                <li><i class="fas fa-check-circle" style="color:#2e7d32; font-size: 12px; margin-top: 4px;"></i>
+                    comportamento com o tempo</li>
+            </ul>
+        </div>
+
+        <div class="modal-block emphasis">
+            <p>
+                É isso que define se o sistema será
+                <strong>estável e previsível ao longo dos anos</strong>,
+                ou se exigirá ajustes depois.
+            </p>
+        </div>
+
+        <div class="modal-block final">
+            <p>
+                Antes de comparar valores, é importante entender
+                que esta proposta envolve <strong>decisões de engenharia</strong>
+                que sustentam o investimento.
+            </p>
+        </div>
+
+        <div class="modal-accept">
+            <label>
+                <input type="checkbox" id="acceptProposal">
+                <span>Li e estou ciente dessas diferenças</span>
+            </label>
+            <button id="confirmProposal" disabled>
+                Estou ciente
+            </button>
+        </div>
+
+    </div>
 
     <main class="main-oculto">
         <header>
@@ -40,27 +97,6 @@
                     <p class="data-proposta">
                         <i class="fas fa-calendar-alt icone-data"></i>
                         <span id="data-proposta"></span>
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section class="bloco-decisao-tecnica">
-            <div class="decisao-container">
-                <div class="decisao-texto">
-                    <h3>Decisão Técnica Importante</h3>
-                    <p>
-                        A diferença entre as propostas apresentadas não está apenas em equipamentos,
-                        mas no nível de risco assumido ao longo da vida útil do sistema.
-                    </p>
-                    <p>
-                        Sistemas fotovoltaicos operam diariamente sob calor, umidade, surtos elétricos
-                        e variações da rede. A forma como o sistema é instalado define se esses efeitos
-                        serão absorvidos com segurança ou se se transformarão em falhas futuras.
-                    </p>
-                    <p class="decisao-alerta">
-                        A escolha entre Premium e Standard não é estética.
-                        É uma decisão entre reduzir riscos agora ou lidar com consequências depois.
                     </p>
                 </div>
             </div>
@@ -138,9 +174,12 @@
             <h2 class="titulo-secao">Padrão de Instalação <span id="tipo-instalacao-destaque"></span></h2>
             <div class="conteudo-instalacao">
                 <div class="imagem-instalacao-container">
-                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação" class="current-installation-image">
-                    <button id="prev-image-btn" class="carousel-nav-btn prev-btn oculto"><i class="fas fa-chevron-left"></i></button>
-                    <button id="next-image-btn" class="carousel-nav-btn next-btn oculto"><i class="fas fa-chevron-right"></i></button>
+                    <img id="imagem-instalacao" src="" alt="Imagem do padrão de instalação"
+                        class="current-installation-image">
+                    <button id="prev-image-btn" class="carousel-nav-btn prev-btn oculto"><i
+                            class="fas fa-chevron-left"></i></button>
+                    <button id="next-image-btn" class="carousel-nav-btn next-btn oculto"><i
+                            class="fas fa-chevron-right"></i></button>
                 </div>
                 <div id="detalhes-instalacao" class="detalhes-instalacao">
                 </div>
@@ -162,11 +201,13 @@
                 </div>
                 <!-- Imagem Ranking Huawei -->
                 <div class="imagem-garantia-container">
-                    <img src="imagens/huawei_primeiro_lugar.webp" alt="Huawei em primeiro lugar no ranking mundial de inversores" class="imagem-garantia">
+                    <img src="imagens/huawei_primeiro_lugar.webp"
+                        alt="Huawei em primeiro lugar no ranking mundial de inversores" class="imagem-garantia">
                 </div>
                 <!-- Imagem Garantia Inversor Huawei -->
                 <div class="imagem-garantia-container">
-                    <img src="imagens/garantia_inversor_huawei.webp" alt="Garantia do inversor Huawei" class="imagem-garantia">
+                    <img src="imagens/garantia_inversor_huawei.webp" alt="Garantia do inversor Huawei"
+                        class="imagem-garantia">
                 </div>
 
                 <!-- Vídeo 3 -->
@@ -303,8 +344,9 @@
             <a href="https://wa.me/5582999469016" target="_blank" class="footer-contact-item">
                 <i class="fab fa-whatsapp"></i> (82) 99946-9016
             </a>
-            
-            <a href="https://www.instagram.com/belenus_ltda/" target="_blank" rel="noopener noreferrer" class="footer-contact-item">
+
+            <a href="https://www.instagram.com/belenus_ltda/" target="_blank" rel="noopener noreferrer"
+                class="footer-contact-item">
                 <i class="fab fa-instagram"></i> BelEnergy
             </a>
         </div>
@@ -321,6 +363,45 @@
                     window.instgrm.Embeds.process();
                 }
             }, 1000); // Aguarda 1 segundo para garantir que tudo carregou
+        });
+    </script>
+
+    <!-- Script do Modal de Aceite -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const overlay = document.getElementById('proposalBlocker');
+            const modal = document.getElementById('proposalModal');
+            const checkbox = document.getElementById('acceptProposal');
+            const btn = document.getElementById('confirmProposal');
+
+            // Verifica se já aceitou anteriormente
+            // COMENTADO PARA TESTES DE DESIGN:
+            // Descomente as linhas abaixo quando for colocar em produção
+            // if (localStorage.getItem('aceiteConsciente') === 'true') {
+            //      overlay.style.display = 'none';
+            //      modal.style.display = 'none';
+            //      return; 
+            // }
+
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    btn.disabled = false;
+                    btn.classList.add('active');
+                } else {
+                    btn.disabled = true;
+                    btn.classList.remove('active');
+                }
+            });
+
+            btn.addEventListener('click', function () {
+                modal.classList.add('fade-out');
+                overlay.classList.add('fade-out');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    overlay.style.display = 'none';
+                    localStorage.setItem('aceiteConsciente', 'true');
+                }, 500);
+            });
         });
     </script>
 
