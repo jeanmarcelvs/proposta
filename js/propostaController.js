@@ -1,4 +1,4 @@
-import { buscarETratarProposta, atualizarStatusVisualizacao, validarValidadeProposta, verificarAcessoDispositivo } from './model.js';
+import { buscarETratarProposta, validarValidadeProposta, verificarAcessoDispositivo } from './model.js';
 
 // Funções para o novo loading-overlay
 function mostrarLoadingOverlay() {
@@ -637,13 +637,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (initialButtonToSelect === btnPremium && btnAcessivel) btnAcessivel.classList.remove('selecionado');
                 if (initialButtonToSelect === btnAcessivel && btnPremium) btnPremium.classList.remove('selecionado');
             }
-
-            // Update status visualization
-            const dadosVisualizacao = {
-                propostaId: numeroProjeto,
-                tipoVisualizacao: propostaParaExibir.tipo === 'premium' ? 'P' : 'A'
-            };
-            await atualizarStatusVisualizacao(dadosVisualizacao);
 
             // 🌟 Inicia e ESPERA a imagem do carrossel carregar antes de prosseguir para o 'finally'
             await showImage(0);

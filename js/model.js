@@ -262,59 +262,37 @@ export function validarValidadeProposta(proposta) {
 // 🔒 LÓGICA DE SEGURANÇA (FINGERPRINT + LOCALSTORAGE)
 // ======================================================================
 
-const CAMPO_OBS_PROJETO_KEY = 'cap_obs_projeto';
-
 /**
- * Coleta dados técnicos do dispositivo para enriquecer o log de segurança.
- * @returns {Promise<object>} Objeto com o fingerprint e detalhes do hardware.
+ * Coleta dados ESTÁVEIS do dispositivo para o Hash Tolerante.
+ * Evita usar dados variáveis como IP, versão exata ou bateria.
  */
-async function gerarDadosIdentificacaoProfissional() {
+function getDadosEstaveisDispositivo() {
     const ua = navigator.userAgent;
     
-    // Identifica apenas a categoria do dispositivo (Mobile/Desktop) e o Navegador
+    // 1. Sistema Operacional (Estável)
+    let os = "Outro OS";
+    if (ua.includes("Win")) os = "Windows";
+    else if (ua.includes("Mac") && !ua.includes("Mobile")) os = "MacOS";
+    else if (ua.includes("Linux") && !ua.includes("Android")) os = "Linux";
+    else if (ua.includes("Android")) os = "Android";
+    else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+
+    // 2. Navegador Principal (Estável - ignora versão menor)
+    let navegador = "Outro Navegador";
+    if (ua.includes("Chrome") && !ua.includes("Edg")) navegador = "Chrome";
+    else if (ua.includes("Safari") && !ua.includes("Chrome")) navegador = "Safari";
+    else if (ua.includes("Firefox")) navegador = "Firefox";
+    else if (ua.includes("Edg")) navegador = "Edge";
+
+    // 3. Tipo de Dispositivo
     const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
     const tipoDispositivo = isMobile ? "Mobile" : "Desktop";
-    
-    // Captura apenas a versão do navegador para suporte técnico
-    let navegador = "Outro";
-    if (ua.includes("Chrome")) navegador = "Chrome";
-    else if (ua.includes("Safari")) navegador = "Safari";
-    else if (ua.includes("Firefox")) navegador = "Firefox";
-
-    // Origem do link (importante apenas para saber se o link do WhatsApp expirou ou foi compartilhado)
-    const origemLink = document.referrer.includes("whatsapp") ? "Link WhatsApp" : "Acesso Direto";
 
     return {
-        fingerprint: await gerarHashDispositivo(),
-        identificacao: `${tipoDispositivo} via ${navegador}`,
-        contexto: `Origem: ${origemLink}`
+        os,
+        navegador,
+        tipoDispositivo
     };
-}
-
-/**
- * Carrega o FingerprintJS e gera o hash do dispositivo.
- * @returns {Promise<string>} O hash do visitante.
- */
-async function gerarHashDispositivo() {
-    try {
-        // Carrega o script dinamicamente se ainda não estiver na página
-        if (!window.FingerprintJS) {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js';
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-        const fp = await window.FingerprintJS.load();
-        const result = await fp.get();
-        return result.visitorId;
-    } catch (error) {
-        console.error("Erro ao gerar fingerprint:", error);
-        // Fallback simples caso o FingerprintJS falhe (menos seguro, mas evita travamento total)
-        return 'fallback-' + navigator.userAgent.replace(/\s+/g, '') + screen.width;
-    }
 }
 
 /**
@@ -327,103 +305,41 @@ async function gerarHashDispositivo() {
 export async function verificarAcessoDispositivo(projectId, clienteNome) {
     try {
         console.log("[Segurança] Iniciando verificação de acesso do dispositivo.");
-        
-        const dadosIdentificacao = await gerarDadosIdentificacaoProfissional();
-        const hashAtual = dadosIdentificacao.fingerprint;
-        console.log(`[Segurança] Hash do dispositivo atual: ${hashAtual}`);
 
-        // 1. Busca o ID do campo customizado nas definições globais (Metadata)
-        // ALTERADO: Busca em /custom-fields pois /projects/{id} pode não retornar a estrutura completa
-        const endpointMeta = `/custom-fields`;
-        const consultaMeta = await get(endpointMeta);
+        // 1. Coleta dados estáveis (sem FingerprintJS)
+        const dadosEstaveis = getDadosEstaveisDispositivo();
         
-        let customFieldId = null;
-        if (consultaMeta.sucesso && consultaMeta.dados && consultaMeta.dados.data) {
-            // Tenta encontrar com ou sem colchetes para garantir compatibilidade
-            const campo = consultaMeta.dados.data.find(c => 
-                c.key === CAMPO_OBS_PROJETO_KEY || 
-                c.key === `[${CAMPO_OBS_PROJETO_KEY}]`
-            );
-            if (campo) customFieldId = campo.id;
-        }
+        // 2. Monta o payload para o Worker
+        const payload = {
+            projectId: projectId,
+            dispositivoNome: `${clienteNome} (${dadosEstaveis.tipoDispositivo} via ${dadosEstaveis.navegador})`,
+            os: dadosEstaveis.os,
+            navegador: dadosEstaveis.navegador,
+            tipoDispositivo: dadosEstaveis.tipoDispositivo
+        };
 
-        if (!customFieldId) {
-            console.warn(`[Segurança] Definição do campo ${CAMPO_OBS_PROJETO_KEY} não encontrada no SolarMarket.`);
-            return false;
-        }
+        // 3. Envia para o Worker (Backend) que fará toda a lógica de Hash, JSON e Bloqueio
+        const resposta = await validarDispositivoHardware(payload);
 
-        // 2. Busca o valor atual do campo no projeto específico
-        const endpointValor = `/projects/${projectId}/custom-fields`;
-        const consultaValor = await get(endpointValor);
-        
-        let conteudoAtual = '';
-        if (consultaValor.sucesso && consultaValor.dados && consultaValor.dados.data) {
-            // CORREÇÃO: Comparação solta (==) para garantir match entre string/number no ID
-            const dadosCampo = consultaValor.dados.data.find(item => item.custom_field_id == customFieldId);
-            if (dadosCampo) {
-                conteudoAtual = dadosCampo.value || '';
-                console.log(`[Segurança] Histórico recuperado: ${conteudoAtual.length} caracteres.`);
+        if (resposta.sucesso) {
+            // O Worker retorna sucesso: true para 'dono' (novo ou existente) e 'pendente' (novo registro).
+            // Se o status for 'dono' ou 'autorizado', permitimos o acesso.
+            if (resposta.status === 'dono' || resposta.status === 'autorizado') {
+                console.log(`[Segurança] Acesso autorizado. Status: ${resposta.status}`);
+                return true;
             }
-        }
-
-        // 3. Verifica se o hash já está na lista (Allow)
-        // Verifica linha a linha para garantir que não estamos liberando um dispositivo BLOQUEADO
-        const linhas = conteudoAtual.split('\n');
-        const dispositivoLiberado = linhas.find(linha => linha.includes(hashAtual) && !linha.includes('BLOQUEADO'));
-
-        if (dispositivoLiberado) {
-            console.log("[Segurança] Dispositivo reconhecido e liberado.");
-            return true;
-        }
-
-        // Verifica se o dispositivo já está na lista de bloqueados para evitar duplicidade no log
-        const dispositivoBloqueado = linhas.find(linha => linha.includes(hashAtual) && linha.includes('BLOQUEADO'));
-        if (dispositivoBloqueado) {
-            console.warn("[Segurança] Dispositivo já consta na lista de bloqueio.");
-            return false;
-        }
-
-        // 3. Se não está na lista, registra a tentativa (Append - Modify)
-        console.warn("[Segurança] Dispositivo desconhecido. Registrando tentativa e bloqueando.");
-        
-        const agora = new Date().toLocaleString('pt-BR');
-        const infoDispositivo = `${clienteNome} (${dadosIdentificacao.identificacao}) | ${dadosIdentificacao.contexto}`;
-        
-        // LÓGICA DE DONO: Se já existe conteúdo (mesmo sem a tag "DONO:"), consideramos que já tem dono.
-        // Isso previne que logs antigos sem a tag permitam um novo "DONO".
-        const jaTemDono = conteudoAtual.includes("DONO:") || conteudoAtual.trim().length > 0;
-        
-        const novoLog = !jaTemDono 
-            ? `DONO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`
-            : `BLOQUEADO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`;
             
-        const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novoLog}` : novoLog;
-
-        // 4. Salva o novo log (Write)
-        let saveSuccess = false;
-
-        if (customFieldId) {
-            // Usa o endpoint específico para atualizar o campo customizado (POST)
-            const endpointUpdate = `/projects/${projectId}/custom-fields/${customFieldId}`;
-            try {
-                await post(endpointUpdate, { value: novoConteudo });
-                saveSuccess = true;
-            } catch (e) {
-                console.error("[Segurança] Erro ao salvar campo customizado:", e);
-                saveSuccess = false;
+            // Se o status for 'pendente', significa que é um novo dispositivo num projeto que já tem dono.
+            // O Worker registrou com sucesso (200 OK), mas o Frontend deve BLOQUEAR a visualização.
+            if (resposta.status === 'pendente') {
+                console.warn(`[Segurança] Dispositivo registrado como PENDENTE. Acesso bloqueado aguardando aprovação.`);
+                return false;
             }
-        } else {
-            console.error("[Segurança] ID do campo customizado não disponível. Não é possível salvar o log.");
-            saveSuccess = false;
         }
 
-        if (!saveSuccess) {
-            console.error("[Segurança] Falha crítica ao persistir log. Bloqueando acesso por segurança.");
-            return false;
-        }
-
-        // Se acabou de criar o DONO, libera (true). Se já tinha dono e caiu aqui, é bloqueio (false).
-        return !jaTemDono;
+        // Caso sucesso: false (ex: bloqueado explicitamente, erro 403) ou status desconhecido
+        console.warn(`[Segurança] Acesso BLOQUEADO. Motivo: ${resposta.mensagem || 'Desconhecido'}`);
+        return false;
 
     } catch (error) {
         console.error("[Segurança] Erro crítico na verificação:", error);
@@ -750,9 +666,4 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     return { sucesso: true, dados: dadosProposta };
-}
-
-// Função mantida vazia (Stub) para evitar erro de importação no controller
-export async function atualizarStatusVisualizacao(dados) {
-    return { sucesso: true };
 }

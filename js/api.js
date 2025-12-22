@@ -130,13 +130,13 @@ export async function getSelicTaxa() {
  * NOVO: Validação de Hardware (Fingerprint)
  * Esta função chama a rota específica de segurança que criamos no Worker.
  */
-export async function validarDispositivoHardware(projectId, fingerprint, dispositivoNome) {
+export async function validarDispositivoHardware(dadosDispositivo) {
     try {
         const fullUrl = `${WORKER_URL}/security/validate-hardware`;
         const response = await fetch(fullUrl, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ projectId, fingerprint, dispositivoNome })
+            body: JSON.stringify(dadosDispositivo)
         });
 
         return await response.json();
