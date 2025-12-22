@@ -677,9 +677,12 @@ export async function atualizarStatusVisualizacao(dados) {
 
         // 1. Busca a descrição atual para evitar sobrescrever o histórico (Read-Modify-Write)
         const consultaAtual = await get(endpoint);
-        let descricaoAtual = '';
-        if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data) {
-            descricaoAtual = consultaAtual.dados.data.description || '';
+        let conteudoAtual = '';
+        if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data && consultaAtual.dados.data.variables) {
+            const variavel = consultaAtual.dados.data.variables.find(v => v.key === CAMPO_OBS_PROJETO_KEY);
+            if (variavel) {
+                conteudoAtual = variavel.value || '';
+            }
         }
 
         const agora = new Date();
@@ -687,9 +690,16 @@ export async function atualizarStatusVisualizacao(dados) {
         
         const novaEntrada = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
         // Concatena com quebra de linha se já existir texto
-        const novaDescricao = descricaoAtual ? `${descricaoAtual}\n${novaEntrada}` : novaEntrada;
+        const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novaEntrada}` : novaEntrada;
         
-        const body = { description: novaDescricao };
+        const body = {
+            variables: [
+                {
+                    key: CAMPO_OBS_PROJETO_KEY,
+                    value: novoConteudo
+                }
+            ]
+        };
 
         const respostaApi = await patch(endpoint, body);
         if (respostaApi.sucesso) {
