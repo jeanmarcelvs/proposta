@@ -1,5 +1,5 @@
 // Importa as funções da API
-import { get, patch, getSelicTaxa, validarDispositivoHardware } from './api.js';
+import { get, patch, post, getSelicTaxa, validarDispositivoHardware } from './api.js';
 
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
@@ -262,6 +262,9 @@ export function validarValidadeProposta(proposta) {
 // 🔒 LÓGICA DE SEGURANÇA (FINGERPRINT + LOCALSTORAGE)
 // ======================================================================
 
+const CAMPO_OBS_PROJETO_KEY = '[cap_obs_projeto]';
+const CAMPO_LOG_VISUALIZACAO_KEY = '[cap_log_visualizacao]';
+
 /**
  * Coleta dados técnicos do dispositivo para enriquecer o log de segurança.
  * @returns {Promise<object>} Objeto com o fingerprint e detalhes do hardware.
@@ -334,10 +337,19 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const endpoint = `/projects/${projectId}`;
         const consulta = await get(endpoint);
         
-        // ALTERADO: Usa o campo 'description' pois a API rejeita 'variables' no PATCH
         let conteudoAtual = '';
+        let customFieldId = null;
+
         if (consulta.sucesso && consulta.dados && consulta.dados.data) {
-            conteudoAtual = consulta.dados.data.description || '';
+            const variables = consulta.dados.data.variables || [];
+            const variable = variables.find(v => v.key === CAMPO_OBS_PROJETO_KEY);
+            if (variable) {
+                conteudoAtual = variable.value || '';
+                customFieldId = variable.id;
+            } else {
+                // Fallback para description se o campo customizado não existir
+                conteudoAtual = consulta.dados.data.description || '';
+            }
         }
 
         // 2. Verifica se o hash já está na lista (Allow)
@@ -362,9 +374,14 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novoLog}` : novoLog;
 
         // 4. Salva o novo log (Write)
-        const body = { description: novoConteudo };
-
-        await patch(endpoint, body);
+        if (customFieldId) {
+            // Usa o endpoint específico para atualizar o campo customizado (POST)
+            const endpointUpdate = `/projects/${projectId}/custom-fields/${customFieldId}`;
+            await post(endpointUpdate, { value: novoConteudo });
+        } else {
+            // Fallback: Atualiza a descrição do projeto (PATCH)
+            await patch(endpoint, { description: novoConteudo });
+        }
 
         // Se acabou de criar o DONO, libera (true). Se já tinha dono e caiu aqui, é bloqueio (false).
         return !jaTemDono;
@@ -703,8 +720,17 @@ export async function atualizarStatusVisualizacao(dados) {
         // 1. Busca a descrição atual para evitar sobrescrever o histórico (Read-Modify-Write)
         const consultaAtual = await get(endpoint);
         let conteudoAtual = '';
+        let customFieldId = null;
+
         if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data) {
-            conteudoAtual = consultaAtual.dados.data.description || '';
+            const variables = consultaAtual.dados.data.variables || [];
+            const variable = variables.find(v => v.key === CAMPO_LOG_VISUALIZACAO_KEY);
+            if (variable) {
+                conteudoAtual = variable.value || '';
+                customFieldId = variable.id;
+            } else {
+                conteudoAtual = consultaAtual.dados.data.description || '';
+            }
         }
 
         const agora = new Date();
@@ -714,13 +740,17 @@ export async function atualizarStatusVisualizacao(dados) {
         // Concatena com quebra de linha se já existir texto
         const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novaEntrada}` : novaEntrada;
         
-        const body = { description: novoConteudo };
-
-        const respostaApi = await patch(endpoint, body);
-        if (respostaApi.sucesso) {
-            console.log("Modelo: Status de visualização atualizado com sucesso!");
+        if (customFieldId) {
+            const endpointUpdate = `/projects/${dados.propostaId}/custom-fields/${customFieldId}`;
+            await post(endpointUpdate, { value: novoConteudo });
+            console.log("Modelo: Status de visualização atualizado com sucesso (Custom Field)!");
         } else {
-            console.error("Modelo: Falha ao atualizar status de visualização.");
+            const respostaApi = await patch(endpoint, { description: novoConteudo });
+            if (respostaApi.sucesso) {
+                console.log("Modelo: Status de visualização atualizado com sucesso!");
+            } else {
+                console.error("Modelo: Falha ao atualizar status de visualização.");
+            }
         }
     } catch (erro) {
         console.log("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
