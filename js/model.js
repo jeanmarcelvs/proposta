@@ -749,3 +749,8 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
     return { sucesso: true, dados: dadosProposta };
 }
+
+// Função mantida vazia (Stub) para evitar erro de importação no controller
+export async function atualizarStatusVisualizacao(dados) {
+    return { sucesso: true };
+}
