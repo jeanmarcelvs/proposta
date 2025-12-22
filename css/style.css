@@ -702,13 +702,7 @@ header {
 
 /* NOVO: Título interno para a lista de detalhes */
 .titulo-interno-detalhes {
-    grid-column: 1 / -1; /* Ocupa toda a largura do grid */
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: var(--cor-texto-principal);
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--cor-cartao-borda);
+    display: none !important;
 }
 
 /* NOVO: Estilo para o card de cada item de detalhe */

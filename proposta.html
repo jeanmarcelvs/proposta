@@ -8,6 +8,22 @@
     <link rel="stylesheet" href="css/style.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Ajuste de posicionamento do Modal de Aceite */
+        #proposalModal {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 60px; /* Margem superior razoável para mobile */
+            z-index: 10000;
+        }
+        @media (min-width: 768px) {
+            #proposalModal {
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -200,7 +216,7 @@
         </section>
 
         <section id="secao-video-instalacao" class="secao-principal">
-            <h2 class="titulo-secao">Seus Produtos</h2>
+            <h2 class="titulo-secao">Detalhes Importantes</h2>
             <div class="conteudo-video">
                 <!-- Vídeo 1 -->
                 <div class="video-somente-container">
