@@ -288,9 +288,23 @@ function getDadosEstaveisDispositivo() {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
     const tipoDispositivo = isMobile ? "Mobile" : "Desktop";
 
+    // 4. Identificador Único Persistente (Client-Side UUID)
+    // Adiciona entropia para diferenciar dispositivos com mesmo hardware/software (ex: dois PCs Windows/Chrome).
+    let deviceId = localStorage.getItem('cap_device_id');
+    if (!deviceId) {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            deviceId = crypto.randomUUID();
+        } else {
+            // Fallback simples para navegadores antigos
+            deviceId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+        localStorage.setItem('cap_device_id', deviceId);
+    }
+
     return {
         os,
-        navegador,
+        navegador: `${navegador}::${deviceId}`, // Concatena ID para tornar o hash único no Worker
+        navegadorLimpo: navegador, // Mantém o nome limpo para exibição
         tipoDispositivo
     };
 }
@@ -312,9 +326,9 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         // 2. Monta o payload para o Worker
         const payload = {
             projectId: projectId,
-            dispositivoNome: `${clienteNome} (${dadosEstaveis.tipoDispositivo} via ${dadosEstaveis.navegador})`,
+            dispositivoNome: `${clienteNome} (${dadosEstaveis.tipoDispositivo} via ${dadosEstaveis.navegadorLimpo})`,
             os: dadosEstaveis.os,
-            navegador: dadosEstaveis.navegador,
+            navegador: dadosEstaveis.navegador, // Envia 'Chrome::UUID' para garantir hash único
             tipoDispositivo: dadosEstaveis.tipoDispositivo
         };
 
