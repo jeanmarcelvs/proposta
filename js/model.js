@@ -673,10 +673,22 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
 export async function atualizarStatusVisualizacao(dados) {
     try {
+        const endpoint = `/projects/${dados.propostaId}`;
+
+        // 1. Busca a descrição atual para evitar sobrescrever o histórico (Read-Modify-Write)
+        const consultaAtual = await get(endpoint);
+        let descricaoAtual = '';
+        if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data) {
+            descricaoAtual = consultaAtual.dados.data.description || '';
+        }
+
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
-        const novaDescricao = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
-        const endpoint = `/projects/${dados.propostaId}`;
+        
+        const novaEntrada = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
+        // Concatena com quebra de linha se já existir texto
+        const novaDescricao = descricaoAtual ? `${descricaoAtual}\n${novaEntrada}` : novaEntrada;
+        
         const body = { description: novaDescricao };
 
         const respostaApi = await patch(endpoint, body);
