@@ -126,21 +126,22 @@ export async function getSelicTaxa() {
     }
 }
 
-// NOVO: Busca campos customizados para encontrar o ID correto
-export async function getCustomFields(projectId) {
-    console.log(`[API] Buscando campos customizados para o projeto: ${projectId}`);
-    return await get(`/projects/${projectId}/custom-fields`);
-}
+/**
+ * NOVO: Validação de Hardware (Fingerprint)
+ * Esta função chama a rota específica de segurança que criamos no Worker.
+ */
+export async function validarDispositivoHardware(projectId, fingerprint, dispositivoNome) {
+    try {
+        const fullUrl = `${WORKER_URL}/security/validate-hardware`;
+        const response = await fetch(fullUrl, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ projectId, fingerprint, dispositivoNome })
+        });
 
-// NOVO: Atualiza um campo customizado específico
-export async function updateCustomField(projectId, fieldId, value) {
-    console.log(`[API] Atualizando campo ${fieldId} do projeto ${projectId}`);
-    const endpoint = `/projects/${projectId}/custom-fields/${fieldId}`;
-    return await post(endpoint, { value: value });
-}
-
-// NOVO: Busca TODOS os campos customizados da conta para descobrir IDs
-export async function getAllAccountCustomFields() {
-    console.log(`[API] Buscando a lista mestre de todos os campos customizados.`);
-    return await get(`/custom-fields`);
+        return await response.json();
+    } catch (error) {
+        console.error("Falha na conexão de segurança:", error);
+        return { sucesso: false, erro: "Falha na conexão de segurança." };
+    }
 }

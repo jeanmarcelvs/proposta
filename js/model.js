@@ -1,13 +1,5 @@
-/**
- * model.js
- * * Este arquivo é o Modelo do projeto. Ele contém a lógica de negócios-,
- * se comunica com a camada de API e prepara os dados para o Controlador.
- */
 // Importa as funções da API
-import { get, patch, getSelicTaxa, getCustomFields, updateCustomField, getAllAccountCustomFields } from './api.js';
-
-// Cache para a lista mestre de campos customizados para evitar múltiplas chamadas
-let masterCustomFieldsList = null;
+import { get, patch, getSelicTaxa, validarDispositivoHardware } from './api.js';
 
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
@@ -273,6 +265,33 @@ export function validarValidadeProposta(proposta) {
 const CAMPO_OBS_PROJETO_KEY = '[cap_obs_projeto]';
 
 /**
+ * Coleta dados técnicos do dispositivo para enriquecer o log de segurança.
+ * @returns {Promise<object>} Objeto com o fingerprint e detalhes do hardware.
+ */
+async function gerarDadosIdentificacaoProfissional() {
+    const ua = navigator.userAgent;
+    
+    // Identifica apenas a categoria do dispositivo (Mobile/Desktop) e o Navegador
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+    const tipoDispositivo = isMobile ? "Mobile" : "Desktop";
+    
+    // Captura apenas a versão do navegador para suporte técnico
+    let navegador = "Outro";
+    if (ua.includes("Chrome")) navegador = "Chrome";
+    else if (ua.includes("Safari")) navegador = "Safari";
+    else if (ua.includes("Firefox")) navegador = "Firefox";
+
+    // Origem do link (importante apenas para saber se o link do WhatsApp expirou ou foi compartilhado)
+    const origemLink = document.referrer.includes("whatsapp") ? "Link WhatsApp" : "Acesso Direto";
+
+    return {
+        fingerprint: await gerarHashDispositivo(),
+        identificacao: `${tipoDispositivo} via ${navegador}`,
+        contexto: `Origem: ${origemLink}`
+    };
+}
+
+/**
  * Carrega o FingerprintJS e gera o hash do dispositivo.
  * @returns {Promise<string>} O hash do visitante.
  */
@@ -305,82 +324,29 @@ async function gerarHashDispositivo() {
  * @param {string} clienteNome O nome do cliente para o log.
  * @returns {Promise<boolean>} True se o acesso for permitido, False se for bloqueado.
  */
-export async function verificarAcessoDispositivo(projectId, clienteNome = "Cliente") {
+export async function verificarAcessoDispositivo(projectId, clienteNome) {
     try {
         console.log("[Segurança] Iniciando verificação de acesso do dispositivo.");
-        const hashAtual = await gerarHashDispositivo();
-        console.log(`[Segurança] Hash do dispositivo atual: ${hashAtual}`);
-
-        // 1. Obter o ID do campo [cap_obs_projeto] dinamicamente
-        let fieldId = null;
-        if (!masterCustomFieldsList) {
-            const masterListResponse = await getAllAccountCustomFields();
-            if (masterListResponse.sucesso && masterListResponse.dados.data) {
-                masterCustomFieldsList = masterListResponse.dados.data;
-            } else {
-                console.error("[Segurança] Falha ao carregar a lista mestre de campos customizados. Não é possível registrar o acesso.");
-                return true; // Libera o acesso, mas não registra.
-            }
-        }
-
-        const fieldDefinition = masterCustomFieldsList.find(field => field.key === CAMPO_OBS_PROJETO_KEY);
-        if (fieldDefinition) {
-            fieldId = fieldDefinition.id;
-            console.log(`[Segurança] ID do campo '${CAMPO_OBS_PROJETO_KEY}' encontrado dinamicamente: ${fieldId}`);
-        } else {
-            console.error(`[Segurança] O campo com a chave '${CAMPO_OBS_PROJETO_KEY}' não existe na sua conta SolarMarket.`);
-            return true; // Libera o acesso, mas não registra.
-        }
-
-        // 2. Busca os dados do campo customizado NO PROJETO
-        const customFieldsResponse = await getCustomFields(projectId);
-        if (!customFieldsResponse.sucesso) {
-            console.error("Falha ao buscar campos customizados para verificação.");
-            return true;
-        }
-
-        const campoObs = customFieldsResponse.dados.data.find(f => f.customField && f.customField.id === fieldId);
         
-        let conteudoAtual = "";
+        const dadosIdentificacao = await gerarDadosIdentificacaoProfissional();
+        console.log(`[Segurança] Hash do dispositivo atual: ${dadosIdentificacao.fingerprint}`);
 
-        if (campoObs) {
-            conteudoAtual = campoObs.value || "";
-            console.log(`[Segurança] Campo [cap_obs_projeto] (ID: ${fieldId}) encontrado no projeto. Conteúdo atual: "${conteudoAtual}"`);
-        } else {
-            console.warn(`[Segurança] Campo [cap_obs_projeto] não retornado do projeto (provavelmente vazio).`);
-            conteudoAtual = ""; // Garante que o conteúdo é uma string vazia
-        }
+        // Envia o nome do cliente concatenado com os detalhes técnicos do aparelho
+        const dispositivoNomeCompleto = `${clienteNome} (${dadosIdentificacao.identificacao}) | ${dadosIdentificacao.contexto}`;
+        
+        const response = await validarDispositivoHardware(projectId, dadosIdentificacao.fingerprint, dispositivoNomeCompleto);
 
-        // 3. Lógica de Verificação
-        if (!conteudoAtual || conteudoAtual.trim() === "") {
-            console.log("[Segurança] Campo está limpo. Registrando como primeiro acesso (DONO).");
-            const primeiroRegistro = `DONO: ${hashAtual} | Aparelho: ${clienteNome} | Data: ${new Date().toLocaleString('pt-BR')}`;
-            await updateCustomField(projectId, fieldId, primeiroRegistro);
-            console.log("[Segurança] Registro de DONO salvo na API.");
-            return true;
-        } 
-        else if (conteudoAtual.includes(`DONO: ${hashAtual}`)) {
-            console.log("[Segurança] Acesso liberado. Hash corresponde a um DONO registrado.");
+        if (response.sucesso) {
+            console.log(`[Segurança] Acesso autorizado. Status: ${response.status}`);
             return true;
         } else {
-            console.warn("[Segurança] Acesso BLOQUEADO. Hash não corresponde a um DONO.");
-            const dataHora = new Date().toLocaleString('pt-BR');
-            
-            if (!conteudoAtual.includes(`BLOQUEADO: ${hashAtual}`)) {
-                console.log("[Segurança] Registrando nova tentativa de acesso bloqueado.");
-                const novoLogBloqueio = `${conteudoAtual}\nBLOQUEADO: ${hashAtual} | Tentativa em: ${dataHora}`;
-                await updateCustomField(projectId, fieldId, novoLogBloqueio);
-                console.log("[Segurança] Log de bloqueio salvo na API.");
-            } else {
-                console.log("[Segurança] Dispositivo já registrado como bloqueado anteriormente.");
-            }
-            
+            console.warn(`[Segurança] Acesso BLOQUEADO. Motivo: ${response.motivo || 'desconhecido'}. Erro: ${response.erro}`);
             return false;
         }
 
     } catch (error) {
         console.error("[Segurança] Erro crítico na verificação:", error);
-        return true;
+        return true; // Falha aberta para não prejudicar o cliente em caso de erro de script.
     }
 }
 
