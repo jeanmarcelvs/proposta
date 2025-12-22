@@ -1,4 +1,4 @@
-import { buscarETratarProposta, atualizarStatusVisualizacao, validarValidadeProposta } from './model.js';
+import { buscarETratarProposta, atualizarStatusVisualizacao, validarValidadeProposta, verificarAcessoDispositivo } from './model.js';
 
 // Funções para o novo loading-overlay
 function mostrarLoadingOverlay() {
@@ -347,6 +347,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const numeroProjeto = urlParams.get('id');
     const primeiroNome = urlParams.get('nome');
+
+    // =================================================================
+    // 🔒 VERIFICAÇÃO DE SEGURANÇA (FINGERPRINT)
+    // =================================================================
+    if (numeroProjeto) {
+        const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto);
+        if (!acessoPermitido) {
+            // Redireciona para página de erro ou exibe mensagem de bloqueio
+            window.location.href = 'index.html?erro=acesso-negado';
+            return; // Interrompe a execução do restante do script
+        }
+    }
+    // =================================================================
 
     const seletorTipoProposta = document.querySelector('.seletor-tipo-proposta');
     const btnPremium = document.getElementById('btn-premium');

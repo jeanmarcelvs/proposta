@@ -4,7 +4,7 @@
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
 // Importa as funções da API
-import { get, patch, getSelicTaxa } from './api.js';
+import { get, patch, getSelicTaxa, getCustomFields, updateCustomField } from './api.js';
 
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
@@ -263,6 +263,142 @@ export function validarValidadeProposta(proposta) {
     return estaAtiva;
 }
 
+// ======================================================================
+// 🔒 LÓGICA DE SEGURANÇA (FINGERPRINT + LOCALSTORAGE)
+// ======================================================================
+
+const CAMPO_OBS_PROJETO_KEY = '[cap_obs_projeto]';
+
+/**
+ * Carrega o FingerprintJS e gera o hash do dispositivo.
+ * @returns {Promise<string>} O hash do visitante.
+ */
+async function gerarHashDispositivo() {
+    try {
+        // Carrega o script dinamicamente se ainda não estiver na página
+        if (!window.FingerprintJS) {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        const fp = await window.FingerprintJS.load();
+        const result = await fp.get();
+        return result.visitorId;
+    } catch (error) {
+        console.error("Erro ao gerar fingerprint:", error);
+        // Fallback simples caso o FingerprintJS falhe (menos seguro, mas evita travamento total)
+        return 'fallback-' + navigator.userAgent.replace(/\s+/g, '') + screen.width;
+    }
+}
+
+/**
+ * Verifica se o dispositivo atual tem permissão para acessar a proposta.
+ * Implementa a lógica de "Primeiro Acesso" e "Chave Reserva Local".
+ * @param {string} projectId O ID do projeto.
+ * @returns {Promise<boolean>} True se permitido, False se bloqueado.
+ */
+export async function verificarAcessoDispositivo(projectId) {
+    try {
+        const hashAtual = await gerarHashDispositivo();
+        const localStorageKey = `acesso_proposta_${projectId}`;
+        
+        // 1. Verifica Chave Reserva (LocalStorage)
+        // Se o navegador já tem a chave salva, libera imediatamente (mesmo que o campo customizado tenha sido limpo).
+        const chaveLocal = localStorage.getItem(localStorageKey);
+        if (chaveLocal) {
+            const dadosLocais = JSON.parse(chaveLocal);
+            if (dadosLocais.hash === hashAtual) {
+                console.log("[Segurança] Acesso liberado via Chave Local.");
+                return true;
+            }
+        }
+
+        // 2. Busca os dados do campo customizado na API
+        const customFieldsResponse = await getCustomFields(projectId);
+        if (!customFieldsResponse.sucesso) {
+            console.error("Falha ao buscar campos customizados para verificação.");
+            return true; // Falha aberta para não prejudicar o cliente em erro de API
+        }
+
+        const campoObs = customFieldsResponse.dados.data.find(f => f.customField.key === CAMPO_OBS_PROJETO_KEY);
+        
+        // Se o campo não existe ou não tem valor, inicializa array vazio
+        let listaHashes = [];
+        let fieldId = null;
+
+        if (campoObs) {
+            fieldId = campoObs.customField.id; // ID necessário para atualizar depois
+            if (campoObs.value) {
+                try {
+                    listaHashes = JSON.parse(campoObs.value);
+                    if (!Array.isArray(listaHashes)) listaHashes = [];
+                } catch (e) {
+                    // Se não for JSON válido, assume vazio (reseta o campo)
+                    listaHashes = [];
+                }
+            }
+        } else {
+            // Se o campo não foi retornado na lista (pode não ter valor ainda), precisamos descobrir o ID de outra forma
+            // ou assumir que não podemos gravar. Mas geralmente a API retorna todos.
+            // Se não achou, vamos tentar prosseguir liberando (primeiro acesso implícito) mas sem gravar (risco).
+            console.warn("Campo [cap_obs_projeto] não encontrado na API.");
+            return true; 
+        }
+
+        // 3. Verifica se o hash já está registrado
+        const registroExistente = listaHashes.find(item => item.hash === hashAtual);
+
+        if (registroExistente) {
+            if (registroExistente.status === 'liberado') {
+                // Atualiza LocalStorage para garantir acesso futuro offline/rápido
+                localStorage.setItem(localStorageKey, JSON.stringify({ hash: hashAtual, timestamp: new Date().toISOString() }));
+                console.log("[Segurança] Acesso liberado (Hash conhecido).");
+                return true;
+            } else {
+                console.warn("[Segurança] Acesso BLOQUEADO (Hash marcado como bloqueado).");
+                return false;
+            }
+        } else {
+            // 4. Novo Dispositivo
+            // Se a lista está vazia, é o PRIMEIRO ACESSO -> Libera.
+            // Se já tem gente na lista, é um NOVO DISPOSITIVO -> Bloqueia.
+            const status = listaHashes.length === 0 ? 'liberado' : 'bloqueado';
+            
+            const novoRegistro = {
+                hash: hashAtual,
+                status: status,
+                timestamp: new Date().toISOString(),
+                device: navigator.userAgent // Info útil para você identificar o aparelho depois
+            };
+
+            listaHashes.push(novoRegistro);
+
+            // Grava na API (Read-Modify-Write seguro)
+            // Importante: fieldId foi capturado no passo 2
+            if (fieldId) {
+                await updateCustomField(projectId, fieldId, JSON.stringify(listaHashes));
+            }
+
+            if (status === 'liberado') {
+                localStorage.setItem(localStorageKey, JSON.stringify({ hash: hashAtual, timestamp: new Date().toISOString() }));
+                console.log("[Segurança] Primeiro acesso registrado e liberado.");
+                return true;
+            } else {
+                console.warn("[Segurança] Novo dispositivo detectado e BLOQUEADO.");
+                return false;
+            }
+        }
+
+    } catch (error) {
+        console.error("[Segurança] Erro crítico na verificação:", error);
+        return true; // Em caso de erro de script, libera para não perder venda (Fail-Open)
+    }
+}
+
 
 // **FUNÇÃO DE CÁLCULO DA TIR** (permanece inalterada)
 function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
@@ -512,8 +648,20 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     dadosProposta.acessivel = null;
 
     // NOVO: Determina o tipo da proposta principal (Premium ou Basic/Acessível)
-    const tipoPropostaPrincipal = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cape_padrao_instalacao');
+    let tipoPropostaPrincipal = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cape_padrao_instalacao');
     const idProjetoAcessivel = extrairValorVariavelPorChave(propostaPrincipal.variables, 'vc_projeto_acessivel');
+
+    console.log('DEBUG: Tipo de Proposta Principal recebido:', tipoPropostaPrincipal);
+
+    if (!tipoPropostaPrincipal) {
+        console.warn('DEBUG: Variável "cape_padrao_instalacao" não encontrada ou nula. Variáveis disponíveis:', propostaPrincipal.variables ? propostaPrincipal.variables.map(v => v.key) : 'Nenhuma');
+        
+        // Tentativa de inferência: Se tem projeto acessível vinculado, assume-se que é Premium
+        if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
+            console.log('DEBUG: Inferindo tipo PREMIUM devido à presença de projeto acessível vinculado.');
+            tipoPropostaPrincipal = 'PREMIUM';
+        }
+    }
 
     // Cenário 1: A proposta principal é PREMIUM e tem uma proposta acessível vinculada.
     if (tipoPropostaPrincipal === 'PREMIUM' && idProjetoAcessivel && idProjetoAcessivel > 0) {
@@ -556,7 +704,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         // dadosProposta.acessivel permanece null, o que está correto.
 
     // Cenário 3: A proposta principal é BASIC (Acessível) e é única.
-    } else if (tipoPropostaPrincipal === 'BASIC') {
+    } else if (tipoPropostaPrincipal === 'BASIC' || tipoPropostaPrincipal === 'STANDARD') {
         const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiPrincipal, 'acessivel', selicAtual);
         if (!propostaAcessivelTratada) {
             return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
@@ -566,7 +714,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
 
     // Cenário 4: Tipo de proposta desconhecido ou não definido.
     } else {
-        return { sucesso: false, mensagem: 'Padrão de instalação da proposta não reconhecido (nem PREMIUM, nem BASIC).' };
+        return { sucesso: false, mensagem: `Padrão de instalação da proposta não reconhecido: ${tipoPropostaPrincipal} (esperado PREMIUM ou BASIC/STANDARD).` };
     }
 
     // Validação final: se nenhuma proposta foi carregada, retorna erro.
