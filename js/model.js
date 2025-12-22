@@ -263,6 +263,7 @@ export function validarValidadeProposta(proposta) {
 // ======================================================================
 
 const CAMPO_OBS_PROJETO_KEY = '[cap_obs_projeto]';
+const CAMPO_LOG_VISUALIZACAO_KEY = '[cap_log_visualizacao]'; // Separado para não sobrescrever regras de segurança
 
 /**
  * Coleta dados técnicos do dispositivo para enriquecer o log de segurança.
@@ -679,7 +680,7 @@ export async function atualizarStatusVisualizacao(dados) {
         const consultaAtual = await get(endpoint);
         let conteudoAtual = '';
         if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data && consultaAtual.dados.data.variables) {
-            const variavel = consultaAtual.dados.data.variables.find(v => v.key === CAMPO_OBS_PROJETO_KEY);
+            const variavel = consultaAtual.dados.data.variables.find(v => v.key === CAMPO_LOG_VISUALIZACAO_KEY);
             if (variavel) {
                 conteudoAtual = variavel.value || '';
             }
@@ -695,7 +696,7 @@ export async function atualizarStatusVisualizacao(dados) {
         const body = {
             variables: [
                 {
-                    key: CAMPO_OBS_PROJETO_KEY,
+                    key: CAMPO_LOG_VISUALIZACAO_KEY,
                     value: novoConteudo
                 }
             ]
