@@ -262,9 +262,6 @@ export function validarValidadeProposta(proposta) {
 // 🔒 LÓGICA DE SEGURANÇA (FINGERPRINT + LOCALSTORAGE)
 // ======================================================================
 
-const CAMPO_OBS_PROJETO_KEY = '[cap_obs_projeto]';
-const CAMPO_LOG_VISUALIZACAO_KEY = '[cap_log_visualizacao]'; // Separado para não sobrescrever regras de segurança
-
 /**
  * Coleta dados técnicos do dispositivo para enriquecer o log de segurança.
  * @returns {Promise<object>} Objeto com o fingerprint e detalhes do hardware.
@@ -337,12 +334,10 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const endpoint = `/projects/${projectId}`;
         const consulta = await get(endpoint);
         
+        // ALTERADO: Usa o campo 'description' pois a API rejeita 'variables' no PATCH
         let conteudoAtual = '';
-        if (consulta.sucesso && consulta.dados && consulta.dados.data && consulta.dados.data.variables) {
-            const variavel = consulta.dados.data.variables.find(v => v.key === CAMPO_OBS_PROJETO_KEY);
-            if (variavel) {
-                conteudoAtual = variavel.value || '';
-            }
+        if (consulta.sucesso && consulta.dados && consulta.dados.data) {
+            conteudoAtual = consulta.dados.data.description || '';
         }
 
         // 2. Verifica se o hash já está na lista (Allow)
@@ -357,28 +352,22 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const agora = new Date().toLocaleString('pt-BR');
         const infoDispositivo = `${clienteNome} (${dadosIdentificacao.identificacao}) | ${dadosIdentificacao.contexto}`;
         
-        // Se a lista estiver vazia, o primeiro a acessar se torna o DONO (Setup inicial)
-        // Caso contrário, adiciona como BLOQUEADO para histórico
-        const novoLog = !conteudoAtual 
+        // LÓGICA DE DONO: Se não existe a palavra "DONO:" no texto, o primeiro a chegar assume.
+        const jaTemDono = conteudoAtual.includes("DONO:");
+        
+        const novoLog = !jaTemDono 
             ? `DONO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`
             : `BLOQUEADO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`;
             
         const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novoLog}` : novoLog;
 
         // 4. Salva o novo log (Write)
-        const body = {
-            variables: [
-                {
-                    key: CAMPO_OBS_PROJETO_KEY,
-                    value: novoConteudo
-                }
-            ]
-        };
+        const body = { description: novoConteudo };
 
         await patch(endpoint, body);
 
-        // Retorna true apenas se for o primeiro acesso (DONO), caso contrário bloqueia
-        return !conteudoAtual;
+        // Se acabou de criar o DONO, libera (true). Se já tinha dono e caiu aqui, é bloqueio (false).
+        return !jaTemDono;
 
     } catch (error) {
         console.error("[Segurança] Erro crítico na verificação:", error);
@@ -714,28 +703,18 @@ export async function atualizarStatusVisualizacao(dados) {
         // 1. Busca a descrição atual para evitar sobrescrever o histórico (Read-Modify-Write)
         const consultaAtual = await get(endpoint);
         let conteudoAtual = '';
-        if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data && consultaAtual.dados.data.variables) {
-            const variavel = consultaAtual.dados.data.variables.find(v => v.key === CAMPO_LOG_VISUALIZACAO_KEY);
-            if (variavel) {
-                conteudoAtual = variavel.value || '';
-            }
+        if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data) {
+            conteudoAtual = consultaAtual.dados.data.description || '';
         }
 
         const agora = new Date();
         const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
         
-        const novaEntrada = `${dados.tipoVisualizacao}: ${dataHoraFormatada}`;
+        const novaEntrada = `VISUALIZADO (${dados.tipoVisualizacao}): ${dataHoraFormatada}`;
         // Concatena com quebra de linha se já existir texto
         const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novaEntrada}` : novaEntrada;
         
-        const body = {
-            variables: [
-                {
-                    key: CAMPO_LOG_VISUALIZACAO_KEY,
-                    value: novoConteudo
-                }
-            ]
-        };
+        const body = { description: novoConteudo };
 
         const respostaApi = await patch(endpoint, body);
         if (respostaApi.sucesso) {
