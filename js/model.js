@@ -291,7 +291,9 @@ function getDadosEstaveisDispositivo() {
     // 4. Identificador Único Persistente (Client-Side UUID)
     // Adiciona entropia para diferenciar dispositivos com mesmo hardware/software (ex: dois PCs Windows/Chrome).
     let deviceId = localStorage.getItem('cap_device_id');
+    console.debug(`[Debug Segurança] Verificando UUID no localStorage...`);
     if (!deviceId) {
+        console.debug(`[Debug Segurança] UUID não encontrado. Gerando um novo.`);
         if (typeof crypto !== 'undefined' && crypto.randomUUID) {
             deviceId = crypto.randomUUID();
         } else {
@@ -299,6 +301,8 @@ function getDadosEstaveisDispositivo() {
             deviceId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         }
         localStorage.setItem('cap_device_id', deviceId);
+    } else {
+        console.debug(`[Debug Segurança] UUID encontrado: ${deviceId}`);
     }
 
     return {
@@ -322,6 +326,7 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
 
         // 1. Coleta dados estáveis (sem FingerprintJS)
         const dadosEstaveis = getDadosEstaveisDispositivo();
+        console.debug("[Debug Segurança] Dados estáveis coletados:", dadosEstaveis);
         
         // 2. Monta o payload para o Worker
         const payload = {
@@ -331,20 +336,39 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
             navegador: dadosEstaveis.navegador, // Envia 'Chrome::UUID' para garantir hash único
             tipoDispositivo: dadosEstaveis.tipoDispositivo
         };
+        console.debug("[Debug Segurança] Payload enviado para o Worker:", payload);
 
         // 3. Envia para o Worker (Backend) que fará toda a lógica de Hash, JSON e Bloqueio
         const resposta = await validarDispositivoHardware(payload);
+        console.debug("[Debug Segurança] Resposta recebida do Worker:", resposta);
+
+        const storageKey = `dono_registrado_${projectId}`;
 
         if (resposta.sucesso) {
-            // O Worker retorna sucesso: true para 'dono' (novo ou existente) e 'pendente' (novo registro).
-            // Se o status for 'dono' ou 'autorizado', permitimos o acesso.
-            if (resposta.status === 'dono' || resposta.status === 'autorizado') {
+            // Caso 1: O Worker diz que este é o DONO.
+            if (resposta.status === 'dono') {
+                // Verificamos no localStorage se já registramos um dono para este projeto antes.
+                if (localStorage.getItem(storageKey)) {
+                    // ANOMALIA DETECTADA: O Worker está criando um segundo "dono".
+                    // Isso significa que o dispositivo atual é diferente do primeiro.
+                    // BLOQUEAMOS por segurança, pois o Worker deveria ter retornado 'pendente'.
+                    console.error("[Segurança] ANOMALIA: Worker tentou registrar um segundo 'dono'. Bloqueando acesso.");
+                    return false;
+                } else {
+                    // É o primeiro "dono" legítimo. Permitimos o acesso e marcamos no localStorage.
+                    console.log(`[Segurança] Acesso autorizado. Status: ${resposta.status}. Registrando dono localmente.`);
+                    localStorage.setItem(storageKey, 'true');
+                    return true;
+                }
+            }
+
+            // Caso 2: O Worker reconheceu um dono existente.
+            if (resposta.status === 'autorizado') {
                 console.log(`[Segurança] Acesso autorizado. Status: ${resposta.status}`);
                 return true;
             }
-            
-            // Se o status for 'pendente', significa que é um novo dispositivo num projeto que já tem dono.
-            // O Worker registrou com sucesso (200 OK), mas o Frontend deve BLOQUEAR a visualização.
+
+            // Caso 3: O Worker registrou como pendente.
             if (resposta.status === 'pendente') {
                 console.warn(`[Segurança] Dispositivo registrado como PENDENTE. Acesso bloqueado aguardando aprovação.`);
                 return false;
