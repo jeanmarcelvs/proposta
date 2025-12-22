@@ -262,8 +262,7 @@ export function validarValidadeProposta(proposta) {
 // 🔒 LÓGICA DE SEGURANÇA (FINGERPRINT + LOCALSTORAGE)
 // ======================================================================
 
-const CAMPO_OBS_PROJETO_KEY = '[cap_obs_projeto]';
-const CAMPO_LOG_VISUALIZACAO_KEY = '[cap_log_visualizacao]';
+const CAMPO_OBS_PROJETO_KEY = 'cap_obs_projeto';
 
 /**
  * Coleta dados técnicos do dispositivo para enriquecer o log de segurança.
@@ -333,26 +332,39 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const hashAtual = dadosIdentificacao.fingerprint;
         console.log(`[Segurança] Hash do dispositivo atual: ${hashAtual}`);
 
-        // 1. Busca a lista de dispositivos permitidos/log atual (Read)
-        const endpoint = `/projects/${projectId}`;
-        const consulta = await get(endpoint);
+        // 1. Busca o ID do campo customizado nas definições globais (Metadata)
+        // ALTERADO: Busca em /custom-fields pois /projects/{id} pode não retornar a estrutura completa
+        const endpointMeta = `/custom-fields`;
+        const consultaMeta = await get(endpointMeta);
+        
+        let customFieldId = null;
+        if (consultaMeta.sucesso && consultaMeta.dados && consultaMeta.dados.data) {
+            // Tenta encontrar com ou sem colchetes para garantir compatibilidade
+            const campo = consultaMeta.dados.data.find(c => 
+                c.key === CAMPO_OBS_PROJETO_KEY || 
+                c.key === `[${CAMPO_OBS_PROJETO_KEY}]`
+            );
+            if (campo) customFieldId = campo.id;
+        }
+
+        if (!customFieldId) {
+            console.warn(`[Segurança] Definição do campo ${CAMPO_OBS_PROJETO_KEY} não encontrada no SolarMarket.`);
+            return false;
+        }
+
+        // 2. Busca o valor atual do campo no projeto específico
+        const endpointValor = `/projects/${projectId}/custom-fields`;
+        const consultaValor = await get(endpointValor);
         
         let conteudoAtual = '';
-        let customFieldId = null;
-
-        if (consulta.sucesso && consulta.dados && consulta.dados.data) {
-            const variables = consulta.dados.data.variables || [];
-            const variable = variables.find(v => v.key === CAMPO_OBS_PROJETO_KEY);
-            if (variable) {
-                conteudoAtual = variable.value || '';
-                customFieldId = variable.id;
-            } else {
-                console.warn(`[Segurança] Campo customizado ${CAMPO_OBS_PROJETO_KEY} não encontrado nas variáveis do projeto.`);
-                // Sem fallback: Se o campo de segurança não existe, não podemos validar corretamente.
+        if (consultaValor.sucesso && consultaValor.dados && consultaValor.dados.data) {
+            const dadosCampo = consultaValor.dados.data.find(item => item.custom_field_id === customFieldId);
+            if (dadosCampo) {
+                conteudoAtual = dadosCampo.value || '';
             }
         }
 
-        // 2. Verifica se o hash já está na lista (Allow)
+        // 3. Verifica se o hash já está na lista (Allow)
         // Verifica linha a linha para garantir que não estamos liberando um dispositivo BLOQUEADO
         const linhas = conteudoAtual.split('\n');
         const dispositivoLiberado = linhas.find(linha => linha.includes(hashAtual) && !linha.includes('BLOQUEADO'));
@@ -736,44 +748,4 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     return { sucesso: true, dados: dadosProposta };
-}
-
-export async function atualizarStatusVisualizacao(dados) {
-    try {
-        const endpoint = `/projects/${dados.propostaId}`;
-
-        // 1. Busca a descrição atual para evitar sobrescrever o histórico (Read-Modify-Write)
-        const consultaAtual = await get(endpoint);
-        let conteudoAtual = '';
-        let customFieldId = null;
-
-        if (consultaAtual.sucesso && consultaAtual.dados && consultaAtual.dados.data) {
-            const variables = consultaAtual.dados.data.variables || [];
-            const variable = variables.find(v => v.key === CAMPO_LOG_VISUALIZACAO_KEY);
-            if (variable) {
-                conteudoAtual = variable.value || '';
-                customFieldId = variable.id;
-            } else {
-                console.warn(`[Model] Campo customizado ${CAMPO_LOG_VISUALIZACAO_KEY} não encontrado.`);
-            }
-        }
-
-        const agora = new Date();
-        const dataHoraFormatada = `${agora.getDate().toString().padStart(2, '0')}-${(agora.getMonth() + 1).toString().padStart(2, '0')}-${agora.getFullYear()} ${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}`;
-        
-        const novaEntrada = `VISUALIZADO (${dados.tipoVisualizacao}): ${dataHoraFormatada}`;
-        // Concatena com quebra de linha se já existir texto
-        const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novaEntrada}` : novaEntrada;
-        
-        if (customFieldId) {
-            const endpointUpdate = `/projects/${dados.propostaId}/custom-fields/${customFieldId}`;
-            await post(endpointUpdate, { value: novoConteudo });
-            console.log("Modelo: Status de visualização atualizado com sucesso (Custom Field)!");
-        } else {
-            console.error("Modelo: ID do campo customizado de log não encontrado. Log não salvo.");
-        }
-    } catch (erro) {
-        console.log("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
-        return { sucesso: false, mensagem: 'Ocorreu um erro ao tentar atualizar o status de visualização.' };
-    }
 }
