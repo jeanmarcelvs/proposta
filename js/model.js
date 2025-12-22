@@ -347,15 +347,26 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
                 conteudoAtual = variable.value || '';
                 customFieldId = variable.id;
             } else {
-                // Fallback para description se o campo customizado não existir
-                conteudoAtual = consulta.dados.data.description || '';
+                console.warn(`[Segurança] Campo customizado ${CAMPO_OBS_PROJETO_KEY} não encontrado nas variáveis do projeto.`);
+                // Sem fallback: Se o campo de segurança não existe, não podemos validar corretamente.
             }
         }
 
         // 2. Verifica se o hash já está na lista (Allow)
-        if (conteudoAtual.includes(hashAtual)) {
-            console.log("[Segurança] Dispositivo reconhecido na lista de acesso.");
+        // Verifica linha a linha para garantir que não estamos liberando um dispositivo BLOQUEADO
+        const linhas = conteudoAtual.split('\n');
+        const dispositivoLiberado = linhas.find(linha => linha.includes(hashAtual) && !linha.includes('BLOQUEADO'));
+
+        if (dispositivoLiberado) {
+            console.log("[Segurança] Dispositivo reconhecido e liberado.");
             return true;
+        }
+
+        // Verifica se o dispositivo já está na lista de bloqueados para evitar duplicidade no log
+        const dispositivoBloqueado = linhas.find(linha => linha.includes(hashAtual) && linha.includes('BLOQUEADO'));
+        if (dispositivoBloqueado) {
+            console.warn("[Segurança] Dispositivo já consta na lista de bloqueio.");
+            return false;
         }
 
         // 3. Se não está na lista, registra a tentativa (Append - Modify)
@@ -364,8 +375,9 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const agora = new Date().toLocaleString('pt-BR');
         const infoDispositivo = `${clienteNome} (${dadosIdentificacao.identificacao}) | ${dadosIdentificacao.contexto}`;
         
-        // LÓGICA DE DONO: Se não existe a palavra "DONO:" no texto, o primeiro a chegar assume.
-        const jaTemDono = conteudoAtual.includes("DONO:");
+        // LÓGICA DE DONO: Se já existe conteúdo (mesmo sem a tag "DONO:"), consideramos que já tem dono.
+        // Isso previne que logs antigos sem a tag permitam um novo "DONO".
+        const jaTemDono = conteudoAtual.includes("DONO:") || conteudoAtual.trim().length > 0;
         
         const novoLog = !jaTemDono 
             ? `DONO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`
@@ -374,13 +386,26 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novoLog}` : novoLog;
 
         // 4. Salva o novo log (Write)
+        let saveSuccess = false;
+
         if (customFieldId) {
             // Usa o endpoint específico para atualizar o campo customizado (POST)
             const endpointUpdate = `/projects/${projectId}/custom-fields/${customFieldId}`;
-            await post(endpointUpdate, { value: novoConteudo });
+            try {
+                await post(endpointUpdate, { value: novoConteudo });
+                saveSuccess = true;
+            } catch (e) {
+                console.error("[Segurança] Erro ao salvar campo customizado:", e);
+                saveSuccess = false;
+            }
         } else {
-            // Fallback: Atualiza a descrição do projeto (PATCH)
-            await patch(endpoint, { description: novoConteudo });
+            console.error("[Segurança] ID do campo customizado não disponível. Não é possível salvar o log.");
+            saveSuccess = false;
+        }
+
+        if (!saveSuccess) {
+            console.error("[Segurança] Falha crítica ao persistir log. Bloqueando acesso por segurança.");
+            return false;
         }
 
         // Se acabou de criar o DONO, libera (true). Se já tinha dono e caiu aqui, é bloqueio (false).
@@ -729,7 +754,7 @@ export async function atualizarStatusVisualizacao(dados) {
                 conteudoAtual = variable.value || '';
                 customFieldId = variable.id;
             } else {
-                conteudoAtual = consultaAtual.dados.data.description || '';
+                console.warn(`[Model] Campo customizado ${CAMPO_LOG_VISUALIZACAO_KEY} não encontrado.`);
             }
         }
 
@@ -745,12 +770,7 @@ export async function atualizarStatusVisualizacao(dados) {
             await post(endpointUpdate, { value: novoConteudo });
             console.log("Modelo: Status de visualização atualizado com sucesso (Custom Field)!");
         } else {
-            const respostaApi = await patch(endpoint, { description: novoConteudo });
-            if (respostaApi.sucesso) {
-                console.log("Modelo: Status de visualização atualizado com sucesso!");
-            } else {
-                console.error("Modelo: Falha ao atualizar status de visualização.");
-            }
+            console.error("Modelo: ID do campo customizado de log não encontrado. Log não salvo.");
         }
     } catch (erro) {
         console.log("Modelo: Erro ao tentar atualizar o status de visualização.", erro);
