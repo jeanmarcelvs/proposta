@@ -358,9 +358,11 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         
         let conteudoAtual = '';
         if (consultaValor.sucesso && consultaValor.dados && consultaValor.dados.data) {
-            const dadosCampo = consultaValor.dados.data.find(item => item.custom_field_id === customFieldId);
+            // CORREÇÃO: Comparação solta (==) para garantir match entre string/number no ID
+            const dadosCampo = consultaValor.dados.data.find(item => item.custom_field_id == customFieldId);
             if (dadosCampo) {
                 conteudoAtual = dadosCampo.value || '';
+                console.log(`[Segurança] Histórico recuperado: ${conteudoAtual.length} caracteres.`);
             }
         }
 
