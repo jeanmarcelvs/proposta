@@ -346,7 +346,8 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
 
     } catch (error) {
         console.error("[Segurança] Erro crítico na verificação:", error);
-        return true; // Falha aberta para não prejudicar o cliente em caso de erro de script.
+        // SEGURANÇA: Alterado para Fail Closed. Se a verificação falhar (ex: erro de rede/CORS), bloqueia o acesso.
+        return false;
     }
 }
 
