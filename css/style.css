@@ -1650,3 +1650,92 @@ body.modal-aberta {
         }
     }
 }
+
+/* --- Estilos da Seção de Expansão --- */
+.secao-expansao-container {
+    margin-top: 3.5rem;
+    padding: 2.5rem 2rem 2rem; /* Padding superior maior para acomodar o título */
+    background-color: rgba(var(--cor-fundo-principal-rgb), 0.3); /* Fundo sutil para separar visualmente */
+    border: 1px solid var(--cor-cartao-borda);
+    border-left: 4px solid var(--cor-primaria); /* Destaque lateral de autoridade */
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Grid responsivo */
+    gap: 2rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Título "Flutuante" na borda para dar contexto técnico e autoridade */
+.secao-expansao-container::before {
+    content: 'Capacidade de Expansão Futura';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background-color: var(--cor-fundo-secao); /* Corta a borda visualmente */
+    padding: 0 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+.item-expansao {
+    display: flex;
+    flex-direction: row; /* Alinha ícone e texto lado a lado */
+    align-items: center;
+    gap: 1rem;
+}
+
+.icone-expansao {
+    font-size: 1.8rem;
+    color: var(--cor-texto-secundario); /* Cor discreta para não competir com o valor */
+    opacity: 0.6; /* Suavidade para elegância */
+    min-width: 40px;
+    text-align: center;
+}
+
+.info-expansao {
+    display: flex;
+    flex-direction: column;
+}
+
+.label-expansao {
+    color: var(--cor-texto-secundario);
+    font-size: 0.75rem; /* Rótulo menor e mais discreto */
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.valor-expansao {
+    color: var(--cor-primaria);
+    font-size: 1.4rem; /* Ajustado para equilibrar com o ícone */
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.theme-acessivel .valor-expansao {
+    color: var(--cor-texto-principal);
+}
+
+@media (max-width: 600px) {
+    .secao-expansao-container {
+        grid-template-columns: 1fr; /* Coluna única no mobile */
+        gap: 1.5rem;
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .item-expansao {
+        border-bottom: 1px solid rgba(var(--cor-fundo-principal-rgb), 0.1); /* Separador sutil */
+        padding-bottom: 1rem;
+    }
+
+    .item-expansao:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+}

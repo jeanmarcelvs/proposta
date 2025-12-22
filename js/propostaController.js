@@ -185,6 +185,12 @@ function preencherDadosProposta(dados) {
         const iconeInstalacaoEl = document.getElementById('icone-instalacao');
         const idealParaEl = document.getElementById('ideal-para');
         const tituloSistemaEl = document.getElementById('titulo-sistema');
+        
+        // NOVO: Seleciona os elementos da nova seção de expansão
+        const secaoExpansao = document.getElementById('secao-expansao');
+        const expansaoCapacidadeValorEl = document.getElementById('expansao-capacidade-valor');
+        const expansaoIdealValorEl = document.getElementById('expansao-ideal-valor');
+        const expansaoModulosValorEl = document.getElementById('expansao-modulos-valor');
 
         if (isVE) {
             if (tituloSistemaEl) tituloSistemaEl.innerText = 'Carregador Proposto';
@@ -193,7 +199,8 @@ function preencherDadosProposta(dados) {
             if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || 'Não informado';
             if (iconeInstalacaoEl) iconeInstalacaoEl.className = 'fas fa-charging-station';
             if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'Não informado';
-            
+            // Oculta a seção de expansão para propostas de VE
+            if (secaoExpansao) secaoExpansao.classList.add('oculto');
         } else { // Lógica para o sistema Solar
             if (tituloSistemaEl) tituloSistemaEl.innerText = 'Sistema Proposto';
             if (geracaoMediaEl) {
@@ -214,6 +221,55 @@ function preencherDadosProposta(dados) {
                 }
             }
             if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'R$ 0,00';
+
+            // --- Lógica para a NOVA seção de Expansão ---
+            // Helper para extrair valores do array 'variables' que vem do JSON.
+            // NOTA: O objeto 'dados' recebido aqui deve conter o array 'variables' para que esta seção funcione.
+            // Se não funcionar, o problema está no arquivo 'model.js' que não está repassando esse array.
+            const getValorExpansao = (chave) => {
+                // Acessa o array 'variables' que contém os campos personalizados.
+                if (!dados.variables || !Array.isArray(dados.variables)) {
+                    return undefined;
+                }
+
+                // Encontra o objeto correspondente à chave.
+                const item = dados.variables.find(v => v && v.key === chave);
+
+                // Retorna o valor do objeto encontrado (prioriza formattedValue).
+                if (item) {
+                    const valor = item.formattedValue || item.value;
+                    return valor;
+                }
+                return undefined;
+            };
+
+            const valExpansao = getValorExpansao('vc_vc_exp_max_em_mod_no_sistema_temp');
+            const modulosParaExpandirRaw = String(valExpansao || '0');
+            const modulosParaExpandirNum = parseInt(modulosParaExpandirRaw.replace(/\D/g, ''), 10) || 0;
+
+            if (secaoExpansao) {
+                // Mostra ou oculta a seção inteira se houver ou não capacidade de expansão
+                const temExpansao = modulosParaExpandirNum > 0;
+                secaoExpansao.classList.toggle('oculto', !temExpansao);
+                
+                if (!temExpansao) {
+                    console.log(`[Expansão] Projeto sem capacidade de expansão (${modulosParaExpandirNum} módulos). Seção ocultada.`);
+                }
+
+                if (temExpansao) {
+                    if (expansaoCapacidadeValorEl) {
+                        expansaoCapacidadeValorEl.innerText = getValorExpansao('vc_ger_max_com_exp') || 'N/A';
+                    }
+                    if (expansaoIdealValorEl) {
+                        // Remove a parte "Contas de até" para não ser redundante com o label
+                        const idealParaRaw = getValorExpansao('vc_valor_aprox_cons_expans') || 'N/A';
+                        expansaoIdealValorEl.innerText = String(idealParaRaw).replace(/Contas de até/i, '').trim();
+                    }
+                    if (expansaoModulosValorEl) {
+                        expansaoModulosValorEl.innerText = valExpansao || 'N/A';
+                    }
+                }
+            }
         }
 
         // 3. Equipamentos (Lógica adaptada para VE e Solar)

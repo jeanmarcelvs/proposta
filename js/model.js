@@ -74,28 +74,23 @@ const caminhosImagens = {
 const detalhesInstalacaoPremium = [
     {
         icone: 'fa-user-shield',
-        titulo: 'Projeto Pensado para Redução de Incertezas',
-        texto: 'Este padrão foi desenvolvido para clientes que preferem eliminar incertezas desde o início. A concepção do sistema prioriza previsibilidade de funcionamento e estabilidade ao longo dos anos, evitando surpresas futuras.'
+        titulo: 'Projeto para Quem Prioriza Tranquilidade',
+        texto: 'Indicado para clientes que preferem investir uma vez e ter estabilidade no funcionamento ao longo dos anos.'
     },
     {
         icone: 'fa-industry',
-        titulo: 'Infraestrutura com Conceito de Longa Vida Útil',
-        texto: 'A infraestrutura é concebida para operação contínua e estável ao longo do tempo. Esse padrão reduz o surgimento de desgastes progressivos que normalmente aparecem após alguns anos de uso.'
-    },
-    {
-        icone: 'fa-shield-alt',
-        titulo: 'Proteção Elétrica Integrada ao Projeto',
-        texto: 'O sistema de proteção é pensado de forma integrada ao conjunto da instalação, com o objetivo de preservar o desempenho do sistema e reduzir impactos causados por variações e distúrbios da rede elétrica.'
-    },
-    {
-        icone: 'fa-box-open',
-        titulo: 'Estabilidade Estrutural e das Conexões',
-        texto: 'O sistema é concebido para manter sua integridade mesmo diante de variações naturais de temperatura e condições externas, evitando esforços acumulativos nas conexões e preservando o desempenho ao longo da vida útil.'
+        titulo: 'Padrão Construtivo Elevado',
+        texto: 'Solução pensada para reduzir desgastes naturais e manter desempenho estável por longo prazo.'
     },
     {
         icone: 'fa-chart-line',
-        titulo: 'Previsibilidade de Retorno ao Longo dos Anos',
-        texto: 'Ao reduzir falhas ocultas, intervenções corretivas e perdas silenciosas de desempenho, este padrão torna o comportamento do investimento mais previsível e estável ao longo do tempo.'
+        titulo: 'Comportamento Financeiro Mais Previsível',
+        texto: 'Menor exposição a correções futuras contribui para um retorno mais consistente do investimento.'
+    },
+    {
+        icone: 'fa-home',
+        titulo: 'Perfil de Consumidor',
+        texto: 'Ideal para consumidores que buscam alto padrão, durabilidade e segurança por longo prazo.'
     }
 ];
 
@@ -104,37 +99,17 @@ const detalhesInstalacaoPremium = [
 const detalhesInstalacaoAcessivel = [
     {
         icone: 'fa-info-circle',
-        titulo: 'Projeto com Foco no Investimento Inicial',
-        texto: 'Este padrão foi desenvolvido para clientes cujo principal critério é reduzir o investimento inicial, adotando uma concepção mais simples quando comparada ao padrão Premium.'
+        titulo: 'Foco no Baixo Custo Inicial',
+        texto: 'Projetado para quem busca uma solução com um menor investimento inicial.'
     },
-    {
-        icone: 'fa-home',
-        titulo: 'Infraestrutura Funcional Simplificada',
-        texto: 'A infraestrutura atende às necessidades básicas de funcionamento do sistema, porém com menor nível de antecipação de desgastes e variações que podem surgir ao longo do tempo.'
-    },
-    {
-        icone: 'fa-bolt',
-        titulo: 'Proteção Elétrica Essencial',
-        texto: 'O sistema conta com proteção elétrica básica, suficiente para operação inicial, porém com menor nível de integração e robustez quando comparado a soluções de padrão mais avançado.'
-    },
-    {
-        icone: 'fa-link',
-        titulo: 'Concepção Convencional das Conexões',
-        texto: 'As conexões seguem uma concepção tradicional de instalação, sem o mesmo nível de antecipação de variações naturais e esforços acumulativos ao longo dos anos.'
-    },
-    {
-        icone: 'fa-coins',
-        titulo: 'Menor Previsibilidade no Longo Prazo',
-        texto: 'A simplificação do projeto reduz o custo inicial, porém pode resultar em maior dependência de ajustes, manutenções ou intervenções ao longo da vida útil do sistema.'
-    }
 ];
 
 // NOVO: Resumos para a seção de instalação
 const resumoInstalacaoPremium = 
-"Esta proposta foi concebida para clientes que valorizam previsibilidade, estabilidade e tranquilidade ao longo dos anos. O foco não é competir em preço, mas reduzir riscos técnicos e evitar custos ocultos que só aparecem com o tempo.";
+"Esta proposta foi concebida para consumidores que valorizam previsibilidade, estabilidade e tranquilidade ao longo dos anos. O foco é reduzir riscos técnicos e evitar custos ocultos que só aparecem com o tempo.";
 
 const resumoInstalacaoAcessivel =
-"Esta proposta prioriza a redução do investimento inicial, adotando soluções mais simples quando comparadas ao padrão Premium.";
+"Esta proposta prioriza a redução do investimento inicial, adotando soluções mais simples.";
 
 // NOVO: Dados para o Aceite Consciente (Gate de Leitura)
 const dadosAceite = {
@@ -578,7 +553,9 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         equipamentos,
         instalacao,
         valores,
-        validade: `Proposta válida por até 3 dias corridos. Após esse prazo, condições técnicas, custos e disponibilidade podem ser reavaliados.`
+        validade: `Proposta válida por até 3 dias corridos. Após esse prazo, condições técnicas, custos e disponibilidade podem ser reavaliados.`,
+        // Adiciona o array completo de variáveis para uso no controller (ex: seção de expansão)
+        variables: variables
     };
 
     return retorno;
