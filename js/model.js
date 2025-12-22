@@ -4,7 +4,10 @@
  * se comunica com a camada de API e prepara os dados para o Controlador.
  */
 // Importa as funções da API
-import { get, patch, getSelicTaxa, getCustomFields, updateCustomField } from './api.js';
+import { get, patch, getSelicTaxa, getCustomFields, updateCustomField, getAllAccountCustomFields } from './api.js';
+
+// Cache para a lista mestre de campos customizados para evitar múltiplas chamadas
+let masterCustomFieldsList = null;
 
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
@@ -299,103 +302,85 @@ async function gerarHashDispositivo() {
  * Verifica se o dispositivo atual tem permissão para acessar a proposta.
  * Implementa a lógica de "Primeiro Acesso" e "Chave Reserva Local".
  * @param {string} projectId O ID do projeto.
- * @returns {Promise<boolean>} True se permitido, False se bloqueado.
+ * @param {string} clienteNome O nome do cliente para o log.
+ * @returns {Promise<boolean>} True se o acesso for permitido, False se for bloqueado.
  */
-export async function verificarAcessoDispositivo(projectId) {
+export async function verificarAcessoDispositivo(projectId, clienteNome = "Cliente") {
     try {
+        console.log("[Segurança] Iniciando verificação de acesso do dispositivo.");
         const hashAtual = await gerarHashDispositivo();
-        const localStorageKey = `acesso_proposta_${projectId}`;
-        
-        // 1. Verifica Chave Reserva (LocalStorage)
-        // Se o navegador já tem a chave salva, libera imediatamente (mesmo que o campo customizado tenha sido limpo).
-        const chaveLocal = localStorage.getItem(localStorageKey);
-        if (chaveLocal) {
-            const dadosLocais = JSON.parse(chaveLocal);
-            if (dadosLocais.hash === hashAtual) {
-                console.log("[Segurança] Acesso liberado via Chave Local.");
-                return true;
+        console.log(`[Segurança] Hash do dispositivo atual: ${hashAtual}`);
+
+        // 1. Obter o ID do campo [cap_obs_projeto] dinamicamente
+        let fieldId = null;
+        if (!masterCustomFieldsList) {
+            const masterListResponse = await getAllAccountCustomFields();
+            if (masterListResponse.sucesso && masterListResponse.dados.data) {
+                masterCustomFieldsList = masterListResponse.dados.data;
+            } else {
+                console.error("[Segurança] Falha ao carregar a lista mestre de campos customizados. Não é possível registrar o acesso.");
+                return true; // Libera o acesso, mas não registra.
             }
         }
 
-        // 2. Busca os dados do campo customizado na API
+        const fieldDefinition = masterCustomFieldsList.find(field => field.key === CAMPO_OBS_PROJETO_KEY);
+        if (fieldDefinition) {
+            fieldId = fieldDefinition.id;
+            console.log(`[Segurança] ID do campo '${CAMPO_OBS_PROJETO_KEY}' encontrado dinamicamente: ${fieldId}`);
+        } else {
+            console.error(`[Segurança] O campo com a chave '${CAMPO_OBS_PROJETO_KEY}' não existe na sua conta SolarMarket.`);
+            return true; // Libera o acesso, mas não registra.
+        }
+
+        // 2. Busca os dados do campo customizado NO PROJETO
         const customFieldsResponse = await getCustomFields(projectId);
         if (!customFieldsResponse.sucesso) {
             console.error("Falha ao buscar campos customizados para verificação.");
-            return true; // Falha aberta para não prejudicar o cliente em erro de API
+            return true;
         }
 
-        const campoObs = customFieldsResponse.dados.data.find(f => f.customField.key === CAMPO_OBS_PROJETO_KEY);
+        const campoObs = customFieldsResponse.dados.data.find(f => f.customField && f.customField.id === fieldId);
         
-        // Se o campo não existe ou não tem valor, inicializa array vazio
-        let listaHashes = [];
-        let fieldId = null;
+        let conteudoAtual = "";
 
         if (campoObs) {
-            fieldId = campoObs.customField.id; // ID necessário para atualizar depois
-            if (campoObs.value) {
-                try {
-                    listaHashes = JSON.parse(campoObs.value);
-                    if (!Array.isArray(listaHashes)) listaHashes = [];
-                } catch (e) {
-                    // Se não for JSON válido, assume vazio (reseta o campo)
-                    listaHashes = [];
-                }
-            }
+            conteudoAtual = campoObs.value || "";
+            console.log(`[Segurança] Campo [cap_obs_projeto] (ID: ${fieldId}) encontrado no projeto. Conteúdo atual: "${conteudoAtual}"`);
         } else {
-            // Se o campo não foi retornado na lista (pode não ter valor ainda), precisamos descobrir o ID de outra forma
-            // ou assumir que não podemos gravar. Mas geralmente a API retorna todos.
-            // Se não achou, vamos tentar prosseguir liberando (primeiro acesso implícito) mas sem gravar (risco).
-            console.warn("Campo [cap_obs_projeto] não encontrado na API.");
-            return true; 
+            console.warn(`[Segurança] Campo [cap_obs_projeto] não retornado do projeto (provavelmente vazio).`);
+            conteudoAtual = ""; // Garante que o conteúdo é uma string vazia
         }
 
-        // 3. Verifica se o hash já está registrado
-        const registroExistente = listaHashes.find(item => item.hash === hashAtual);
-
-        if (registroExistente) {
-            if (registroExistente.status === 'liberado') {
-                // Atualiza LocalStorage para garantir acesso futuro offline/rápido
-                localStorage.setItem(localStorageKey, JSON.stringify({ hash: hashAtual, timestamp: new Date().toISOString() }));
-                console.log("[Segurança] Acesso liberado (Hash conhecido).");
-                return true;
-            } else {
-                console.warn("[Segurança] Acesso BLOQUEADO (Hash marcado como bloqueado).");
-                return false;
-            }
+        // 3. Lógica de Verificação
+        if (!conteudoAtual || conteudoAtual.trim() === "") {
+            console.log("[Segurança] Campo está limpo. Registrando como primeiro acesso (DONO).");
+            const primeiroRegistro = `DONO: ${hashAtual} | Aparelho: ${clienteNome} | Data: ${new Date().toLocaleString('pt-BR')}`;
+            await updateCustomField(projectId, fieldId, primeiroRegistro);
+            console.log("[Segurança] Registro de DONO salvo na API.");
+            return true;
+        } 
+        else if (conteudoAtual.includes(`DONO: ${hashAtual}`)) {
+            console.log("[Segurança] Acesso liberado. Hash corresponde a um DONO registrado.");
+            return true;
         } else {
-            // 4. Novo Dispositivo
-            // Se a lista está vazia, é o PRIMEIRO ACESSO -> Libera.
-            // Se já tem gente na lista, é um NOVO DISPOSITIVO -> Bloqueia.
-            const status = listaHashes.length === 0 ? 'liberado' : 'bloqueado';
+            console.warn("[Segurança] Acesso BLOQUEADO. Hash não corresponde a um DONO.");
+            const dataHora = new Date().toLocaleString('pt-BR');
             
-            const novoRegistro = {
-                hash: hashAtual,
-                status: status,
-                timestamp: new Date().toISOString(),
-                device: navigator.userAgent // Info útil para você identificar o aparelho depois
-            };
-
-            listaHashes.push(novoRegistro);
-
-            // Grava na API (Read-Modify-Write seguro)
-            // Importante: fieldId foi capturado no passo 2
-            if (fieldId) {
-                await updateCustomField(projectId, fieldId, JSON.stringify(listaHashes));
-            }
-
-            if (status === 'liberado') {
-                localStorage.setItem(localStorageKey, JSON.stringify({ hash: hashAtual, timestamp: new Date().toISOString() }));
-                console.log("[Segurança] Primeiro acesso registrado e liberado.");
-                return true;
+            if (!conteudoAtual.includes(`BLOQUEADO: ${hashAtual}`)) {
+                console.log("[Segurança] Registrando nova tentativa de acesso bloqueado.");
+                const novoLogBloqueio = `${conteudoAtual}\nBLOQUEADO: ${hashAtual} | Tentativa em: ${dataHora}`;
+                await updateCustomField(projectId, fieldId, novoLogBloqueio);
+                console.log("[Segurança] Log de bloqueio salvo na API.");
             } else {
-                console.warn("[Segurança] Novo dispositivo detectado e BLOQUEADO.");
-                return false;
+                console.log("[Segurança] Dispositivo já registrado como bloqueado anteriormente.");
             }
+            
+            return false;
         }
 
     } catch (error) {
         console.error("[Segurança] Erro crítico na verificação:", error);
-        return true; // Em caso de erro de script, libera para não perder venda (Fail-Open)
+        return true;
     }
 }
 
@@ -627,7 +612,6 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         dataExpiracao: propostaPrincipal.expirationDate, // Correção: usar propostaPrincipal
     };
     if (!validarValidadeProposta(propostaParaValidarPremium)) {
-        console.warn('DEBUG: Proposta premium expirada.');
         return {
             sucesso: false,
             mensagem: 'Proposta expirada. Por favor, solicite uma nova.'
@@ -651,14 +635,9 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     let tipoPropostaPrincipal = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cape_padrao_instalacao');
     const idProjetoAcessivel = extrairValorVariavelPorChave(propostaPrincipal.variables, 'vc_projeto_acessivel');
 
-    console.log('DEBUG: Tipo de Proposta Principal recebido:', tipoPropostaPrincipal);
-
     if (!tipoPropostaPrincipal) {
-        console.warn('DEBUG: Variável "cape_padrao_instalacao" não encontrada ou nula. Variáveis disponíveis:', propostaPrincipal.variables ? propostaPrincipal.variables.map(v => v.key) : 'Nenhuma');
-        
         // Tentativa de inferência: Se tem projeto acessível vinculado, assume-se que é Premium
         if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
-            console.log('DEBUG: Inferindo tipo PREMIUM devido à presença de projeto acessível vinculado.');
             tipoPropostaPrincipal = 'PREMIUM';
         }
     }

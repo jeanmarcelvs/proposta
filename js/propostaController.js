@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 🔒 VERIFICAÇÃO DE SEGURANÇA (FINGERPRINT)
     // =================================================================
     if (numeroProjeto) {
-        const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto);
+        const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto, primeiroNome);
         if (!acessoPermitido) {
             // Redireciona para página de erro ou exibe mensagem de bloqueio
             window.location.href = 'index.html?erro=acesso-negado';

@@ -18,7 +18,6 @@ export async function get(endpoint) {
     try {
         const fullUrl = `${WORKER_URL}/solarmarket${endpoint}`;
         
-        console.log(`DEBUG: Iniciando GET para ${fullUrl}`);
         const response = await fetch(fullUrl, { headers: getHeaders() });
 
         if (!response.ok) {
@@ -37,7 +36,6 @@ export async function get(endpoint) {
         return { sucesso: true, dados: dados };
 
     } catch (error) {
-        console.error('DEBUG: Erro na requisição GET (catch):', error);
         return { sucesso: false, dados: null, mensagem: 'Erro na requisição GET.' };
     }
 }
@@ -67,7 +65,6 @@ export async function post(endpoint, dados) {
         const responseData = await response.json();
         return responseData;
     } catch (error) {
-        console.error('DEBUG: Erro na requisição POST (catch):', error);
         throw error;
     }
 }
@@ -98,7 +95,6 @@ export async function patch(endpoint, dados) {
         return { sucesso: true, dados: responseData };
         
     } catch (error) {
-        console.error('DEBUG: Erro na requisição PATCH (catch):', error);
         return { sucesso: false, mensagem: 'Ocorreu um erro ao tentar atualizar o status de visualização.' };
     }
 }
@@ -126,18 +122,25 @@ export async function getSelicTaxa() {
         
         return parseFloat(dados[0].valor);
     } catch (error) {
-        console.error('DEBUG: Erro na requisição GET (Selic):', error);
         return null;
     }
 }
 
 // NOVO: Busca campos customizados para encontrar o ID correto
 export async function getCustomFields(projectId) {
+    console.log(`[API] Buscando campos customizados para o projeto: ${projectId}`);
     return await get(`/projects/${projectId}/custom-fields`);
 }
 
 // NOVO: Atualiza um campo customizado específico
 export async function updateCustomField(projectId, fieldId, value) {
+    console.log(`[API] Atualizando campo ${fieldId} do projeto ${projectId}`);
     const endpoint = `/projects/${projectId}/custom-fields/${fieldId}`;
     return await post(endpoint, { value: value });
+}
+
+// NOVO: Busca TODOS os campos customizados da conta para descobrir IDs
+export async function getAllAccountCustomFields() {
+    console.log(`[API] Buscando a lista mestre de todos os campos customizados.`);
+    return await get(`/custom-fields`);
 }
