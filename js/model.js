@@ -320,7 +320,7 @@ function getDadosEstaveisDispositivo() {
  * @param {string} clienteNome O nome do cliente para o log.
  * @returns {Promise<boolean>} True se o acesso for permitido, False se for bloqueado.
  */
-export async function verificarAcessoDispositivo(projectId, clienteNome) {
+export async function verificarAcessoDispositivo(projectId) {
     try {
         console.log("[Segurança] Iniciando verificação de acesso do dispositivo.");
 
@@ -331,7 +331,7 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         // 2. Monta o payload para o Worker
         const payload = {
             projectId: projectId,
-            dispositivoNome: `${clienteNome} (${dadosEstaveis.tipoDispositivo} via ${dadosEstaveis.navegadorLimpo})`,
+            dispositivoNome: `${dadosEstaveis.tipoDispositivo} via ${dadosEstaveis.navegadorLimpo}`,
             os: dadosEstaveis.os,
             navegador: dadosEstaveis.navegador, // Envia 'Chrome::UUID' para garantir hash único
             tipoDispositivo: dadosEstaveis.tipoDispositivo
