@@ -330,20 +330,55 @@ export async function verificarAcessoDispositivo(projectId, clienteNome) {
         console.log("[Segurança] Iniciando verificação de acesso do dispositivo.");
         
         const dadosIdentificacao = await gerarDadosIdentificacaoProfissional();
-        console.log(`[Segurança] Hash do dispositivo atual: ${dadosIdentificacao.fingerprint}`);
+        const hashAtual = dadosIdentificacao.fingerprint;
+        console.log(`[Segurança] Hash do dispositivo atual: ${hashAtual}`);
 
-        // Envia o nome do cliente concatenado com os detalhes técnicos do aparelho
-        const dispositivoNomeCompleto = `${clienteNome} (${dadosIdentificacao.identificacao}) | ${dadosIdentificacao.contexto}`;
+        // 1. Busca a lista de dispositivos permitidos/log atual (Read)
+        const endpoint = `/projects/${projectId}`;
+        const consulta = await get(endpoint);
         
-        const response = await validarDispositivoHardware(projectId, dadosIdentificacao.fingerprint, dispositivoNomeCompleto);
-
-        if (response.sucesso) {
-            console.log(`[Segurança] Acesso autorizado. Status: ${response.status}`);
-            return true;
-        } else {
-            console.warn(`[Segurança] Acesso BLOQUEADO. Motivo: ${response.motivo || 'desconhecido'}. Erro: ${response.erro}`);
-            return false;
+        let conteudoAtual = '';
+        if (consulta.sucesso && consulta.dados && consulta.dados.data && consulta.dados.data.variables) {
+            const variavel = consulta.dados.data.variables.find(v => v.key === CAMPO_OBS_PROJETO_KEY);
+            if (variavel) {
+                conteudoAtual = variavel.value || '';
+            }
         }
+
+        // 2. Verifica se o hash já está na lista (Allow)
+        if (conteudoAtual.includes(hashAtual)) {
+            console.log("[Segurança] Dispositivo reconhecido na lista de acesso.");
+            return true;
+        }
+
+        // 3. Se não está na lista, registra a tentativa (Append - Modify)
+        console.warn("[Segurança] Dispositivo desconhecido. Registrando tentativa e bloqueando.");
+        
+        const agora = new Date().toLocaleString('pt-BR');
+        const infoDispositivo = `${clienteNome} (${dadosIdentificacao.identificacao}) | ${dadosIdentificacao.contexto}`;
+        
+        // Se a lista estiver vazia, o primeiro a acessar se torna o DONO (Setup inicial)
+        // Caso contrário, adiciona como BLOQUEADO para histórico
+        const novoLog = !conteudoAtual 
+            ? `DONO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`
+            : `BLOQUEADO: ${hashAtual} | ${infoDispositivo} | Data: ${agora}`;
+            
+        const novoConteudo = conteudoAtual ? `${conteudoAtual}\n${novoLog}` : novoLog;
+
+        // 4. Salva o novo log (Write)
+        const body = {
+            variables: [
+                {
+                    key: CAMPO_OBS_PROJETO_KEY,
+                    value: novoConteudo
+                }
+            ]
+        };
+
+        await patch(endpoint, body);
+
+        // Retorna true apenas se for o primeiro acesso (DONO), caso contrário bloqueia
+        return !conteudoAtual;
 
     } catch (error) {
         console.error("[Segurança] Erro crítico na verificação:", error);
