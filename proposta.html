@@ -8,72 +8,46 @@
     <link rel="stylesheet" href="css/style.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        /* Ajuste de posicionamento do Modal de Aceite */
-        #proposalModal {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 60px; /* Margem superior razoável para mobile */
-            z-index: 10000;
-        }
-        @media (min-width: 768px) {
-            #proposalModal {
-                top: 50%;
-                transform: translate(-50%, -50%);
-            }
-        }
-    </style>
 </head>
 
-<body>
+<body class="awaiting-acceptance">
     <div class="background-animation"></div>
 
     <div id="loading-overlay" class="loading-overlay">
         <div class="spinner"></div>
     </div>
 
-    <!-- Modal de Aceite Consciente (Novo Layout Mobile-First) -->
-    <div id="proposalBlocker"></div>
+    <!-- Modal de Posicionamento (Engenharia Consultiva) -->
+    <!-- O ID proposalBlocker foi removido pois o modal agora é tela cheia opaca -->
 
     <div id="proposalModal">
+        <div class="modal-content-wrapper">
+            <div class="onboarding-badge">
+                Consultoria em Engenharia
+            </div>
 
-        <div class="modal-header">
-            <i class="fas fa-clipboard-check"></i>
-            <h2>Confirmação</h2>
-        </div>
+            <h1 class="onboarding-title">
+                Proposta Técnica<br>Personalizada
+            </h1>
 
-        <div class="modal-block highlight">
-            <p>
-                Esta proposta envolve a <strong>engenharia completa da solução</strong>,
-                não apenas os equipamentos.
+            <p class="onboarding-text">
+                Esta proposta <strong>não se refere</strong> à venda de um kit fotovoltaico.
+                Ela segue um modelo técnico de consultoria em engenharia, conduzido por
+                engenheiro especialista em soluções energéticas, considerando projeto,
+                execução, desempenho e retorno financeiro ao longo da vida útil do sistema.
             </p>
-        </div>
 
-        <div class="modal-block">
-            <p>
-                Projetos de Energia Solar diferem na
-                <strong>durabilidade e no nível de estabilidade ao longo do tempo</strong>.
-            </p>
-        </div>
+            <div class="onboarding-divider"></div>
 
-        <div class="modal-block emphasis">
-            <p>
-                Ao avançar, você confirma ciência de que a avaliação de propostas
-                envolve <strong>critérios técnicos decisivos que influenciam no sucesso do investimento</strong>.
-            </p>
-        </div>
-
-        <div class="modal-accept">
-            <label>
+            <label class="onboarding-check">
                 <input type="checkbox" id="acceptProposal">
-                <span>Li e estou ciente</span>
+                <span>Estou ciente e desejo acessar a proposta</span>
             </label>
-            <button id="confirmProposal" disabled>
-                Visualizar proposta
+
+            <button id="confirmProposal" class="onboarding-button" disabled>
+                Acessar proposta
             </button>
         </div>
-
     </div>
 
     <main class="main-oculto">
@@ -384,7 +358,7 @@
     <!-- Script do Modal de Aceite -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const overlay = document.getElementById('proposalBlocker');
+            // const overlay = document.getElementById('proposalBlocker'); // Não usado no novo layout full-screen
             const modal = document.getElementById('proposalModal');
             const checkbox = document.getElementById('acceptProposal');
             const btn = document.getElementById('confirmProposal');
@@ -401,19 +375,18 @@
             checkbox.addEventListener('change', function () {
                 if (this.checked) {
                     btn.disabled = false;
-                    btn.classList.add('active');
                 } else {
                     btn.disabled = true;
-                    btn.classList.remove('active');
                 }
             });
 
             btn.addEventListener('click', function () {
                 modal.classList.add('fade-out');
-                overlay.classList.add('fade-out');
+                // overlay.classList.add('fade-out');
                 setTimeout(() => {
                     modal.style.display = 'none';
-                    overlay.style.display = 'none';
+                    // overlay.style.display = 'none';
+                    document.body.classList.remove('awaiting-acceptance'); // Libera o scroll e exibe o main
                     localStorage.setItem('aceiteConsciente', 'true');
                 }, 500);
             });

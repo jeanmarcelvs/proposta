@@ -1457,158 +1457,129 @@ body.modal-aberta {
 }
 
 /* ====================================================================== */
-/* CSS DO MODAL DE CIÊNCIA (MOBILE-FIRST) - ACEITE CONSCIENTE             */
+/* CSS DO MODAL DE POSICIONAMENTO (Engenharia Consultiva)                 */
 /* ====================================================================== */
 
-/* Fundo escuro */
-#proposalBlocker {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    z-index: 9998;
-    backdrop-filter: blur(4px);
+/* --- ESTADO DE BLOQUEIO TOTAL (Engenharia de Software) --- */
+/* Garante que o conteúdo atrás não seja renderizado/acessível até o aceite */
+body.awaiting-acceptance {
+    overflow: hidden !important; /* Trava o scroll da página */
 }
 
-/* MODAL (Padrão Mobile: Sheet Bottom) */
+body.awaiting-acceptance main {
+    display: none !important; /* Remove o conteúdo do fluxo de renderização */
+}
+
+/* MODAL FULL SCREEN */
 #proposalModal {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: #fff;
-    padding: 24px 20px 28px;
-    border-radius: 16px 16px 0 0;
-    z-index: 9999;
+    height: 100%;
+    z-index: 10001; /* Garante prioridade máxima sobre qualquer overlay */
+    background-color: #0b0f14; /* Fundo Sólido e Opaco (Fallback) */
+    background-image: radial-gradient(circle at top, rgba(255, 193, 7, 0.1), transparent 60%);
+    color: #e6e6e6;
     font-family: 'Poppins', sans-serif;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-}
-
-/* HEADER DO MODAL */
-.modal-header {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    padding: 20px;
+    overflow-y: auto; /* Garante scroll em telas muito pequenas */
 }
 
-.modal-header i {
-    font-size: 22px;
-    color: #2e7d32;
+/* Wrapper para centralizar e limitar largura em Desktop mantendo layout mobile */
+.modal-content-wrapper {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    /* Garante que se o conteúdo for maior que a tela, ele não fique cortado pelo align-items: center */
+    margin: auto; 
 }
 
-.modal-header h2 {
-    font-size: 19px;
-    margin: 0;
-    color: #333;
+.onboarding-badge {
+    align-self: flex-start;
+    margin-bottom: 16px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.onboarding-title {
+    font-size: 1.8rem;
+    line-height: 1.15;
+    margin: 0 0 14px 0;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.onboarding-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #cfd3da;
+    margin-bottom: 0;
+}
+
+.onboarding-text strong {
+    color: #ffffff;
     font-weight: 600;
 }
 
-/* BLOCOS DE TEXTO */
-.modal-block {
-    margin-bottom: 18px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #444;
+.onboarding-divider {
+    margin: 22px 0 18px;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
 }
 
-.modal-block strong {
-    font-weight: 600;
-    color: #000;
-}
-
-/* DESTAQUES VISUAIS */
-.modal-block.highlight {
-    background: #f5f7f6;
-    padding: 16px;
-    border-left: 4px solid #2e7d32;
-    border-radius: 0 8px 8px 0;
-}
-
-.modal-block.emphasis {
-    background: #fff8e1;
-    padding: 16px;
-    border-radius: 8px;
-    border: 1px solid #ffe082;
-}
-
-.modal-block.final {
-    border-top: 1px solid #eee;
-    padding-top: 16px;
-    margin-top: 10px;
-}
-
-/* LISTA */
-.modal-block ul {
-    margin: 10px 0 0 0;
-    padding-left: 8px;
-    list-style: none;
-}
-
-.modal-block li {
-    margin-bottom: 6px;
-    display: flex;
-    gap: 8px;
-}
-
-/* ACEITE E BOTÃO */
-.modal-accept {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-}
-
-.modal-accept label {
+.onboarding-check {
     display: flex;
     gap: 12px;
-    align-items: center;
-    font-size: 15px;
-    margin-bottom: 18px;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    color: #d0d4da;
     cursor: pointer;
-    color: #333;
-    font-weight: 500;
+    user-select: none;
 }
 
-.modal-accept input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    accent-color: #2e7d32;
-    cursor: pointer;
+.onboarding-check input {
+    margin-top: 4px;
+    accent-color: #ffc107;
+    width: 18px;
+    height: 18px;
 }
 
-#confirmProposal {
-    width: 100%;
+.onboarding-button {
+    margin-top: 28px;
     padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    background: #e0e0e0;
-    color: #888;
-    border: none;
     border-radius: 10px;
-    opacity: 1;
-    cursor: not-allowed;
-    transition: all 0.3s;
-    text-transform: uppercase;
+    border: none;
+    background: linear-gradient(135deg, #ffc107, #ffb300);
+    color: #1a1a1a;
+    font-size: 1rem;
+    font-weight: 700;
     letter-spacing: 0.5px;
-}
-
-#confirmProposal.active {
-    background: #2e7d32;
-    color: #fff;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
+    opacity: 0.5;
+    width: 100%;
+    text-transform: uppercase;
 }
 
-#confirmProposal.active:hover {
-    background: #1b5e20;
-    transform: translateY(-2px);
+.onboarding-button:enabled {
+    opacity: 1;
+}
+
+.onboarding-button:enabled:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.35);
 }
 
 /* Animação de Saída */
@@ -1616,33 +1587,6 @@ body.modal-aberta {
     opacity: 0 !important;
     transition: opacity 0.5s ease;
     pointer-events: none;
-}
-
-/* AJUSTE PARA DESKTOP */
-@media (min-width: 768px) {
-    #proposalModal {
-        top: 50%;
-        left: 50%;
-        bottom: auto;
-        transform: translate(-50%, -50%);
-        width: 520px;
-        max-height: 85vh;
-        border-radius: 16px;
-        padding: 32px;
-        animation: fadeInScale 0.3s ease-out;
-    }
-
-    @keyframes fadeInScale {
-        from {
-            opacity: 0;
-            transform: translate(-50%, -45%) scale(0.95);
-        }
-
-        to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-    }
 }
 
 /* --- Estilos da Seção de Expansão --- */
