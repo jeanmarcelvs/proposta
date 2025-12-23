@@ -31,6 +31,103 @@ function esconderLoadingOverlay() {
     }
 }
 
+// NOVO: Função para exibir mensagem de bloqueio personalizada (Design Mobile Extreme)
+function exibirMensagemBloqueio() {
+    esconderLoadingOverlay();
+    
+    // Captura o link do WhatsApp configurado no rodapé antes de limpar o DOM
+    const whatsappBtn = document.querySelector('footer a[href*="wa.me"]');
+    const whatsappUrl = whatsappBtn ? whatsappBtn.href : 'https://wa.me/5582999469016'; // Fallback seguro
+
+    // 1. Limpa o body para remover a aplicação e focar na mensagem
+    document.body.innerHTML = '';
+    
+    // 2. Define estilos base do corpo para centralizar
+    Object.assign(document.body.style, {
+        backgroundColor: '#121212',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        margin: '0',
+        fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        overflow: 'hidden'
+    });
+
+    // 3. Injeta o CSS Minimalista / Mobile Extreme
+    const style = document.createElement('style');
+    style.textContent = `
+        .proposal-access-minimal {
+            width: 85%;
+            max-width: 380px;
+            padding: 20px;
+            border-left: 4px solid #ff6b6b; /* Vermelho elegante */
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .access-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .access-title {
+            color: #ff6b6b;
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        .whatsapp-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #25d366;
+            color: #0b3d1c;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .whatsapp-link:active {
+            transform: scale(0.98);
+        }
+        .whatsapp-link:hover {
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        .whatsapp-link i {
+            font-size: 1.2rem;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 4. Cria o elemento HTML (Mobile Extreme: 1 linha de impacto + Botão)
+    const container = document.createElement('div');
+    container.className = 'proposal-access-minimal';
+    container.innerHTML = `
+        <div class="access-header">
+            <span style="font-size: 1.4rem;">❗</span>
+            <span class="access-title">Proposta com acesso personalizado</span>
+        </div>
+        <a href="${whatsappUrl}" target="_blank" class="whatsapp-link">
+            <i class="fab fa-whatsapp"></i>
+            Falar com Engenheiro
+        </a>
+    `;
+    
+    document.body.appendChild(container);
+}
+
 // FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
 // FUNÇÃO CORRIGIDA: Gerencia as imagens de equipamentos de forma inteligente
 function atualizarImagemEquipamentos(proposta) {
@@ -484,7 +581,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto);
         if (!acessoPermitido) {
             // Redireciona para página de erro ou exibe mensagem de bloqueio
-            window.location.href = 'index.html?erro=acesso-negado';
+            exibirMensagemBloqueio();
             return; // Interrompe a execução do restante do script
         }
     }
