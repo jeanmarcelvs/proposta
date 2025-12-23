@@ -74,23 +74,18 @@ const caminhosImagens = {
 const detalhesInstalacaoPremium = [
     {
         icone: 'fa-user-shield',
-        titulo: 'Projeto para Quem Prioriza Tranquilidade',
-        texto: 'Indicado para clientes que preferem investir uma vez e ter estabilidade no funcionamento ao longo dos anos.'
-    },
-    {
-        icone: 'fa-industry',
-        titulo: 'Padrão Construtivo Elevado',
-        texto: 'Solução pensada para reduzir desgastes naturais e manter desempenho estável por longo prazo.'
+        titulo: 'Decisão Pensada para o Longo Prazo',
+        texto: 'Indicada para quem prefere fazer uma escolha consciente hoje e não revisitar essa decisão no futuro.'
     },
     {
         icone: 'fa-chart-line',
-        titulo: 'Comportamento Financeiro Mais Previsível',
-        texto: 'Menor exposição a correções futuras contribui para um retorno mais consistente do investimento.'
+        titulo: 'Comportamento Estável ao Longo dos Anos',
+        texto: 'Projeto voltado à constância de funcionamento e previsibilidade de resultado com o passar do tempo.'
     },
     {
         icone: 'fa-home',
         titulo: 'Perfil de Consumidor',
-        texto: 'Ideal para consumidores que buscam alto padrão, durabilidade e segurança por longo prazo.'
+        texto: 'Consumidores exigentes, que valorizam organização, padrão elevado e tranquilidade.'
     }
 ];
 
@@ -99,17 +94,16 @@ const detalhesInstalacaoPremium = [
 const detalhesInstalacaoAcessivel = [
     {
         icone: 'fa-info-circle',
-        titulo: 'Foco no Baixo Custo Inicial',
-        texto: 'Projetado para quem busca uma solução com um menor investimento inicial.'
-    },
-];
+        titulo: 'Solução Simplificada',
+        texto: 'Indicada para consumidores que priorizam um investimento inicial mais baixo.'
+    }];
 
 // NOVO: Resumos para a seção de instalação
-const resumoInstalacaoPremium = 
-"Esta proposta foi concebida para consumidores que valorizam previsibilidade, estabilidade e tranquilidade ao longo dos anos. O foco é reduzir riscos técnicos e evitar custos ocultos que só aparecem com o tempo.";
+const resumoInstalacaoPremium =
+    "Esta proposta foi concebida para consumidores que valorizam previsibilidade, estabilidade e tranquilidade ao longo dos anos. O foco é reduzir riscos técnicos e evitar custos ocultos que só aparecem com o tempo.";
 
 const resumoInstalacaoAcessivel =
-"Esta proposta prioriza a redução do investimento inicial, adotando soluções mais simples.";
+    "Esta proposta prioriza a redução do investimento inicial, adotando soluções mais simples.";
 
 // NOVO: Dados para o Aceite Consciente (Gate de Leitura)
 const dadosAceite = {
@@ -243,7 +237,7 @@ export function validarValidadeProposta(proposta) {
  */
 function getDadosEstaveisDispositivo() {
     const ua = navigator.userAgent;
-    
+
     // 1. Sistema Operacional (Estável)
     let os = "Outro OS";
     if (ua.includes("Win")) os = "Windows";
@@ -302,7 +296,7 @@ export async function verificarAcessoDispositivo(projectId) {
         // 1. Coleta dados estáveis (sem FingerprintJS)
         const dadosEstaveis = getDadosEstaveisDispositivo();
         console.debug("[Debug Segurança] Dados estáveis coletados:", dadosEstaveis);
-        
+
         // 2. Monta o payload para o Worker
         const payload = {
             projectId: projectId,
@@ -652,7 +646,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
             console.warn("Falha ao buscar a proposta acessível vinculada.");
         }
 
-    // Cenário 2: A proposta principal é PREMIUM, mas é única (standalone).
+        // Cenário 2: A proposta principal é PREMIUM, mas é única (standalone).
     } else if (tipoPropostaPrincipal === 'PREMIUM') {
         const propostaPremiumTratada = tratarDadosParaProposta(dadosApiPrincipal, 'premium', selicAtual);
         if (!propostaPremiumTratada) {
@@ -661,7 +655,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         dadosProposta.premium = propostaPremiumTratada;
         // dadosProposta.acessivel permanece null, o que está correto.
 
-    // Cenário 3: A proposta principal é BASIC (Acessível) e é única.
+        // Cenário 3: A proposta principal é BASIC (Acessível) e é única.
     } else if (tipoPropostaPrincipal === 'BASIC' || tipoPropostaPrincipal === 'STANDARD') {
         const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiPrincipal, 'acessivel', selicAtual);
         if (!propostaAcessivelTratada) {
@@ -670,7 +664,7 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         dadosProposta.acessivel = propostaAcessivelTratada;
         // dadosProposta.premium permanece null, o que está correto.
 
-    // Cenário 4: Tipo de proposta desconhecido ou não definido.
+        // Cenário 4: Tipo de proposta desconhecido ou não definido.
     } else {
         return { sucesso: false, mensagem: `Padrão de instalação da proposta não reconhecido: ${tipoPropostaPrincipal} (esperado PREMIUM ou BASIC/STANDARD).` };
     }

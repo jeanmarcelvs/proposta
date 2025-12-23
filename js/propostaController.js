@@ -152,6 +152,62 @@ function preencherChecklistInstalacao(proposta) {
     container.innerHTML = `<ul class="checklist ${tipoClasse}">${listaHTML}</ul>`;
 }
 
+// NOVO: Função para reorganizar a seção de detalhes (Vídeos e Garantias)
+function organizarSecaoConfiabilidade() {
+    // Tenta encontrar o container pelo ID. Se não tiver ID no HTML, adicione id="detalhes-importantes" na section/div correta.
+    const container = document.getElementById('secao-video-instalacao');
+    
+    if (!container) return;
+
+    // Evita re-executar se já estiver organizado para não duplicar ou perder referências
+    if (container.classList.contains('secao-organizada')) return;
+
+    // Captura os elementos de mídia existentes (preserva os elementos originais do HTML)
+    let videos = Array.from(container.querySelectorAll('.video-somente-container'));
+    if (videos.length === 0) {
+        videos = Array.from(container.querySelectorAll('iframe, video, .video-container'));
+    }
+
+    let imagens = Array.from(container.querySelectorAll('.imagem-garantia-container'));
+    if (imagens.length === 0) {
+        imagens = Array.from(container.querySelectorAll('img, .banner-container'));
+    }
+
+    // Se não houver conteúdo, não faz nada
+    if (videos.length === 0 && imagens.length === 0) return;
+
+    // Limpa o container visualmente, mas mantém os elementos capturados em memória
+    container.innerHTML = '';
+    container.classList.add('secao-organizada');
+
+    // 2. Seção Confiabilidade
+    if (videos.length > 0) {
+        const divConfiabilidade = document.createElement('div');
+        divConfiabilidade.className = 'secao-confiabilidade';
+        divConfiabilidade.style.marginBottom = '50px';
+        divConfiabilidade.innerHTML = `
+            <h2 class="titulo-secao" style="text-align: center; margin-bottom: 40px;">Confiabilidade</h2>
+            <div class="grid-videos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
+        `;
+        const grid = divConfiabilidade.querySelector('.grid-videos');
+        videos.forEach(v => { v.style.maxWidth = '100%'; grid.appendChild(v); });
+        container.appendChild(divConfiabilidade);
+    }
+
+    // 3. Seção Garantias e Respaldo
+    if (imagens.length > 0) {
+        const divGarantias = document.createElement('div');
+        divGarantias.className = 'secao-garantias';
+        divGarantias.innerHTML = `
+            <h2 class="titulo-secao" style="text-align: center; margin-bottom: 40px;">Garantias e Respaldo</h2>
+            <div class="grid-banners" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
+        `;
+        const grid = divGarantias.querySelector('.grid-banners');
+        imagens.forEach(img => { img.style.maxWidth = '100%'; img.style.height = 'auto'; grid.appendChild(img); });
+        container.appendChild(divGarantias);
+    }
+}
+
 // --- FUNÇÃO CENTRAL DE PREENCHIMENTO ATUALIZADA ---
 function preencherDadosProposta(dados) {
     try {
@@ -345,11 +401,34 @@ function preencherDadosProposta(dados) {
 
 
         // NOVO: Atualiza o destaque do título da seção de instalação
-        const tituloSecaoInstalacaoEl = document.getElementById('titulo-secao-instalacao');
+        const tituloSecaoInstalacaoEl = document.getElementById('titulo-secao-instalacao') || document.querySelector('#secao-instalacao .titulo-secao');
         if (tituloSecaoInstalacaoEl) {
-            const tituloPremium = 'Padrão de Instalação Premium &mdash; <span>Projeto com Risco Técnico Mínimo</span>';
-            const tituloStandard = 'Padrão de Instalação Standard &mdash; <span>Solução Funcional com Concessões Técnicas</span>';
+            // 1. Define apenas o título principal (mantendo a linha de destaque do CSS no H2)
+            const tituloPremium = 'Padrão de Instalação <span id="tipo-instalacao-destaque">Premium</span>';
+            const tituloStandard = 'Padrão de Instalação <span id="tipo-instalacao-destaque">Standard</span>';
             tituloSecaoInstalacaoEl.innerHTML = dados.tipo === 'premium' ? tituloPremium : tituloStandard;
+
+            // 2. Insere a descrição como um elemento separado APÓS o H2
+            let subtituloEl = tituloSecaoInstalacaoEl.nextElementSibling;
+            
+            // Cria o elemento se não existir ou se o próximo não for o nosso subtítulo
+            if (!subtituloEl || !subtituloEl.classList.contains('subtitulo-instalacao')) {
+                subtituloEl = document.createElement('p');
+                subtituloEl.className = 'subtitulo-instalacao';
+                tituloSecaoInstalacaoEl.after(subtituloEl);
+            }
+
+            // Define estilos dinâmicos (atualizados a cada troca de proposta)
+            const corTexto = dados.tipo === 'premium' ? '#FFFFFF' : '#666666';
+            subtituloEl.style.cssText = `display: block; font-size: 1.1em; color: ${corTexto}; font-weight: normal; margin-top: 5px; margin-bottom: 25px; text-align: center; width: 100%;`;
+
+            // Atualiza o texto da descrição
+            const textoDescricao = dados.tipo === 'premium' 
+                ? 'Critério de Escolha do Consumidor'
+                : 'Critério de Escolha do Consumidor';
+            
+            const corNegrito = dados.tipo === 'premium' ? '#FFFFFF' : '#555555';
+            subtituloEl.innerHTML = textoDescricao.replace('Critério de Escolha:', `<strong style="color: ${corNegrito};">Critério de Escolha:</strong>`);
         }
 
 
@@ -365,19 +444,13 @@ function preencherDadosProposta(dados) {
 
 
         if (resumoContainerEl) {
-            const resumoTexto = dados.instalacao?.resumoInstalacao;
-            if (resumoTexto) {
-                resumoContainerEl.classList.remove('oculto');
-                const resumoInstalacaoEl = document.getElementById('resumo-instalacao');
-                const iconeResumoEl = document.getElementById('icone-resumo');
-                if (resumoInstalacaoEl) resumoInstalacaoEl.innerText = resumoTexto;
-                if (iconeResumoEl) {
-                    iconeResumoEl.className = `icone-resumo fas ${dados.tipo === 'premium' ? 'fa-shield-halved' : 'fa-triangle-exclamation'}`;
-                }
-            } else {
-                resumoContainerEl.classList.add('oculto');
-            }
+            // REMOVIDO: Oculta o resumo da instalação conforme solicitado
+            resumoContainerEl.classList.add('oculto');
+            resumoContainerEl.innerHTML = '';
         }
+
+        // NOVO: Organiza a seção de confiabilidade e garantias
+        organizarSecaoConfiabilidade();
 
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
@@ -445,18 +518,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             'imagens/inst_premium_5a.webp',
             'imagens/inst_premium_6a.webp',
             'imagens/inst_premium_7a.webp',
-            'imagens/mod_1.webp',
-            'imagens/mod_2.webp',
-            'imagens/mod_3.webp'
+            'imagens/mod_1.webp'
         ],
         acessivel: [
             'imagens/inst_acessível_1.webp',
-            'imagens/inst_acessível_2.webp',
-            'imagens/inst_acessível_3.webp',
-            'imagens/inst_acessível_4.webp',
-            'imagens/mod_1.webp',
-            'imagens/mod_2.webp',
-            'imagens/mod_3.webp'
+            'imagens/mod_1.webp'
         ]
     };
 
