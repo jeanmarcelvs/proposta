@@ -289,9 +289,9 @@ function preencherDadosServico(dados) {
 
             // Células restantes
             tr.innerHTML += `
-                <td class="col-numerica">${item.quantidade}</td>
-                <td class="col-numerica">R$ ${item.valorUnitario}</td>
-                <td class="col-numerica col-subtotal">R$ ${item.valorTotalItem}</td>
+                <td class="col-numerica" data-label="Qtd.">${item.quantidade}</td>
+                <td class="col-numerica" data-label="Vlr. Unit.">R$ ${item.valorUnitario}</td>
+                <td class="col-numerica col-subtotal" data-label="Subtotal">R$ ${item.valorTotalItem}</td>
             `;
 
             tr.insertBefore(tdDesc, tr.firstChild); // Adiciona a descrição no início

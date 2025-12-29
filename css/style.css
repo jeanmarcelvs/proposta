@@ -1759,3 +1759,59 @@ body.awaiting-acceptance main {
 .pagina-servicos header {
     justify-content: center;
 }
+
+/* NOVO: Estilos responsivos para a tabela de serviços em telas menores */
+@media (max-width: 768px) {
+    .tabela-servicos {
+        border: none; /* Remove a borda geral da tabela no mobile */
+    }
+
+    .tabela-servicos thead {
+        display: none; /* Oculta o cabeçalho original */
+    }
+
+    .tabela-servicos tr {
+        display: block; /* Transforma cada linha em um card */
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--cor-cartao-borda);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 15px var(--cor-sombra-leve);
+    }
+
+    .tabela-servicos td {
+        display: flex; /* Alinha o label e o valor na mesma linha */
+        justify-content: space-between; /* Label na esquerda, valor na direita */
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed rgba(var(--cor-primaria-rgb), 0.2);
+        text-align: right; /* Alinha o valor do dado à direita */
+    }
+
+    .tabela-servicos tr td:last-child {
+        border-bottom: none; /* Remove a borda do último item do card */
+    }
+
+    /* A coluna de descrição fica no topo do card, sem label */
+    .tabela-servicos .col-descricao {
+        display: block;
+        text-align: left;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--cor-cartao-borda);
+        width: 100%;
+    }
+    
+    .tabela-servicos .col-descricao .descricao-item {
+        font-size: 1.1rem; /* Aumenta a fonte da descrição para melhor leitura */
+    }
+
+    /* Usa o atributo 'data-label' para criar os títulos de cada dado */
+    .tabela-servicos td[data-label]::before {
+        content: attr(data-label);
+        font-weight: 500;
+        color: var(--cor-texto-secundario);
+        text-align: left;
+        margin-right: 1rem;
+    }
+}
