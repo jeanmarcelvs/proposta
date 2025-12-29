@@ -83,6 +83,9 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
             } else if (tipoProposta === 'solar') {
                 // Redireciona para a página de propostas Solar
                 window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
+            } else if (tipoProposta === 'servico') {
+                // Redireciona para a página de propostas de Serviços
+                window.location.href = `propostaServicos.html?id=${numeroProjeto}&nome=${primeiroNome}`;
             } else {
                 // Caso o tipo seja desconhecido, mostra um erro
                 atualizarEstadoBotao('erro', 'Tipo de proposta desconhecido.');

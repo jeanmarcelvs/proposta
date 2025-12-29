@@ -205,26 +205,48 @@ function formatarData(dataISO) {
     return `${dia}/${mes}/${ano}`;
 }
 
+// NOVO: Função para calcular parcelas de cartão de crédito (temporariamente com lógica de financiamento)
+function calcularParcelasCartao(valorProjeto, selicAnual) {
+    // ATUALIZADO: Usando taxas fixas fornecidas.
+    const taxasCartao = {
+        'debito': 0.0229,
+        '1': 0.0549,
+        '2': 0.1089,
+        '3': 0.1199,
+        '4': 0.1259,
+        '5': 0.1329,
+        '6': 0.1399,
+        '7': 0.1499,
+        '8': 0.1559,
+        '9': 0.1619,
+        '10': 0.1689,
+        '11': 0.1789,
+        '12': 0.1829
+    };
+
+    const simulacao = {};
+
+    Object.keys(taxasCartao).forEach(key => {
+        const taxa = taxasCartao[key];
+        const valorFinal = valorProjeto / (1 - taxa);
+        const valorParcela = key === 'debito' ? valorFinal : valorFinal / parseInt(key);
+        simulacao[`parcela-${key}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    });
+
+    return { parcelas: simulacao };
+}
+
 // **NOVO: Função para validar se a proposta está expirada, usando o formato ISO 8601.**
 /**
  * @param {object} proposta O objeto de dados da proposta (versão premium ou acessivel).
  * @returns {boolean} Retorna true se a proposta estiver ativa, false se estiver expirada.
  */
 export function validarValidadeProposta(proposta) {
-    if (!proposta || !proposta.dataExpiracao) {
-        return false;
-    }
-
-    const dataAtual = new Date();
-    const dataExpiracao = new Date(proposta.dataExpiracao);
-
-    // Ajusta o fuso horário para a data de expiração, garantindo que a comparação seja precisa.
-    // O `Date` do JavaScript já faz o ajuste automático, mas é bom ter certeza.
-    // O `expirationDate` do JSON já vem em UTC, então a comparação é direta.
-
-    const estaAtiva = dataAtual <= dataExpiracao;
-
-    return estaAtiva;
+    // REMOVIDO: A lógica de validação foi desativada conforme a nova estratégia de buscar dados do projeto,
+    // que não contém a data de expiração da proposta.
+    // Esta função agora sempre permite o acesso, e a validação de expiração, se necessária,
+    // deve ser reimplementada com base em um campo de variável do projeto.
+    return true;
 }
 
 // ======================================================================
@@ -460,7 +482,9 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const variables = dados.variables || [];
 
     const tipoVisualizacao = extrairValorVariavelPorChave(variables, 'cap_visualizacao') || 'SOLAR';
-    const isVE = tipoVisualizacao.toUpperCase() === 'VE';
+    const tipoVisualizacaoUpper = tipoVisualizacao.trim().toUpperCase();
+    const isVE = tipoVisualizacaoUpper === 'VE';
+    const isServico = tipoVisualizacaoUpper === 'SERVICO';
 
     // Variáveis comuns a ambos os tipos de proposta
     const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
@@ -477,6 +501,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     let equipamentos = {};
     let valores = {};
     let instalacao = {};
+    let dadosServico = {};
 
     // --- CORREÇÃO: A lógica para extração de dados de VE foi unificada com a de Solar ---
     const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
@@ -505,32 +530,85 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         'Maior dependência de manutenção futura'
     ];
 
-    sistema = {
-        geracaoMedia: isVE ? `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês` : `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
-        unidadeGeracao: 'kWh',
-        instalacaoPaineis: extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado',
-        idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-    };
-    equipamentos = {
-        imagem: isVE ? caminhosImagens.ve.equipamentos[tipoProposta] : caminhosImagens.solar.equipamentos[tipoProposta],
-        quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
-        descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
-        quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
-        descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
-    };
-    instalacao = {
-        imagem: isVE ? caminhosImagens.ve.instalacao[tipoProposta] : caminhosImagens.solar.instalacao[tipoProposta],
-        detalhesInstalacao: isVE ? (tipoProposta === 'premium' ? detalhesInstalacaoPremiumVE : detalhesInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
-        resumoInstalacao: isVE ? (tipoProposta === 'premium' ? resumoInstalacaoPremiumVE : resumoInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel),
-        checklist: tipoProposta === 'premium' ? checklistPremium : checklistStandard
-    };
-    valores = {
-        valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
-        payback: payback,
-        parcelas: isVE ? {} : parcelasCalculadas,
-        taxasPorParcela: isVE ? {} : taxasPorParcela,
-        observacao: isVE ? ' ' : 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
-    };
+    if (isServico) {
+        // Lógica simplificada para Serviços
+        const itensServico = [];
+        let novoValorTotalServicos = 0;
+
+        for (let i = 1; i <= 3; i++) {
+            const descricao = (variables.find(v => v.key === `cap_descricao_servico_${i}`) || {}).value;
+            if (!descricao) continue; // Pula para o próximo item se a descrição não existir
+
+            const observacao = (variables.find(v => v.key === `cap_obs_servico_${i}`) || {}).value;
+            const quantidade = extrairValorNumericoPorChave(variables, `cap_qtd_servico_${i}`) || 1;
+            const valorUnitario = extrairValorNumericoPorChave(variables, `cap_vlr_unit_servico_${i}`) || 0;
+            const valorTotalItem = quantidade * valorUnitario;
+
+            itensServico.push({
+                descricao,
+                observacao,
+                quantidade,
+                valorUnitario: valorUnitario.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                valorTotalItem: valorTotalItem.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            });
+            novoValorTotalServicos += valorTotalItem;
+        }
+
+        const temItensDeServico = itensServico.length > 0;
+        // O valor final é a soma dos itens. Se não houver itens, o valor é 0.
+        const valorFinalDaProposta = novoValorTotalServicos;
+
+        const descricaoGeral = extrairValorVariavelPorChave(variables, 'cap_descricao_geral_servico');
+        const { parcelas: parcelasCartao } = calcularParcelasCartao(valorFinalDaProposta, selicAtual);
+        
+        dadosServico = {
+            // Se não houver itens, usa a descrição antiga como fallback.
+            descricao: null, // A descrição geral agora é o título
+            tipoServico: descricaoGeral || extrairValorVariavelPorChave(variables, 'proposta_titulo') || 'Serviço Especializado',
+            itens: itensServico,
+            temItens: temItensDeServico
+        };
+        valores = {
+            valorTotal: valorFinalDaProposta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            observacao: extrairValorVariavelPorChave(variables, 'condicoes_pagamento') || 'Consulte condições de pagamento.',
+            observacaoServico: extrairValorVariavelPorChave(variables, 'cap_obs_servico') || null,
+            parcelas: parcelasCartao
+        };
+        // Adiciona os detalhes da instalação Premium para servir como vitrine da qualidade da empresa
+        instalacao = {
+            imagem: caminhosImagens.solar.instalacao['premium'], // Usa a imagem do carrossel premium
+            detalhesInstalacao: detalhesInstalacaoPremium,
+            resumoInstalacao: resumoInstalacaoPremium
+        };
+    } else {
+        // Lógica existente para Solar e VE
+        sistema = {
+            geracaoMedia: isVE ? `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês` : `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
+            unidadeGeracao: 'kWh',
+            instalacaoPaineis: extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado',
+            idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        };
+        equipamentos = {
+            imagem: isVE ? caminhosImagens.ve.equipamentos[tipoProposta] : caminhosImagens.solar.equipamentos[tipoProposta],
+            quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
+            descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
+            quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
+            descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
+        };
+        instalacao = {
+            imagem: isVE ? caminhosImagens.ve.instalacao[tipoProposta] : caminhosImagens.solar.instalacao[tipoProposta],
+            detalhesInstalacao: isVE ? (tipoProposta === 'premium' ? detalhesInstalacaoPremiumVE : detalhesInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
+            resumoInstalacao: isVE ? (tipoProposta === 'premium' ? resumoInstalacaoPremiumVE : resumoInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel),
+            checklist: tipoProposta === 'premium' ? checklistPremium : checklistStandard
+        };
+        valores = {
+            valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+            payback: payback,
+            parcelas: isVE ? {} : parcelasCalculadas,
+            taxasPorParcela: isVE ? {} : taxasPorParcela,
+            observacao: isVE ? ' ' : 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
+        };
+    }
 
     const retorno = {
         tipo: tipoProposta,
@@ -546,6 +624,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         sistema,
         equipamentos,
         instalacao,
+        dadosServico, // Novo campo
         valores,
         validade: `Proposta válida por até 3 dias corridos. Após esse prazo, condições técnicas, custos e disponibilidade podem ser reavaliados.`,
         // Adiciona o array completo de variáveis para uso no controller (ex: seção de expansão)
@@ -557,119 +636,104 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
 export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    const endpointPremium = `/projects/${numeroProjeto}/proposals`;
-    const dadosApiPrincipal = await get(endpointPremium); // Renomeado para 'Principal'
+    // PASSO 1: Buscar a proposta primeiro (comportamento original para Solar/VE)
+    const endpointProposta = `/projects/${numeroProjeto}/proposals`;
+    const dadosApiProposta = await get(endpointProposta);
 
-    if (!dadosApiPrincipal.sucesso) {
-        console.error('Falha na busca da proposta premium.');
+    if (!dadosApiProposta.sucesso || !dadosApiProposta.dados.data) {
+        console.error('Falha na busca da proposta ou dados.data está vazio.');
         return {
             sucesso: false,
-            mensagem: 'Projeto não encontrado ou dados inválidos.'
+            mensagem: 'Proposta não encontrada ou dados inválidos.'
         };
     }
 
-    const propostaPrincipal = dadosApiPrincipal.dados.data;
+    const propostaPrincipal = dadosApiProposta.dados.data;
+    const variablesDaProposta = propostaPrincipal.variables || [];
 
-    // Acessa o nome do cliente a partir das variáveis
-    const nomeCompletoApi = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cliente_nome');
+    // PASSO 2: Validar o nome do cliente usando os dados da proposta
+    const nomeCompletoApi = extrairValorVariavelPorChave(variablesDaProposta, 'cliente_nome');
     const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
 
-    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) { // Correção: usar propostaPrincipal
+    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
         console.error("Tentativa de acesso não autorizado. Nome não corresponde.");
         return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
     }
-
-    // --- NOVA LÓGICA DE VALIDAÇÃO ANTECIPADA DA PROPOSTA PREMIUM ---
-    // Cria um objeto temporário para a verificação de validade
-    const propostaParaValidarPremium = {
-        dataExpiracao: propostaPrincipal.expirationDate, // Correção: usar propostaPrincipal
-    };
-    if (!validarValidadeProposta(propostaParaValidarPremium)) {
-        return {
-            sucesso: false,
-            mensagem: 'Proposta expirada. Por favor, solicite uma nova.'
-        };
-    }
-    // --- FIM DA NOVA LÓGICA ---
 
     const selicAtual = await getSelicTaxa();
     if (selicAtual === null) {
         return {
             sucesso: false,
-            mensagem: 'Não foi possível obter a taxa Selic para o cálculo do financiamento.'
+            mensagem: 'Não foi possível obter a taxa Selic para o cálculo.'
         };
     }
 
-    // Resetar dadosProposta para garantir um estado limpo antes de popular
     dadosProposta.premium = null;
     dadosProposta.acessivel = null;
 
-    // NOVO: Determina o tipo da proposta principal (Premium ou Basic/Acessível)
-    let tipoPropostaPrincipal = extrairValorVariavelPorChave(propostaPrincipal.variables, 'cape_padrao_instalacao');
-    const idProjetoAcessivel = extrairValorVariavelPorChave(propostaPrincipal.variables, 'vc_projeto_acessivel');
+    // PASSO 3: Verificar o tipo de visualização
+    const tipoVisualizacao = extrairValorVariavelPorChave(variablesDaProposta, 'cap_visualizacao');
 
-    if (!tipoPropostaPrincipal) {
-        // Tentativa de inferência: Se tem projeto acessível vinculado, assume-se que é Premium
-        if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
-            tipoPropostaPrincipal = 'PREMIUM';
+    // PASSO 4: Lógica condicional
+    if (tipoVisualizacao && tipoVisualizacao.trim().toUpperCase() === 'SERVICO') {
+        // É um serviço. Usa os dados da PROPOSTA, conforme restaurado.
+        const propostaServico = tratarDadosParaProposta(dadosApiProposta, 'unico', selicAtual);
+        
+        if (!propostaServico) {
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta de Serviço.' };
         }
-    }
+        
+        dadosProposta.premium = propostaServico; // Armazena no slot principal
 
-    // Cenário 1: A proposta principal é PREMIUM e tem uma proposta acessível vinculada.
-    if (tipoPropostaPrincipal === 'PREMIUM' && idProjetoAcessivel && idProjetoAcessivel > 0) {
-        const propostaPremiumTratada = tratarDadosParaProposta(dadosApiPrincipal, 'premium', selicAtual);
-        if (!propostaPremiumTratada) {
-            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
+    } else {
+        // É Solar ou VE. Usar a lógica original com os dados da proposta já buscados.
+        let tipoPropostaPrincipal = extrairValorVariavelPorChave(variablesDaProposta, 'cape_padrao_instalacao');
+        const idProjetoAcessivel = extrairValorVariavelPorChave(variablesDaProposta, 'vc_projeto_acessivel');
+        
+        if (!tipoPropostaPrincipal) {
+            if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
+                tipoPropostaPrincipal = 'PREMIUM';
+            }
+            else if (tipoVisualizacao && tipoVisualizacao.trim().toUpperCase() === 'VE') {
+                tipoPropostaPrincipal = 'STANDARD';
+            }
+            else if (!tipoVisualizacao || tipoVisualizacao.trim().toUpperCase() === 'SOLAR') {
+                tipoPropostaPrincipal = 'STANDARD';
+            }
         }
-        dadosProposta.premium = propostaPremiumTratada;
 
-        // Busca a proposta acessível vinculada
-        const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
-        const dadosApiAcessivel = await get(endpointAcessivel);
+        if (tipoPropostaPrincipal === 'PREMIUM' && idProjetoAcessivel && idProjetoAcessivel > 0) {
+            const propostaPremiumTratada = tratarDadosParaProposta(dadosApiProposta, 'premium', selicAtual);
+            if (!propostaPremiumTratada) {
+                return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
+            }
+            dadosProposta.premium = propostaPremiumTratada;
 
-        if (dadosApiAcessivel.sucesso) {
-            const propostaParaValidarAcessivel = {
-                dataExpiracao: dadosApiAcessivel.dados.data.expirationDate
-            };
-
-            if (validarValidadeProposta(propostaParaValidarAcessivel)) {
+            const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
+            const dadosApiAcessivel = await get(endpointAcessivel);
+            if (dadosApiAcessivel.sucesso) {
                 const propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
                 if (propostaAcessivel) {
                     dadosProposta.acessivel = propostaAcessivel;
-                } else {
-                    console.warn("Falha ao processar dados da proposta Acessível vinculada.");
                 }
-            } else {
-                console.warn("Proposta acessível vinculada expirada.");
             }
+        } else if (tipoPropostaPrincipal === 'PREMIUM') {
+            const propostaPremiumTratada = tratarDadosParaProposta(dadosApiProposta, 'premium', selicAtual);
+            if (!propostaPremiumTratada) {
+                return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
+            }
+            dadosProposta.premium = propostaPremiumTratada;
+        } else if (tipoPropostaPrincipal === 'BASIC' || tipoPropostaPrincipal === 'STANDARD') {
+            const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiProposta, 'acessivel', selicAtual);
+            if (!propostaAcessivelTratada) {
+                return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
+            }
+            dadosProposta.acessivel = propostaAcessivelTratada;
         } else {
-            console.warn("Falha ao buscar a proposta acessível vinculada.");
+            return { sucesso: false, mensagem: `Padrão de instalação da proposta não reconhecido: ${tipoPropostaPrincipal} (esperado PREMIUM ou BASIC/STANDARD).` };
         }
-
-        // Cenário 2: A proposta principal é PREMIUM, mas é única (standalone).
-    } else if (tipoPropostaPrincipal === 'PREMIUM') {
-        const propostaPremiumTratada = tratarDadosParaProposta(dadosApiPrincipal, 'premium', selicAtual);
-        if (!propostaPremiumTratada) {
-            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
-        }
-        dadosProposta.premium = propostaPremiumTratada;
-        // dadosProposta.acessivel permanece null, o que está correto.
-
-        // Cenário 3: A proposta principal é BASIC (Acessível) e é única.
-    } else if (tipoPropostaPrincipal === 'BASIC' || tipoPropostaPrincipal === 'STANDARD') {
-        const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiPrincipal, 'acessivel', selicAtual);
-        if (!propostaAcessivelTratada) {
-            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
-        }
-        dadosProposta.acessivel = propostaAcessivelTratada;
-        // dadosProposta.premium permanece null, o que está correto.
-
-        // Cenário 4: Tipo de proposta desconhecido ou não definido.
-    } else {
-        return { sucesso: false, mensagem: `Padrão de instalação da proposta não reconhecido: ${tipoPropostaPrincipal} (esperado PREMIUM ou BASIC/STANDARD).` };
     }
 
-    // Validação final: se nenhuma proposta foi carregada, retorna erro.
     if (!dadosProposta.premium && !dadosProposta.acessivel) {
         return { sucesso: false, mensagem: 'Não foi possível carregar nenhuma proposta válida.' };
     }

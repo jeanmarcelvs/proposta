@@ -125,7 +125,7 @@ main {
 
 .logo,
 .logo-header {
-    max-width: 120px;
+    max-width: 220px;
     height: auto;
     filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -1676,4 +1676,86 @@ body.awaiting-acceptance main {
         border-bottom: none;
         padding-bottom: 0;
     }
+}
+
+/* NOVO: Estilos para a tabela de serviços */
+.tabela-servicos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    font-size: 1rem;
+}
+
+.tabela-servicos th,
+.tabela-servicos td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--cor-cartao-borda);
+}
+
+.tabela-servicos th {
+    background-color: rgba(var(--cor-primaria-rgb), 0.1);
+    color: var(--cor-primaria);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.tabela-servicos .col-descricao {
+    width: 60%;
+    white-space: normal; /* NOVO: Permite que o texto longo quebre a linha */
+}
+
+.tabela-servicos .col-numerica {
+    text-align: right;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.tabela-servicos .col-subtotal {
+    font-weight: 600;
+    color: var(--cor-texto-principal);
+}
+
+.tabela-servicos .descricao-item {
+    display: block;
+    font-weight: 500;
+    color: var(--cor-texto-principal);
+    margin-bottom: 5px;
+}
+
+.tabela-servicos .observacao-item {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--cor-texto-secundario);
+    font-style: italic;
+    padding-top: 5px;
+}
+
+.tabela-servicos tr:last-child td {
+    border-bottom: none;
+}
+
+/* NOVO: Estilo para o título da seção de parcelamento no cartão */
+.titulo-parcelamento {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 2rem; /* Espaço acima do título */
+    margin-bottom: 1rem; /* Espaço entre o título e os cards */
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--cor-texto-secundario);
+}
+
+.titulo-parcelamento i {
+    color: var(--cor-primaria);
+    font-size: 1.5rem;
+}
+
+/* NOVO: Centraliza o header na página de serviços, que não possui botões de seleção. */
+.pagina-servicos header {
+    justify-content: center;
 }
