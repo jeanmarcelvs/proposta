@@ -1818,7 +1818,7 @@ body.awaiting-acceptance main {
 
 /* NOVO: Estilo para o título da descrição geral do serviço */
 .titulo-descricao-geral {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: 400;
     color: var(--cor-texto-secundario);
     text-align: center;
