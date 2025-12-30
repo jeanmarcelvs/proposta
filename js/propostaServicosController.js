@@ -372,6 +372,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // --- Lógica do Bloco de Consciência de Valor (Animação + Interação) ---
+    // 1. Lógica da Animação de Entrada por Scroll
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target); // Roda a animação apenas uma vez
+                }
+            });
+        },
+        {
+            threshold: 0.35 // Dispara quando 35% do elemento está visível
+        }
+    );
+
+    const elementsToAnimate = document.querySelectorAll(".animate-on-scroll");
+    if (elementsToAnimate.length > 0) {
+        elementsToAnimate.forEach(el => {
+            observer.observe(el);
+        });
+    }
+
+    // 2. Lógica da Interação de Clique (Toggle)
+    const itemsDeConsciencia = document.querySelectorAll('.consciencia-item');
+    if (itemsDeConsciencia.length > 0) {
+        itemsDeConsciencia.forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+    }
+
     mostrarLoadingOverlay();
 
     const urlParams = new URLSearchParams(window.location.search);
