@@ -292,11 +292,7 @@ function preencherDadosServico(dados) {
             `;
 
             // Células restantes
-            tr.innerHTML += `
-                <td class="col-numerica" data-label="Qtd.">${item.quantidade}</td>
-                <td class="col-numerica" data-label="Vlr. Unit.">R$ ${item.valorUnitario}</td>
-                <td class="col-numerica col-subtotal" data-label="Subtotal">R$ ${item.valorTotalItem}</td>
-            `;
+            tr.innerHTML += `<td class="col-numerica" data-label="Qtd.">${item.quantidade}</td>`;
 
             tr.insertBefore(tdDesc, tr.firstChild); // Adiciona a descrição no início
             tbody.appendChild(tr);

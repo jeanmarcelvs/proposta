@@ -1705,7 +1705,6 @@ body.awaiting-acceptance main {
 }
 
 .tabela-servicos .col-descricao {
-    width: 60%;
     white-space: normal; /* NOVO: Permite que o texto longo quebre a linha */
 }
 
@@ -1767,7 +1766,12 @@ body.awaiting-acceptance main {
 /* NOVO: Estilos responsivos para a tabela de serviços em telas menores */
 @media (max-width: 768px) {
     .tabela-servicos {
-        border: none; /* Remove a borda geral da tabela no mobile */
+        /* Transforma a tabela inteira em um card único */
+        display: block;
+        border: 1px solid var(--cor-cartao-borda);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 15px var(--cor-sombra-leve);
     }
 
     .tabela-servicos thead {
@@ -1775,12 +1779,10 @@ body.awaiting-acceptance main {
     }
 
     .tabela-servicos tr {
-        display: block; /* Transforma cada linha em um card */
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--cor-cartao-borda);
-        border-radius: 12px;
-        padding: 1rem;
-        box-shadow: 0 4px 15px var(--cor-sombra-leve);
+        display: block; /* Mantém como bloco para layout vertical */
+        padding-bottom: 1rem; /* Espaçamento para o separador */
+        margin-bottom: 1rem; /* Espaçamento entre itens */
+        border-bottom: 1px solid var(--cor-cartao-borda); /* Linha separadora principal */
     }
 
     .tabela-servicos td {
@@ -1788,12 +1790,14 @@ body.awaiting-acceptance main {
         justify-content: space-between; /* Label na esquerda, valor na direita */
         align-items: center;
         padding: 0.75rem 0;
-        border-bottom: 1px dashed rgba(var(--cor-primaria-rgb), 0.2);
+        border-bottom: none; /* Remove bordas internas para um visual mais limpo */
         text-align: right; /* Alinha o valor do dado à direita */
     }
 
-    .tabela-servicos tr td:last-child {
-        border-bottom: none; /* Remove a borda do último item do card */
+    .tabela-servicos tr:last-child {
+        border-bottom: none; /* Remove a borda do último item da lista */
+        margin-bottom: 0;
+        padding-bottom: 0;
     }
 
     /* A coluna de descrição fica no topo do card, sem label */
@@ -1802,7 +1806,7 @@ body.awaiting-acceptance main {
         text-align: left;
         padding-bottom: 1rem;
         margin-bottom: 1rem;
-        border-bottom: 1px solid var(--cor-cartao-borda);
+        border-bottom: none; /* Remove bordas internas para um visual mais limpo */
         width: 100%;
     }
     
@@ -1999,7 +2003,7 @@ body.awaiting-acceptance main {
     align-items: center;
     gap: 14px;
     margin-bottom: 1.6rem;
-    opacity: 0.45;
+    opacity: 0.7;
     transition: all 0.4s ease;
     cursor: pointer;
 }
@@ -2060,6 +2064,10 @@ body.awaiting-acceptance main {
     margin: 0;
 }
 
+.consciencia-item.active p {
+    color: var(--cor-texto-principal);
+}
+
 .consciencia-fechamento {
     margin-top: 2.2rem;
     padding-left: 14px;
@@ -2068,8 +2076,10 @@ body.awaiting-acceptance main {
 
 .consciencia-fechamento p {
     font-size: 0.95rem;
-    opacity: 0.9;
+    opacity: 1;
     text-align: justify;
+    color: var(--cor-texto-principal);
+    font-weight: 600;
     margin: 0;
 }
 
@@ -2097,7 +2107,7 @@ body.awaiting-acceptance main {
 }
 
 .animate-on-scroll.visible .consciencia-item {
-    opacity: 0.45; /* Volta para a opacidade inicial após a animação */
+    opacity: 0.7; /* Volta para a opacidade inicial após a animação */
     transform: translateY(0);
 }
 
@@ -2105,6 +2115,11 @@ body.awaiting-acceptance main {
 .animate-on-scroll.visible .consciencia-item:nth-child(1) { transition-delay: 0.1s; }
 .animate-on-scroll.visible .consciencia-item:nth-child(2) { transition-delay: 0.25s; }
 .animate-on-scroll.visible .consciencia-item:nth-child(3) { transition-delay: 0.4s; }
+
+/* Garante visibilidade total quando ativo, sobrepondo a opacidade base */
+.animate-on-scroll.visible .consciencia-item.active {
+    opacity: 1;
+}
 
 /* Fechamento */
 .animate-on-scroll .consciencia-fechamento {
@@ -2114,7 +2129,7 @@ body.awaiting-acceptance main {
 }
 
 .animate-on-scroll.visible .consciencia-fechamento {
-    opacity: 0.9;
+    opacity: 1;
     transform: translateY(0);
     transition-delay: 0.6s; /* Aparece depois dos itens */
 }
