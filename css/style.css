@@ -1824,3 +1824,150 @@ body.awaiting-acceptance main {
     text-align: center;
     margin-bottom: 1.5rem;
 }
+
+/* Estilo para os Microtextos de Reforço Emocional */
+.microtexto-detalhe {
+    display: block;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #e0e0e0; /* Cor clara mas sutil */
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+/* Ajuste para tema claro (se houver) ou cards brancos */
+.theme-acessivel .microtexto-detalhe {
+    border-top-color: rgba(0, 0, 0, 0.1);
+    color: #555;
+}
+
+/* ====================================================================== */
+/* 🌟 ANIMAÇÕES DE REFORÇO E PERCEPÇÃO DE VALOR (Mobile-First)            */
+/* ====================================================================== */
+
+/* 1. Entrada Suave (Fade + Slide Up) */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade {
+    opacity: 0; /* Começa invisível */
+    animation: fadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* 2. Presença Técnica (Hover Sutil nos Cards) */
+/* Aplica a transição suave para cards de detalhes, valores e itens */
+.card-detalhe,
+.card-valores,
+.card-item-detalhe {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: transform; /* Otimização de performance */
+}
+
+.card-detalhe:hover,
+.card-valores:hover,
+.card-item-detalhe:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15); /* Sombra um pouco mais marcada no hover */
+    border-color: var(--cor-primaria); /* Sutil brilho na borda */
+}
+
+/* 3. Microinteração de Leitura (Foco no Texto) */
+/* Ao passar o mouse no card, o texto secundário ganha destaque */
+.card-detalhe p,
+.card-valores p,
+.card-item-detalhe p,
+.card-item-detalhe .texto-detalhe {
+    transition: color 0.3s ease;
+}
+
+.card-detalhe:hover .legenda-card,
+.card-valores:hover .legenda-valores,
+.card-item-detalhe:hover .texto-detalhe {
+    color: var(--cor-texto-principal); /* Traz o texto cinza para branco (ou preto no tema claro) */
+}
+
+/* 4. Destaque Emocional (Brilho Sutil) */
+.destaque-brilho {
+    position: relative;
+    overflow: hidden;
+}
+
+.destaque-brilho::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.1), transparent 70%);
+    animation: brilho 6s infinite; /* 6s para ser bem calmo */
+}
+
+@keyframes brilho {
+    0% { transform: translateX(-100%); }
+    20% { transform: translateX(100%); } /* Passa rápido */
+    100% { transform: translateX(100%); } /* Fica parado o resto do tempo */
+}
+
+/* ====================================================================== */
+/* 💎 VERSÃO PREMIUM SILENCIOSA (LUXO DISCRETO)                           */
+/* ====================================================================== */
+
+.emocional-sutil {
+    display: grid;
+    gap: 30px;
+    padding: 36px 22px;
+    max-width: 720px;
+    margin: 0 auto 40px; /* Margem inferior para separar da próxima seção */
+}
+
+/* Blocos */
+.bloco-emocional {
+    background: var(--cor-fundo-secao);
+    padding: 26px 22px;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--cor-texto-secundario);
+    box-shadow: 0 10px 25px var(--cor-sombra-leve);
+    border: 1px solid var(--cor-cartao-borda);
+    opacity: 0;
+    animation: fadeElegante 0.9s ease forwards;
+}
+
+/* Destaque inicial */
+.bloco-emocional.destaque {
+    border-left: 4px solid var(--cor-primaria);
+    font-weight: 500;
+    color: var(--cor-texto-principal);
+}
+
+/* Assinatura */
+.bloco-emocional.assinatura {
+    text-align: center;
+    font-size: 0.95rem;
+    opacity: 0.85;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Animação sutil */
+@keyframes fadeElegante {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

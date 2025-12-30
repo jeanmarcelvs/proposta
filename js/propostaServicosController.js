@@ -187,9 +187,10 @@ function preencherDetalhesInstalacao(proposta) {
         return;
     }
 
-    detalhes.forEach(detalhe => {
+    detalhes.forEach((detalhe, index) => {
         const div = document.createElement('div');
-        div.className = 'card-item-detalhe';
+        div.className = 'card-item-detalhe animate-fade';
+        div.style.animationDelay = `${index * 0.15}s`;
         div.innerHTML = `
             <div class="icone-container-detalhe">
                 <i class="fas ${detalhe.icone} icone-detalhe"></i>
@@ -197,6 +198,7 @@ function preencherDetalhesInstalacao(proposta) {
             <div class="texto-container-detalhe">
                 ${detalhe.titulo ? `<h4 class="titulo-card-detalhe">${detalhe.titulo}</h4>` : ''}
                 <p class="texto-detalhe">${detalhe.texto}</p>
+                ${detalhe.microtexto ? `<p class="microtexto-detalhe">${detalhe.microtexto}</p>` : ''}
             </div>
         `;
         secaoDetalhes.appendChild(div);
@@ -276,8 +278,10 @@ function preencherDadosServico(dados) {
         const tbody = document.getElementById('tbody-itens-servico');
         tbody.innerHTML = ''; // Limpa antes de popular
 
-        dados.dadosServico.itens.forEach(item => {
+        dados.dadosServico.itens.forEach((item, index) => {
             const tr = document.createElement('tr');
+            tr.className = 'animate-fade';
+            tr.style.animationDelay = `${index * 0.1}s`; // Cascata rápida na tabela
 
             // Coluna Descrição com Observação
             const tdDesc = document.createElement('td');
@@ -348,6 +352,26 @@ function preencherDadosServico(dados) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // --- Lógica do Modal de Aceite Consciente (Engenharia Consultiva) ---
+    const modalAceite = document.getElementById('proposalModal');
+    const checkboxAceite = document.getElementById('acceptProposal');
+    const btnConfirmarAceite = document.getElementById('confirmProposal');
+
+    if (modalAceite && checkboxAceite && btnConfirmarAceite) {
+        checkboxAceite.addEventListener('change', function () {
+            btnConfirmarAceite.disabled = !this.checked;
+        });
+
+        btnConfirmarAceite.addEventListener('click', function () {
+            modalAceite.classList.add('fade-out');
+            setTimeout(() => {
+                modalAceite.style.display = 'none';
+                document.body.classList.remove('awaiting-acceptance');
+                localStorage.setItem('aceiteConsciente', 'true');
+            }, 500);
+        });
+    }
+
     mostrarLoadingOverlay();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -434,4 +458,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (nextModalBtn) nextModalBtn.addEventListener('click', () => showImageInModal(currentImageIndex + 1));
     if (prevModalBtn) prevModalBtn.addEventListener('click', () => showImageInModal(currentImageIndex - 1));
+});
+
+// --- Script para forçar o recarregamento dos vídeos do Instagram (Movido do HTML) ---
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        if (window.instgrm) {
+            window.instgrm.Embeds.process();
+        }
+    }, 1000);
 });

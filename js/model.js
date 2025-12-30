@@ -74,18 +74,18 @@ const caminhosImagens = {
 const detalhesInstalacaoPremium = [
     {
         icone: 'fa-user-shield',
-        titulo: 'Decisão Pensada para o Longo Prazo',
-        texto: 'Indicada para quem prefere fazer uma escolha consciente hoje e não revisitar essa decisão no futuro.'
+        titulo: 'Pensado para durar',
+        texto: 'Projeto técnico que reduz riscos ao longo do tempo.'
     },
     {
         icone: 'fa-chart-line',
-        titulo: 'Comportamento Estável ao Longo dos Anos',
-        texto: 'Projeto voltado à constância de funcionamento e previsibilidade de resultado com o passar do tempo.'
+        titulo: 'Engenharia consistente',
+        texto: 'Dimensionamento preciso evita perdas futuras.'
     },
     {
         icone: 'fa-home',
-        titulo: 'Perfil de Consumidor',
-        texto: 'Consumidores exigentes, que valorizam organização, padrão elevado e tranquilidade.'
+        titulo: 'Perfil criterioso',
+        texto: 'Para quem prioriza decisão bem fundamentada.'
     }
 ];
 
@@ -94,16 +94,17 @@ const detalhesInstalacaoPremium = [
 const detalhesInstalacaoAcessivel = [
     {
         icone: 'fa-info-circle',
-        titulo: 'Solução Simplificada',
-        texto: 'Indicada para consumidores que priorizam um investimento inicial mais baixo.'
+        titulo: 'Solução Básica',
+        texto: 'Atende o básico com menor investimento inicial.',
+        microtexto: 'Infraestrutura simplificada.'
     }];
 
 // NOVO: Resumos para a seção de instalação
 const resumoInstalacaoPremium =
-    "Esta proposta foi concebida para consumidores que valorizam previsibilidade, estabilidade e tranquilidade ao longo dos anos. O foco é reduzir riscos técnicos e evitar custos ocultos que só aparecem com o tempo.";
+    "Essa proposta prioriza estabilidade estrutural e comportamento confiável ao longo dos anos, mesmo sob variações naturais de uso, clima e carga elétrica.";
 
 const resumoInstalacaoAcessivel =
-    "Esta proposta prioriza a redução do investimento inicial, adotando soluções mais simples.";
+    "Uma solução funcional para quem busca reduzir o investimento inicial, mantendo atendimento às exigências técnicas básicas.";
 
 // NOVO: Dados para o Aceite Consciente (Gate de Leitura)
 const dadosAceite = {
@@ -560,7 +561,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
         const descricaoGeral = extrairValorVariavelPorChave(variables, 'cap_descricao_geral_servico');
         const { parcelas: parcelasCartao } = calcularParcelasCartao(valorFinalDaProposta, selicAtual);
-        
+
         dadosServico = {
             // Se não houver itens, usa a descrição antiga como fallback.
             descricao: null, // A descrição geral agora é o título
@@ -678,18 +679,18 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     if (tipoVisualizacao && tipoVisualizacao.trim().toUpperCase() === 'SERVICO') {
         // É um serviço. Usa os dados da PROPOSTA, conforme restaurado.
         const propostaServico = tratarDadosParaProposta(dadosApiProposta, 'unico', selicAtual);
-        
+
         if (!propostaServico) {
             return { sucesso: false, mensagem: 'Falha ao processar dados da proposta de Serviço.' };
         }
-        
+
         dadosProposta.premium = propostaServico; // Armazena no slot principal
 
     } else {
         // É Solar ou VE. Usar a lógica original com os dados da proposta já buscados.
         let tipoPropostaPrincipal = extrairValorVariavelPorChave(variablesDaProposta, 'cape_padrao_instalacao');
         const idProjetoAcessivel = extrairValorVariavelPorChave(variablesDaProposta, 'vc_projeto_acessivel');
-        
+
         if (!tipoPropostaPrincipal) {
             if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
                 tipoPropostaPrincipal = 'PREMIUM';

@@ -9,11 +9,42 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
-<body class="theme-premium pagina-servicos">
+<body class="theme-premium pagina-servicos awaiting-acceptance">
   <div class="background-animation"></div>
 
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>
+  </div>
+
+  <!-- Modal de Posicionamento (Engenharia Consultiva) - Igual à Proposta Premium -->
+  <div id="proposalModal">
+    <div class="modal-content-wrapper">
+        <div class="onboarding-badge">
+            Consultoria em Engenharia
+        </div>
+
+        <h1 class="onboarding-title">
+            Proposta Técnica<br>Personalizada
+        </h1>
+
+        <p class="onboarding-text">
+            Esta proposta <strong>não se refere</strong> à venda de um kit fotovoltaico.
+            Ela segue um modelo técnico de consultoria em engenharia, conduzido por
+            engenheiro especialista em soluções energéticas, considerando projeto,
+            execução, desempenho e retorno financeiro ao longo da vida útil do sistema.
+        </p>
+
+        <div class="onboarding-divider"></div>
+
+        <label class="onboarding-check">
+            <input type="checkbox" id="acceptProposal">
+            <span>Estou ciente e desejo acessar a proposta</span>
+        </label>
+
+        <button id="confirmProposal" class="onboarding-button" disabled>
+            Acessar proposta
+        </button>
+    </div>
   </div>
 
   <main class="main-oculto">
@@ -124,10 +155,29 @@
         </div>
     </section>
 
+    <!-- SEÇÃO PREMIUM SILENCIOSA (Luxo Discreto) -->
+    <section class="emocional-sutil">
+        <div class="bloco-emocional destaque" style="animation-delay: 0.1s;">
+            <p>Nem tudo o que funciona hoje, permanece amanhã.</p>
+        </div>
+        <div class="bloco-emocional" style="animation-delay: 0.2s;">
+            <p>O tempo não perdoa decisões apressadas.</p>
+        </div>
+        <div class="bloco-emocional" style="animation-delay: 0.3s;">
+            <p>O que sustenta um sistema raramente chama atenção.</p>
+        </div>
+        <div class="bloco-emocional" style="animation-delay: 0.4s;">
+            <p>Algumas escolhas só revelam seu valor com os anos.</p>
+        </div>
+        <div class="bloco-emocional assinatura" style="animation-delay: 0.5s;">
+            <p>Projeto, método e responsabilidade técnica.</p>
+        </div>
+    </section>
+
     <section id="secao-valores-servico" class="secao-principal">
       <h2 class="titulo-secao">Valores e Condições</h2>
       <div class="container-financiamento">
-        <div class="card-valores card-total">
+        <div class="card-valores card-total animate-fade destaque-brilho" style="animation-delay: 0.1s;">
           <p class="legenda-valores">Valor total:</p>
           <p class="valor-total-proposta">
             <span class="moeda">R$</span>
@@ -142,55 +192,55 @@
         </div>
         <!-- NOVO: Container para parcelas do cartão -->
         <div id="container-parcelas-cartao" class="valores-container oculto">
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.2s;">
             <p class="legenda-valores">Débito:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-debito"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.25s;">
             <p class="legenda-valores">Em 1x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-1"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.3s;">
             <p class="legenda-valores">Em 2x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-2"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.35s;">
             <p class="legenda-valores">Em 3x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-3"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.4s;">
             <p class="legenda-valores">Em 4x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-4"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.45s;">
             <p class="legenda-valores">Em 5x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-5"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.5s;">
             <p class="legenda-valores">Em 6x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-6"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.55s;">
             <p class="legenda-valores">Em 7x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-7"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.6s;">
             <p class="legenda-valores">Em 8x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-8"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.65s;">
             <p class="legenda-valores">Em 9x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-9"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.7s;">
             <p class="legenda-valores">Em 10x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-10"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.75s;">
             <p class="legenda-valores">Em 11x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-11"></span></p>
           </div>
-          <div class="card-valores">
+          <div class="card-valores animate-fade" style="animation-delay: 0.8s;">
             <p class="legenda-valores">Em 12x:</p>
             <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-12"></span></p>
           </div>
@@ -232,14 +282,5 @@
   </div>
 
   <script async src="//www.instagram.com/embed.js"></script>
-  <script>
-    window.addEventListener('load', function () {
-      setTimeout(function () {
-        if (window.instgrm) {
-          window.instgrm.Embeds.process();
-        }
-      }, 1000);
-    });
-  </script>
 </body>
 </html>

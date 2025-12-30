@@ -211,13 +211,14 @@ function preencherDetalhesInstalacao(proposta) {
     tituloDetalhes.innerText = 'O que está incluso:';
     secaoDetalhes.appendChild(tituloDetalhes);
 
-    detalhes.forEach(detalhe => {
+    detalhes.forEach((detalhe, index) => {
         const textoFormatado = detalhe.texto
             .replace(/\*\*(.*?)\*\*/g, '<strong class="texto-destaque">$1</strong>') // Formata negrito
             .replace(/<br><br>/g, '</p><p class="texto-detalhe">');
 
         const div = document.createElement('div');
-        div.className = 'card-item-detalhe';
+        div.className = 'card-item-detalhe animate-fade';
+        div.style.animationDelay = `${index * 0.15}s`; // Cascata: 0s, 0.15s, 0.30s...
 
         // Estrutura de card com ícone, título (se houver) e texto. O ícone é dinâmico.
         div.innerHTML = `
@@ -227,6 +228,7 @@ function preencherDetalhesInstalacao(proposta) {
             <div class="texto-container-detalhe">
                 ${detalhe.titulo ? `<h4 class="titulo-card-detalhe">${detalhe.titulo}</h4>` : ''}
                 <p class="texto-detalhe">${textoFormatado}</p>
+                ${detalhe.microtexto ? `<p class="microtexto-detalhe">${detalhe.microtexto}</p>` : ''}
             </div>
         `;
         secaoDetalhes.appendChild(div);
@@ -567,6 +569,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             evento.preventDefault();
         }
     });
+
+    // --- Lógica do Modal de Aceite Consciente (Movido do HTML) ---
+    const modalAceite = document.getElementById('proposalModal');
+    const checkboxAceite = document.getElementById('acceptProposal');
+    const btnConfirmarAceite = document.getElementById('confirmProposal');
+
+    if (modalAceite && checkboxAceite && btnConfirmarAceite) {
+        checkboxAceite.addEventListener('change', function () {
+            btnConfirmarAceite.disabled = !this.checked;
+        });
+
+        btnConfirmarAceite.addEventListener('click', function () {
+            modalAceite.classList.add('fade-out');
+            setTimeout(() => {
+                modalAceite.style.display = 'none';
+                document.body.classList.remove('awaiting-acceptance');
+                localStorage.setItem('aceiteConsciente', 'true');
+            }, 500);
+        });
+    }
 
     mostrarLoadingOverlay();
 
@@ -1012,4 +1034,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             esconderModal();
         }
     });
+});
+
+// --- Script para forçar o recarregamento dos vídeos do Instagram (Movido do HTML) ---
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        if (window.instgrm) {
+            window.instgrm.Embeds.process();
+        }
+    }, 1000); // Aguarda 1 segundo para garantir que tudo carregou
 });
