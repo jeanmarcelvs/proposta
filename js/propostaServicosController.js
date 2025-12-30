@@ -352,26 +352,6 @@ function preencherDadosServico(dados) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- Lógica do Modal de Aceite Consciente (Engenharia Consultiva) ---
-    const modalAceite = document.getElementById('proposalModal');
-    const checkboxAceite = document.getElementById('acceptProposal');
-    const btnConfirmarAceite = document.getElementById('confirmProposal');
-
-    if (modalAceite && checkboxAceite && btnConfirmarAceite) {
-        checkboxAceite.addEventListener('change', function () {
-            btnConfirmarAceite.disabled = !this.checked;
-        });
-
-        btnConfirmarAceite.addEventListener('click', function () {
-            modalAceite.classList.add('fade-out');
-            setTimeout(() => {
-                modalAceite.style.display = 'none';
-                document.body.classList.remove('awaiting-acceptance');
-                localStorage.setItem('aceiteConsciente', 'true');
-            }, 500);
-        });
-    }
-
     // --- Lógica do Bloco de Consciência de Valor (Animação + Interação) ---
     // 1. Lógica da Animação de Entrada por Scroll
     const observer = new IntersectionObserver(

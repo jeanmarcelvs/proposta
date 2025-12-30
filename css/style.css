@@ -946,6 +946,7 @@ header {
     font-size: 0.9rem;
     color: var(--cor-texto-secundario);
     line-height: 1.6;
+    text-align: justify;
 }
 
 .secao-voltar-proposta {
@@ -1524,6 +1525,7 @@ body.awaiting-acceptance main {
     font-size: 0.95rem;
     line-height: 1.55;
     color: #cfd3da;
+    text-align: justify;
     margin-bottom: 0;
 }
 
@@ -1723,6 +1725,7 @@ body.awaiting-acceptance main {
     font-weight: 500;
     color: var(--cor-texto-principal);
     margin-bottom: 5px;
+    text-align: justify;
 }
 
 .tabela-servicos .observacao-item {
@@ -1731,6 +1734,7 @@ body.awaiting-acceptance main {
     color: var(--cor-texto-secundario);
     font-style: italic;
     padding-top: 5px;
+    text-align: justify;
 }
 
 .tabela-servicos tr:last-child td {
@@ -1818,11 +1822,12 @@ body.awaiting-acceptance main {
 
 /* NOVO: Estilo para o título da descrição geral do serviço */
 .titulo-descricao-geral {
-    font-size: 1.2rem;
+    font-size: 1rem; /* Reduzido para mais elegância */
     font-weight: 400;
     color: var(--cor-texto-secundario);
-    text-align: center;
+    text-align: justify; /* Alinhamento justificado */
     margin-bottom: 1.5rem;
+    line-height: 1.6; /* Melhora a legibilidade do texto justificado */
 }
 
 /* Estilo para os Microtextos de Reforço Emocional */
@@ -2051,6 +2056,7 @@ body.awaiting-acceptance main {
     font-size: 0.95rem;
     line-height: 1.5;
     color: #d6d6d6;
+    text-align: justify;
     margin: 0;
 }
 
@@ -2063,6 +2069,7 @@ body.awaiting-acceptance main {
 .consciencia-fechamento p {
     font-size: 0.95rem;
     opacity: 0.9;
+    text-align: justify;
     margin: 0;
 }
 
