@@ -69,7 +69,7 @@ const caminhosImagens = {
     }
 };
 
-// Detalhes de instalação fixos para a proposta Premium (dados corrigidos)
+// Detalhes de instalação fixos para a proposta Premium (dados corrigidos).
 // ATUALIZADO: Foco em Risco Zero, Durabilidade e Padrão Industrial.
 const detalhesInstalacaoPremium = [
     {
