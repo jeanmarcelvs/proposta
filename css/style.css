@@ -1,15 +1,3 @@
-/* Limite para imagem de marca do equipamento */
-#imagem-marca-equipamento,
-.imagem-proposta {
-    max-width: 200px !important;
-    max-height: 200px !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain !important;
-    display: block !important;
-    margin: 0 auto 1rem !important;
-    /* borda removida */
-}
 /* style.css - Versão Final Refinada e Corrigida */
 
 /* Importação da fonte e variáveis de cores globais */
@@ -22,8 +10,8 @@
     --cor-fundo-principal-rgb: 26, 26, 26; /* RGB do Cinza Escuro */
     --cor-fundo-secao: #222222; /* Cinza escuro para seções e header */
     --cor-fundo-logo-contraste: #222222; /* NOVO: Cor escura fixa para o fundo da logo no tema claro */
-    --cor-cartao-fundo: #000000; /* Preto para containers de destaque (login, cards de valor) */
-    --cor-cartao-borda: #FFCC00; /* Amarelo Energético */
+    --cor-cartao-fundo: #151515; /* Grafite muito escuro, não preto puro */
+    --cor-cartao-borda: rgba(255, 255, 255, 0.08); /* Linha fina, branca e discreta */
     --cor-header-fundo: rgba(34, 34, 34, 0.85); /* Fundo do header com transparência */
     --cor-header-botoes-fundo: #333333;
     --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
@@ -37,6 +25,7 @@
     --cor-sombra: rgba(0, 0, 0, 0.12);
     --cor-sombra-leve: rgba(0, 0, 0, 0.06);
     --cor-animacao: rgba(255, 204, 0, 0.05); /* Animação de fundo com tom amarelo sutil */
+    --cor-grafite-suave: #1e1e1e; /* Novo tom para fundos de cards */
 }
 
 /* Paleta de Cores +Acessível (Tema Claro BelEnergy) */
@@ -59,6 +48,7 @@
     --cor-sombra: rgba(0, 0, 0, 0.1);
     --cor-sombra-leve: rgba(0, 0, 0, 0.05);
     --cor-animacao: rgba(255, 204, 0, 0.15); /* Animação amarela mais visível no fundo claro */
+    --cor-grafite-suave: #ffffff;
 }
 
 /* --- Estilos Globais e Padrões --- */
@@ -220,7 +210,7 @@ label {
 input[type="text"] {
     width: 100%;
     padding: 1rem;
-    border: 1px solid var(--cor-cartao-borda);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil em inputs */
     border-radius: 12px; 
     background-color: var(--cor-fundo-input);
     color: #FFFFFF; /* Texto do input sempre branco para contrastar com o fundo escuro do input */
@@ -420,8 +410,8 @@ header {
     margin-bottom: 40px;
     padding: 3.5rem 4rem; 
     box-shadow: none;
-    border-top: 1px solid var(--cor-cartao-borda);
-    border-bottom: 1px solid var(--cor-cartao-borda);
+    border-top: 1px solid rgba(255, 255, 255, 0.05); /* Linha muito fina e discreta */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     background-color: var(--cor-fundo-secao); /* Fundo cinza escuro para seções */
     backdrop-filter: blur(10px);
     transition: none;
@@ -500,9 +490,9 @@ header {
     justify-content: center;
     padding: 3rem;
     border-radius: 16px;
-    background-color: var(--cor-fundo-secao);
+    background: linear-gradient(145deg, var(--cor-fundo-secao), var(--cor-grafite-suave)); /* Gradiente sutil Grafite */
     border: 1px solid var(--cor-cartao-borda);
-    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.02), 0 5px 20px var(--cor-sombra-leve);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
@@ -511,6 +501,7 @@ header {
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03), 0 10px 30px var(--cor-sombra-leve);
 }
 
+/* Ícones mantêm o amarelo para foco visual */
 .icone-card {
     font-size: 3rem;
     color: var(--cor-primaria);
@@ -558,13 +549,15 @@ header {
     gap: 3.5rem;
 }
 
-#imagem-marca {
+#imagem-marca-equipamento {
     max-width: 200px !important;
     max-height: 200px !important;
     width: auto !important;
     height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto 1rem !important;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
-    border: 2px solid red;
 }
 
 .card-lista-equipamentos {
@@ -672,7 +665,6 @@ header {
     object-fit: contain;
     object-position: center;
     display: block;
-    border: 2px solid red;
 }
 
 .imagem-marca:hover {
@@ -710,7 +702,7 @@ header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background-color: var(--cor-fundo-secao);
+    background-color: var(--cor-grafite-suave); /* Fundo grafite sutil */
     padding: 1.2rem;
     border-radius: 12px;
     border: 1px solid var(--cor-cartao-borda);
@@ -773,7 +765,7 @@ header {
 #resumo-instalacao-container {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--cor-cartao-borda);
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Linha fina separadora */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -818,10 +810,11 @@ header {
 .card-valores {
     padding: 2.5rem 2rem;
     border-radius: 12px;
-    background-color: var(--cor-cartao-fundo);
+    /* INVERSÃO: Fundo escuro agora é aplicado no tema Standard. Premium é sutil. */
+    background-color: transparent;
     border: 1px solid var(--cor-cartao-borda);
     box-shadow: 0 5px 20px var(--cor-sombra-leve);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
     position: relative;
     text-align: center;
 }
@@ -861,11 +854,12 @@ header {
     /* Remove a margem superior para colar no card anterior */
     margin-top: 0;
     margin-bottom: 40px; 
-    background-color: var(--cor-cartao-fundo); /* Fundo preto para consistência */
-    border: 2px solid var(--cor-primaria); /* Borda amarela mais espessa para destaque */
+    /* INVERSÃO: Estilo de destaque escuro agora é do tema Standard. Premium tem borda forte. */
+    background-color: var(--cor-cartao-fundo);
+    border: 2px solid var(--cor-primaria);
     color: var(--cor-primaria); /* Cor do texto principal (valor) em amarelo */
     grid-column: 1 / -1;
-    box-shadow: 0 10px 40px rgba(var(--cor-primaria-rgb), 0.3); /* Sombra amarela sutil */
+    box-shadow: 0 10px 40px var(--cor-sombra);
     padding: 2.5rem 2rem;
     display: flex;
     flex-direction: column;
@@ -924,10 +918,52 @@ header {
     color: var(--cor-texto-principal); /* Branco para o valor do payback */
 }
 
+/* ====================================================================== */
+/* 🎨 AJUSTES DE TEMA PARA VALORES (STANDARD/ACESSÍVEL)                   */
+/* ====================================================================== */
+
+/* AJUSTE: Cards de valores com fundo claro e informações escuras no tema Standard */
+.theme-acessivel .card-valores {
+    background-color: var(--cor-cartao-fundo); /* Fundo branco */
+    border-color: var(--cor-cartao-borda); /* Borda cinza clara */
+    box-shadow: 0 4px 15px var(--cor-sombra-leve);
+}
+
+/* AJUSTE: Informações escuras para leitura clara */
+.theme-acessivel .card-valores .legenda-valores {
+    color: var(--cor-texto-secundario); /* Cinza escuro */
+}
+.theme-acessivel .card-valores .valor-parcela-proposta,
+.theme-acessivel .card-valores .moeda {
+    color: var(--cor-texto-principal); /* Preto para máximo contraste */
+}
+
+/* AJUSTE: Card total também segue o padrão claro */
+.theme-acessivel .card-total {
+    background: var(--cor-cartao-fundo);
+    border: 2px solid var(--cor-primaria); /* Mantém borda amarela para destaque */
+    box-shadow: 0 10px 30px var(--cor-sombra-leve);
+}
+
+.theme-acessivel .card-total .legenda-valores,
+.theme-acessivel .card-total .valor-total-proposta,
+.theme-acessivel .card-total .moeda {
+    color: var(--cor-texto-principal); /* Preto */
+    text-shadow: none;
+}
+
+.theme-acessivel .card-total .legenda-investimento {
+    color: var(--cor-texto-secundario);
+}
+
+.theme-acessivel .card-total .valor-investimento {
+    color: var(--cor-texto-principal);
+}
+
 .secao-observacao-container {
     grid-column: 1 / -1;
     padding: 20px;
-    border-left: 5px solid var(--cor-primaria);
+    border-left: 3px solid var(--cor-primaria); /* Linha amarela mais fina e elegante */
     border-radius: 0;
     background-color: transparent;
     box-shadow: none;
@@ -975,7 +1011,7 @@ footer {
     backdrop-filter: blur(10px);
     padding: 2.5rem;
     text-align: center;
-    border-top: 1px solid var(--cor-cartao-borda);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .footer-contact-container {
@@ -1152,7 +1188,7 @@ footer {
         width: auto;
     }
 
-    #imagem-marca {
+    #imagem-marca-equipamento {
         display: block;
         margin: 0 auto 1rem;
         max-width: 200px !important;
@@ -1596,8 +1632,8 @@ body.awaiting-acceptance main {
     margin-top: 3.5rem;
     padding: 2.5rem 2rem 2rem; /* Padding superior maior para acomodar o título */
     background-color: rgba(var(--cor-fundo-principal-rgb), 0.3); /* Fundo sutil para separar visualmente */
-    border: 1px solid var(--cor-cartao-borda);
-    border-left: 4px solid var(--cor-primaria); /* Destaque lateral de autoridade */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--cor-primaria); /* Destaque lateral mais fino */
     border-radius: 8px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Grid responsivo */
@@ -1692,7 +1728,7 @@ body.awaiting-acceptance main {
 .tabela-servicos td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid var(--cor-cartao-borda);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Linha fina separadora */
 }
 
 .tabela-servicos th {
@@ -1768,7 +1804,7 @@ body.awaiting-acceptance main {
     .tabela-servicos {
         /* Transforma a tabela inteira em um card único */
         display: block;
-        border: 1px solid var(--cor-cartao-borda);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 12px;
         padding: 1rem;
         box-shadow: 0 4px 15px var(--cor-sombra-leve);
@@ -1782,7 +1818,7 @@ body.awaiting-acceptance main {
         display: block; /* Mantém como bloco para layout vertical */
         padding-bottom: 1rem; /* Espaçamento para o separador */
         margin-bottom: 1rem; /* Espaçamento entre itens */
-        border-bottom: 1px solid var(--cor-cartao-borda); /* Linha separadora principal */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Linha separadora principal */
     }
 
     .tabela-servicos td {
@@ -1887,8 +1923,326 @@ body.awaiting-acceptance main {
 .card-valores:hover,
 .card-item-detalhe:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15); /* Sombra um pouco mais marcada no hover */
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3); /* Sombra um pouco mais marcada no hover */
     border-color: var(--cor-primaria); /* Sutil brilho na borda */
+}
+
+/* ====================================================================== */
+/* 🏆 SEÇÕES DE DIFERENCIAIS E ESCOPO (GRID DE ÍCONES)                    */
+/* ====================================================================== */
+
+.grid-icones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.card-icone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--cor-cartao-fundo); /* Dark no Premium, Branco no Standard */
+    border: 1px solid var(--cor-cartao-borda);
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-icone:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--cor-sombra-leve);
+    border-color: var(--cor-primaria);
+}
+
+/* Estilo Horizontal (Ícone à esquerda, texto à direita) - Usado para Diferenciais */
+.card-icone.horizontal {
+    flex-direction: row;
+    text-align: left;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.card-icone i {
+    font-size: 2.5rem;
+    color: var(--cor-primaria); /* Amarelo BelEnergy */
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.card-icone.horizontal i {
+    margin-bottom: 0;
+    min-width: 50px; /* Garante alinhamento */
+    text-align: center;
+}
+
+.card-icone:hover i {
+    transform: scale(1.1);
+}
+
+.card-icone h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--cor-texto-principal);
+    margin-bottom: 0.5rem;
+}
+
+.card-icone p {
+    font-size: 0.95rem;
+    color: var(--cor-texto-secundario);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Ajuste específico para o tema Standard (Acessível) */
+.theme-acessivel .card-icone {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* ====================================================================== */
+/* ⏳ BLOCO DE PRAZO E PROCESSO (LINHA DO TEMPO)                          */
+/* ====================================================================== */
+
+.bloco-prazo {
+    text-align: center;
+    /* O background já é definido pela classe .secao-principal, mas reforçamos o padding */
+    padding: 4rem 2rem; 
+}
+
+.linha-tempo {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 35px;
+    max-width: 1100px;
+    margin: 3rem auto 0;
+}
+
+.etapa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    opacity: 0; /* Para animação */
+    transform: translateY(18px);
+    transition: all 0.6s ease;
+}
+
+/* Cascata de animação manual para garantir a ordem */
+.animate-on-scroll.visible .etapa:nth-child(1) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
+.animate-on-scroll.visible .etapa:nth-child(2) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
+.animate-on-scroll.visible .etapa:nth-child(3) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
+.animate-on-scroll.visible .etapa:nth-child(4) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+
+.etapa i {
+    font-size: 2.2rem;
+    color: var(--cor-primaria); /* Amarelo BelEnergy */
+    margin-bottom: 5px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+
+.etapa .tempo {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--cor-texto-principal);
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--cor-cartao-borda);
+}
+
+.etapa p {
+    font-size: 0.95rem;
+    color: var(--cor-texto-secundario);
+    line-height: 1.45;
+    max-width: 230px;
+}
+
+.fechamento-prazo {
+    margin-top: 45px;
+    font-size: 1.1rem;
+    color: var(--cor-texto-principal);
+    padding-top: 30px;
+    border-top: 1px solid var(--cor-cartao-borda);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.fechamento-prazo span {
+    color: var(--cor-primaria);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.observacao-prazo {
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: var(--cor-texto-secundario);
+    max-width: 780px;
+    margin-inline: auto;
+    opacity: 0.7;
+}
+
+/* ====================================================================== */
+/* 🎓 BLOCO DE AUTORIDADE TÉCNICA (Engenharia)                            */
+/* ====================================================================== */
+
+.bloco-autoridade {
+    /* Adaptação para o tema: Gradiente sutil baseado no fundo da seção */
+    background: linear-gradient(180deg, var(--cor-fundo-secao), var(--cor-fundo-principal));
+    padding: 60px 20px;
+    color: var(--cor-texto-secundario);
+    text-align: center;
+    margin-top: 40px;
+    border-top: 1px solid var(--cor-cartao-borda);
+}
+
+/* Linha de transição */
+.linha-transicao {
+    width: 120px;
+    height: 1px;
+    margin: 0 auto 40px;
+    background: linear-gradient(to right, transparent, var(--cor-cartao-borda), transparent);
+    opacity: 0.6;
+}
+
+/* Selo técnico */
+.selo-tecnico {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    letter-spacing: 0.4px;
+    color: var(--cor-texto-secundario);
+    opacity: 0.85;
+}
+
+.selo-tecnico i {
+    color: var(--cor-primaria); /* Amarelo BelEnergy */
+    font-size: 1.1rem;
+}
+
+/* Assinatura */
+.assinatura-tecnica {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    padding: 40px 0;
+    border-top: 1px solid var(--cor-cartao-borda);
+    text-align: left;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.assinatura-info {
+    flex: 1;
+}
+
+.frase-autoridade {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--cor-texto-principal);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+    letter-spacing: 0.3px;
+}
+
+.container-dados-engenheiro {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Foto */
+.foto-tecnica img {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    filter: grayscale(100%) contrast(1.1);
+    border: 1px solid var(--cor-cartao-borda);
+    object-fit: cover;
+}
+
+/* Texto */
+.dados-tecnicos .nome {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-texto-principal);
+    margin-bottom: 2px;
+}
+
+.dados-tecnicos .cargo {
+    font-size: 0.85rem;
+    color: var(--cor-texto-secundario);
+}
+
+/* QR Code */
+.qr-code {
+    text-align: center;
+    position: relative; /* Necessário para o pulse */
+}
+
+.qr-code img {
+    width: 100px;
+    height: 100px;
+    opacity: 0.9;
+    border-radius: 4px;
+    background-color: #fff; /* Fundo branco para garantir leitura do QR */
+    padding: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+.qr-code span {
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 6px;
+    color: var(--cor-texto-secundario);
+}
+
+/* --- Microanimação "Pulse Técnico" --- */
+.pulse-tech::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 110px;
+    height: 110px;
+    border-radius: 8px;
+    border: 1px solid var(--cor-primaria);
+    opacity: 0;
+    z-index: 1;
+    animation: pulseTech 3.8s ease-in-out infinite;
+}
+
+@keyframes pulseTech {
+    0% {
+        transform: translate(-50%, -50%) scale(0.95);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 0.3; /* Brilho sutil */
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.95);
+        opacity: 0;
+    }
+}
+
+/* Animação suave reutilizando classes existentes se possível, ou definindo novas */
+.animate {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.9s ease forwards;
+}
+
+.delay-1 {
+    animation-delay: 0.3s;
 }
 
 /* 3. Microinteração de Leitura (Foco no Texto) */
@@ -1983,6 +2337,23 @@ body.awaiting-acceptance main {
 
     .story-step p {
         font-size: 0.92rem;
+    }
+
+    /* Ajuste da Linha do Tempo no Mobile */
+    .linha-tempo {
+        grid-template-columns: 1fr; /* Empilha as etapas */
+        gap: 40px;
+    }
+
+    /* Ajuste da Assinatura Técnica no Mobile */
+    .assinatura-tecnica {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 30px;
+        text-align: left;
+    }
+    .qr-code {
+        align-self: center; /* Centraliza o QR code no mobile */
     }
 }
 
