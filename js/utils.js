@@ -42,7 +42,7 @@ export function exibirMensagemBloqueio() {
     
     // 2. Define estilos base do corpo para centralizar
     Object.assign(document.body.style, {
-        backgroundColor: '#121212',
+        backgroundColor: '#0e1116', // Mantém alinhado com --bg-main
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -52,64 +52,7 @@ export function exibirMensagemBloqueio() {
         overflow: 'hidden'
     });
 
-    // 3. Injeta o CSS Minimalista
-    const style = document.createElement('style');
-    style.textContent = `
-        .proposal-access-minimal {
-            width: 85%;
-            max-width: 380px;
-            padding: 20px;
-            border-left: 4px solid #ff6b6b; /* Vermelho elegante */
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .access-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .access-title {
-            color: #ff6b6b;
-            font-weight: 600;
-            font-size: 1rem;
-            line-height: 1.4;
-        }
-        .whatsapp-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: #25d366;
-            color: #0b3d1c;
-            font-weight: 700;
-            text-decoration: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .whatsapp-link:active {
-            transform: scale(0.98);
-        }
-        .whatsapp-link:hover {
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-        }
-        .whatsapp-link i {
-            font-size: 1.2rem;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // 4. Cria o elemento HTML
+    // 3. Cria o elemento HTML (CSS agora está no style.css)
     const container = document.createElement('div');
     container.className = 'proposal-access-minimal';
     container.innerHTML = `

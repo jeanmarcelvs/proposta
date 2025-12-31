@@ -6,26 +6,52 @@
 /* --- Variáveis de Cores (Temas) --- */ 
 /* Paleta de Cores BelEnergy (Preto e Amarelo Elétrico) */
 :root {
-    --cor-fundo-principal: #1a1a1a; /* Cinza Escuro para o fundo geral */
-    --cor-fundo-principal-rgb: 26, 26, 26; /* RGB do Cinza Escuro */
-    --cor-fundo-secao: #222222; /* Cinza escuro para seções e header */
+    /* --- DESIGN SYSTEM: ENGENHARIA PREMIUM (Refinado) --- */
+    
+    /* Base (Cinzas Profundos e Técnicos) */
+    --bg-main: #0e1116;        /* Fundo principal (quase preto, tom azulado profundo) */
+    --bg-soft: #141820;        /* Seções intermediárias */
+    --bg-card: #1b1f27;        /* Cartões base */
+    
+    /* Texto e Hierarquia (Cinzas Técnicos) */
+    --text-primary: #e6e8eb;   /* Títulos e destaques */
+    --text-secondary: #b5bcc6; /* Textos explicativos (leitura confortável) */
+    --text-muted: #8a9099;     /* Microtextos / notas */
+
+    /* Destaques Sutis */
+    --accent-soft: #c9a24d;    /* Dourado técnico (menos saturado/elegante) */
+    --accent-line: #2a2f3a;    /* Divisórias discretas */
+
+    /* Texturas e Acabamentos (Textura Silenciosa) */
+    /* Gradiente sutil + Blur para profundidade */
+    --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    --card-border: 1px solid rgba(255,255,255,0.05);
+    --card-backdrop: blur(2px);
+    
+    /* Linha Técnica (Degradê para transparente) */
+    --tech-line-gradient: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+    
+    /* --- Mapeamento para Variáveis Legadas --- */
+    --cor-fundo-principal: var(--bg-main);
+    --cor-fundo-principal-rgb: 14, 17, 22;
+    --cor-fundo-secao: var(--bg-soft);
     --cor-fundo-logo-contraste: #222222; /* NOVO: Cor escura fixa para o fundo da logo no tema claro */
-    --cor-cartao-fundo: #151515; /* Grafite muito escuro, não preto puro */
-    --cor-cartao-borda: rgba(255, 255, 255, 0.08); /* Linha fina, branca e discreta */
-    --cor-header-fundo: rgba(34, 34, 34, 0.85); /* Fundo do header com transparência */
-    --cor-header-botoes-fundo: #333333;
-    --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
-    --cor-primaria: #FFCC00; /* Amarelo Energético para botões e destaques */
-    --cor-primaria-rgb: 255, 204, 0;
-    --cor-primaria-clara: rgba(255, 204, 0, 0.3); /* Sombra amarela */
-    --cor-primaria-hover: #e6b800; /* Amarelo mais escuro para hover */
-    --cor-fundo-input: #2a2a2a; /* Cinza escuro para inputs */
-    --cor-texto-principal: #FFFFFF; /* Branco para textos principais */
-    --cor-texto-secundario: #bbbbbb; /* Cinza claro para textos secundários */
-    --cor-sombra: rgba(0, 0, 0, 0.12);
-    --cor-sombra-leve: rgba(0, 0, 0, 0.06);
-    --cor-animacao: rgba(255, 204, 0, 0.05); /* Animação de fundo com tom amarelo sutil */
-    --cor-grafite-suave: #1e1e1e; /* Novo tom para fundos de cards */
+    --cor-cartao-fundo: var(--bg-card); /* Fallback */
+    --cor-cartao-borda: var(--accent-line);
+    --cor-header-fundo: rgba(20, 24, 32, 0.9);
+    --cor-header-botoes-fundo: var(--bg-card);
+    --cor-header-botoes-borda: var(--accent-line);
+    --cor-primaria: var(--accent-soft);
+    --cor-primaria-rgb: 201, 162, 77;
+    --cor-primaria-clara: rgba(201, 162, 77, 0.2);
+    --cor-primaria-hover: #b08d42;
+    --cor-fundo-input: var(--bg-card);
+    --cor-texto-principal: var(--text-primary);
+    --cor-texto-secundario: var(--text-secondary);
+    --cor-sombra: rgba(0, 0, 0, 0.3);
+    --cor-sombra-leve: rgba(0, 0, 0, 0.15);
+    --cor-animacao: rgba(201, 162, 77, 0.05);
+    --cor-grafite-suave: var(--bg-card);
 }
 
 /* Paleta de Cores +Acessível (Tema Claro BelEnergy) */
@@ -61,8 +87,11 @@
 body {
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
-    background-color: transparent;
-    background-image: none;
+    background-color: var(--cor-fundo-principal);
+    /* Textura silenciosa (Micro-granulação técnica) */
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+    background-size: 14px 14px; /* Ajustado para 14px conforme especificação técnica */
+    background-attachment: fixed;
     color: var(--cor-texto-principal);
     transition: background-color 0.5s ease, color 0.5s ease;
 }
@@ -490,8 +519,10 @@ header {
     justify-content: center;
     padding: 3rem;
     border-radius: 16px;
-    background: linear-gradient(145deg, var(--cor-fundo-secao), var(--cor-grafite-suave)); /* Gradiente sutil Grafite */
-    border: 1px solid var(--cor-cartao-borda);
+    /* Card Premium com profundidade sutil */
+    background: var(--card-gradient);
+    border: var(--card-border);
+    backdrop-filter: var(--card-backdrop);
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
@@ -499,6 +530,7 @@ header {
 .card-detalhe:hover {
     transform: translateY(-5px);
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03), 0 10px 30px var(--cor-sombra-leve);
+    border-color: rgba(255,255,255,0.1);
 }
 
 /* Ícones mantêm o amarelo para foco visual */
@@ -702,10 +734,11 @@ header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background-color: var(--cor-grafite-suave); /* Fundo grafite sutil */
+    /* Card Item Detalhe - Textura sutil */
+    background: var(--card-gradient);
     padding: 1.2rem;
     border-radius: 12px;
-    border: 1px solid var(--cor-cartao-borda);
+    border: var(--card-border);
     box-shadow: 0 4px 15px var(--cor-sombra-leve);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -811,8 +844,9 @@ header {
     padding: 2.5rem 2rem;
     border-radius: 12px;
     /* INVERSÃO: Fundo escuro agora é aplicado no tema Standard. Premium é sutil. */
-    background-color: transparent;
-    border: 1px solid var(--cor-cartao-borda);
+    background: var(--card-gradient);
+    border: var(--card-border);
+    backdrop-filter: var(--card-backdrop);
     box-shadow: 0 5px 20px var(--cor-sombra-leve);
     transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
     position: relative;
@@ -855,7 +889,7 @@ header {
     margin-top: 0;
     margin-bottom: 40px; 
     /* INVERSÃO: Estilo de destaque escuro agora é do tema Standard. Premium tem borda forte. */
-    background-color: var(--cor-cartao-fundo);
+    background: var(--card-gradient);
     border: 2px solid var(--cor-primaria);
     color: var(--cor-primaria); /* Cor do texto principal (valor) em amarelo */
     grid-column: 1 / -1;
@@ -2103,7 +2137,7 @@ body.awaiting-acceptance main {
     width: 120px;
     height: 1px;
     margin: 0 auto 40px;
-    background: linear-gradient(to right, transparent, var(--cor-cartao-borda), transparent);
+    background: var(--tech-line-gradient); /* Linha técnica elegante */
     opacity: 0.6;
 }
 
@@ -2365,7 +2399,7 @@ body.awaiting-acceptance main {
     max-width: 680px;
     margin: 3.5rem auto 3rem;
     padding: 2rem 1.5rem;
-    background: linear-gradient(180deg, #0f1113, #0c0e10);
+    background: var(--bg-soft); /* Uso da variável de seção intermediária */
     border-radius: 14px;
 }
 
@@ -2541,4 +2575,69 @@ body.awaiting-acceptance main {
 
 .theme-acessivel .consciencia-fechamento p {
     color: var(--cor-texto-secundario); /* Texto de fechamento cinza escuro */
+}
+
+/* ====================================================================== */
+/* 🔒 TELA DE BLOQUEIO / ACESSO PERSONALIZADO (CSS Movido do JS)          */
+/* ====================================================================== */
+
+.proposal-access-minimal {
+    width: 85%;
+    max-width: 380px;
+    padding: 24px;
+    border-left: 4px solid #ff6b6b; /* Vermelho elegante */
+    background: var(--card-gradient);
+    border: var(--card-border);
+    backdrop-filter: var(--card-backdrop);
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.access-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.access-title {
+    color: #ff6b6b;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.whatsapp-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #25d366;
+    color: #0b3d1c;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.whatsapp-link:active {
+    transform: scale(0.98);
+}
+
+.whatsapp-link:hover {
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-link i {
+    font-size: 1.2rem;
 }
