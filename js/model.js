@@ -108,11 +108,11 @@ const resumoInstalacaoAcessivel =
 
 // NOVO: Dados para o Aceite Consciente (Gate de Leitura)
 const dadosAceite = {
-    titulo: "Antes de visualizar a proposta",
-    paragrafo1: "Tratando-se de projeto fotovoltaico, a diferença no valor costuma ser pequena. O que muda é o comportamento do sistema ao longo do tempo.",
-    paragrafo2: "Algumas propostas priorizam apenas o custo inicial. Outras são pensadas para oferecer maior previsibilidade, estabilidade e tranquilidade ao longo dos anos.",
+    titulo: "Entenda o modelo de trabalho",
+    texto: `Esta não é uma simples oferta de kit solar. <br>
+    É um serviço de <strong>engenharia consultiva e gestão</strong>. Como engenheiro responsável, eu gerencio a integração entre as suas necessidades e as melhores marcas do setor, assumindo a responsabilidade técnica por cada decisão para assegurar a performance da sua solução.`,
     textoCheckbox: "Li e estou ciente dessas diferenças",
-    textoBotao: "Estou ciente"
+    textoBotao: "Estou ciente e quero prosseguir"
 };
 
 /**

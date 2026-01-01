@@ -392,6 +392,15 @@ function preencherDadosProposta(dados) {
             resumoContainerEl.innerHTML = '';
         }
 
+        // NOVO: Atualiza o texto do Modal de Aceite Consciente com a versão de Engenharia Consultiva
+        const modalAceite = document.getElementById('proposalModal');
+        if (modalAceite && dados.dadosAceite?.texto) {
+            const onboardingText = modalAceite.querySelector('.onboarding-text');
+            if (onboardingText) {
+                onboardingText.innerHTML = dados.dadosAceite.texto;
+            }
+        }
+
         // NOVO: Organiza a seção de confiabilidade e garantias
         organizarSecaoConfiabilidade();
 
@@ -773,75 +782,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         startCarouselAutoPlay();
     });
 
+    // Função auxiliar para alternar entre os modos (DRY - Don't Repeat Yourself)
+    const alternarModoVisualizacao = async (novoTipo) => {
+        const btnAlvo = novoTipo === 'premium' ? btnPremium : btnAcessivel;
+        const btnOutro = novoTipo === 'premium' ? btnAcessivel : btnPremium;
 
-    if (btnPremium) {
-        btnPremium.addEventListener('click', async () => {
-            if (btnPremium.classList.contains('selecionado')) {
-                return;
-            }
-            mostrarLoadingOverlay();
-            const propostas = JSON.parse(localStorage.getItem('propostaData'));
-            if (propostas && propostas.premium) {
-                try {
-                    stopCarouselAutoPlay(); // Pausa o carrossel antes de trocar
-                    preencherDadosProposta(propostas.premium);
-                    atualizarEtiquetasDinamicas('premium');
-                    await switchProposalType('premium');
-                    preencherDetalhesInstalacao(propostas.premium);
-                    preencherChecklistInstalacao(propostas.premium);
-                    await atualizarImagemEquipamentos(propostas.premium); // Espera a imagem carregar
-                    startCarouselAutoPlay(); // Reinicia o carrossel após a troca
-                    document.body.classList.remove('theme-acessivel');
-                    document.body.classList.add('theme-premium');
-                    btnPremium.classList.add('selecionado');
-                    if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
-                    // Reinicia o storytelling para os novos elementos
-                    setTimeout(iniciarScrollStorytelling, 100);
-                } catch (error) {
-                    console.error("ERRO ao trocar para proposta Premium:", error);
-                } finally {
-                    esconderLoadingOverlay(); // Esconde o overlay após tudo, incluindo a imagem
-                }
-            } else {
-                console.error("ERRO: Dados da proposta Premium não encontrados no localStorage.");
+        if (btnAlvo.classList.contains('selecionado')) return;
+
+        mostrarLoadingOverlay();
+        const propostas = JSON.parse(localStorage.getItem('propostaData'));
+
+        if (propostas && propostas[novoTipo]) {
+            try {
+                stopCarouselAutoPlay();
+                preencherDadosProposta(propostas[novoTipo]);
+                atualizarEtiquetasDinamicas(novoTipo);
+                await switchProposalType(novoTipo);
+                preencherDetalhesInstalacao(propostas[novoTipo]);
+                preencherChecklistInstalacao(propostas[novoTipo]);
+                await atualizarImagemEquipamentos(propostas[novoTipo]);
+                startCarouselAutoPlay();
+
+                document.body.classList.toggle('theme-premium', novoTipo === 'premium');
+                document.body.classList.toggle('theme-acessivel', novoTipo === 'acessivel');
+                
+                btnAlvo.classList.add('selecionado');
+                if (btnOutro) btnOutro.classList.remove('selecionado');
+
+                setTimeout(iniciarScrollStorytelling, 100);
+            } catch (error) {
+                console.error(`ERRO ao trocar para proposta ${novoTipo}:`, error);
+            } finally {
                 esconderLoadingOverlay();
             }
-        });
+        } else {
+            console.error(`ERRO: Dados da proposta ${novoTipo} não encontrados no localStorage.`);
+            esconderLoadingOverlay();
+        }
+    };
+
+    if (btnPremium) {
+        btnPremium.addEventListener('click', () => alternarModoVisualizacao('premium'));
     }
 
     if (btnAcessivel) {
-        btnAcessivel.addEventListener('click', async () => {
-            if (btnAcessivel.classList.contains('selecionado')) {
-                return;
-            }
-            mostrarLoadingOverlay();
-            const propostas = JSON.parse(localStorage.getItem('propostaData'));
-            if (propostas && propostas.acessivel) {
-                try {
-                    stopCarouselAutoPlay(); // Pausa o carrossel antes de trocar
-                    preencherDadosProposta(propostas.acessivel);
-                    atualizarEtiquetasDinamicas('acessivel');
-                    await switchProposalType('acessivel');
-                    preencherDetalhesInstalacao(propostas.acessivel);
-                    preencherChecklistInstalacao(propostas.acessivel);
-                    await atualizarImagemEquipamentos(propostas.acessivel); // Espera a imagem carregar
-                    startCarouselAutoPlay(); // Reinicia o carrossel após a troca
-                    document.body.classList.add('theme-acessivel');
-                    document.body.classList.remove('theme-premium');
-                    btnAcessivel.classList.add('selecionado');
-                    if (btnPremium) btnPremium.classList.remove('selecionado');
-                    // Reinicia o storytelling para os novos elementos
-                    setTimeout(iniciarScrollStorytelling, 100);
-                } catch (error) {
-                    console.error("ERRO ao trocar para proposta Acessível:", error);
-                } finally {
-                    esconderLoadingOverlay(); // Esconde o overlay após tudo, incluindo a imagem
-                }
-            } else {
-                console.error("ERRO: Dados da proposta Acessível não encontrados no localStorage.");
-                esconderLoadingOverlay();
-            }
-        });
+        btnAcessivel.addEventListener('click', () => alternarModoVisualizacao('acessivel'));
     }
 
     if (btnVoltar) {
