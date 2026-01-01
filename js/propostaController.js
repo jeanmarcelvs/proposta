@@ -338,14 +338,12 @@ function preencherDadosProposta(dados) {
 
             // Define estilos dinâmicos (atualizados a cada troca de proposta)
             const corTexto = dados.tipo === 'premium' ? '#FFFFFF' : '#666666';
-            subtituloEl.style.cssText = `display: block; font-size: 1.1em; color: ${corTexto}; font-weight: normal; margin-top: 5px; margin-bottom: 25px; text-align: center; width: 100%;`;
-
-            // Atualiza o texto da descrição
-            const corNegrito = dados.tipo === 'premium' ? '#FFFFFF' : '#555555';
             if (dados.tipo === 'premium') {
-                subtituloEl.innerHTML = `<strong style="color: ${corNegrito};">Perfil criterioso:</strong> Para quem prioriza decisões bem fundamentadas.`;
+                subtituloEl.style.cssText = `display: block; font-size: 1.1em; color: #B0B0B0; font-weight: normal; margin-top: 5px; margin-bottom: 25px; text-align: center; width: 100%;`;
+                subtituloEl.innerHTML = `Projeto pensado — <span style="color: #FFFFFF;">Para consumidores mais exigentes.</span>`;
             } else {
-                subtituloEl.innerHTML = `<strong style="color: ${corNegrito};">Critério de Escolha:</strong> do Consumidor`;
+                subtituloEl.style.display = 'none';
+                subtituloEl.innerHTML = '';
             }
         }
 
@@ -374,11 +372,8 @@ function preencherDadosProposta(dados) {
         // --- Lógica de Visibilidade de Seções Exclusivas Premium ---
         const isPremium = dados.tipo === 'premium';
         
-        const secaoConsciencia = document.querySelector('.bloco-consciencia-premium');
-        if (secaoConsciencia) secaoConsciencia.classList.toggle('oculto', !isPremium);
-
-        const secaoMicroAutoridade = document.querySelector('.micro-autoridade');
-        if (secaoMicroAutoridade) secaoMicroAutoridade.classList.toggle('oculto', !isPremium);
+        const secoesMicroAutoridade = document.querySelectorAll('.micro-autoridade');
+        secoesMicroAutoridade.forEach(secao => secao.classList.toggle('oculto', !isPremium));
 
         const secaoAutoridade = document.querySelector('.bloco-autoridade');
         if (secaoAutoridade) secaoAutoridade.classList.toggle('oculto', !isPremium);
