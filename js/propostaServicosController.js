@@ -1,5 +1,5 @@
 import { buscarETratarProposta, verificarAcessoDispositivo } from './model.js';
-import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade } from './utils.js';
+import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, iniciarScrollStorytelling, criarBlocoLinhaTecnica } from './utils.js';
 
 // --- CAROUSEL & MODAL LOGIC (Adapted for Service Page) ---
 
@@ -108,8 +108,9 @@ function preencherDetalhesInstalacao(proposta) {
 
     detalhes.forEach((detalhe, index) => {
         const div = document.createElement('div');
-        div.className = 'card-item-detalhe animate-fade';
-        div.style.animationDelay = `${index * 0.15}s`;
+        // ATUALIZADO: Usa a nova classe .bloco-animado
+        div.className = 'card-item-detalhe bloco-animado';
+        div.style.transitionDelay = `${index * 0.1}s`;
         div.innerHTML = `
             <div class="icone-container-detalhe">
                 <i class="fas ${detalhe.icone} icone-detalhe"></i>
@@ -122,6 +123,16 @@ function preencherDetalhesInstalacao(proposta) {
         `;
         secaoDetalhes.appendChild(div);
     });
+
+    // NOVO: Injeção do Bloco de Storytelling Técnico para Serviços
+    const containerDetalhes = document.getElementById('detalhes-instalacao');
+    if (containerDetalhes) {
+        if (!containerDetalhes.previousElementSibling || !containerDetalhes.previousElementSibling.classList.contains('bloco-linha')) {
+            const textoTecnico = "Serviços especializados garantem <strong>segurança operacional e conformidade técnica.</strong>";
+            const blocoTecnico = criarBlocoLinhaTecnica(textoTecnico);
+            containerDetalhes.parentNode.insertBefore(blocoTecnico, containerDetalhes);
+        }
+    }
 }
 
 function preencherDadosServico(dados) {
@@ -151,8 +162,8 @@ function preencherDadosServico(dados) {
 
         dados.dadosServico.itens.forEach((item, index) => {
             const tr = document.createElement('tr');
-            tr.className = 'animate-fade';
-            tr.style.animationDelay = `${index * 0.1}s`; // Cascata rápida na tabela
+            tr.className = 'bloco-animado'; // Linhas da tabela também animam
+            tr.style.transitionDelay = `${index * 0.05}s`; // Cascata rápida
 
             // Coluna Descrição com Observação
             const tdDesc = document.createElement('td');
@@ -219,29 +230,6 @@ function preencherDadosServico(dados) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- Lógica do Bloco de Consciência de Valor (Animação + Interação) ---
-    // 1. Lógica da Animação de Entrada por Scroll
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("visible");
-                    observer.unobserve(entry.target); // Roda a animação apenas uma vez
-                }
-            });
-        },
-        {
-            threshold: 0.35 // Dispara quando 35% do elemento está visível
-        }
-    );
-
-    const elementsToAnimate = document.querySelectorAll(".animate-on-scroll");
-    if (elementsToAnimate.length > 0) {
-        elementsToAnimate.forEach(el => {
-            observer.observe(el);
-        });
-    }
-
     // 2. Lógica da Interação de Clique (Toggle)
     const itemsDeConsciencia = document.querySelectorAll('.consciencia-item');
     if (itemsDeConsciencia.length > 0) {
@@ -251,6 +239,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
     }
+
+    // 🚀 INICIALIZAÇÃO IMEDIATA: Ativa o storytelling para elementos estáticos
+    iniciarScrollStorytelling();
 
     mostrarLoadingOverlay();
 
@@ -283,6 +274,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 preencherDadosServico(propostaData);
                 await showImage(0);
                 startCarouselAutoPlay();
+                
+                // Inicia o storytelling
+                setTimeout(iniciarScrollStorytelling, 100);
             } else {
                 throw new Error("Dados da proposta de serviço não encontrados.");
             }

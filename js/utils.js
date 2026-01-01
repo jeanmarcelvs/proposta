@@ -110,3 +110,52 @@ export function organizarSecaoConfiabilidade() {
         container.appendChild(divGarantias);
     }
 }
+
+/**
+ * Inicia o observador de interseção para o Scroll Storytelling.
+ * Aplica a classe .visible aos elementos .bloco-animado quando entram na tela.
+ */
+export function iniciarScrollStorytelling() {
+    // SELEÇÃO INTELIGENTE: Pega apenas elementos que ainda NÃO foram observados
+    const elementos = document.querySelectorAll(".bloco-animado:not(.observed-init)");
+
+    if (elementos.length === 0) return;
+
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    // Opcional: Parar de observar após animar (para performance)
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0.15, // Ativa quando 15% do elemento está visível (bom para mobile)
+            rootMargin: "0px 0px -50px 0px" // Offset para não ativar muito na borda inferior
+        }
+    );
+
+    elementos.forEach(el => {
+        observer.observe(el);
+        el.classList.add('observed-init'); // Marca como observado para evitar duplicação
+    });
+}
+
+/**
+ * Cria o HTML estruturado para o bloco de "Linha Técnica" (Storytelling).
+ * @param {string} texto O texto a ser exibido. Pode conter tags HTML como <strong>.
+ * @returns {HTMLElement} O elemento section configurado.
+ */
+export function criarBlocoLinhaTecnica(texto) {
+    const section = document.createElement('section');
+    section.className = 'bloco-animado bloco-linha grain-bg';
+    
+    section.innerHTML = `
+        <span class="linha-tecnica"></span>
+        <p class="texto-principal">${texto}</p>
+    `;
+    
+    return section;
+}

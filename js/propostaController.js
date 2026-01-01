@@ -1,5 +1,5 @@
 import { buscarETratarProposta, validarValidadeProposta, verificarAcessoDispositivo } from './model.js';
-import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade } from './utils.js';
+import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, iniciarScrollStorytelling, criarBlocoLinhaTecnica } from './utils.js';
 
 // FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
 // FUNÇÃO CORRIGIDA: Gerencia as imagens de equipamentos de forma inteligente
@@ -90,8 +90,10 @@ function preencherDetalhesInstalacao(proposta) {
             .replace(/<br><br>/g, '</p><p class="texto-detalhe">');
 
         const div = document.createElement('div');
-        div.className = 'card-item-detalhe animate-fade';
-        div.style.animationDelay = `${index * 0.15}s`; // Cascata: 0s, 0.15s, 0.30s...
+        // ATUALIZADO: Usa a nova classe de storytelling .bloco-animado
+        div.className = 'card-item-detalhe bloco-animado';
+        // A cascata de delay agora é tratada via CSS (nth-child) ou pode ser mantida inline se preferir controle fino
+        div.style.transitionDelay = `${index * 0.1}s`; 
 
         // Estrutura de card com ícone, título (se houver) e texto. O ícone é dinâmico.
         div.innerHTML = `
@@ -339,17 +341,47 @@ function preencherDadosProposta(dados) {
             subtituloEl.style.cssText = `display: block; font-size: 1.1em; color: ${corTexto}; font-weight: normal; margin-top: 5px; margin-bottom: 25px; text-align: center; width: 100%;`;
 
             // Atualiza o texto da descrição
-            const textoDescricao = dados.tipo === 'premium' 
-                ? 'Critério de Escolha do Consumidor'
-                : 'Critério de Escolha do Consumidor';
-            
             const corNegrito = dados.tipo === 'premium' ? '#FFFFFF' : '#555555';
-            subtituloEl.innerHTML = textoDescricao.replace('Critério de Escolha:', `<strong style="color: ${corNegrito};">Critério de Escolha:</strong>`);
+            if (dados.tipo === 'premium') {
+                subtituloEl.innerHTML = `<strong style="color: ${corNegrito};">Perfil criterioso:</strong> Para quem prioriza decisões bem fundamentadas.`;
+            } else {
+                subtituloEl.innerHTML = `<strong style="color: ${corNegrito};">Critério de Escolha:</strong> do Consumidor`;
+            }
         }
 
+        // NOVO: Injeção do Bloco de Storytelling Técnico (Linha Animada)
+        // Insere antes da lista de detalhes para criar contexto de valor
+        const containerDetalhes = document.getElementById('detalhes-instalacao');
+        if (containerDetalhes) {
+            const elementoAnterior = containerDetalhes.previousElementSibling;
+            const blocoExiste = elementoAnterior && elementoAnterior.classList.contains('bloco-linha');
+
+            if (dados.tipo === 'premium') {
+                if (!blocoExiste) {
+                    const textoTecnico = "Decisões técnicas influenciam o desempenho ao longo do tempo. <strong>Expertise na fase de concepção garante a integridade operacional por longo prazo.</strong>";
+                    const blocoTecnico = criarBlocoLinhaTecnica(textoTecnico);
+                    containerDetalhes.parentNode.insertBefore(blocoTecnico, containerDetalhes);
+                }
+            } else if (blocoExiste) {
+                // Remove o bloco se estiver na proposta Standard
+                elementoAnterior.remove();
+            }
+        }
 
         if (observacaoEl) observacaoEl.innerText = dados.valores?.observacao || "Não há observações sobre financiamento.";
         if (validadeEl) validadeEl.innerText = dados.validade || "Não informada";
+
+        // --- Lógica de Visibilidade de Seções Exclusivas Premium ---
+        const isPremium = dados.tipo === 'premium';
+        
+        const secaoConsciencia = document.querySelector('.bloco-consciencia-premium');
+        if (secaoConsciencia) secaoConsciencia.classList.toggle('oculto', !isPremium);
+
+        const secaoMicroAutoridade = document.querySelector('.micro-autoridade');
+        if (secaoMicroAutoridade) secaoMicroAutoridade.classList.toggle('oculto', !isPremium);
+
+        const secaoAutoridade = document.querySelector('.bloco-autoridade');
+        if (secaoAutoridade) secaoAutoridade.classList.toggle('oculto', !isPremium);
 
         // CORREÇÃO: Oculta todo o container do resumo se não houver texto.
         // NOVO: Adiciona o bloco de alerta para a proposta Standard
@@ -387,6 +419,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // 🚀 INICIALIZAÇÃO IMEDIATA: Ativa o storytelling para elementos estáticos do HTML
+    iniciarScrollStorytelling();
+
     // --- Lógica do Modal de Aceite Consciente (Movido do HTML) ---
     const modalAceite = document.getElementById('proposalModal');
     const checkboxAceite = document.getElementById('acceptProposal');
@@ -404,29 +439,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.body.classList.remove('awaiting-acceptance');
                 localStorage.setItem('aceiteConsciente', 'true');
             }, 500);
-        });
-    }
-
-    // --- Lógica do Bloco de Consciência de Valor (Animação + Interação) ---
-    // 1. Lógica da Animação de Entrada por Scroll
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("visible");
-                    observer.unobserve(entry.target); // Roda a animação apenas uma vez
-                }
-            });
-        },
-        {
-            threshold: 0.35 // Dispara quando 35% do elemento está visível
-        }
-    );
-
-    const elementsToAnimate = document.querySelectorAll(".animate-on-scroll");
-    if (elementsToAnimate.length > 0) {
-        elementsToAnimate.forEach(el => {
-            observer.observe(el);
         });
     }
 
@@ -732,6 +744,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 🌟 Inicia e ESPERA a imagem do carrossel carregar antes de prosseguir para o 'finally'
             await showImage(0);
             startCarouselAutoPlay(); // Inicia o avanço automático do carrossel
+
+            // NOVO: Inicia o Scroll Storytelling após o conteúdo estar carregado
+            setTimeout(iniciarScrollStorytelling, 100);
+
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
             window.location.href = 'index.html?erro=acesso-negado';
@@ -784,6 +800,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.body.classList.add('theme-premium');
                     btnPremium.classList.add('selecionado');
                     if (btnAcessivel) btnAcessivel.classList.remove('selecionado');
+                    // Reinicia o storytelling para os novos elementos
+                    setTimeout(iniciarScrollStorytelling, 100);
                 } catch (error) {
                     console.error("ERRO ao trocar para proposta Premium:", error);
                 } finally {
@@ -817,6 +835,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.body.classList.remove('theme-premium');
                     btnAcessivel.classList.add('selecionado');
                     if (btnPremium) btnPremium.classList.remove('selecionado');
+                    // Reinicia o storytelling para os novos elementos
+                    setTimeout(iniciarScrollStorytelling, 100);
                 } catch (error) {
                     console.error("ERRO ao trocar para proposta Acessível:", error);
                 } finally {

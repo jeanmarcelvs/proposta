@@ -79,13 +79,13 @@ const detalhesInstalacaoPremium = [
     },
     {
         icone: 'fa-chart-line',
-        titulo: 'Engenharia consistente',
+        titulo: 'Engenharia real',
         texto: 'Dimensionamento preciso evita perdas futuras.'
     },
     {
         icone: 'fa-home',
         titulo: 'Perfil criterioso',
-        texto: 'Para quem prioriza decisão bem fundamentada.'
+        texto: 'Para quem prioriza decisões bem fundamentadas.'
     }
 ];
 
