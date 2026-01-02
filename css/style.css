@@ -1005,6 +1005,368 @@ header {
     margin-bottom: 20px;
 }
 
+/* --- Estilos da Área de Simulação de Entrada --- */
+.area-simulacao-entrada {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.input-wrapper-entrada {
+    background: var(--card-gradient);
+    border: 1px solid var(--cor-primaria);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 20px var(--cor-sombra-leve);
+    width: 100%;
+    max-width: 400px;
+}
+
+.input-wrapper-entrada label {
+    color: var(--cor-primaria);
+    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-group-entrada {
+    display: flex;
+    align-items: center;
+    background-color: var(--cor-fundo-input);
+    border: 1px solid var(--cor-cartao-borda);
+    border-radius: 8px;
+    padding: 5px 15px;
+    width: 100%;
+}
+
+.moeda-input {
+    color: var(--cor-texto-secundario);
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+#valor-entrada-input {
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    color: var(--cor-texto-principal);
+    font-weight: 600;
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    box-shadow: none; /* Remove sombra padrão do input global */
+}
+
+#valor-entrada-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* NOVO: Oculta o placeholder quando o usuário clica/foca ou passa o mouse no campo */
+#valor-entrada-input:focus::placeholder,
+#valor-entrada-input:hover::placeholder {
+    color: transparent;
+}
+
+/* --- Estilos do Detalhamento de Pagamento --- */
+.detalhamento-pagamento {
+    grid-column: 1 / -1;
+    background: var(--bg-soft);
+    border: 1px solid var(--cor-cartao-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* --- Grid de Resumo (Topo) --- */
+.resumo-investimento-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card-resumo-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.label-resumo {
+    font-size: 0.85rem;
+    color: var(--cor-texto-secundario);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.valor-resumo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cor-primaria);
+}
+
+.obs-resumo {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.divisor-detalhamento {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+}
+
+/* --- Timeline de Pagamento --- */
+.timeline-pagamento {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    padding-left: 10px;
+}
+
+/* Linha vertical conectora */
+.timeline-pagamento::before {
+    content: '';
+    position: absolute;
+    left: 24px; /* Centraliza com o marcador */
+    top: 15px;
+    bottom: 30px;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.item-timeline {
+    display: flex;
+    gap: 15px;
+    position: relative;
+    z-index: 1;
+    padding-bottom: 25px;
+}
+
+.item-timeline:last-child {
+    padding-bottom: 0;
+}
+
+.marcador-timeline {
+    width: 30px;
+    height: 30px;
+    background: var(--bg-soft);
+    border: 2px solid var(--cor-primaria);
+    color: var(--cor-primaria);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.destaque-equipamento-timeline .marcador-timeline {
+    background: var(--cor-primaria);
+    color: #000;
+}
+
+.conteudo-timeline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-detalhamento {
+    font-size: 1.1rem;
+    color: var(--cor-texto-secundario);
+    margin-bottom: 1.2rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.titulo-timeline {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--cor-texto-principal);
+}
+
+.desc-timeline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.desc-timeline strong {
+    color: var(--cor-primaria);
+}
+
+.valor-timeline {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-texto-principal);
+}
+
+@media (max-width: 600px) {
+    .resumo-investimento-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ajuste para tema claro */
+.theme-acessivel .detalhamento-pagamento {
+    background: var(--cor-cartao-fundo);
+    border-color: var(--cor-cartao-borda);
+}
+.theme-acessivel .card-resumo-item {
+    background: #f9f9f9;
+    border-color: #e0e0e0;
+}
+.theme-acessivel .divisor-detalhamento {
+    background: #e0e0e0;
+}
+.theme-acessivel .timeline-pagamento::before {
+    background: #e0e0e0;
+}
+.theme-acessivel .marcador-timeline {
+    background: #fff;
+}
+
+/* --- Componente Inteligente de Lista de Parcelas --- */
+.dropdown-parcelas-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-toggle-lista {
+    background: transparent;
+    border: 1px solid var(--cor-cartao-borda);
+    color: var(--cor-texto-secundario);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-toggle-lista:hover {
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+    background: rgba(var(--cor-primaria-rgb), 0.05);
+}
+
+.btn-toggle-lista i {
+    transition: transform 0.3s ease;
+}
+
+.btn-toggle-lista.ativo i {
+    transform: rotate(180deg);
+}
+
+.lista-parcelas-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 15px;
+    background: var(--bg-soft);
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid var(--cor-cartao-borda);
+}
+
+.lista-parcelas-compacta {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px 32px;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-parcelas-compacta li {
+    font-size: 0.85rem;
+    color: var(--cor-texto-secundario);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+}
+
+.lista-parcelas-compacta li span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.lista-parcelas-compacta li span::after {
+    content: "";
+    flex: 1;
+    border-bottom: 2px dotted var(--cor-texto-secundario);
+    margin: 0 10px;
+    opacity: 0.5;
+}
+
+.lista-parcelas-compacta li strong {
+    color: var(--cor-texto-principal);
+    white-space: nowrap;
+}
+
+.theme-acessivel .lista-parcelas-wrapper {
+    background: #f9f9f9;
+    border-color: #e0e0e0;
+}
+.theme-acessivel .lista-parcelas-compacta li {
+    border-bottom-color: #e0e0e0;
+}
+
+.feedback-entrada {
+    font-size: 0.85rem;
+    min-height: 1.2em;
+    text-align: center;
+    font-weight: 500;
+}
+
+.feedback-erro {
+    color: #ff6b6b;
+}
+
+.feedback-info {
+    color: var(--cor-texto-secundario);
+}
+
+/* Ajuste para tema claro */
+.theme-acessivel .input-wrapper-entrada {
+    background: var(--cor-cartao-fundo);
+    border-color: var(--cor-primaria);
+}
+
+.theme-acessivel #valor-entrada-input {
+    color: var(--cor-texto-principal);
+}
+
 .titulo-observacao {
     font-size: 1.1rem;
     font-weight: 600;
@@ -2609,4 +2971,27 @@ body.awaiting-acceptance main {
 .micro-autoridade .linha-secundaria {
     color: #eeeeee; /* Branco suave para destaque */
     font-weight: 500;
+}
+
+/* --- Seção Equipe BelEnergy --- */
+.secao-equipe {
+    padding: 0 20px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.container-imagem-equipe {
+    max-width: 800px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px var(--cor-sombra);
+    border: 1px solid var(--cor-cartao-borda);
+}
+
+.imagem-equipe {
+    width: 100%;
+    height: auto;
+    display: block;
 }

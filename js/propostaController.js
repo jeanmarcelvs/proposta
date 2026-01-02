@@ -1,8 +1,7 @@
-import { buscarETratarProposta, validarValidadeProposta, verificarAcessoDispositivo } from './model.js';
+import { buscarETratarProposta, validarValidadeProposta, verificarAcessoDispositivo, calcularFinanciamento, calcularParcelasCartao } from './model.js';
 import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, iniciarScrollStorytelling, criarBlocoLinhaTecnica } from './utils.js';
 
 // FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
-// FUNÇÃO CORRIGIDA: Gerencia as imagens de equipamentos de forma inteligente
 function atualizarImagemEquipamentos(proposta) {
     return new Promise((resolve, reject) => {
         let imagemEquipamentos;
@@ -275,6 +274,7 @@ function preencherDadosProposta(dados) {
         const valorTotalEl = document.getElementById('valor-total');
         const paybackContainer = document.getElementById('payback-container');
         const financiamentoContainer = document.getElementById('financiamento-container');
+        const inputEntrada = document.getElementById('valor-entrada-input');
 
         if (isVE) {
             if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
@@ -291,6 +291,7 @@ function preencherDadosProposta(dados) {
             if (paybackContainer) paybackContainer.classList.remove('oculto');
             if (financiamentoContainer) financiamentoContainer.classList.remove('oculto');
             
+            // Preenche os cards principais (12, 36, 60, 84)
             const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
             opcoesParcelas.forEach(n => {
                 const parcelaKey = `parcela-${n}`;
@@ -304,6 +305,172 @@ function preencherDadosProposta(dados) {
                     elementoTaxa.innerText = '';
                 }
             });
+
+            // NOVO: Preenche a lista completa de financiamento (Componente Inteligente)
+            const listaFinanciamento = document.getElementById('lista-financiamento-completa');
+            if (listaFinanciamento && dados.valores?.parcelas) {
+                listaFinanciamento.innerHTML = '';
+                opcoesParcelas.forEach(n => {
+                    const valor = dados.valores.parcelas[`parcela-${n}`] || 'N/A';
+                    const taxa = dados.valores.taxasPorParcela ? dados.valores.taxasPorParcela[`taxaNominal-${n}`] : '';
+                    // Cria o item da lista compacta
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${n}x</span> <strong>R$ ${valor}</strong>`;
+                    listaFinanciamento.appendChild(li);
+                });
+            }
+
+            // NOVO: Preenche as parcelas do cartão de crédito
+            const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+            opcoesCartao.forEach(i => {
+                const el = document.getElementById(`parcela-cc-${i}`);
+                if (el) {
+                    const key = `parcela-${i}`;
+                    el.innerText = dados.valores?.parcelasCartao?.[key] || 'N/A';
+                }
+            });
+
+            // NOVO: Preenche a lista completa de cartão (Componente Inteligente)
+            const listaCartao = document.getElementById('lista-cartao-completa');
+            if (listaCartao && dados.valores?.parcelasCartao) {
+                listaCartao.innerHTML = '';
+                opcoesCartao.forEach(i => {
+                    const key = `parcela-${i}`;
+                    const valor = dados.valores.parcelasCartao[key] || 'N/A';
+                    const label = i === 'debito' ? 'Débito' : `${i}x`;
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${label}</span> <strong>R$ ${valor}</strong>`;
+                    listaCartao.appendChild(li);
+                });
+            }
+
+            // ============================================================
+            // 🧠 LÓGICA DE SIMULAÇÃO DE ENTRADA (Financiamento + Cartão)
+            // ============================================================
+            if (inputEntrada && dados.valores?.valorTotalNum) {
+                // 1. Clona o input para remover listeners antigos (evita duplicação ao trocar proposta)
+                const novoInput = inputEntrada.cloneNode(true);
+                inputEntrada.parentNode.replaceChild(novoInput, inputEntrada);
+                
+                // 2. Zera o valor e reseta o feedback visual
+                novoInput.value = "";
+                const feedbackEl = document.getElementById('feedback-entrada');
+                if (feedbackEl) {
+                    feedbackEl.innerText = "";
+                    feedbackEl.className = "feedback-entrada";
+                }
+
+                const valorTotalProjeto = dados.valores.valorTotalNum;
+                const selic = dados.valores.selicAtual || 11.25; // Fallback seguro
+
+                // Formata o input como moeda enquanto digita
+                novoInput.addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\D/g, "");
+                    value = (parseInt(value) / 100).toFixed(2) + "";
+                    if (value === "NaN") value = "0.00";
+                    e.target.value = value.replace(".", ","); // Apenas visual simples
+                    
+                    // Debounce simples para recálculo
+                    clearTimeout(window.delayCalculo);
+                    window.delayCalculo = setTimeout(() => {
+                        recalcularSimulacoes(parseFloat(value));
+                    }, 500);
+                });
+
+                function recalcularSimulacoes(valorEntrada) {
+                    // Regras de Negócio
+                    const metadeValor = valorTotalProjeto / 2;
+
+                    // Limpa estados anteriores
+                    feedbackEl.innerText = "";
+                    feedbackEl.className = "feedback-entrada";
+
+                    if (valorEntrada === 0) {
+                        // Se entrada for 0, restaura valores originais (Financiamento 100%)
+                        atualizarDOMParcelas(valorTotalProjeto);
+                        return;
+                    }
+
+                    if (valorEntrada >= valorTotalProjeto) {
+                        feedbackEl.innerText = "A entrada não pode ser igual ou maior que o valor total.";
+                        feedbackEl.classList.add('feedback-erro');
+                        return;
+                    }
+
+                    if (valorEntrada < metadeValor) {
+                        feedbackEl.innerText = `Entrada mínima permitida: 50% (R$ ${metadeValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})})`;
+                        feedbackEl.classList.add('feedback-erro');
+                        // Opcional: Não atualiza os valores se a regra for violada, ou atualiza mostrando erro.
+                        // Decisão: Não atualizar para não mostrar simulação inválida.
+                        return;
+                    }
+
+                    // Se passou nas validações, calcula o saldo a financiar/parcelar
+                    const saldoDevedor = valorTotalProjeto - valorEntrada;
+                    feedbackEl.innerText = `Simulando saldo restante de: R$ ${saldoDevedor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                    feedbackEl.classList.add('feedback-info');
+
+                    atualizarDOMParcelas(saldoDevedor);
+                }
+
+                function atualizarDOMParcelas(valorBase) {
+                    // 1. Recalcula Financiamento Bancário
+                    const { parcelas: novasParcelasFinan } = calcularFinanciamento(valorBase, selic);
+                    const opcoesFinan = [12, 24, 36, 48, 60, 72, 84];
+                    opcoesFinan.forEach(n => {
+                        const el = document.getElementById(`parcela-${n}`);
+                        if (el) el.innerText = novasParcelasFinan[`parcela-${n}`] || '---';
+                    });
+
+                    // 2. Recalcula Cartão de Crédito
+                    const { parcelas: novasParcelasCartao } = calcularParcelasCartao(valorBase, selic);
+                    const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+                    opcoesCartao.forEach(i => {
+                        const el = document.getElementById(`parcela-cc-${i}`);
+                        if (el) el.innerText = novasParcelasCartao[`parcela-${i}`] || '---';
+                    });
+
+                    // 3. Atualiza as Listas Completas (Componentes Inteligentes)
+                    if (listaFinanciamento) {
+                        Array.from(listaFinanciamento.children).forEach((li, idx) => {
+                            const n = opcoesFinan[idx];
+                            li.querySelector('strong').innerText = `R$ ${novasParcelasFinan[`parcela-${n}`]}`;
+                        });
+                    }
+                    if (listaCartao) {
+                        Array.from(listaCartao.children).forEach((li, idx) => {
+                            const i = opcoesCartao[idx];
+                            li.querySelector('strong').innerText = `R$ ${novasParcelasCartao[`parcela-${i}`]}`;
+                        });
+                    }
+                }
+            }
+        }
+
+        // NOVO: Preenchimento do Detalhamento de Pagamento (Equipamentos vs Serviços)
+        const detalhamentoContainer = document.getElementById('detalhamento-pagamento-container');
+        if (detalhamentoContainer) {
+            const detalhe = dados.valores?.detalhamento;
+            
+            if (detalhe && detalhe.equipamentos > 0) {
+                detalhamentoContainer.classList.remove('oculto');
+                
+                // Helper para formatar moeda sem R$
+                const fmt = (val) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                // 1. Preenche o Resumo (Topo)
+                document.getElementById('resumo-valor-equipamentos').innerText = fmt(detalhe.equipamentos);
+                document.getElementById('resumo-valor-servicos').innerText = fmt(detalhe.servicosTotal);
+                
+                // 2. Preenche o Fluxo Cronológico
+                document.getElementById('fluxo-valor-entrada').innerText = fmt(detalhe.servicoEntrada);
+                document.getElementById('fluxo-valor-equipamentos').innerText = fmt(detalhe.equipamentos);
+                document.getElementById('fluxo-valor-entrega').innerText = fmt(detalhe.servicoEntrega);
+                document.getElementById('fluxo-valor-conclusao').innerText = fmt(detalhe.servicoConclusao);
+            } else {
+                // Se não houver valor de kit definido, oculta a seção para evitar mostrar dados zerados/errados
+                detalhamentoContainer.classList.add('oculto');
+            }
         }
 
         // 5. Observações e Validade
@@ -863,6 +1030,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             showImageInModal(currentImageIndex - 1);
         });
     }
+
+    // --- Lógica dos Botões "Ver Mais" (Listas de Parcelas) ---
+    const setupToggle = (btnId, wrapperId) => {
+        const btn = document.getElementById(btnId);
+        const wrapper = document.getElementById(wrapperId);
+        if (btn && wrapper) {
+            btn.addEventListener('click', () => {
+                wrapper.classList.toggle('oculto');
+                btn.classList.toggle('ativo');
+                const icon = btn.querySelector('i');
+                // O CSS já trata a rotação, mas podemos mudar o texto se quiser
+            });
+        }
+    };
+    setupToggle('btn-toggle-financiamento', 'wrapper-financiamento');
+    setupToggle('btn-toggle-cartao', 'wrapper-cartao');
 
     // 3. Fechar Modal
     if (fecharModalBtn) {

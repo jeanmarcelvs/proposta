@@ -327,6 +327,13 @@
             </div>
         </section>
 
+        <!-- NOVO: Imagem da Equipe -->
+        <section class="secao-equipe bloco-animado">
+            <div class="container-imagem-equipe">
+                <img src="imagens/belenergy.webp" alt="Equipe BelEnergy" class="imagem-equipe">
+            </div>
+        </section>
+
         <!-- NOVO: Bloco de Cronograma / Linha do Tempo -->
         <section class="secao-principal bloco-prazo bloco-animado">
             <h2 class="titulo-secao">Etapas do Projeto</h2>
@@ -373,7 +380,7 @@
                 Mais do que equipamentos, o que faz diferença é quem orienta cada decisão.
             </p>
             <p class="linha-secundaria">
-                Profissionais que pensam no desempenho hoje — e na tranquilidade ao longo do tempo.
+                Profissionais que pensam no desempenho e na tranquilidade por longo prazo.
             </p>
         </section>
 
@@ -382,8 +389,24 @@
 
             <div class="container-financiamento">
 
+                <!-- NOVO: Área de Simulação de Entrada -->
+                <div class="area-simulacao-entrada bloco-animado">
+                    <div class="input-wrapper-entrada">
+                        <label for="valor-entrada-input"><i class="fas fa-calculator"></i> Simular Valor de Entrada</label>
+                        <div class="input-group-entrada">
+                            <span class="moeda-input">R$</span>
+                            <input type="text" id="valor-entrada-input" placeholder="0,00" inputmode="numeric">
+                        </div>
+                        <p id="feedback-entrada" class="feedback-entrada"></p>
+                    </div>
+                </div>
 
                 <div class="valores-container">
+                    <!-- Título Financiamento Bancário -->
+                    <div class="titulo-secao-financiamento" style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
+                        <h3 style="font-size: 1.2rem; color: var(--cor-texto-secundario); font-weight: 500;">Financiamento Bancário</h3>
+                    </div>
+
                     <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
                         <p class="legenda-valores">Em 12x:</p>
                         <p class="valor-parcela-proposta">
@@ -391,14 +414,6 @@
                             <span id="parcela-12"></span>
                         </p>
                         <p class="taxa-parcela" id="taxa-12"></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.15s;">
-                        <p class="legenda-valores">Em 24x:</p>
-                        <p class="valor-parcela-proposta">
-                            <span class="moeda">R$</span>
-                            <span id="parcela-24"></span>
-                        </p>
-                        <p class="taxa-parcela" id="taxa-24"></p>
                     </div>
                     <div class="card-valores bloco-animado" style="transition-delay: 0.2s;">
                         <p class="legenda-valores">Em 36x:</p>
@@ -408,14 +423,6 @@
                         </p>
                         <p class="taxa-parcela" id="taxa-36"></p>
                     </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.25s;">
-                        <p class="legenda-valores">Em 48x:</p>
-                        <p class="valor-parcela-proposta">
-                            <span class="moeda">R$</span>
-                            <span id="parcela-48"></span>
-                        </p>
-                        <p class="taxa-parcela" id="taxa-48"></p>
-                    </div>
                     <div class="card-valores bloco-animado" style="transition-delay: 0.3s;">
                         <p class="legenda-valores">Em 60x:</p>
                         <p class="valor-parcela-proposta">
@@ -423,14 +430,6 @@
                             <span id="parcela-60"></span>
                         </p>
                         <p class="taxa-parcela" id="taxa-60"></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.35s;">
-                        <p class="legenda-valores">Em 72x:</p>
-                        <p class="valor-parcela-proposta">
-                            <span class="moeda">R$</span>
-                            <span id="parcela-72"></span>
-                        </p>
-                        <p class="taxa-parcela" id="taxa-72"></p>
                     </div>
                     <div class="card-valores bloco-animado" style="transition-delay: 0.4s;">
                         <p class="legenda-valores">Em 84x:</p>
@@ -441,9 +440,68 @@
                         <p class="taxa-parcela" id="taxa-84"></p>
                     </div>
 
+                    <!-- Componente Inteligente: Lista Completa Financiamento -->
+                    <div class="dropdown-parcelas-container" style="grid-column: 1 / -1;">
+                        <button class="btn-toggle-lista" id="btn-toggle-financiamento" type="button">
+                            Ver todas as opções (12x a 84x) <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="lista-parcelas-wrapper oculto" id="wrapper-financiamento">
+                            <ul class="lista-parcelas-compacta" id="lista-financiamento-completa">
+                                <!-- Preenchido via JS -->
+                            </ul>
+                        </div>
+                    </div>
+
                     <div id="secao-observacao" class="secao-observacao-container">
                         <p class="titulo-observacao">Observações sobre Financiamento:</p>
                         <p id="texto-observacao" class="texto-observacao"></p>
+                    </div>
+
+                    <!-- Título Parcelamento Cartão -->
+                    <div class="titulo-parcelamento" style="grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px; margin-bottom: 10px;">
+                        <i class="fas fa-credit-card" style="color: var(--cor-primaria); font-size: 1.5rem;"></i>
+                        <span style="font-size: 1.2rem; font-weight: 500; color: var(--cor-texto-secundario);">Parcelamento no Cartão</span>
+                    </div>
+
+                    <!-- Cards Cartão de Crédito -->
+                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
+                        <p class="legenda-valores">Débito:</p>
+                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-debito"></span></p>
+                    </div>
+                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
+                        <p class="legenda-valores">Em 1x:</p>
+                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-1"></span></p>
+                    </div>
+                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
+                        <p class="legenda-valores">Em 6x:</p>
+                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-6"></span></p>
+                    </div>
+                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
+                        <p class="legenda-valores">Em 10x:</p>
+                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-10"></span></p>
+                    </div>
+                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
+                        <p class="legenda-valores">Em 12x:</p>
+                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-12"></span></p>
+                    </div>
+
+                    <!-- Componente Inteligente: Lista Completa Cartão -->
+                    <div class="dropdown-parcelas-container" style="grid-column: 1 / -1;">
+                        <button class="btn-toggle-lista" id="btn-toggle-cartao" type="button">
+                            Ver todas as opções de cartão <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="lista-parcelas-wrapper oculto" id="wrapper-cartao">
+                            <ul class="lista-parcelas-compacta" id="lista-cartao-completa">
+                                <!-- Preenchido via JS -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="obs-cartao-credito" class="secao-observacao-container">
+                        <p class="titulo-observacao">Observações sobre Cartão de Crédito:</p>
+                        <p class="texto-observacao">
+                            Simulação sujeita a reajuste. Os valores definitivos dependem das taxas de juros praticadas pelo mercado financeiro e pela administradora do cartão no momento exato do pagamento.
+                        </p>
                     </div>
 
                     <div class="card-valores card-total bloco-animado destaque-brilho" style="transition-delay: 0.5s;">
@@ -460,6 +518,74 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- NOVO: Detalhamento do Pagamento (Equipamentos vs Serviços) -->
+                    <div id="detalhamento-pagamento-container" class="detalhamento-pagamento oculto bloco-animado">
+                        <h4 class="titulo-detalhamento">Composição do Investimento</h4>
+                        
+                        <!-- 1. Resumo dos Totais -->
+                        <div class="resumo-investimento-grid">
+                            <div class="card-resumo-item">
+                                <span class="label-resumo">Total Equipamentos Fotovoltaicos</span>
+                                <span class="valor-resumo">R$ <span id="resumo-valor-equipamentos"></span></span>
+                                <span class="obs-resumo">(Direto com Distribuidor)</span>
+                            </div>
+                            <div class="card-resumo-item">
+                                <span class="label-resumo">Total Serviços e Materiais Elétricos</span>
+                                <span class="valor-resumo">R$ <span id="resumo-valor-servicos"></span></span>
+                                <span class="obs-resumo">(Mão de obra e infraestrutura)</span>
+                            </div>
+                        </div>
+
+                        <div class="divisor-detalhamento"></div>
+                        
+                        <h4 class="titulo-detalhamento" style="margin-top: 10px;">Fluxo para Pagto À Vista</h4>
+
+                        <!-- 2. Fluxo Cronológico -->
+                        <div class="timeline-pagamento">
+                            
+                            <!-- Passo 1: Entrada -->
+                            <div class="item-timeline">
+                                <div class="marcador-timeline">1</div>
+                                <div class="conteudo-timeline">
+                                    <span class="titulo-timeline">Entrada (Projeto)</span>
+                                    <span class="desc-timeline">Pagamento imediato para início do projeto.</span>
+                                    <span class="valor-timeline">R$ <span id="fluxo-valor-entrada"></span></span>
+                                </div>
+                            </div>
+
+                            <!-- Passo 2: Equipamentos (15 dias depois) -->
+                            <div class="item-timeline">
+                                <div class="marcador-timeline">2</div>
+                                <div class="conteudo-timeline">
+                                    <span class="titulo-timeline">Pagamento dos Equipamentos</span>
+                                    <span class="desc-timeline">Aprox. <strong>15 dias úteis</strong>. Boleto direto com a distribuidora.</span>
+                                    <span class="valor-timeline">R$ <span id="fluxo-valor-equipamentos"></span></span>
+                                </div>
+                            </div>
+
+                            <!-- Passo 3: Entrega/Instalação (25 dias depois) -->
+                            <div class="item-timeline">
+                                <div class="marcador-timeline">3</div>
+                                <div class="conteudo-timeline">
+                                    <span class="titulo-timeline">Início da Instalação</span>
+                                    <span class="desc-timeline">Aprox. <strong>40 dias úteis</strong>. Pagamento na entrega dos materiais.</span>
+                                    <span class="valor-timeline">R$ <span id="fluxo-valor-entrega"></span></span>
+                                </div>
+                            </div>
+
+                            <!-- Passo 4: Conclusão (10 dias depois) -->
+                            <div class="item-timeline">
+                                <div class="marcador-timeline">4</div>
+                                <div class="conteudo-timeline">
+                                    <span class="titulo-timeline">Conclusão e Testes</span>
+                                    <span class="desc-timeline">Aprox. <strong>50 dias úteis</strong>. Pagamento final na conclusão da instalação.</span>
+                                    <span class="valor-timeline">R$ <span id="fluxo-valor-conclusao"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="secao-observacao-container">
                         <p class="titulo-observacao">Validade da Proposta:</p>
                         <p id="texto-validade" class="texto-observacao"></p>

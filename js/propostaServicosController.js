@@ -202,6 +202,7 @@ function preencherDadosServico(dados) {
     // NOVO: Preenche as parcelas do cartão de crédito
     const containerParcelas = document.getElementById('container-parcelas-cartao');
     const tituloParcelas = document.querySelector('.titulo-parcelamento');
+    const obsCartao = document.getElementById('obs-cartao-credito');
     if (dados.valores?.parcelas && containerParcelas && tituloParcelas) {
         let hasParcelas = false;
         const opcoes = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
@@ -222,6 +223,7 @@ function preencherDadosServico(dados) {
         if (hasParcelas) {
             containerParcelas.classList.remove('oculto');
             tituloParcelas.classList.remove('oculto');
+            if (obsCartao) obsCartao.classList.remove('oculto');
         }
     }
 

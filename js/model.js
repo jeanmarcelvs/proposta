@@ -207,7 +207,7 @@ function formatarData(dataISO) {
 }
 
 // NOVO: Função para calcular parcelas de cartão de crédito (temporariamente com lógica de financiamento)
-function calcularParcelasCartao(valorProjeto, selicAnual) {
+export function calcularParcelasCartao(valorProjeto, selicAnual) {
     // ATUALIZADO: Usando taxas fixas fornecidas.
     const taxasCartao = {
         'debito': 0.0229,
@@ -231,7 +231,7 @@ function calcularParcelasCartao(valorProjeto, selicAnual) {
         const taxa = taxasCartao[key];
         const valorFinal = valorProjeto / (1 - taxa);
         const valorParcela = key === 'debito' ? valorFinal : valorFinal / parseInt(key);
-        simulacao[`parcela-${key}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        simulacao[`parcela-${key}`] = valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     });
 
     return { parcelas: simulacao };
@@ -411,7 +411,7 @@ function calcularTIRMensal(valorFinanciado, valorParcela, numeroParcelas) {
 }
 
 // ALTERADO: Função para calcular o financiamento com a lógica da Tabela Price
-function calcularFinanciamento(valorProjeto, selicAnual) {
+export function calcularFinanciamento(valorProjeto, selicAnual) {
     const selicDecimal = selicAnual / 100;
     const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
     const simulacao = {};
@@ -510,7 +510,35 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
+    // NOVO: Lógica de Detalhamento do Investimento (Equipamentos vs Serviços)
+    // Extrai o valor dos equipamentos da variável 'preco_equipamentos'
+    const valorEquipamentos = extrairValorNumericoPorChave(variables, 'preco_equipamentos') || 0;
+    let detalhamentoPagamento = null;
+
+    if (valorEquipamentos > 0 && valorEquipamentos < valorTotal) {
+        const valorServicosTotal = valorTotal - valorEquipamentos;
+        
+        // Regra: 24% do Total da Proposta, com mínimo de R$ 1.200,00
+        let valorProjeto = valorTotal * 0.24;
+        if (valorProjeto < 1200) valorProjeto = 1200;
+
+        // O que sobra do serviço é dividido em 2 (Entrega + Conclusão)
+        const valorRestanteInstalacao = valorServicosTotal - valorProjeto;
+        const valorParcelaInstalacao = valorRestanteInstalacao / 2;
+
+        detalhamentoPagamento = {
+            equipamentos: valorEquipamentos,
+            servicosTotal: valorServicosTotal,
+            servicoEntrada: valorProjeto,       // 1ª Parcela: Projeto/Entrada
+            servicoEntrega: valorParcelaInstalacao, // 2ª Parcela: Entrega (50% do restante)
+            servicoConclusao: valorParcelaInstalacao // 3ª Parcela: Conclusão (50% do restante)
+        };
+    }
+
     const { parcelas: parcelasCalculadas, taxasNominais } = calcularFinanciamento(valorTotal, selicAtual);
+    // NOVO: Calcula também as parcelas do cartão de crédito para Solar
+    const { parcelas: parcelasCartaoSolar } = calcularParcelasCartao(valorTotal, selicAtual);
+
     const taxasPorParcela = {};
     for (const key in taxasNominais) {
         if (taxasNominais.hasOwnProperty(key)) {
@@ -571,6 +599,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         };
         valores = {
             valorTotal: valorFinalDaProposta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            valorTotalNum: valorFinalDaProposta, // Valor numérico para cálculos
             observacao: extrairValorVariavelPorChave(variables, 'condicoes_pagamento') || 'Consulte condições de pagamento.',
             observacaoServico: extrairValorVariavelPorChave(variables, 'cap_obs_servico') || null,
             parcelas: parcelasCartao
@@ -604,9 +633,13 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         };
         valores = {
             valorTotal: valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+            detalhamento: detalhamentoPagamento, // Objeto com a divisão calculada
+            valorTotalNum: valorTotal, // Valor numérico para cálculos
             payback: payback,
             parcelas: isVE ? {} : parcelasCalculadas,
+            parcelasCartao: parcelasCartaoSolar, // Adicionado para uso no controller
             taxasPorParcela: isVE ? {} : taxasPorParcela,
+            selicAtual: selicAtual, // Passa a Selic para recalculos no controller
             observacao: isVE ? ' ' : 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
         };
     }
