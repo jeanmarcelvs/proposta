@@ -1,5 +1,5 @@
 import { buscarETratarProposta, validarValidadeProposta, verificarAcessoDispositivo, calcularFinanciamento, calcularParcelasCartao } from './model.js';
-import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, iniciarScrollStorytelling, criarBlocoLinhaTecnica } from './utils.js';
+import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, criarBlocoLinhaTecnica } from './utils.js';
 
 // FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
 function atualizarImagemEquipamentos(proposta) {
@@ -576,6 +576,28 @@ function preencherDadosProposta(dados) {
     }
 }
 
+// --- FUNÇÃO LOCAL DE SCROLL STORYTELLING (Mais sensível) ---
+function iniciarAnimacaoScroll() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -50px 0px', // Dispara um pouco antes do elemento estar totalmente visível
+        threshold: 0.05 // Dispara assim que 5% do elemento estiver visível (evita espaços vazios)
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.bloco-animado').forEach(el => {
+        observer.observe(el);
+    });
+}
+
 // --- Função principal de inicialização ---
 document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('contextmenu', function(evento) {
@@ -591,7 +613,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 🚀 INICIALIZAÇÃO IMEDIATA: Ativa o storytelling para elementos estáticos do HTML
-    iniciarScrollStorytelling();
+    iniciarAnimacaoScroll();
 
     // --- Lógica do Modal de Aceite Consciente (Movido do HTML) ---
     const modalAceite = document.getElementById('proposalModal');
@@ -917,7 +939,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             startCarouselAutoPlay(); // Inicia o avanço automático do carrossel
 
             // NOVO: Inicia o Scroll Storytelling após o conteúdo estar carregado
-            setTimeout(iniciarScrollStorytelling, 100);
+            setTimeout(iniciarAnimacaoScroll, 100);
 
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
@@ -976,7 +998,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 btnAlvo.classList.add('selecionado');
                 if (btnOutro) btnOutro.classList.remove('selecionado');
 
-                setTimeout(iniciarScrollStorytelling, 100);
+                setTimeout(iniciarAnimacaoScroll, 100);
             } catch (error) {
                 console.error(`ERRO ao trocar para proposta ${novoTipo}:`, error);
             } finally {

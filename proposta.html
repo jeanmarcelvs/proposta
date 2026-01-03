@@ -403,7 +403,7 @@
 
                 <div class="valores-container">
                     <!-- Título Financiamento Bancário -->
-                    <div class="titulo-secao-financiamento" style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
+                    <div class="titulo-secao-financiamento" style="width: 100%; text-align: center; margin-bottom: 10px;">
                         <h3 style="font-size: 1.2rem; color: var(--cor-texto-secundario); font-weight: 500;">Financiamento Bancário</h3>
                     </div>
 
@@ -416,22 +416,6 @@
                         <p class="taxa-parcela" id="taxa-12"></p>
                     </div>
                     <div class="card-valores bloco-animado" style="transition-delay: 0.2s;">
-                        <p class="legenda-valores">Em 36x:</p>
-                        <p class="valor-parcela-proposta">
-                            <span class="moeda">R$</span>
-                            <span id="parcela-36"></span>
-                        </p>
-                        <p class="taxa-parcela" id="taxa-36"></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.3s;">
-                        <p class="legenda-valores">Em 60x:</p>
-                        <p class="valor-parcela-proposta">
-                            <span class="moeda">R$</span>
-                            <span id="parcela-60"></span>
-                        </p>
-                        <p class="taxa-parcela" id="taxa-60"></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.4s;">
                         <p class="legenda-valores">Em 84x:</p>
                         <p class="valor-parcela-proposta">
                             <span class="moeda">R$</span>
@@ -441,7 +425,7 @@
                     </div>
 
                     <!-- Componente Inteligente: Lista Completa Financiamento -->
-                    <div class="dropdown-parcelas-container" style="grid-column: 1 / -1;">
+                    <div class="dropdown-parcelas-container" style="width: 100%;">
                         <button class="btn-toggle-lista" id="btn-toggle-financiamento" type="button">
                             Ver todas as opções (12x a 84x) <i class="fas fa-chevron-down"></i>
                         </button>
@@ -452,13 +436,12 @@
                         </div>
                     </div>
 
-                    <div id="secao-observacao" class="secao-observacao-container">
-                        <p class="titulo-observacao">Observações sobre Financiamento:</p>
-                        <p id="texto-observacao" class="texto-observacao"></p>
+                    <div id="secao-observacao" class="secao-observacao-container" style="border: none; padding: 10px 0;">
+                        <p class="texto-observacao" style="font-size: 0.85rem;"><span style="color: var(--cor-primaria); font-weight: bold;">*</span> <span id="texto-observacao"></span></p>
                     </div>
 
                     <!-- Título Parcelamento Cartão -->
-                    <div class="titulo-parcelamento" style="grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px; margin-bottom: 10px;">
+                    <div class="titulo-parcelamento" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px; margin-bottom: 10px;">
                         <i class="fas fa-credit-card" style="color: var(--cor-primaria); font-size: 1.5rem;"></i>
                         <span style="font-size: 1.2rem; font-weight: 500; color: var(--cor-texto-secundario);">Parcelamento no Cartão</span>
                     </div>
@@ -469,24 +452,12 @@
                         <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-debito"></span></p>
                     </div>
                     <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
-                        <p class="legenda-valores">Em 1x:</p>
-                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-1"></span></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
-                        <p class="legenda-valores">Em 6x:</p>
-                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-6"></span></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
-                        <p class="legenda-valores">Em 10x:</p>
-                        <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-10"></span></p>
-                    </div>
-                    <div class="card-valores bloco-animado" style="transition-delay: 0.1s;">
                         <p class="legenda-valores">Em 12x:</p>
                         <p class="valor-parcela-proposta"><span class="moeda">R$</span><span id="parcela-cc-12"></span></p>
                     </div>
 
                     <!-- Componente Inteligente: Lista Completa Cartão -->
-                    <div class="dropdown-parcelas-container" style="grid-column: 1 / -1;">
+                    <div class="dropdown-parcelas-container" style="width: 100%;">
                         <button class="btn-toggle-lista" id="btn-toggle-cartao" type="button">
                             Ver todas as opções de cartão <i class="fas fa-chevron-down"></i>
                         </button>
@@ -497,11 +468,8 @@
                         </div>
                     </div>
 
-                    <div id="obs-cartao-credito" class="secao-observacao-container">
-                        <p class="titulo-observacao">Observações sobre Cartão de Crédito:</p>
-                        <p class="texto-observacao">
-                            Simulação sujeita a reajuste. Os valores definitivos dependem das taxas de juros praticadas pelo mercado financeiro e pela administradora do cartão no momento exato do pagamento.
-                        </p>
+                    <div id="obs-cartao-credito" class="secao-observacao-container" style="border: none; padding: 10px 0;">
+                        <p class="texto-observacao" style="font-size: 0.85rem;"><span style="color: var(--cor-primaria); font-weight: bold;">*</span> Simulação sujeita a reajuste. Os valores definitivos dependem das taxas de juros praticadas pelo mercado financeiro e pela administradora do cartão no momento exato do pagamento.</p>
                     </div>
 
                     <div class="card-valores card-total bloco-animado destaque-brilho" style="transition-delay: 0.5s;">

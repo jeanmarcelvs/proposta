@@ -1,5 +1,5 @@
 import { buscarETratarProposta, verificarAcessoDispositivo } from './model.js';
-import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, iniciarScrollStorytelling, criarBlocoLinhaTecnica } from './utils.js';
+import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, criarBlocoLinhaTecnica } from './utils.js';
 
 // --- CAROUSEL & MODAL LOGIC (Adapted for Service Page) ---
 
@@ -231,6 +231,28 @@ function preencherDadosServico(dados) {
     organizarSecaoConfiabilidade();
 }
 
+// --- FUNÇÃO LOCAL DE SCROLL STORYTELLING (Mais sensível) ---
+function iniciarAnimacaoScroll() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -50px 0px', // Dispara um pouco antes do elemento estar totalmente visível
+        threshold: 0.05 // Dispara assim que 5% do elemento estiver visível (evita espaços vazios)
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.bloco-animado').forEach(el => {
+        observer.observe(el);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // 2. Lógica da Interação de Clique (Toggle)
     const itemsDeConsciencia = document.querySelectorAll('.consciencia-item');
@@ -243,7 +265,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 🚀 INICIALIZAÇÃO IMEDIATA: Ativa o storytelling para elementos estáticos
-    iniciarScrollStorytelling();
+    iniciarAnimacaoScroll();
 
     mostrarLoadingOverlay();
 
@@ -278,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 startCarouselAutoPlay();
                 
                 // Inicia o storytelling
-                setTimeout(iniciarScrollStorytelling, 100);
+                setTimeout(iniciarAnimacaoScroll, 100);
             } else {
                 throw new Error("Dados da proposta de serviço não encontrados.");
             }
