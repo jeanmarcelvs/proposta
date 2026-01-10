@@ -498,6 +498,10 @@ function preencherDadosProposta(dados) {
         const secaoAutoridade = document.querySelector('.bloco-autoridade');
         if (secaoAutoridade) secaoAutoridade.classList.toggle('oculto', !isPremium);
 
+        // NOVO: Controla a visibilidade da Frase de Ouro (Combo de Autoridade)
+        const secaoFraseOuro = document.getElementById('secao-frase-ouro');
+        if (secaoFraseOuro) secaoFraseOuro.classList.toggle('oculto', !isPremium);
+
         // CORREÇÃO: Oculta todo o container do resumo se não houver texto.
         // NOVO: Adiciona o bloco de alerta para a proposta Standard
         const alertaDecisaoEl = document.getElementById('alerta-decisao');
