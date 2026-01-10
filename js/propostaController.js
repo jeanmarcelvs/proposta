@@ -813,36 +813,40 @@ document.addEventListener('DOMContentLoaded', async () => {
             let initialThemeClass;
             let initialButtonToSelect;
 
-            // Determine which proposal to display initially
-            // CORREÇÃO: Prioriza a premium, mas se não existir, usa a acessível.
-            const premiumValida = propostaData.premium && validarValidadeProposta(propostaData.premium);
-            const acessivelValida = propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
+            // VALIDAÇÃO DE EXPIRAÇÃO EXPLÍCITA (Sincronizada com indexController.js)
+            // Verifica a validade de ambas as propostas antes de decidir o que fazer
+            const pPremium = propostaData.premium;
+            const pAcessivel = propostaData.acessivel;
+            
+            const isPremiumValida = pPremium && validarValidadeProposta(pPremium);
+            const isAcessivelValida = pAcessivel && validarValidadeProposta(pAcessivel);
 
-            if (premiumValida) {
+            // Se ambas forem inválidas (mas existirem), bloqueia tudo imediatamente.
+            if (!isPremiumValida && !isAcessivelValida && (pPremium || pAcessivel)) {
+                console.warn("Propostas encontradas mas expiradas (Bloqueio de Segurança).");
+                
+                // SEGURANÇA VISUAL: Oculta imediatamente qualquer modal ou conteúdo
+                const modal = document.getElementById('proposalModal');
+                if (modal) modal.style.display = 'none';
+                document.body.classList.remove('awaiting-acceptance');
+                document.body.innerHTML = ''; // Limpa o DOM para evitar flash de conteúdo
+                
+                redirecionando = true;
+                window.location.href = 'index.html?erro=proposta-expirada';
+                return;
+            }
+
+            // Se chegou aqui, pelo menos uma é válida ou não existem propostas (erro tratado abaixo)
+            if (isPremiumValida) {
                 propostaParaExibir = propostaData.premium;
                 initialThemeClass = 'theme-premium';
                 initialButtonToSelect = btnPremium;
-            } else if (acessivelValida) {
+            } else if (isAcessivelValida) {
                 propostaParaExibir = propostaData.acessivel;
                 initialThemeClass = 'theme-acessivel';
                 initialButtonToSelect = btnAcessivel;
             } else {
-                // Se existem propostas carregadas mas nenhuma é válida, significa que expiraram
-                if (propostaData.premium || propostaData.acessivel) {
-                    console.warn("Propostas encontradas mas expiradas.");
-                    
-                    // SEGURANÇA VISUAL: Oculta imediatamente qualquer modal ou conteúdo
-                    const modal = document.getElementById('proposalModal');
-                    if (modal) modal.style.display = 'none';
-                    document.body.classList.remove('awaiting-acceptance');
-                    document.body.innerHTML = ''; // Limpa o DOM para evitar flash de conteúdo
-                    
-                    redirecionando = true;
-                    window.location.href = 'index.html?erro=proposta-expirada';
-                    return;
-                }
-
-                // This case should ideally be caught by !propostas.sucesso earlier
+                // Caso de erro genérico (nenhuma proposta retornada ou erro de lógica)
                 console.error("Nenhuma proposta válida para exibir após buscar.");
                 document.body.innerHTML = ''; // Limpa o DOM
                 redirecionando = true;

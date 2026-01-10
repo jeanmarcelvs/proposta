@@ -257,6 +257,9 @@ export function validarValidadeProposta(proposta) {
         }
 
         const agora = new Date();
+        
+        // Debug para rastrear validação em produção (Verifique o console do navegador)
+        console.log(`[Validade] Data Proposta: ${dataString} | Interpretada: ${dataExpiracao} | Agora: ${agora} | Válida: ${agora <= dataExpiracao}`);
 
         return agora <= dataExpiracao;
     } catch (error) {
