@@ -227,11 +227,27 @@ export function validarValidadeProposta(proposta) {
     }
 
     try {
-        const dataExpiracao = new Date(proposta.dataExpiracao);
+        let dataExpiracao;
+        const dataString = proposta.dataExpiracao;
+
+        // Tratamento robusto de data
+        // Se for formato ISO simples (YYYY-MM-DD), forçamos o final do dia local
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dataString)) {
+            dataExpiracao = new Date(dataString + 'T23:59:59');
+        } else {
+            dataExpiracao = new Date(dataString);
+        }
+
+        // Se a data for inválida, tenta parsear formatos comuns ou falha seguro
+        if (isNaN(dataExpiracao.getTime())) {
+            console.warn("Data de expiração inválida recebida:", dataString);
+            // Se a data é inválida, não bloqueamos por erro técnico, mas logamos.
+            return true; 
+        }
+
         const agora = new Date();
 
-        // Verifica se a data é válida e se o momento atual é anterior ou igual à expiração
-        return !isNaN(dataExpiracao.getTime()) ? agora <= dataExpiracao : true;
+        return agora <= dataExpiracao;
     } catch (error) {
         console.error("Erro ao validar validade da proposta:", error);
         return true; // Em caso de erro no parse, permite o acesso (Fail Open)

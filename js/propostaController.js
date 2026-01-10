@@ -830,6 +830,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Se existem propostas carregadas mas nenhuma é válida, significa que expiraram
                 if (propostaData.premium || propostaData.acessivel) {
                     console.warn("Propostas encontradas mas expiradas.");
+                    
+                    // SEGURANÇA VISUAL: Oculta imediatamente qualquer modal ou conteúdo
+                    const modal = document.getElementById('proposalModal');
+                    if (modal) modal.style.display = 'none';
+                    document.body.classList.remove('awaiting-acceptance');
+                    document.body.innerHTML = ''; // Limpa o DOM para evitar flash de conteúdo
+                    
                     redirecionando = true;
                     window.location.href = 'index.html?erro=proposta-expirada';
                     return;
@@ -837,6 +844,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // This case should ideally be caught by !propostas.sucesso earlier
                 console.error("Nenhuma proposta válida para exibir após buscar.");
+                document.body.innerHTML = ''; // Limpa o DOM
                 redirecionando = true;
                 window.location.href = 'index.html?erro=acesso-negado';
                 return;
