@@ -228,21 +228,32 @@ export function validarValidadeProposta(proposta) {
 
     try {
         let dataExpiracao;
-        const dataString = proposta.dataExpiracao;
+        let dataString = proposta.dataExpiracao;
+
+        // Garante que é string para evitar erros de tipo
+        if (typeof dataString !== 'string') {
+            dataString = String(dataString);
+        }
 
         // Tratamento robusto de data
         // Se for formato ISO simples (YYYY-MM-DD), forçamos o final do dia local
         if (/^\d{4}-\d{2}-\d{2}$/.test(dataString)) {
             dataExpiracao = new Date(dataString + 'T23:59:59');
-        } else {
+        } 
+        // Suporte explícito para formato brasileiro DD/MM/YYYY (evita confusão com MM/DD)
+        else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataString)) {
+            const partes = dataString.split('/');
+            // new Date(ano, mesIndex, dia, hora, min, seg) - mesIndex é 0-based
+            dataExpiracao = new Date(partes[2], partes[1] - 1, partes[0], 23, 59, 59);
+        }
+        else {
             dataExpiracao = new Date(dataString);
         }
 
-        // Se a data for inválida, tenta parsear formatos comuns ou falha seguro
+        // Se a data for inválida, bloqueia o acesso (Fail Closed)
         if (isNaN(dataExpiracao.getTime())) {
-            console.warn("Data de expiração inválida recebida:", dataString);
-            // Se a data é inválida, não bloqueamos por erro técnico, mas logamos.
-            return true; 
+            console.warn("Data de expiração inválida/não parseável:", dataString);
+            return false; 
         }
 
         const agora = new Date();
@@ -250,7 +261,7 @@ export function validarValidadeProposta(proposta) {
         return agora <= dataExpiracao;
     } catch (error) {
         console.error("Erro ao validar validade da proposta:", error);
-        return true; // Em caso de erro no parse, permite o acesso (Fail Open)
+        return false; // Bloqueia o acesso em caso de erro crítico
     }
 }
 
