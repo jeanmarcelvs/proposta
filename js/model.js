@@ -221,11 +221,21 @@ export function calcularParcelasCartao(valorProjeto, selicAnual) {
  * @returns {boolean} Retorna true se a proposta estiver ativa, false se estiver expirada.
  */
 export function validarValidadeProposta(proposta) {
-    // REMOVIDO: A lógica de validação foi desativada conforme a nova estratégia de buscar dados do projeto,
-    // que não contém a data de expiração da proposta.
-    // Esta função agora sempre permite o acesso, e a validação de expiração, se necessária,
-    // deve ser reimplementada com base em um campo de variável do projeto.
-    return true;
+    // Se não houver data de expiração definida, assumimos válida para compatibilidade
+    if (!proposta || !proposta.dataExpiracao || proposta.dataExpiracao === 'Não informado') {
+        return true;
+    }
+
+    try {
+        const dataExpiracao = new Date(proposta.dataExpiracao);
+        const agora = new Date();
+
+        // Verifica se a data é válida e se o momento atual é anterior ou igual à expiração
+        return !isNaN(dataExpiracao.getTime()) ? agora <= dataExpiracao : true;
+    } catch (error) {
+        console.error("Erro ao validar validade da proposta:", error);
+        return true; // Em caso de erro no parse, permite o acesso (Fail Open)
+    }
 }
 
 // ======================================================================

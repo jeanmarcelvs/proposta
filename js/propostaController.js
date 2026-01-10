@@ -787,6 +787,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // CORREÇÃO: Mover a declaração de 'propostas' para fora do try para ser acessível no 'finally'
     let propostas;
+    let redirecionando = false; // Flag para evitar flash de conteúdo em redirecionamentos
 
     if (numeroProjeto && primeiroNome) {
         try {
@@ -800,6 +801,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 
                 // Redireciona para a página inicial com o código de erro correto
+                redirecionando = true;
                 window.location.href = `index.html?erro=${codigoErro}`;
                 return;
             }
@@ -813,17 +815,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Determine which proposal to display initially
             // CORREÇÃO: Prioriza a premium, mas se não existir, usa a acessível.
-            if (propostaData.premium && validarValidadeProposta(propostaData.premium)) {
+            const premiumValida = propostaData.premium && validarValidadeProposta(propostaData.premium);
+            const acessivelValida = propostaData.acessivel && validarValidadeProposta(propostaData.acessivel);
+
+            if (premiumValida) {
                 propostaParaExibir = propostaData.premium;
                 initialThemeClass = 'theme-premium';
                 initialButtonToSelect = btnPremium;
-            } else if (propostaData.acessivel && validarValidadeProposta(propostaData.acessivel)) {
+            } else if (acessivelValida) {
                 propostaParaExibir = propostaData.acessivel;
                 initialThemeClass = 'theme-acessivel';
                 initialButtonToSelect = btnAcessivel;
             } else {
+                // Se existem propostas carregadas mas nenhuma é válida, significa que expiraram
+                if (propostaData.premium || propostaData.acessivel) {
+                    console.warn("Propostas encontradas mas expiradas.");
+                    redirecionando = true;
+                    window.location.href = 'index.html?erro=proposta-expirada';
+                    return;
+                }
+
                 // This case should ideally be caught by !propostas.sucesso earlier
                 console.error("Nenhuma proposta válida para exibir após buscar.");
+                redirecionando = true;
                 window.location.href = 'index.html?erro=acesso-negado';
                 return;
             }
@@ -867,14 +881,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
+            redirecionando = true;
             window.location.href = 'index.html?erro=acesso-negado';
         } finally {
-            esconderLoadingOverlay();
-            // Garante que o carrossel automático seja iniciado mesmo se houver um erro
-            // e a página não redirecionar, mas a proposta for exibida.
-            // Isso é um fallback, o ideal é que startCarouselAutoPlay() seja chamado após o sucesso.
-            if (propostas && propostas.sucesso) {
-                startCarouselAutoPlay();
+            if (!redirecionando) {
+                esconderLoadingOverlay();
+                // Garante que o carrossel automático seja iniciado mesmo se houver um erro
+                // e a página não redirecionar, mas a proposta for exibida.
+                // Isso é um fallback, o ideal é que startCarouselAutoPlay() seja chamado após o sucesso.
+                if (propostas && propostas.sucesso) {
+                    startCarouselAutoPlay();
+                }
             }
         }
     } else {

@@ -1,4 +1,4 @@
-import { buscarETratarProposta } from './model.js';
+import { buscarETratarProposta, validarValidadeProposta } from './model.js';
 
 // Função para centralizar a atualização do estado do botão
 // Função para centralizar a atualização do estado do botão
@@ -64,7 +64,7 @@ function atualizarEstadoBotao(estado, mensagem = '') {
 async function executarConsulta(numeroProjeto, primeiroNome) {
     if (!numeroProjeto || !primeiroNome) {
         atualizarEstadoBotao('erro', 'Por favor, preencha todos os campos.');
-        setTimeout(() => atualizarEstadoBotao('normal'), 3000);
+        setTimeout(() => atualizarEstadoBotao('normal'), 10000);
         return;
     }
 
@@ -73,6 +73,20 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
         const propostaData = await buscarETratarProposta(numeroProjeto, primeiroNome);
 
         if (propostaData.sucesso) {
+            // VALIDAÇÃO DE EXPIRAÇÃO ANTES DO REDIRECIONAMENTO
+            // Evita que o usuário acesse a página da proposta (e veja modais/conteúdo) se já estiver vencida
+            const pPremium = propostaData.dados.premium;
+            const pAcessivel = propostaData.dados.acessivel;
+            
+            const isPremiumValida = pPremium && validarValidadeProposta(pPremium);
+            const isAcessivelValida = pAcessivel && validarValidadeProposta(pAcessivel);
+
+            if (!isPremiumValida && !isAcessivelValida && (pPremium || pAcessivel)) {
+                atualizarEstadoBotao('erro', 'Esta proposta encontra-se expirada. Por favor, solicite uma nova proposta.');
+                setTimeout(() => atualizarEstadoBotao('normal'), 10000);
+                return;
+            }
+
             // CORREÇÃO: Determina o tipo de visualização a partir da proposta que existe (premium ou acessível)
             const propostaDisponivel = propostaData.dados.premium || propostaData.dados.acessivel;
             const tipoProposta = propostaDisponivel ? propostaDisponivel.tipoVisualizacao : null;
@@ -86,17 +100,17 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
             } else {
                 // Caso o tipo seja desconhecido, mostra um erro
                 atualizarEstadoBotao('erro', 'Tipo de proposta desconhecido.');
-                setTimeout(() => atualizarEstadoBotao('normal'), 5000);
+                setTimeout(() => atualizarEstadoBotao('normal'), 10000);
             }
         } else {
             // Se a busca falhar, exibe a mensagem de erro
             atualizarEstadoBotao('erro', propostaData.mensagem);
-            setTimeout(() => atualizarEstadoBotao('normal'), 5000);
+            setTimeout(() => atualizarEstadoBotao('normal'), 10000);
         }
     } catch (erro) {
         console.error('Erro na consulta:', erro);
         atualizarEstadoBotao('erro', 'Erro ao carregar a proposta.');
-        setTimeout(() => atualizarEstadoBotao('normal'), 5000);
+        setTimeout(() => atualizarEstadoBotao('normal'), 10000);
     }
 }
 
@@ -151,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarEstadoBotao('erro', mensagem);
         setTimeout(() => {
             atualizarEstadoBotao('normal');
-        }, 5000);
+        }, 10000);
     }
 
     form.addEventListener('submit', async (evento) => {
