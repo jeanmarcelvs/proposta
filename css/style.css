@@ -74,10 +74,10 @@
     --cor-header-fundo: rgba(255, 255, 255, 0.9);
     --cor-header-botoes-fundo: #f4f4f4;
     --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
-    --cor-primaria: #FFD700;
-    --cor-primaria-rgb: 255, 215, 0;
-    --cor-primaria-clara: rgba(255, 215, 0, 0.2);
-    --cor-primaria-hover: #ffc800;
+    --cor-primaria: #947C20;
+    --cor-primaria-rgb: 148, 124, 32;
+    --cor-primaria-clara: rgba(148, 124, 32, 0.2);
+    --cor-primaria-hover: #7a661a;
     --cor-fundo-input: #f9f9f9;
     --cor-texto-principal: #1a1a1a;
     --cor-texto-secundario: #666666;
@@ -85,7 +85,7 @@
     --cor-sombra-leve: rgba(0, 0, 0, 0.05);
     --cor-animacao: rgba(255, 215, 0, 0.15);
     --cor-grafite-suave: #ffffff;
-    --card-gradient: linear-gradient(145deg, #ffffff, #f8f9fa);
+    --card-gradient: linear-gradient(145deg, #ffffff, #f1f5f9);
 }
 
 /* --- Estilos Globais e Padrões --- */
@@ -590,11 +590,6 @@ header {
     color: var(--cor-primaria);
 }
 
-.theme-acessivel .valor-card {
-    color: var(--cor-texto-principal);
-    /* Preto no tema claro */
-}
-
 .unidade-card {
     font-size: 1.2rem;
     font-weight: 300;
@@ -685,11 +680,6 @@ header {
     font-weight: 500;
     line-height: 1;
     color: var(--cor-primaria);
-}
-
-.theme-acessivel .descricao-equipamento {
-    color: var(--cor-texto-principal);
-    /* Preto no tema claro */
 }
 
 .conteudo-instalacao {
@@ -2193,10 +2183,6 @@ body.awaiting-acceptance main {
     line-height: 1.2;
 }
 
-.theme-acessivel .valor-expansao {
-    color: var(--cor-texto-principal);
-}
-
 @media (max-width: 600px) {
     .secao-expansao-container {
         grid-template-columns: 1fr;
@@ -3207,50 +3193,4 @@ body.awaiting-acceptance main {
     width: 100%;
     height: auto;
     display: block;
-}
-
-/* ====================================================================== */
-/* 🔧 CORREÇÕES DE CONTRASTE (TEMA STANDARD/ACESSÍVEL)                    */
-/* ====================================================================== */
-
-/* 
-   Sobrescreve a cor primária (Amarelo Elétrico) por um tom Amarelo Técnico/Cinzento (#947C20)
-   apenas quando o tema claro (acessível) estiver ativo. 
-   Isso garante legibilidade sobre o fundo branco.
-*/
-
-.theme-acessivel .valor-card,
-.theme-acessivel .moeda,
-.theme-acessivel .valor-total-proposta,
-.theme-acessivel .valor-parcela-proposta,
-.theme-acessivel .icone-card,
-.theme-acessivel .icone-card i,
-.theme-acessivel .icone-expansao,
-.theme-acessivel .titulo-secao,
-.theme-acessivel .valor-expansao,
-.theme-acessivel .marcador-timeline,
-.theme-acessivel .destaque-equipamento-timeline .marcador-timeline,
-.theme-acessivel .titulo-parcelamento i,
-.theme-acessivel .desc-timeline strong {
-    color: #947C20 !important; 
-}
-
-.theme-acessivel .marcador-timeline {
-    border-color: #947C20 !important;
-}
-
-.theme-acessivel .titulo-secao::after {
-    background-color: #947C20 !important;
-}
-
-.theme-acessivel .card-total {
-    border-color: #947C20 !important;
-    color: #947C20 !important;
-}
-
-.theme-acessivel .card-total .legenda-valores,
-.theme-acessivel .card-total .valor-total-proposta,
-.theme-acessivel .card-total .moeda {
-    color: #947C20 !important;
-    text-shadow: none;
 }
