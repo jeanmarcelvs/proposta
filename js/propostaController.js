@@ -604,19 +604,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const numeroProjeto = urlParams.get('id');
     const primeiroNome = urlParams.get('nome');
 
-    // =================================================================
-    // 🔒 VERIFICAÇÃO DE SEGURANÇA (FINGERPRINT)
-    // =================================================================
-    if (numeroProjeto) {
-        const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto);
-        if (!acessoPermitido) {
-            // Redireciona para página de erro ou exibe mensagem de bloqueio
-            exibirMensagemBloqueio();
-            return; // Interrompe a execução do restante do script
-        }
-    }
-    // =================================================================
-
     const seletorTipoProposta = document.querySelector('.seletor-tipo-proposta');
     const btnPremium = document.getElementById('btn-premium');
     const btnAcessivel = document.getElementById('btn-acessivel');
@@ -807,14 +794,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const propostaData = propostas.dados;
-            localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
             let propostaParaExibir;
             let initialThemeClass;
             let initialButtonToSelect;
 
-            // VALIDAÇÃO DE EXPIRAÇÃO EXPLÍCITA (Sincronizada com indexController.js)
-            // Verifica a validade de ambas as propostas antes de decidir o que fazer
+            // 1. VALIDAÇÃO DE EXPIRAÇÃO (PRIORITÁRIA)
+            // Verifica se a proposta está vencida ANTES de checar o dispositivo
             const pPremium = propostaData.premium;
             const pAcessivel = propostaData.acessivel;
             
@@ -835,6 +821,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.href = 'index.html?erro=proposta-expirada';
                 return;
             }
+
+            // 2. VERIFICAÇÃO DE SEGURANÇA (FINGERPRINT) - APÓS VALIDAR DATA
+            // Só verifica o dispositivo se a proposta estiver válida (data ok)
+            const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto);
+            if (!acessoPermitido) {
+                exibirMensagemBloqueio();
+                redirecionando = true; // Impede que o finally esconda o overlay ou execute lógica extra
+                return;
+            }
+
+            // Se passou por todas as verificações, salva os dados e prossegue
+            localStorage.setItem('propostaData', JSON.stringify(propostaData));
 
             // Se chegou aqui, pelo menos uma é válida ou não existem propostas (erro tratado abaixo)
             if (isPremiumValida) {
