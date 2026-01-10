@@ -645,11 +645,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             'imagens/inst_premium_5a.webp',
             'imagens/inst_premium_6a.webp',
             'imagens/inst_premium_7a.webp',
-            'imagens/mod_1.webp'
+            'imagens/mod_1.webp',
+            'imagens/mod_2.webp'
         ],
         acessivel: [
             'imagens/inst_acessível_1.webp',
-            'imagens/mod_1.webp'
+            'imagens/mod_1.webp',
+            'imagens/mod_2.webp'
         ]
     };
 

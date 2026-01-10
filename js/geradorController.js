@@ -109,14 +109,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ======================================================================
     const gerenciadorEtapas = {
         // Mapeamento de índices para nomes lógicos das etapas
-        ordem: ['premissas', 'modulos', 'inversores', 'financeiro'],
+        ordem: ['premissas', 'modulos', 'inversores', 'financeiro', 'resumo'],
         
         etapas: {
             premissas: ['card_geometria', 'card_perdas'],
             // ATUALIZADO: IDs completos para garantir controle total da visibilidade
-            modulos: ['wrapper-etapa-paineis', 'container_sugestao_painel', 'wrapper-etapa-tecnica'],
+            // REORDENADO: container_sugestao_painel primeiro
+            modulos: ['container_sugestao_painel', 'wrapper-etapa-paineis', 'wrapper-etapa-tecnica'], 
             inversores: ['wrapper-etapa-inversores', 'card-dimensionamento-inversor'],
-            financeiro: ['wrapper-etapa-financeira']
+            financeiro: ['wrapper-etapa-financeira'],
+            resumo: ['secao_resumo_executivo', 'secao_comparativa_final']
         },
 
         // Armazena o estado dos dados ao entrar na edição para comparação posterior
@@ -146,50 +148,67 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const ids = this.etapas[nomeEtapa];
                 if (!ids) return;
 
+                const isEtapaAtual = index === indiceAtual;
+                let botaoVoltarAdicionado = false; // Flag para garantir apenas um botão voltar por etapa
+
                 ids.forEach(id => {
                     const el = document.getElementById(id);
                     if (!el) return;
 
-                    // Remove overlays antigos para redesenhar corretamente
+                    // Limpeza de estilos antigos de bloqueio/overlay
                     const overlayAntigo = el.querySelector('.overlay-desbloqueio');
                     if (overlayAntigo) overlayAntigo.remove();
+                    
+                    // Limpeza de botões de navegação antigos (para evitar duplicação)
+                    const navAntiga = el.querySelector('.nav-etapa-container');
+                    if (navAntiga) navAntiga.remove();
 
-                    // Lista de classes que devem ser removidas para desbloquear totalmente
-                    const classesBloqueio = ['card-bloqueado', 'disabled', 'etapa-bloqueada'];
-
-                    if (index < indiceAtual) {
-                        // ETAPA PASSADA: TRANCADA
-                        el.classList.add('card-bloqueado');
+                    // LÓGICA PRINCIPAL: Mostrar apenas a etapa atual
+                    if (isEtapaAtual) {
+                        el.style.display = 'block';
                         
-                        // Lógica N-1: Botão "Editar" só aparece na etapa imediatamente anterior à atual
-                        // E apenas no primeiro elemento da lista para não duplicar botões
-                        if (index === indiceAtual - 1 && id === ids[0]) {
-                            const overlay = document.createElement('div');
-                            overlay.className = 'overlay-desbloqueio';
-                            // Estilo inline para garantir visibilidade sobre o backdrop
-                            overlay.style.cssText = "position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20;";
-                            overlay.innerHTML = `
-                                <button class="btn-desbloquear" onclick="window.solicitarDesbloqueio('${nomeEtapa}')" style="background: white; border: 1px solid #e2e8f0; padding: 10px 20px; border-radius: 6px; font-weight: 600; color: #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                    <i class="fas fa-lock-open" style="color: var(--primaria);"></i> Editar ${nomeEtapa.charAt(0).toUpperCase() + nomeEtapa.slice(1)}
-                                </button>
-                            `;
-                            el.appendChild(overlay);
-                        }
-                    } else if (index === indiceAtual) {
-                        // ETAPA ATUAL: ABERTA
-                        el.classList.remove(...classesBloqueio);
+                        // Reseta estilos visuais de bloqueio (caso existam no CSS)
+                        el.classList.remove('card-bloqueado', 'etapa-bloqueada');
                         el.style.opacity = "1";
+                        el.style.filter = "none";
                         el.style.pointerEvents = "auto";
+                        el.style.backgroundColor = "";
+                        el.style.border = "";
+
+                        // Injeta botão de VOLTAR se não for a primeira etapa e ainda não foi adicionado nesta etapa
+                        if (index > 0 && !botaoVoltarAdicionado) {
+                            this.injetarBotaoVoltar(el, this.ordem[index - 1]);
+                            botaoVoltarAdicionado = true;
+                        }
                     } else {
                         // ETAPA FUTURA: TRANCADA E LIMPA (Reset em Cascata Visual)
                         // Mantém bloqueada para evitar interação antes da hora
-                        el.classList.add('card-bloqueado');
-                        // Opcional: Pode-se adicionar opacidade reduzida para indicar inatividade
-                        el.style.opacity = "0.5";
-                        el.style.pointerEvents = "none";
+                        el.style.display = 'none';
                     }
                 });
             });
+            
+            // Rola para o topo para manter o foco na etapa atual
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        // Helper para criar o botão de voltar visualmente integrado
+        injetarBotaoVoltar: function(elementoPai, nomeEtapaAnterior) {
+            const containerNav = document.createElement('div');
+            containerNav.className = 'nav-etapa-container';
+            containerNav.style.cssText = "margin-bottom: 15px; display: flex; align-items: center;";
+            
+            const btnVoltar = document.createElement('button');
+            btnVoltar.innerHTML = `<i class="fas fa-arrow-left"></i> Voltar para ${nomeEtapaAnterior.charAt(0).toUpperCase() + nomeEtapaAnterior.slice(1)}`;
+            btnVoltar.onclick = () => window.voltarEtapa();
+            
+            // Estilo do botão de voltar
+            btnVoltar.style.cssText = "background: transparent; border: 1px solid #cbd5e1; color: #64748b; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;";
+            btnVoltar.onmouseover = () => { btnVoltar.style.background = "#f1f5f9"; btnVoltar.style.color = "#334155"; };
+            btnVoltar.onmouseout = () => { btnVoltar.style.background = "transparent"; btnVoltar.style.color = "#64748b"; };
+
+            containerNav.appendChild(btnVoltar);
+            elementoPai.insertBefore(containerNav, elementoPai.firstChild);
         },
 
         // Avança para a próxima etapa (Forward)
@@ -200,11 +219,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Garante que existe um índice numérico válido (fallback para 0)
                 const indiceAtual = projetoGerenciador[aba].dados.etapaIndex || 0;
 
-                // Só avança se o novo índice for maior que o atual (evita recuos acidentais por esta função)
+                // CORREÇÃO SCROLL: Só sincroniza visualmente (scroll top) se houver mudança real de etapa.
+                // Isso evita que ações dentro da mesma etapa (como selecionar painel) rolem a tela.
                 if (novoIndice > indiceAtual) {
                     projetoGerenciador[aba].dados.etapaIndex = novoIndice;
+                    this.sincronizarVisual();
                 }
-                // Se for igual ou menor, apenas sincroniza (útil para re-renderização)
+            }
+        },
+
+        // Recua para uma etapa específica SEM resetar imediatamente (Snapshot para Dirty Check)
+        recuarPara: function(nomeEtapa) {
+            const novoIndice = this.ordem.indexOf(nomeEtapa);
+            const aba = projetoGerenciador.abaAtiva;
+            
+            if (novoIndice > -1 && projetoGerenciador[aba]) {
+                // 1. Captura o estado ATUAL da etapa para a qual estamos voltando
+                // Isso serve para comparar depois se o usuário mudou algo ou não
+                this.snapshotEstado = this.capturarEstado(nomeEtapa);
+                console.log(`Voltando para ${nomeEtapa}. Snapshot criado para detecção de mudanças.`);
+
+                // 2. Apenas recua o índice visualmente
+                projetoGerenciador[aba].dados.etapaIndex = novoIndice;
                 this.sincronizarVisual();
             }
         },
@@ -218,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 1. Captura o estado ATUAL da etapa para a qual estamos voltando
                 // Isso serve para comparar depois se o usuário mudou algo ou não
                 this.snapshotEstado = this.capturarEstado(nomeEtapa);
-                console.log(`Editando ${nomeEtapa}. Snapshot criado.`);
+                console.log(`Voltando para ${nomeEtapa}. Snapshot criado para detecção de mudanças.`);
 
                 // 2. Apenas recua o índice visualmente
                 projetoGerenciador[aba].dados.etapaIndex = novoIndice;
@@ -281,19 +317,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Função Global para o botão de desbloqueio
-    window.solicitarDesbloqueio = function(etapaAlvo) {
-        // Mensagem mais amigável
-        // const confirmacao = confirm(`Deseja editar a etapa "${etapaAlvo.toUpperCase()}"?`); // Removido confirm para fluidez, já que não deleta dados imediatamente
+    // NOVA FUNÇÃO: Voltar Etapa (Genérica)
+    window.voltarEtapa = function() {
+        const aba = projetoGerenciador.abaAtiva;
+        if (!aba || !projetoGerenciador[aba]) return;
         
-        if (true) {
-            // A função recuarPara agora apenas destranca e tira o snapshot
-            gerenciadorEtapas.recuarPara(etapaAlvo);
+        const indiceAtual = projetoGerenciador[aba].dados.etapaIndex;
+        if (indiceAtual > 0) {
+            const etapaAnterior = gerenciadorEtapas.ordem[indiceAtual - 1];
+            gerenciadorEtapas.recuarPara(etapaAnterior);
         }
     };
 
     // --- NOVA FUNÇÃO: CONFIRMAR PREMISSAS E AVANÇAR ---
     window.confirmarPremissasEAvançar = function() {
+        // VALIDAÇÃO: Consumo Obrigatório
+        const consumo = parseFloat(document.getElementById('uc_consumo')?.value) || 0;
+        if (consumo <= 0) {
+            alert("Por favor, informe um Consumo Médio válido (maior que zero) para prosseguir.");
+            const input = document.getElementById('uc_consumo');
+            if(input) input.focus();
+            return;
+        }
+
         console.log("Iniciando transição: Premissas -> Módulos");
 
         // 1. Verifica se houve mudança real nas premissas
@@ -313,13 +359,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Isso vai trancar as premissas e liberar a seleção de módulos
         if (typeof gerenciadorEtapas !== 'undefined') {
             gerenciadorEtapas.avancarPara('modulos');
-        }
-
-        // 3. Scroll Suave para a próxima etapa
-        // O desbloqueio visual agora é garantido pelo gerenciadorEtapas.sincronizarVisual()
-        const scrollTarget = document.getElementById('wrapper-etapa-paineis') || document.getElementById('container_sugestao_painel');
-        if (scrollTarget) {
-            scrollTarget.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
@@ -735,6 +774,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Força um recálculo inicial para garantir que o estado esteja limpo/pronto
         recalcularDimensionamento();
+
+        // Renderiza o botão de avançar na etapa de Premissas (sem scroll inicial)
+        // Verifica consumo inicial
+        const consumoInicial = parseFloat(document.getElementById('uc_consumo')?.value) || 0;
+        renderizarBotaoNavegacao('card_perdas', 'window.confirmarPremissasEAvançar()', consumoInicial > 0 ? 'Premissas de Projeto' : 'Informe o Consumo', 'Ir para Seleção de Módulos', consumoInicial > 0);
     }
 
     // --- CARGA DE PREMISSAS GLOBAIS ---
@@ -848,6 +892,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 2. ATUALIZAÇÃO IMEDIATA DO TOPO (Correção do "Topo Fixo não mudou")
         // Passamos o PR calculado agora, sem esperar o resto do processo
         sincronizarEngenhariaUnica(prPonderado);
+
+        // Atualiza o botão de avançar das premissas
+        atualizarEstadoBotaoPremissas();
         
         // 3. Executa o Dimensionamento Completo (Motor de Seleção 540W-715W)
         if (consumo > 0 && hspBruto > 0) {
@@ -987,6 +1034,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (restante.length > 0) {
             prepararListaCompleta(restante, pMinimaKwp);
         }
+
+        // RESTAURAÇÃO DO BOTÃO VOLTAR (Caso tenha sido apagado pelo innerHTML)
+        // Verifica se estamos na etapa de módulos (índice 1) e se o botão sumiu
+        if (typeof gerenciadorEtapas !== 'undefined') {
+            const aba = projetoGerenciador.abaAtiva;
+            if (projetoGerenciador[aba] && projetoGerenciador[aba].dados.etapaIndex === 1) {
+                gerenciadorEtapas.injetarBotaoVoltar(containerSugestaoPainel, 'premissas');
+            }
+        }
+
+        // Renderiza o botão de avançar (Desabilitado inicialmente, pois nenhum módulo foi confirmado ainda)
+        // Se já houver seleção (recalculo), verifica se é válida
+        const temSelecao = !!(estadoSelecaoModulo.watts && estadoSelecaoModulo.qtd);
+        renderizarBotaoNavegacao('container_sugestao_painel', 'window.avancarParaInversores()', temSelecao ? 'Configuração de Módulos Definida' : 'Selecione um Módulo', 'Avançar para Inversores', temSelecao);
     }
 
     // NOVA FUNÇÃO: Valida a seleção antes de confirmar
@@ -1054,10 +1115,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // AVANÇO DE ETAPA: Módulos definidos -> Vai para Inversores (Índice 2)
-        if (typeof gerenciadorEtapas !== 'undefined') {
-            gerenciadorEtapas.avancarPara('inversores');
-        }
+        // AVANÇO DE ETAPA: REMOVIDO AUTO-AVANÇO
+        // Agora exibe o botão para o usuário confirmar a intenção de avançar
+        renderizarBotaoNavegacao('container_sugestao_painel', 'window.avancarParaInversores()', 'Configuração de Módulos Definida', 'Avançar para Inversores', true);
 
         // 3. GATILHO DE REAVALIAÇÃO EM CASCATA: Verifica se o carrinho atual ainda é válido
         atualizarComposicaoFinal();
@@ -1065,12 +1125,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Atualiza a tabela de sugestões (agora sem pré-seleção automática única)
         renderizarTabelaHuawei();
 
-        // Rola a tela para a próxima etapa: Dimensionamento de Inversores
-        const scrollTarget = document.getElementById('wrapper-etapa-inversores') || document.getElementById('card-dimensionamento-inversor');
-        if (scrollTarget) {
-            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
     }
+
+    // NOVA FUNÇÃO GENÉRICA: Renderiza botão de navegação padronizado (Atualiza estado se já existir)
+    function renderizarBotaoNavegacao(containerId, acaoGlobal, textoFeedback, textoBotao, isValid = false) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        let areaAcao = container.querySelector('.area-acao-navegacao');
+        let isNew = false;
+
+        if (!areaAcao) {
+            isNew = true;
+            areaAcao = document.createElement('div');
+            areaAcao.className = 'area-acao-navegacao';
+            // Estilo base com transição suave
+            areaAcao.style.cssText = "margin-top: 25px; text-align: center; padding: 20px; border: 1px solid; border-radius: 8px; transition: all 0.3s ease;";
+            container.appendChild(areaAcao);
+        }
+
+        // Definição de cores e estados baseados na validade
+        const corFundo = isValid ? '#f0fdf4' : '#f8fafc'; // Verde claro vs Cinza claro
+        const corBorda = isValid ? '#bbf7d0' : '#e2e8f0';
+        const corTexto = isValid ? '#15803d' : '#64748b';
+        const iconClass = isValid ? 'fa-check-circle' : 'fa-lock'; 
+        
+        // Atualiza container
+        areaAcao.style.backgroundColor = corFundo;
+        areaAcao.style.borderColor = corBorda;
+
+        // Estilo do Botão
+        const btnStyle = isValid 
+            ? "padding: 12px 30px; font-size: 1.1rem; transition: all 0.3s; cursor: pointer;" 
+            : "padding: 12px 30px; font-size: 1.1rem; background-color: #cbd5e1; color: #64748b; border: 1px solid #94a3b8; cursor: not-allowed; opacity: 0.7;";
+        
+        const disabledAttr = isValid ? '' : 'disabled';
+        const btnClass = isValid ? 'btn-primary' : ''; 
+
+        areaAcao.innerHTML = `
+            <p style="color: ${corTexto}; font-weight: 600; margin-bottom: 15px; transition: color 0.3s;">
+                <i class="fas ${iconClass}"></i> ${textoFeedback}
+            </p>
+            <button class="${btnClass}" onclick="${acaoGlobal}" style="${btnStyle}" ${disabledAttr}>
+                ${textoBotao} <i class="fas fa-arrow-right"></i>
+            </button>
+        `;
+    }
+
+    window.avancarParaInversores = function() {
+        if (typeof gerenciadorEtapas !== 'undefined') {
+            gerenciadorEtapas.avancarPara('inversores');
+        }
+    };
+
+    window.avancarParaFinanceiro = function() {
+        if (typeof gerenciadorEtapas !== 'undefined') {
+            gerenciadorEtapas.avancarPara('financeiro');
+        }
+    };
+
+    window.avancarParaResumo = function() {
+        if (typeof gerenciadorEtapas !== 'undefined') {
+            gerenciadorEtapas.avancarPara('resumo');
+        }
+    };
 
     // ======================================================================
     // 🔌 MOTOR DE DIMENSIONAMENTO DE INVERSOR E EXPANSÃO
@@ -1360,12 +1478,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         estadoSelecaoInversor = { tipo: 'SUGESTAO', id: indexSugestao };
         renderizarTabelaHuawei(); // Re-renderiza para aplicar classes
 
-        // AVANÇO DE ETAPA: Inversores definidos -> Vai para Financeiro (Índice 3)
-        gerenciadorEtapas.avancarPara('financeiro');
+        // REMOVIDO AVANÇO AUTOMÁTICO
+        // gerenciadorEtapas.avancarPara('financeiro');
 
         atualizarComposicaoFinal();
-        // Rola para o resumo
-        document.getElementById('container_selecionados').scrollIntoView({ behavior: 'smooth' });
     }
 
     window.adicionarAoCarrinho = function(modelo, nominal, tipo) {
@@ -1384,8 +1500,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         estadoSelecaoInversor = { tipo: 'MANUAL', id: modelo };
         renderizarTabelaHuawei(); // Re-renderiza para aplicar classes
 
-        // AVANÇO DE ETAPA: Inversores definidos -> Vai para Financeiro (Índice 3)
-        gerenciadorEtapas.avancarPara('financeiro');
+        // REMOVIDO AVANÇO AUTOMÁTICO
+        // gerenciadorEtapas.avancarPara('financeiro');
 
         atualizarComposicaoFinal();
     }
@@ -1408,15 +1524,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const lista = document.getElementById('lista_inversores_escolhidos');
         const resumo = document.getElementById('resumo_tecnico_combinado');
         const overAlvo = parseFloat(document.getElementById('val_oversizing_aplicado').value);
-        
+
+        // Exibe ou oculta o container de itens selecionados
         if (carrinhoInversores.length === 0) {
             container.style.display = 'none';
-            // Reseta proposta atual
             gerenciarEstadoCalculo('INVALIDAR');
-            return;
+        } else {
+            container.style.display = 'block';
         }
-
-        container.style.display = 'block';
         
         // 1. Dados do Projeto
         const potDCInstaladaWp = parseFloat(document.getElementById('potencia_dc_total').innerText) * 1000;
@@ -1528,6 +1643,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (carrinhoInversores.length > 0) {
             window.calcularEngenhariaFinanceira();
         }
+
+        // Renderiza o botão de avançar SEMPRE, mas desabilitado se vazio
+        // Alvo alterado para 'card-dimensionamento-inversor' para ficar visível mesmo com carrinho vazio
+        const temItens = carrinhoInversores.length > 0;
+        renderizarBotaoNavegacao('card-dimensionamento-inversor', 'window.avancarParaFinanceiro()', temItens ? 'Inversores Definidos' : 'Selecione os Inversores', 'Avançar para Financeiro', temItens);
     }
 
     window.filtrarTabelaHuawei = function() {
@@ -1594,7 +1714,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         div.innerHTML = `
             <div class="grupo-form">
                 <label>% da Potência</label>
-                <input type="number" class="input-perc input-monitorado" value="${primeira ? 100 : 0}" oninput="window.validarSomaOrientacao()">
+                <input type="number" class="input-perc input-monitorado" value="${primeira ? 100 : 0}" oninput="window.validarSomaOrientacao(true)">
             </div>
             <div class="grupo-form">
                 <label>Azimute (°)</label>
@@ -1638,7 +1758,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    window.validarSomaOrientacao = function() {
+    window.validarSomaOrientacao = function(apenasVisual = false) {
         if (modoOrientacao === 'simples') return true;
 
         const inputs = document.querySelectorAll('#container_orientacoes_compostas .input-perc');
@@ -1650,13 +1770,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const statusEl = document.getElementById('status_soma_perc');
         statusEl.innerText = `Total: ${soma}%`;
 
-        if (soma === 100) {
+        // Usa tolerância para float (ex: 99.999...)
+        if (Math.abs(soma - 100) < 0.1) {
             statusEl.style.color = '#16a34a'; // Verde
-            recalcularDimensionamento();
+            if (!apenasVisual) recalcularDimensionamento();
+            atualizarEstadoBotaoPremissas(); // Atualiza botão em tempo real
             return true;
         } else {
             statusEl.style.color = '#dc2626'; // Vermelho
             gerenciarEstadoCalculo('INVALIDAR');
+            atualizarEstadoBotaoPremissas(); // Atualiza botão em tempo real (bloqueia)
             return false;
         }
     };
@@ -1705,6 +1828,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    // --- NOVA FUNÇÃO: Validação em Tempo Real das Premissas ---
+    function atualizarEstadoBotaoPremissas() {
+        const consumo = parseFloat(document.getElementById('uc_consumo')?.value) || 0;
+        const consumoValido = consumo > 0;
+        
+        let orientacaoValida = true;
+        if (modoOrientacao === 'composto') {
+            const inputs = document.querySelectorAll('#container_orientacoes_compostas .input-perc');
+            let soma = 0;
+            inputs.forEach(input => soma += parseFloat(input.value) || 0);
+            orientacaoValida = (Math.abs(soma - 100) < 0.1);
+        }
+
+        const premissasValidas = consumoValido && orientacaoValida;
+        let textoBotao = 'Premissas de Projeto';
+        if (!consumoValido) textoBotao = 'Informe o Consumo';
+        else if (!orientacaoValida) textoBotao = 'Ajuste as Orientações (Total 100%)';
+
+        renderizarBotaoNavegacao('card_perdas', 'window.confirmarPremissasEAvançar()', textoBotao, 'Ir para Seleção de Módulos', premissasValidas);
+    }
+
     // --- Event Listeners ---
     const inputsGatilho = document.querySelectorAll('.input-monitorado');
     inputsGatilho.forEach(input => {
@@ -1723,6 +1867,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         input.removeEventListener('change', handlePremiseChange); // Evita duplicatas
         input.addEventListener('change', handlePremiseChange);
     });
+
+    // Listener específico para validação em tempo real do Consumo
+    if (inputConsumo) {
+        inputConsumo.addEventListener('input', atualizarEstadoBotaoPremissas);
+    }
 
     // Listeners específicos para campos de perdas (Garantia de Reatividade)
     const inputsPerdas = [pEficiInv, pTempInv, pTempMod, pCabosTotal, pExtras, pIndisp];
@@ -1988,6 +2137,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const valorKit = parseFloat(elValorKit?.value) || 0;
         const valorTotalCliente = precoVendaServico + valorKit;
 
+        // VALIDAÇÃO: O Kit deve ter valor coerente para avançar
+        const isKitValido = valorKit > 0;
+
         // 4. ATUALIZAÇÃO UI
         if(document.getElementById('res_custo_materiais')) document.getElementById('res_custo_materiais').innerText = formatarMoeda(custoMateriais);
         if(document.getElementById('res_custo_mo_base')) document.getElementById('res_custo_mo_base').innerText = `${formatarMoeda(custoMO)} (${diasFinais}d)`;
@@ -1999,7 +2151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Estado
         if (projetoGerenciador.abaAtiva && projetoGerenciador[projetoGerenciador.abaAtiva]) {
-            projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado = true;
+            projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado = isKitValido;
         }
 
         // Atualiza o Resumo Executivo
@@ -2019,6 +2171,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         validarBotaoFinal();
+
+        // Renderiza o botão de avançar padronizado se o preço foi calculado
+        const containerBtnId = 'wrapper-etapa-financeira';
+        const containerBtn = document.getElementById(containerBtnId);
+
+        const isPrecoOk = projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado;
+        renderizarBotaoNavegacao(containerBtnId, 'window.avancarParaResumo()', isPrecoOk ? 'Análise Financeira Concluída' : 'Defina o Valor do Kit', 'Ver Resumo e Salvar', isPrecoOk);
     };
 
     function preencherResumoExecutivo(dados) {
@@ -2027,70 +2186,120 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Só exibe se houver preço calculado
         if (projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado) {
-            secao.style.display = 'block';
+            // A visibilidade agora é controlada pelo gerenciadorEtapas (etapa 'resumo')
+            // secao.style.display = 'block'; 
 
-            // 1. Equipamentos
-            let descInversores = dados.inversores.map(i => `${i.qtd}x ${i.modelo}`).join(' + ');
+            // --- DADOS COMPLETOS PARA O RESUMO ---
+            const clienteNome = projetoCompleto.nome || 'Cliente';
+            const projNome = projetoCompleto.projeto.nome_projeto || 'Projeto';
+            const local = `${projetoCompleto.projeto.cidade}/${projetoCompleto.projeto.uf}`;
+            const consumo = projetoCompleto.projeto.consumo || 0;
+            const tipoTelhado = projetoCompleto.projeto.tipoTelhado || 'Não informado';
             
-            // Adiciona flag de seleção manual no resumo final
-            if (estadoSelecaoInversor.tipo === 'MANUAL') {
-                descInversores += ' <span style="color: #f59e0b; font-size: 0.8em;" title="Seleção Manual do Engenheiro">⚠️ (Manual)</span>';
-            }
+            // Dados Técnicos
+            const potSistema = ((dados.qtdModulos * dados.potenciaModulo) / 1000).toFixed(2);
+            const modulosDesc = `${dados.qtdModulos}x ${dados.potenciaModulo}W`;
             
-            // Verifica se o módulo escolhido é o recomendado (assumindo que o primeiro da lista gerada era o recomendado)
-            // Nota: Para precisão total, precisaríamos persistir qual era o recomendado. 
-            // Aqui usamos uma lógica visual: se tem seleção manual diferente da recomendação padrão.
-            if (estadoSelecaoModulo.watts && dimensionamentoCompleto?.melhorSugestao) {
-                 // Lógica simplificada para o resumo
-            }
+            // Cálculo da Potência AC Total (Inversores)
+            const potInversoresAC = dados.inversores.reduce((acc, i) => acc + (i.nominal * i.qtd), 0) / 1000;
 
-            document.getElementById('res_final_equipamentos').innerHTML = descInversores || "Nenhum inversor";
-            document.getElementById('res_final_detalhes_mod').innerText = `${dados.qtdModulos}x Painéis de ${dados.potenciaModulo}W`;
+            // Formata lista de inversores com destaque para seleção manual
+            const invDesc = dados.inversores.map(i => {
+                const manualTag = estadoSelecaoInversor.tipo === 'MANUAL' ? '<span style="color:#f59e0b; font-size:0.8em;">(Manual)</span>' : '';
+                return `<div><strong>${i.qtd}x</strong> ${i.modelo} ${manualTag}</div>`;
+            }).join('');
 
-            // 2. Geração e Expansão
-            document.getElementById('res_final_geracao').innerText = `Geração: ${dados.geracaoMensal}`;
-            // Usa o cálculo linear de expansão se disponível, ou o valor passado
-            const textoExpansao = `Geração Máxima: ${dados.geracaoMax}`;
-            document.getElementById('res_final_expansao').innerText = textoExpansao;
+            // HTML Rico e Padronizado (Wizard Style)
+            const html = `
+                <div class="resumo-geral-card" style="background: white; border: 1px solid #cbd5e1; border-radius: 12px; padding: 30px; margin-top: 30px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+                    
+                    <div style="border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 25px; text-align: center;">
+                        <h3 style="color: #0f172a; font-size: 1.5rem; margin: 0;"><i class="fas fa-clipboard-list" style="color: var(--primaria);"></i> Resumo Geral da Proposta</h3>
+                        <p style="color: #64748b; margin-top: 5px;">Confira os dados antes de salvar</p>
+                    </div>
 
-            // 3. Financeiro
-            document.getElementById('res_final_preco').innerText = dados.precoVenda;
-            document.getElementById('res_final_imposto_lucro').innerText = `Impostos: ${dados.impostos} | Lucro: ${dados.lucro}`;
-            
-            // 4. Status de Seleção Técnica (Novo)
-            const statusDiv = document.getElementById('status_selecao_tecnica');
-            if (!statusDiv) {
-                // Cria se não existir (inserir antes do financeiro ou onde preferir)
-                const div = document.createElement('div');
-                div.id = 'status_selecao_tecnica';
-                div.className = 'item-resumo';
-                document.getElementById('res_final_equipamentos').parentNode.appendChild(div);
-            }
-            
-            const isModuloRecomendado = dimensionamentoCompleto?.melhorSugestao && 
-                                      (estadoSelecaoModulo.watts === dimensionamentoCompleto.melhorSugestao.watts && 
-                                       estadoSelecaoModulo.qtd === dimensionamentoCompleto.melhorSugestao.quantidade);
-            
-            const modTexto = isModuloRecomendado ? "<span style='color:#16a34a'>Recomendado</span>" : "<span style='color:#3b82f6'>Personalizado</span>";
-            const invTexto = estadoSelecaoInversor.tipo === 'MANUAL' ? "<span style='color:#f59e0b'>Manual ⚠️</span>" : "<span style='color:#16a34a'>Sugerido</span>";
-            
-            document.getElementById('status_selecao_tecnica').innerHTML = `
-                <div style="margin-top:10px; font-size:0.85rem; border-top:1px solid #eee; padding-top:5px;">
-                    Configuração: <strong>Módulos ${modTexto}</strong> | <strong>Inversores ${invTexto}</strong>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                        
+                        <!-- Coluna 1: Contexto -->
+                        <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            <h4 style="color: #334155; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                                <i class="fas fa-user-tag"></i> Dados do Projeto
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 10px; font-size: 1rem; color: #475569;">
+                                <div style="display: flex; justify-content: space-between;"><span>Cliente:</span> <strong style="color: #0f172a;">${clienteNome}</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Projeto:</span> <strong style="color: #0f172a;">${projNome}</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Local:</span> <strong style="color: #0f172a;">${local}</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Consumo:</span> <strong style="color: #0f172a;">${consumo} kWh</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Estrutura:</span> <strong style="color: #0f172a;">${tipoTelhado}</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Coluna 2: Engenharia -->
+                        <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            <h4 style="color: #334155; font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                                <i class="fas fa-microchip"></i> Solução Técnica
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 10px; font-size: 1rem; color: #475569;">
+                                <div style="display: flex; justify-content: space-between;"><span>Potência DC:</span> <strong style="color: #0f172a;">${potSistema} kWp</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Módulos:</span> <strong style="color: #0f172a;">${modulosDesc}</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Potência AC:</span> <strong style="color: #0f172a;">${potInversoresAC.toFixed(2)} kW</strong></div>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;"><span>Inversores:</span> <div style="text-align: right; color: #0f172a;">${invDesc}</div></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Geração Estimada:</span> <strong style="color: #16a34a;">${dados.geracaoMensal} kWh/mês</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Expansão:</span> <strong style="color: #0f172a;">${dados.geracaoMax}</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloco Financeiro -->
+                    <div style="background: #f0fdf4; padding: 25px; border-radius: 10px; border: 1px solid #bbf7d0; text-align: center; margin-bottom: 30px;">
+                        <h4 style="color: #166534; font-size: 1.2rem; margin-bottom: 20px;">Valor Final da Proposta</h4>
+                        <div style="display: flex; justify-content: center; gap: 40px; align-items: flex-end;">
+                            <div>
+                                <span style="display: block; font-size: 0.9rem; color: #15803d; margin-bottom: 5px;">Preço ao Cliente</span>
+                                <span style="font-size: 2.2rem; font-weight: 800; color: #16a34a; line-height: 1;">${dados.precoVenda}</span>
+                            </div>
+                            <div style="padding-left: 40px; border-left: 1px solid #bbf7d0;">
+                                <span style="display: block; font-size: 0.9rem; color: #15803d; margin-bottom: 5px;">Lucro Projetado</span>
+                                <span style="font-size: 1.5rem; font-weight: 700; color: #15803d; line-height: 1;">${dados.lucro}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 0.9rem; color: #166534;">
+                            Tempo estimado de obra: <strong>${dados.diasObra} dias</strong>
+                        </div>
+                    </div>
+
+                    <!-- Container para o Botão -->
+                    <div id="container_botao_salvar_final" style="display: flex; justify-content: center;">
+                        <!-- Botão será injetado aqui -->
+                    </div>
+
                 </div>
             `;
+            
+            secao.innerHTML = html;
 
-            // 4. Execução (Segurança)
-            const elDias = document.getElementById('res_final_dias_txt');
-            const elAlerta = document.getElementById('res_final_alerta_minimo');
-            if (elDias) elDias.innerText = `${dados.diasObra} Dias de Obra`;
-            if (elAlerta) elAlerta.style.display = dados.isMinimo ? 'block' : 'none';
+            // Move o botão de salvar para dentro do resumo
+            const btnSalvar = document.getElementById('btn_gerar_proposta');
+            const containerBtn = document.getElementById('container_botao_salvar_final');
+            
+            if (btnSalvar && containerBtn) {
+                containerBtn.appendChild(btnSalvar);
+                // Estilização do botão para ficar imponente
+                btnSalvar.style.width = 'auto';
+                btnSalvar.style.minWidth = '250px';
+                btnSalvar.style.padding = '16px 32px';
+                btnSalvar.style.fontSize = '1.1rem';
+                btnSalvar.style.display = 'inline-flex';
+                btnSalvar.style.visibility = 'visible'; // Garante visibilidade
+                btnSalvar.classList.remove('oculto'); // Remove classes de ocultação se houver
+                btnSalvar.style.justifyContent = 'center';
+                btnSalvar.style.alignItems = 'center';
+                btnSalvar.style.gap = '10px';
+            }
 
             // 5. Comparativo (Se ambas as abas estiverem preenchidas)
             atualizarComparativoFinal();
 
-        } else {
-            secao.style.display = 'none';
         }
     }
 
@@ -2127,7 +2336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>
         `;
-        container.style.display = 'block';
+        // A visibilidade é controlada pelo gerenciadorEtapas
     }
 
     // ======================================================================
