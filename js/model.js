@@ -1,6 +1,9 @@
 // Importa as funções da API
 import { get, patch, post, getSelicTaxa, validarDispositivoHardware } from './api.js';
 
+// Re-exporta post para uso nos controllers
+export { post };
+
 // ======================================================================
 // CONSTANTES AJUSTADAS PARA SIMULAR OS VALORES DO BANCO BV
 // ======================================================================
@@ -23,21 +26,6 @@ const FATOR_RISCO_PRAZO = 0.00046; // AJUSTADO
 // FIM DAS CONSTANTES
 // ======================================================================
 
-const detalhesInstalacaoPremiumVE = [
-    { icone: 'fa-pen-ruler', texto: 'Projeto Elétrico da instalação conforme normas ABNT (NBR 5410/2004 e NBR 17019/2022)' },
-    { icone: 'fa-check-circle', texto: 'Instalação com infraestrutura elétrica reforçada com padrão de sobrepor em aço zincado' },
-    { icone: 'fa-bolt', texto: 'Sistema de proteção completo e coordenado contra surtos da rede de energia, desde o Quadro Geral até o ponto de recarga' }
-];
-
-const detalhesInstalacaoAcessivelVE = [
-    { icone: 'fa-pen-ruler', texto: 'Projeto Elétrico da instalação conforme normas ABNT (NBR 5410/2004 e NBR 17019/2022)' },
-    { icone: 'fa-triangle-exclamation', texto: 'Instalação elétrica básica com padrão de sobrepor em PVC' },
-    { icone: 'fa-triangle-exclamation', texto: 'Dispositivo de proteção simples apenas no ponto de recarga' }
-];
-
-const resumoInstalacaoPremiumVE = 'Uma infraestrutura que garante máxima segurança e conformidade para o seu Wallbox, preparada para proteger seu investimento com materiais de alta qualidade.';
-const resumoInstalacaoAcessivelVE = 'Uma solução básica mas em conformidade com os requisitos mínimos normativos.';
-
 
 // Objeto que armazena os dados da proposta, incluindo as duas versões
 let dadosProposta = {
@@ -55,16 +43,6 @@ const caminhosImagens = {
         instalacao: {
             premium: 'imagens/instalacao-premium.webp',
             acessivel: 'imagens/instalacao-acessivel.webp'
-        }
-    },
-    ve: {
-        equipamentos: {
-            premium: 'imagens/marca-ve-premium.webp',
-            acessivel: 'imagens/marca-ve-acessivel.webp'
-        },
-        instalacao: {
-            premium: 'imagens/instalacao-ve-premium.webp',
-            acessivel: 'imagens/instalacao-ve-acessivel.webp'
         }
     }
 };
@@ -484,7 +462,6 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
 
     const tipoVisualizacao = extrairValorVariavelPorChave(variables, 'cap_visualizacao') || 'SOLAR';
     const tipoVisualizacaoUpper = tipoVisualizacao.trim().toUpperCase();
-    const isVE = tipoVisualizacaoUpper === 'VE';
     const isServico = tipoVisualizacaoUpper === 'SERVICO';
 
     // Variáveis comuns a ambos os tipos de proposta
@@ -503,8 +480,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     let valores = {};
     let instalacao = {};
     let dadosServico = {};
-
-    // --- CORREÇÃO: A lógica para extração de dados de VE foi unificada com a de Solar ---
+    
     const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
     const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
     const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
@@ -611,24 +587,24 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             resumoInstalacao: resumoInstalacaoPremium
         };
     } else {
-        // Lógica existente para Solar e VE
+        // Lógica existente para Solar (VE removido)
         sistema = {
-            geracaoMedia: isVE ? `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês` : `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
+            geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
             unidadeGeracao: 'kWh',
             instalacaoPaineis: extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado',
             idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
         };
         equipamentos = {
-            imagem: isVE ? caminhosImagens.ve.equipamentos[tipoProposta] : caminhosImagens.solar.equipamentos[tipoProposta],
+            imagem: caminhosImagens.solar.equipamentos[tipoProposta],
             quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
             descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
             quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
             descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
         };
         instalacao = {
-            imagem: isVE ? caminhosImagens.ve.instalacao[tipoProposta] : caminhosImagens.solar.instalacao[tipoProposta],
-            detalhesInstalacao: isVE ? (tipoProposta === 'premium' ? detalhesInstalacaoPremiumVE : detalhesInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
-            resumoInstalacao: isVE ? (tipoProposta === 'premium' ? resumoInstalacaoPremiumVE : resumoInstalacaoAcessivelVE) : (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel),
+            imagem: caminhosImagens.solar.instalacao[tipoProposta],
+            detalhesInstalacao: (tipoProposta === 'premium' ? detalhesInstalacaoPremium : detalhesInstalacaoAcessivel),
+            resumoInstalacao: (tipoProposta === 'premium' ? resumoInstalacaoPremium : resumoInstalacaoAcessivel),
             checklist: tipoProposta === 'premium' ? checklistPremium : checklistStandard
         };
         valores = {
@@ -636,11 +612,11 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
             detalhamento: detalhamentoPagamento, // Objeto com a divisão calculada
             valorTotalNum: valorTotal, // Valor numérico para cálculos
             payback: payback,
-            parcelas: isVE ? {} : parcelasCalculadas,
+            parcelas: parcelasCalculadas,
             parcelasCartao: parcelasCartaoSolar, // Adicionado para uso no controller
-            taxasPorParcela: isVE ? {} : taxasPorParcela,
+            taxasPorParcela: taxasPorParcela,
             selicAtual: selicAtual, // Passa a Selic para recalculos no controller
-            observacao: isVE ? ' ' : 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
+            observacao: 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.'
         };
     }
 
@@ -720,16 +696,13 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
         dadosProposta.premium = propostaServico; // Armazena no slot principal
 
     } else {
-        // É Solar ou VE. Usar a lógica original com os dados da proposta já buscados.
+        // É Solar. Usar a lógica original com os dados da proposta já buscados.
         let tipoPropostaPrincipal = extrairValorVariavelPorChave(variablesDaProposta, 'cape_padrao_instalacao');
         const idProjetoAcessivel = extrairValorVariavelPorChave(variablesDaProposta, 'vc_projeto_acessivel');
 
         if (!tipoPropostaPrincipal) {
             if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
                 tipoPropostaPrincipal = 'PREMIUM';
-            }
-            else if (tipoVisualizacao && tipoVisualizacao.trim().toUpperCase() === 'VE') {
-                tipoPropostaPrincipal = 'STANDARD';
             }
             else if (!tipoVisualizacao || tipoVisualizacao.trim().toUpperCase() === 'SOLAR') {
                 tipoPropostaPrincipal = 'STANDARD';
@@ -773,4 +746,451 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     }
 
     return { sucesso: true, dados: dadosProposta };
+}
+
+// ======================================================================
+// FUNÇÕES DE DADOS GEOGRÁFICOS (CEP / IBGE)
+// ======================================================================
+
+// Busca de CEP via API pública (ViaCEP)
+export async function buscarEnderecoPorCEP(cep) {
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+        return data.erro ? null : data;
+    } catch (error) {
+        console.error("Erro ao buscar CEP", error);
+        return null;
+    }
+}
+
+// Busca de Cidades via API do IBGE
+export async function obterCidadesPorUF(uf) {
+    try {
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+        return await response.json();
+    } catch (error) {
+        console.error("Erro ao buscar cidades", error);
+        return [];
+    }
+}
+
+// ======================================================================
+// ENGENHARIA: MOTOR DE DIMENSIONAMENTO BELENERGY
+// ======================================================================
+
+const DIAS_MES_PRECISO = 30.4166666666666;
+
+// Base de dados histórica BelEnergy para Alagoas (Fator de Geração Mensal - kWh/kWp.mês)
+// A estrutura foi atualizada para incluir lat/lon, conforme solicitado.
+export const baseDadosAlagoas = {
+    "AGUA BRANCA": { fator: 126.7, lat: null, lon: null, dist: 300 }, "ANADIA": { fator: 121.21, lat: null, lon: null, dist: 90 },
+    "ARAPIRACA": { fator: 122.46, lat: -9.751, lon: -36.660, dist: 130 }, "ATALAIA": { fator: 120.7, lat: null, lon: null, dist: 48 },
+    "BARRA DE SANTO ANTONIO": { fator: 125.84, lat: null, lon: null, dist: 40 }, "BARRA DE SAO MIGUEL": { fator: 129.13, lat: null, lon: null, dist: 30 },
+    "BATALHA": { fator: 122.95, lat: null, lon: null, dist: 190 }, "BELEM": { fator: 121.51, lat: null, lon: null, dist: 110 },
+    "BELO MONTE": { fator: 124.45, lat: null, lon: null }, "BOCA DA MATA": { fator: 119.2, lat: null, lon: null },
+    "BRANQUINHA": { fator: 119.75, lat: null, lon: null }, "CACIMBINHAS": { fator: 124.61, lat: null, lon: null },
+    "CAJUEIRO": { fator: 118.32, lat: null, lon: null }, "CAMPESTRE": { fator: 119.2, lat: null, lon: null },
+    "CAMPO ALEGRE": { fator: 121.3, lat: null, lon: null }, "CAMPO GRANDE": { fator: 122.74, lat: null, lon: null },
+    "CANAPI": { fator: 128.09, lat: null, lon: null }, "CAPELA": { fator: 119.33, lat: null, lon: null },
+    "CARNEIROS": { fator: 125.84, lat: null, lon: null }, "CHA PRETA": { fator: 119.82, lat: null, lon: null },
+    "COITE DO NOIA": { fator: 123.64, lat: null, lon: null }, "COLONIA LEOPOLDINA": { fator: 115.98, lat: null, lon: null },
+    "COQUEIRO SECO": { fator: 124.13, lat: null, lon: null, dist: 20 }, "CORURIPE": { fator: 126.49, lat: null, lon: null, dist: 90 },
+    "CRAIBAS": { fator: 124.8, lat: null, lon: null }, "DELMIRO GOUVEIA": { fator: 128.34, lat: null, lon: null },
+    "DOIS RIACHOS": { fator: 125.4, lat: null, lon: null }, "ESTRELA DE ALAGOAS": { fator: 126.14, lat: null, lon: null },
+    "FEIRA GRANDE": { fator: 121.49, lat: null, lon: null }, "FELIZ DESERTO": { fator: 125.96, lat: null, lon: null },
+    "FLEXEIRAS": { fator: 118.41, lat: null, lon: null }, "GIRAU DO PONCIANO": { fator: 122.51, lat: null, lon: null },
+    "IBATEGUARA": { fator: 119.33, lat: null, lon: null }, "IGACI": { fator: 124.22, lat: null, lon: null },
+    "IGREJA NOVA": { fator: 121.93, lat: null, lon: null }, "INHAPI": { fator: 127.95, lat: null, lon: null },
+    "JACARE DOS HOMENS": { fator: 124.13, lat: null, lon: null }, "JACUIPE": { fator: 120.08, lat: null, lon: null },
+    "JAPARATINGA": { fator: 127.79, lat: null, lon: null }, "JARAMATAIA": { fator: 122.02, lat: null, lon: null },
+    "JEQUIA DA PRAIA": { fator: 126.33, lat: null, lon: null }, "JOAQUIM GOMES": { fator: 115.4, lat: null, lon: null },
+    "JUNDIA": { fator: 119.2, lat: null, lon: null }, "JUNQUEIRO": { fator: 121.28, lat: null, lon: null },
+    "LAGOA DA CANOA": { fator: 123.11, lat: null, lon: null }, "LIMOEIRO DE ANADIA": { fator: 122.51, lat: null, lon: null, dist: 110 },
+    "MACEIO": { fator: 127.9, lat: -9.665, lon: -35.735, dist: 0 }, "MAJOR ISIDORO": { fator: 124.15, lat: null, lon: null },
+    "MAR VERMELHO": { fator: 121.21, lat: null, lon: null }, "MARAGOGI": { fator: 123.94, lat: null, lon: null, dist: 125 },
+    "MARAVILHA": { fator: 127.07, lat: null, lon: null }, "MARECHAL DEODORO": { fator: 126.24, lat: -9.701, lon: -35.849, dist: 28 },
+    "MARIBONDO": { fator: 121.19, lat: null, lon: null }, "MATA GRANDE": { fator: 130.08, lat: null, lon: null },
+    "MATRIZ DE CAMARAGIBE": { fator: 120.91, lat: null, lon: null }, "MESSIAS": { fator: 120.86, lat: null, lon: null },
+    "MINADOR DO NEGRAO": { fator: 125.17, lat: null, lon: null }, "MONTEIROPOLIS": { fator: 124.13, lat: null, lon: null },
+    "MURICI": { fator: 120.15, lat: null, lon: null }, "NOVO LINO": { fator: 117.69, lat: null, lon: null },
+    "OLHO D'AGUA DAS FLORES": { fator: 125.4, lat: null, lon: null }, "OLHO D'AGUA DO CASADO": { fator: 127, lat: null, lon: null },
+    "OLHO D'AGUA GRANDE": { fator: 123.23, lat: null, lon: null }, "OLIVENCA": { fator: 124.68, lat: null, lon: null },
+    "OURO BRANCO": { fator: 127.07, lat: null, lon: null }, "PALESTINA": { fator: 123.69, lat: null, lon: null },
+    "PALMEIRA DOS INDIOS": { fator: 124.68, lat: null, lon: null }, "PAO DE ACUCAR": { fator: 126.14, lat: null, lon: null },
+    "PARICONHA": { fator: 127.93, lat: null, lon: null }, "PARIPUEIRA": { fator: 128.44, lat: null, lon: null },
+    "PASSO DE CAMARAGIBE": { fator: 122.37, lat: null, lon: null }, "PAULO JACINTO": { fator: 121.21, lat: null, lon: null },
+    "PENEDO": { fator: 123.62, lat: null, lon: null, dist: 160 }, "PIACABUCU": { fator: 126, lat: null, lon: null },
+    "PILAR": { fator: 122.9, lat: null, lon: null, dist: 35 }, "PINDOBA": { fator: 119.1, lat: null, lon: null },
+    "PIRANHAS": { fator: 126.65, lat: null, lon: null }, "POCO DAS TRINCHEIRAS": { fator: 126.33, lat: null, lon: null },
+    "PORTO CALVO": { fator: 121.03, lat: null, lon: null, dist: 100 }, "PORTO DE PEDRAS": { fator: 125.47, lat: null, lon: null },
+    "PORTO REAL DO COLEGIO": { fator: 125.84, lat: null, lon: null }, "QUEBRANGULO": { fator: 122.11, lat: null, lon: null },
+    "RIO LARGO": { fator: 121.42, lat: null, lon: null }, "ROTEIRO": { fator: 125.01, lat: null, lon: null },
+    "SANTA LUZIA DO NORTE": { fator: 124.13, lat: null, lon: null }, "SANTANA DO IPANEMA": { fator: 126.49, lat: null, lon: null },
+    "SANTANA DO MUNDAU": { fator: 118.8, lat: null, lon: null }, "SAO BRAS": { fator: 123.23, lat: null, lon: null },
+    "SAO JOSE DA LAJE": { fator: 117.64, lat: null, lon: null }, "SAO JOSE DA TAPERA": { fator: 125.17, lat: null, lon: null },
+    "SAO LUIS DO QUITUNDE": { fator: 123.43, lat: null, lon: null }, "SAO MIGUEL DOS CAMPOS": { fator: 122.02, lat: null, lon: null },
+    "SAO MIGUEL DOS MILAGRES": { fator: 129.57, lat: null, lon: null }, "SAO SEBASTIAO": { fator: 121.77, lat: null, lon: null },
+    "SATUBA": { fator: 124.13, lat: null, lon: null }, "SENADOR RUI PALMEIRA": { fator: 125.59, lat: null, lon: null },
+    "TANQUE D'ARCA": { fator: 122.39, lat: null, lon: null }, "TAQUARANA": { fator: 121.51, lat: null, lon: null },
+    "TEOTONIO VILELA": { fator: 121.12, lat: null, lon: null, dist: 100 }, "TRAIPU": { fator: 126.51, lat: null, lon: null },
+    "UNIAO DOS PALMARES": { fator: 119.75, lat: null, lon: null }, "VICOSA": { fator: 120.26, lat: null, lon: null }
+};
+
+// Gera lista de potências de painéis de 425W a 715W (passo de 5W)
+export const listaPaineis = Array.from({ length: (715 - 540) / 5 + 1 }, (_, i) => 540 + i * 5);
+
+export const MODELOS_FOCO = [540, 545, 550, 560, 565, 570, 575, 580, 585, 590, 595, 600, 605, 610, 615, 620, 625, 650, 660, 690, 695, 700, 710, 715];
+
+export const CATALOGO_INVERSORES_HUAWEI = [
+    { mod: "SUN2000-3KTL-L1", nom: 3000, mppt: 2, tipo: "monofásico" },
+    { mod: "SUN2000-4KTL-L1", nom: 4000, mppt: 2, tipo: "monofásico" },
+    { mod: "SUN2000-5KTL-L1", nom: 5000, mppt: 2, tipo: "monofásico" },
+    { mod: "SUN2000-6KTL-L1", nom: 6000, mppt: 2, tipo: "monofásico" },
+    { mod: "SUN2000-7.5K-LC0", nom: 7500, mppt: 3, tipo: "monofásico" },
+    { mod: "SUN2000-8K-LC0", nom: 8000, mppt: 3, tipo: "monofásico" },
+    { mod: "SUN2000-10K-LC0", nom: 10000, mppt: 3, tipo: "monofásico" },
+    { mod: "SUN2000-12K-MB0", nom: 12000, mppt: 2, tipo: "trifásico" },
+    { mod: "SUN2000-15KTL-M5", nom: 15000, mppt: 2, tipo: "trifásico" },
+    { mod: "SUN2000-17KTL-M5", nom: 17000, mppt: 2, tipo: "trifásico" },
+    { mod: "SUN2000-20KTL-M5", nom: 20000, mppt: 2, tipo: "trifásico" },
+    { mod: "SUN2000-25KTL-M5", nom: 25000, mppt: 2, tipo: "trifásico" },
+    { mod: "SUN2000-30KTL-M3", nom: 30000, mppt: 4, tipo: "trifásico" },
+    { mod: "SUN2000-36KTL-M3", nom: 36000, mppt: 4, tipo: "trifásico" },
+    { mod: "SUN2000-40KTL-M3", nom: 40000, mppt: 4, tipo: "trifásico" },
+    { mod: "SUN2000-50KTL-M3", nom: 50000, mppt: 4, tipo: "trifásico" },
+    { mod: "SUN2000-60KTL-M0", nom: 60000, mppt: 6, tipo: "trifásico" },
+    { mod: "SUN2000-75KTL-M1", nom: 75000, mppt: 10, tipo: "trifásico" },
+    { mod: "SUN2000-100KTL-M2", nom: 100000, mppt: 10, tipo: "trifásico" },
+    { mod: "SUN2000-150K-MG0", nom: 150000, mppt: 6, tipo: "trifásico" },
+    { mod: "SUN2000-185KTL-INH0", nom: 185000, mppt: 9, tipo: "trifásico" },
+    { mod: "SUN2000-215KTL-H0", nom: 200000, mppt: 9, tipo: "trifásico" },
+    { mod: "SUN2000-250KTL-H1", nom: 250000, mppt: 6, tipo: "trifásico" },
+    { mod: "SUN2000-330KTL-H1", nom: 300000, mppt: 6, tipo: "trifásico" }
+];
+
+/**
+ * Converte o fator de geração histórico (com perdas) para HSP Bruto (sem perdas).
+ * @param {number} fatorMensalHistorico - Ex: 126.24 para Marechal Deodoro.
+ * @returns {number} O HSP diário bruto (sem perdas).
+ */
+export function obterHSPBruto(fatorMensalHistorico) {
+    const rendimentoPadrao = 0.7643; // 100% - 23.57% de perdas padrão
+    return fatorMensalHistorico / (DIAS_MES_PRECISO * rendimentoPadrao);
+}
+
+/**
+ * Calcula a Potência de Pico (kWp) necessária para atender um consumo.
+ * @param {number} consumo - Consumo mensal em kWh.
+ * @param {number} hspEfetivo - HSP diário já com as perdas aplicadas.
+ * @returns {number} A potência de pico em kWp.
+ */
+export function calcularPpk(consumo, hspEfetivo) {
+    if (hspEfetivo <= 0) return 0;
+    // Ppk = Consumo / (HSP_Efetivo * Dias)
+    return consumo / (hspEfetivo * DIAS_MES_PRECISO);
+}
+
+/**
+ * Motor de Cálculo de Alta Precisão - Jean Marcel
+ * @param {object} parametros - Objeto com { azimute, inclinacao, perdasExtras: { eficienciaInversor, perdaTempInversor, cabos, outros } }.
+ * @returns {object} O Performance Ratio (PR) final e detalhes.
+ */
+export function calcularRendimentoCientifico(parametros) {
+    // 1. PERDAS INTERNAS (Características Elétricas)
+    const pEficienciaInv = (parametros.perdasExtras?.eficienciaInversor || 98.0) / 100;
+    const pTempInv = (parametros.perdasExtras?.perdaTempInversor || 1.5) / 100;
+    const pTempModulos = (parametros.perdasExtras?.perdaTempModulos || 10.13) / 100;
+    const pCabos = (parametros.perdasExtras?.cabos || 2.0) / 100;
+    const pOutros = (parametros.perdasExtras?.outros || 2.0) / 100; // Sombreamento/Sujidade
+    const pIndisp = (parametros.perdasExtras?.indisponibilidade || 0.5) / 100;
+
+    // Cálculo Multiplicativo (A perda de um recai sobre o que restou do outro)
+    // CORREÇÃO: Todas as perdas são multiplicativas para refletir a cadeia de eficiência.
+    let prBruto = pEficienciaInv * (1 - pTempInv) * (1 - pTempModulos) * (1 - pCabos) * (1 - pOutros) * (1 - pIndisp);
+
+    // 2. PERDAS ANGULARES (SUBTRATIVO) - Conforme especificação de engenharia
+    const taxaPerdaAzi = 0.05; // 0.05 pontos percentuais por grau
+    const taxaPerdaInc = 0.08; // 0.08 pontos percentuais por grau
+    const latitudeLocal = parametros.latitude || 9.7; // Latitude de Marechal Deodoro como fallback
+    
+    const desvioAzimute = Math.abs(parseFloat(parametros.azimute)) || 0;
+    const desvioInclinacao = Math.abs((parseFloat(parametros.inclinacao) || 10) - latitudeLocal);
+
+    // Calcula a perda total em pontos percentuais
+    const perdaTotalAngular = (desvioAzimute * taxaPerdaAzi) + (desvioInclinacao * taxaPerdaInc);
+
+    // Converte o PR dos insumos para percentual e subtrai as perdas angulares
+    const prBrutoPercentual = prBruto * 100;
+    let prGeograficoPercentual = prBrutoPercentual - perdaTotalAngular;
+
+    // Converte de volta para decimal para o resto do sistema
+    let prGeografico = prGeograficoPercentual / 100;
+
+    // 3. TRAVA DE SEGURANÇA (O Ajuste de Engenharia)
+    // APLICAÇÃO DA REGRA DE OURO: O PR Efetivo é o menor valor entre o PR calculado e o teto de 80%.
+    const limitadorSeguranca = 0.80;
+    const prFinal = Math.min(prGeografico, limitadorSeguranca);
+    const valorAjuste = prFinal - prGeografico; // Será 0 ou um valor negativo (a perda do ajuste)
+
+    return {
+        prBruto: prBruto,
+        prGeografico: prGeografico,
+        valorAjuste: valorAjuste,
+        prFinal: prFinal,
+        // Mantém nomes antigos para compatibilidade com dimensionarSistema
+        rendimentoFinal: prFinal,
+        // Strings formatadas para UI
+        brutoStr: (prBruto * 100).toFixed(2),
+        geograficoStr: (prGeografico * 100).toFixed(2),
+        ajusteStr: (valorAjuste * 100).toFixed(2),
+        finalStr: (prFinal * 100).toFixed(2)
+    };
+}
+
+/**
+ * Dimensiona o sistema considerando apenas modelos viáveis comercialmente.
+ * @param {Array} modelosPermitidos (Opcional) Lista de potências permitidas. Se null, usa lista geral.
+ */
+export function dimensionarSistema(consumoMensal, hspBruto, paramsTecnicos, modelosPermitidos = null) {
+    // Usa a lista de foco se fornecida, senão usa a geral
+    const listaWatts = modelosPermitidos || listaPaineis;
+
+    const resultados = [];    
+    // O rendimento final (PR) agora é pré-calculado no controller e passado via paramsTecnicos.
+    const rendimentoFinal = paramsTecnicos.rendimentoFinal;
+    const geracaoPorKwp = hspBruto * DIAS_MES_PRECISO * rendimentoFinal;
+    
+    // Evita divisão por zero
+    const kwpNecessario = consumoMensal > 0 ? consumoMensal / geracaoPorKwp : 0;
+
+    listaWatts.forEach(watts => {
+        const wattsKw = watts / 1000;
+        const qtdModulos = kwpNecessario > 0 ? Math.ceil(kwpNecessario / wattsKw) : 0;
+        const potenciaRealSistema = qtdModulos * wattsKw;
+        const sobra = potenciaRealSistema - kwpNecessario;
+        const geracaoRealMensal = potenciaRealSistema * geracaoPorKwp;
+
+        resultados.push({
+            modelo: watts + "W",
+            watts: watts,
+            quantidade: qtdModulos,
+            sobra: sobra,
+            potenciaTotal: potenciaRealSistema,
+            geracaoReal: geracaoRealMensal,
+            atendimento: consumoMensal > 0 ? (geracaoRealMensal / consumoMensal) * 100 : 0
+        });
+    });
+
+    // Lógica de Seleção Otimizada (Ranking de Engenharia):
+    // 1. Ordena pela menor sobra (desvio positivo) para máxima precisão de dimensionamento.
+    // 2. Como critério de desempate, prefere a menor quantidade de módulos (geralmente implica em módulos mais potentes, otimizando estrutura e M.O.).
+    const sugestoesOrdenadas = [...resultados].sort((a, b) => {
+        if (a.sobra !== b.sobra) {
+            return a.sobra - b.sobra;
+        }
+        return a.quantidade - b.quantidade;
+    });
+    
+    const melhorOpcaoTecnica = sugestoesOrdenadas.length > 0 ? sugestoesOrdenadas[0] : null;
+
+    return {
+        melhorSugestao: melhorOpcaoTecnica,
+        // Retorna a lista já ordenada corretamente para o controller
+        todosModelos: sugestoesOrdenadas,
+        prCalculado: rendimentoFinal,
+        kwpNecessario: kwpNecessario
+    };
+}
+
+// ======================================================================
+// ENGENHARIA: DADOS CLIMÁTICOS E GEOGRÁFICOS
+// ======================================================================
+
+// Busca coordenadas (Lat/Lon) da cidade para consultar a NASA
+// Usa a API pública do OpenStreetMap (Nominatim)
+export async function buscarCoordenadas(cidade, uf) {
+    try {
+        const query = `${cidade}, ${uf}, Brazil`;
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            return { lat: data[0].lat, lon: data[0].lon };
+        }
+        return null;
+    } catch (error) {
+        console.error("Erro ao buscar coordenadas:", error);
+        return null;
+    }
+}
+
+// Busca dados de irradiação solar (HSP) da NASA POWER API
+// Endpoint Climatology fornece médias históricas (ideal para dimensionamento)
+export async function buscarHSPNasa(lat, lon) {
+    try {
+        const url = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=ALLSKY_SFC_SW_DWN&community=RE&longitude=${lon}&latitude=${lat}&format=JSON`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // Retorna a média anual (ANN) do parâmetro ALLSKY_SFC_SW_DWN
+        return data.properties.parameter.ALLSKY_SFC_SW_DWN.ANN;
+    } catch (error) {
+        console.error("Erro ao buscar dados da NASA:", error);
+        return 5.0; // Fallback seguro (Média Brasil) caso a API falhe
+    }
+}
+
+// ======================================================================
+// ENGENHARIA: MOTOR DE CUSTOS PARAMETRIZADOS
+// ======================================================================
+
+/**
+ * Calcula o custo base de materiais elétricos com base na quantidade de módulos.
+ * Lógica de faixas de volume (SWITCH/CASE).
+ * @param {number} quantidadeModulos - O número total de módulos no projeto.
+ * @param {Array} tabelaPersonalizada - (Opcional) Array de objetos {limite, custo}.
+ * @returns {number} O custo estimado dos materiais.
+ */
+export function calcularCustoMateriaisBasicos(quantidadeModulos, tabelaPersonalizada = null) {
+    if (quantidadeModulos <= 0) return 0;
+
+    // Se houver tabela personalizada, usa ela
+    if (tabelaPersonalizada && Array.isArray(tabelaPersonalizada) && tabelaPersonalizada.length > 0) {
+        // Encontra a faixa onde a quantidade se encaixa (assumindo ordenação por limite)
+        const faixa = tabelaPersonalizada.find(f => quantidadeModulos <= f.limite);
+        if (faixa) return faixa.custo;
+        // Se for maior que o último limite, usa o último valor da tabela
+        return tabelaPersonalizada[tabelaPersonalizada.length - 1].custo;
+    }
+
+    if (quantidadeModulos <= 20) return 1100;
+    if (quantidadeModulos <= 25) return 1550;
+    if (quantidadeModulos <= 30) return 2000;
+    if (quantidadeModulos <= 40) return 2450;
+    if (quantidadeModulos <= 50) return 2750;
+    if (quantidadeModulos <= 70) return 3200;
+    if (quantidadeModulos <= 90) return 3650;
+    if (quantidadeModulos <= 110) return 4100;
+    if (quantidadeModulos <= 130) return 4550;
+    if (quantidadeModulos <= 150) return 5000;
+    if (quantidadeModulos <= 170) return 5450;
+    if (quantidadeModulos <= 190) return 5900;
+    if (quantidadeModulos <= 210) return 6350;
+    if (quantidadeModulos <= 230) return 6800;
+    if (quantidadeModulos <= 250) return 7250;
+    if (quantidadeModulos <= 270) return 7700;
+    return quantidadeModulos * 33; // Custo variável para grandes usinas
+}
+
+/**
+ * Calcula o custo base de mão de obra com base no custo unitário regressivo.
+ * @param {number} qtdModulos - O número total de módulos no projeto.
+ * @param {Array} tabelaPersonalizada - (Opcional) Array de objetos {limite, unitario}.
+ * @returns {number} O custo base da mão de obra.
+ */
+export function calcularMaoObraBase(qtdModulos, tabelaPersonalizada = null) {
+    if (qtdModulos <= 0) return 0;
+
+    if (tabelaPersonalizada && Array.isArray(tabelaPersonalizada) && tabelaPersonalizada.length > 0) {
+        const faixa = tabelaPersonalizada.find(f => qtdModulos <= f.limite);
+        const valorUnitario = faixa ? faixa.unitario : tabelaPersonalizada[tabelaPersonalizada.length - 1].unitario;
+        return qtdModulos * valorUnitario;
+    }
+
+    let valorPorModulo = 80; // Padrão para > 90
+
+    const faixas = [
+        { limite: 10, valor: 150 }, { limite: 11, valor: 140 }, { limite: 12, valor: 130 },
+        { limite: 13, valor: 120 }, { limite: 14, valor: 115 }, { limite: 18, valor: 110 },
+        { limite: 22, valor: 107 }, { limite: 26, valor: 104 }, { limite: 30, valor: 100 },
+        { limite: 50, valor: 95 },  { limite: 70, valor: 90 },  { limite: 90, valor: 85 }
+    ];
+
+    const faixaEncontrada = faixas.find(f => qtdModulos <= f.limite);
+    if (faixaEncontrada) {
+        valorPorModulo = faixaEncontrada.valor;
+    }
+
+    return qtdModulos * valorPorModulo;
+}
+
+/**
+ * Calcula a capacidade de expansão do inversor (Oversizing e Geração Futura).
+ * @param {number} potenciaTotalCC - Potência total dos módulos selecionados (kWp).
+ * @param {number} wattsModulo - Potência unitária do módulo (W).
+ * @param {number} potenciaInvAC - Potência nominal do inversor (kW).
+ * @param {number} qtdInv - Quantidade de inversores.
+ * @param {number} oversizingLimite - Limite de oversizing (ex: 1.3 para 30%).
+ * @param {number} hsp - HSP do local.
+ * @param {number} pr - Performance Ratio (Rendimento final).
+ */
+export function calcularExpansaoInversor(potenciaTotalCC, wattsModulo, potenciaInvAC, qtdInv, oversizingLimite, hsp, pr) {
+    const potenciaTotalAC = potenciaInvAC * qtdInv;
+    
+    if (potenciaTotalAC <= 0) return null;
+
+    const oversizingAtual = (potenciaTotalCC / potenciaTotalAC); // Ratio (ex: 1.2)
+    const potenciaMaxCC = potenciaTotalAC * oversizingLimite;
+    
+    // O quanto ainda cabe (em kWp)
+    const potenciaDisponivel = Math.max(0, potenciaMaxCC - potenciaTotalCC);
+    
+    // Quantos módulos inteiros cabem nessa sobra
+    const qtdModulosExtras = Math.floor((potenciaDisponivel * 1000) / wattsModulo);
+    
+    // Geração estimada desses módulos extras
+    const geracaoExtra = (qtdModulosExtras * wattsModulo * hsp * 30.4166 * pr) / 1000;
+
+    return {
+        oversizingAtualPercentual: oversizingAtual * 100,
+        potenciaMaxCC,
+        potenciaDisponivel,
+        qtdModulosExtras,
+        geracaoExtra
+    };
+}
+
+/**
+ * Calcula o custo de logística e deslocamento.
+ * @param {number} distanciaIda - Distância em KM da base até o cliente.
+ * @param {number} qtdModulos - Quantidade de módulos.
+ * @param {number} qtdInversores - Quantidade de inversores.
+ * @param {object} premissas - Objeto com { precoCombustivel, consumoVeiculo, modulosPorDia, tempoExtraInversor, kmAlmoco, kmSuprimentos }.
+ */
+export function calcularCustoLogistica(distanciaIda, qtdModulos, qtdInversores, premissas) {
+    // 1. Premissas Globais (com fallbacks)
+    const precoCombustivel = premissas?.precoCombustivel || 6.10;
+    const kmPorLitro = premissas?.consumoVeiculo || 8.5; // Carro popular carregado
+    const modulosPorDia = premissas?.modulosPorDia || 12; // Produtividade padrão
+    const tempoExtraInversor = premissas?.tempoExtraInversor || 0.5; // Dias a mais por inversor extra
+    const kmSuprimentosMaceio = premissas?.kmSuprimentos || 15; // Média fixa para compra de materiais na cidade da empresa
+    const kmAlmocoDiario = premissas?.kmAlmoco || 5;
+    const diasMinimos = premissas?.diasMinimosObra || 2; // Piso de segurança parametrizado
+
+    // 2. Estimativa de Dias de Obra (Diárias)
+    // Fórmula: Teto(Módulos / Produtividade) + ((Qtd Inversores - 1) * Acréscimo Tempo)
+    const diasBaseModulos = Math.ceil(qtdModulos / modulosPorDia);
+    const diasExtrasInversores = qtdInversores > 1 ? (qtdInversores - 1) * tempoExtraInversor : 0;
+    let diasDeObra = diasBaseModulos + diasExtrasInversores;
+
+    // REGRA DE SEGURANÇA: Mínimo parametrizado para viabilidade de mobilização
+    const diasCalculados = diasDeObra;
+    diasDeObra = Math.max(diasMinimos, diasDeObra);
+    const isMinimo = diasDeObra > diasCalculados;
+
+    // 3. Cálculo de Quilometragem Total
+    // Suprimentos (1x por obra) + [ (Ida + Volta + Almoço) * Dias ]
+    const kmTotal = kmSuprimentosMaceio + (((distanciaIda * 2) + kmAlmocoDiario) * diasDeObra);
+
+    // 4. Cálculo Financeiro
+    const custoCombustivelTotal = (kmTotal / kmPorLitro) * precoCombustivel;
+
+    return {
+        kmTotal: kmTotal,
+        diasObra: diasDeObra,
+        isMinimo: isMinimo,
+        custoFinanceiro: custoCombustivelTotal,
+        detalhes: `Suprimentos (${kmSuprimentosMaceio}km) + Viagens (${diasDeObra}d x ${(distanciaIda * 2 + kmAlmocoDiario).toFixed(0)}km)`
+    };
 }

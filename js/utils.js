@@ -159,3 +159,39 @@ export function criarBlocoLinhaTecnica(texto) {
     
     return section;
 }
+
+/**
+ * Higieniza inputs para aceitar apenas números e vírgula/ponto.
+ * Converte automaticamente para ponto para o JS.
+ * @param {string} valor O valor do input.
+ * @returns {string} O valor limpo e normalizado.
+ */
+export function higienizarParaCalculo(valor) {
+    if (typeof valor !== 'string') return '';
+    // Remove tudo que não for número, ponto ou vírgula
+    let cleanValue = valor.replace(/[^\d.,]/g, '');
+    
+    // Converte vírgula em ponto
+    cleanValue = cleanValue.replace(',', '.');
+    
+    // Garante apenas um ponto decimal
+    const partes = cleanValue.split('.');
+    if (partes.length > 2) {
+        cleanValue = partes[0] + '.' + partes.slice(1).join('');
+    }
+    
+    return cleanValue;
+}
+
+/**
+ * Escapa strings para uso seguro em innerHTML.
+ * @param {string} str String não confiável.
+ * @returns {string} String escapada.
+ */
+export function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[tag]));
+}

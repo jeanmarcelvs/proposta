@@ -5,15 +5,8 @@ import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, 
 function atualizarImagemEquipamentos(proposta) {
     return new Promise((resolve, reject) => {
         let imagemEquipamentos;
-        const isVE = proposta.tipoVisualizacao === 've';
-
-        // 1. Acessa o elemento HTML
-        if (isVE) {
-            // Para propostas VE, o elemento pode não existir, então não tratamos como erro.
-            imagemEquipamentos = document.getElementById('imagem-marca-ve');
-        } else {
-            imagemEquipamentos = document.getElementById('imagem-marca-equipamento');
-        }
+        
+        imagemEquipamentos = document.getElementById('imagem-marca-equipamento');
 
         if (!imagemEquipamentos) {
             return resolve(); // Resolve a promise se o elemento não existe, para não travar a aplicação.
@@ -128,8 +121,6 @@ function preencherChecklistInstalacao(proposta) {
 // --- FUNÇÃO CENTRAL DE PREENCHIMENTO ATUALIZADA ---
 function preencherDadosProposta(dados) {
     try {
-        const isVE = dados.tipoVisualizacao === 've';
-        
         // 1. Dados do Cliente
         const nomeClienteEl = document.getElementById('nome-cliente');
         const nomeCompleto = dados.cliente || "Não informado";
@@ -151,7 +142,7 @@ function preencherDadosProposta(dados) {
         const dataPropostaEl = document.getElementById('data-proposta');
         if (dataPropostaEl) dataPropostaEl.innerText = dados.dataProposta || "Não informado";
         
-        // 2. Sistema Proposto (Lógica adaptada para VE e Solar)
+        // 2. Sistema Proposto (Lógica Solar)
         const geracaoMediaEl = document.getElementById('geracao-media');
         const unidadeGeracaoEl = document.getElementById('unidade-geracao');
         const instalacaoPaineisEl = document.getElementById('instalacao-paineis');
@@ -165,87 +156,62 @@ function preencherDadosProposta(dados) {
         const expansaoIdealValorEl = document.getElementById('expansao-ideal-valor');
         const expansaoModulosValorEl = document.getElementById('expansao-modulos-valor');
 
-        if (isVE) {
-            if (tituloSistemaEl) tituloSistemaEl.innerText = 'Carregador Proposto';
-            if (geracaoMediaEl) geracaoMediaEl.innerText = dados.sistema?.geracaoMedia || 'N/A';
-            if (unidadeGeracaoEl) unidadeGeracaoEl.innerText = dados.sistema?.unidadeGeracao || '';
-            if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || 'Não informado';
-            if (iconeInstalacaoEl) iconeInstalacaoEl.className = 'fas fa-charging-station';
-            if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'Não informado';
-            // Oculta a seção de expansão para propostas de VE
-            if (secaoExpansao) secaoExpansao.classList.add('oculto');
-        } else { // Lógica para o sistema Solar
-            if (tituloSistemaEl) tituloSistemaEl.innerText = 'Sistema Proposto';
-            if (geracaoMediaEl) {
-                const geracaoMedia = dados.sistema?.geracaoMedia;
-                const geracaoMediaSplit = typeof geracaoMedia === 'string' ? geracaoMedia.split(' ') : ['N/A', ''];
-                geracaoMediaEl.innerText = geracaoMediaSplit[0];
-                if (unidadeGeracaoEl) unidadeGeracaoEl.innerText = geracaoMediaSplit.slice(1).join(' ');
+        if (tituloSistemaEl) tituloSistemaEl.innerText = 'Sistema Proposto';
+        if (geracaoMediaEl) {
+            const geracaoMedia = dados.sistema?.geracaoMedia;
+            const geracaoMediaSplit = typeof geracaoMedia === 'string' ? geracaoMedia.split(' ') : ['N/A', ''];
+            geracaoMediaEl.innerText = geracaoMediaSplit[0];
+            if (unidadeGeracaoEl) unidadeGeracaoEl.innerText = geracaoMediaSplit.slice(1).join(' ');
+        }
+        if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || 'Não informado';
+        if (iconeInstalacaoEl) {
+            const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
+            if (tipoInstalacao.toLowerCase().includes('telhado')) {
+                iconeInstalacaoEl.className = 'fas fa-house-chimney';
+            } else if (tipoInstalacao.toLowerCase().includes('solo')) {
+                iconeInstalacaoEl.className = 'fas fa-solar-panel';
+            } else {
+                iconeInstalacaoEl.className = 'fas fa-question-circle';
             }
-            if (instalacaoPaineisEl) instalacaoPaineisEl.innerText = dados.sistema?.instalacaoPaineis || 'Não informado';
-            if (iconeInstalacaoEl) {
-                const tipoInstalacao = dados.sistema?.instalacaoPaineis || "Não informado";
-                if (tipoInstalacao.toLowerCase().includes('telhado')) {
-                    iconeInstalacaoEl.className = 'fas fa-house-chimney';
-                } else if (tipoInstalacao.toLowerCase().includes('solo')) {
-                    iconeInstalacaoEl.className = 'fas fa-solar-panel';
-                } else {
-                    iconeInstalacaoEl.className = 'fas fa-question-circle';
-                }
-            }
-            if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'R$ 0,00';
+        }
+        if (idealParaEl) idealParaEl.innerText = dados.sistema?.idealPara || 'R$ 0,00';
 
-            // --- Lógica para a NOVA seção de Expansão ---
-            // Helper para extrair valores do array 'variables' que vem do JSON.
-            // NOTA: O objeto 'dados' recebido aqui deve conter o array 'variables' para que esta seção funcione.
-            // Se não funcionar, o problema está no arquivo 'model.js' que não está repassando esse array.
-            const getValorExpansao = (chave) => {
-                // Acessa o array 'variables' que contém os campos personalizados.
-                if (!dados.variables || !Array.isArray(dados.variables)) {
-                    return undefined;
-                }
-
-                // Encontra o objeto correspondente à chave.
-                const item = dados.variables.find(v => v && v.key === chave);
-
-                // Retorna o valor do objeto encontrado (prioriza formattedValue).
-                if (item) {
-                    const valor = item.formattedValue || item.value;
-                    return valor;
-                }
+        // --- Lógica para a NOVA seção de Expansão ---
+        const getValorExpansao = (chave) => {
+            if (!dados.variables || !Array.isArray(dados.variables)) {
                 return undefined;
-            };
+            }
+            const item = dados.variables.find(v => v && v.key === chave);
+            if (item) {
+                const valor = item.formattedValue || item.value;
+                return valor;
+            }
+            return undefined;
+        };
 
-            const valExpansao = getValorExpansao('vc_vc_exp_max_em_mod_no_sistema_temp');
-            const modulosParaExpandirRaw = String(valExpansao || '0');
-            const modulosParaExpandirNum = parseInt(modulosParaExpandirRaw.replace(/\D/g, ''), 10) || 0;
+        const valExpansao = getValorExpansao('vc_vc_exp_max_em_mod_no_sistema_temp');
+        const modulosParaExpandirRaw = String(valExpansao || '0');
+        const modulosParaExpandirNum = parseInt(modulosParaExpandirRaw.replace(/\D/g, ''), 10) || 0;
 
-            if (secaoExpansao) {
-                // Mostra ou oculta a seção inteira se houver ou não capacidade de expansão
-                const temExpansao = modulosParaExpandirNum > 0;
-                secaoExpansao.classList.toggle('oculto', !temExpansao);
-                
-                if (!temExpansao) {
-                    console.log(`[Expansão] Projeto sem capacidade de expansão (${modulosParaExpandirNum} módulos). Seção ocultada.`);
+        if (secaoExpansao) {
+            const temExpansao = modulosParaExpandirNum > 0;
+            secaoExpansao.classList.toggle('oculto', !temExpansao);
+            
+            if (temExpansao) {
+                if (expansaoCapacidadeValorEl) {
+                    expansaoCapacidadeValorEl.innerText = getValorExpansao('vc_ger_max_com_exp') || 'N/A';
                 }
-
-                if (temExpansao) {
-                    if (expansaoCapacidadeValorEl) {
-                        expansaoCapacidadeValorEl.innerText = getValorExpansao('vc_ger_max_com_exp') || 'N/A';
-                    }
-                    if (expansaoIdealValorEl) {
-                        // Remove a parte "Contas de até" para não ser redundante com o label
-                        const idealParaRaw = getValorExpansao('vc_valor_aprox_cons_expans') || 'N/A';
-                        expansaoIdealValorEl.innerText = String(idealParaRaw).replace(/Contas de até/i, '').trim();
-                    }
-                    if (expansaoModulosValorEl) {
-                        expansaoModulosValorEl.innerText = valExpansao || 'N/A';
-                    }
+                if (expansaoIdealValorEl) {
+                    const idealParaRaw = getValorExpansao('vc_valor_aprox_cons_expans') || 'N/A';
+                    expansaoIdealValorEl.innerText = String(idealParaRaw).replace(/Contas de até/i, '').trim();
+                }
+                if (expansaoModulosValorEl) {
+                    expansaoModulosValorEl.innerText = valExpansao || 'N/A';
                 }
             }
         }
 
-        // 3. Equipamentos (Lógica adaptada para VE e Solar)
+        // 3. Equipamentos (Lógica Solar)
         const tituloEquipamentosEl = document.getElementById('titulo-equipamentos');
         const descricaoInversorEl = document.getElementById('descricao-inversor');
         const quantidadeInversorEl = document.getElementById('quantidade-inversor');
@@ -254,198 +220,185 @@ function preencherDadosProposta(dados) {
         const painelBox = document.getElementById('painel-box');
         const inversorBox = document.getElementById('inversor-box');
 
-        if (isVE) {
-            if (tituloEquipamentosEl) tituloEquipamentosEl.innerText = 'Equipamentos';
-            if (painelBox) painelBox.classList.add('oculto');
-            if (inversorBox) inversorBox.classList.remove('oculto');
-            if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
-            if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
-        } else {
-            if (tituloEquipamentosEl) tituloEquipamentosEl.innerText = 'Equipamentos do Sistema';
-            if (painelBox) painelBox.classList.remove('oculto');
-            if (inversorBox) inversorBox.classList.remove('oculto');
-            if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
-            if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
-            if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
-            if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
-        }
+        if (tituloEquipamentosEl) tituloEquipamentosEl.innerText = 'Equipamentos do Sistema';
+        if (painelBox) painelBox.classList.remove('oculto');
+        if (inversorBox) inversorBox.classList.remove('oculto');
+        if (descricaoInversorEl) descricaoInversorEl.innerText = dados.equipamentos?.descricaoInversor || "Não informado";
+        if (quantidadeInversorEl) quantidadeInversorEl.innerText = `${dados.equipamentos?.quantidadeInversor || 0}`;
+        if (descricaoPainelEl) descricaoPainelEl.innerText = dados.equipamentos?.descricaoPainel || "Não informado";
+        if (quantidadePainelEl) quantidadePainelEl.innerText = `${dados.equipamentos?.quantidadePainel || 0}`;
 
-        // 4. Valores Finais e Financiamento (Lógica adaptada para VE e Solar)
+        // 4. Valores Finais e Financiamento (Lógica Solar)
         const valorTotalEl = document.getElementById('valor-total');
         const paybackContainer = document.getElementById('payback-container');
         const financiamentoContainer = document.getElementById('financiamento-container');
         const inputEntrada = document.getElementById('valor-entrada-input');
 
-        if (isVE) {
-            if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
-            if (paybackContainer) paybackContainer.classList.add('oculto');
-            if (financiamentoContainer) financiamentoContainer.classList.add('oculto');
+        if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
+        const paybackValorEl = document.getElementById('payback-valor');
+        if (paybackValorEl) {
+            paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
         } else {
-            if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
-            const paybackValorEl = document.getElementById('payback-valor');
-            if (paybackValorEl) {
-                paybackValorEl.innerText = dados.valores?.payback || 'Não informado';
+            console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
+        }
+        if (paybackContainer) paybackContainer.classList.remove('oculto');
+        if (financiamentoContainer) financiamentoContainer.classList.remove('oculto');
+        
+        // Preenche os cards principais (12, 36, 60, 84)
+        const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
+        opcoesParcelas.forEach(n => {
+            const parcelaKey = `parcela-${n}`;
+            const elementoParcela = document.getElementById(parcelaKey);
+            if (elementoParcela) {
+                elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
             } else {
-                console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
             }
-            if (paybackContainer) paybackContainer.classList.remove('oculto');
-            if (financiamentoContainer) financiamentoContainer.classList.remove('oculto');
-            
-            // Preenche os cards principais (12, 36, 60, 84)
-            const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
+            const elementoTaxa = document.getElementById(`taxa-${n}`);
+            if (elementoTaxa) {
+                elementoTaxa.innerText = '';
+            }
+        });
+
+        // NOVO: Preenche a lista completa de financiamento (Componente Inteligente)
+        const listaFinanciamento = document.getElementById('lista-financiamento-completa');
+        if (listaFinanciamento && dados.valores?.parcelas) {
+            listaFinanciamento.innerHTML = '';
             opcoesParcelas.forEach(n => {
-                const parcelaKey = `parcela-${n}`;
-                const elementoParcela = document.getElementById(parcelaKey);
-                if (elementoParcela) {
-                    elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
-                } else {
-                }
-                const elementoTaxa = document.getElementById(`taxa-${n}`);
-                if (elementoTaxa) {
-                    elementoTaxa.innerText = '';
-                }
+                const valor = dados.valores.parcelas[`parcela-${n}`] || 'N/A';
+                const taxa = dados.valores.taxasPorParcela ? dados.valores.taxasPorParcela[`taxaNominal-${n}`] : '';
+                // Cria o item da lista compacta
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${n}x</span> <strong>R$ ${valor}</strong>`;
+                listaFinanciamento.appendChild(li);
             });
+        }
 
-            // NOVO: Preenche a lista completa de financiamento (Componente Inteligente)
-            const listaFinanciamento = document.getElementById('lista-financiamento-completa');
-            if (listaFinanciamento && dados.valores?.parcelas) {
-                listaFinanciamento.innerHTML = '';
-                opcoesParcelas.forEach(n => {
-                    const valor = dados.valores.parcelas[`parcela-${n}`] || 'N/A';
-                    const taxa = dados.valores.taxasPorParcela ? dados.valores.taxasPorParcela[`taxaNominal-${n}`] : '';
-                    // Cria o item da lista compacta
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span>${n}x</span> <strong>R$ ${valor}</strong>`;
-                    listaFinanciamento.appendChild(li);
-                });
+        // NOVO: Preenche as parcelas do cartão de crédito
+        const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+        opcoesCartao.forEach(i => {
+            const el = document.getElementById(`parcela-cc-${i}`);
+            if (el) {
+                const key = `parcela-${i}`;
+                el.innerText = dados.valores?.parcelasCartao?.[key] || 'N/A';
             }
+        });
 
-            // NOVO: Preenche as parcelas do cartão de crédito
-            const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+        // NOVO: Preenche a lista completa de cartão (Componente Inteligente)
+        const listaCartao = document.getElementById('lista-cartao-completa');
+        if (listaCartao && dados.valores?.parcelasCartao) {
+            listaCartao.innerHTML = '';
             opcoesCartao.forEach(i => {
-                const el = document.getElementById(`parcela-cc-${i}`);
-                if (el) {
-                    const key = `parcela-${i}`;
-                    el.innerText = dados.valores?.parcelasCartao?.[key] || 'N/A';
-                }
+                const key = `parcela-${i}`;
+                const valor = dados.valores.parcelasCartao[key] || 'N/A';
+                const label = i === 'debito' ? 'Débito' : `${i}x`;
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${label}</span> <strong>R$ ${valor}</strong>`;
+                listaCartao.appendChild(li);
             });
+        }
 
-            // NOVO: Preenche a lista completa de cartão (Componente Inteligente)
-            const listaCartao = document.getElementById('lista-cartao-completa');
-            if (listaCartao && dados.valores?.parcelasCartao) {
-                listaCartao.innerHTML = '';
-                opcoesCartao.forEach(i => {
-                    const key = `parcela-${i}`;
-                    const valor = dados.valores.parcelasCartao[key] || 'N/A';
-                    const label = i === 'debito' ? 'Débito' : `${i}x`;
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span>${label}</span> <strong>R$ ${valor}</strong>`;
-                    listaCartao.appendChild(li);
-                });
+        // ============================================================
+        // 🧠 LÓGICA DE SIMULAÇÃO DE ENTRADA (Financiamento + Cartão)
+        // ============================================================
+        if (inputEntrada && dados.valores?.valorTotalNum) {
+            // 1. Clona o input para remover listeners antigos (evita duplicação ao trocar proposta)
+            const novoInput = inputEntrada.cloneNode(true);
+            inputEntrada.parentNode.replaceChild(novoInput, inputEntrada);
+            
+            // 2. Zera o valor e reseta o feedback visual
+            novoInput.value = "";
+            const feedbackEl = document.getElementById('feedback-entrada');
+            if (feedbackEl) {
+                feedbackEl.innerText = "";
+                feedbackEl.className = "feedback-entrada";
             }
 
-            // ============================================================
-            // 🧠 LÓGICA DE SIMULAÇÃO DE ENTRADA (Financiamento + Cartão)
-            // ============================================================
-            if (inputEntrada && dados.valores?.valorTotalNum) {
-                // 1. Clona o input para remover listeners antigos (evita duplicação ao trocar proposta)
-                const novoInput = inputEntrada.cloneNode(true);
-                inputEntrada.parentNode.replaceChild(novoInput, inputEntrada);
+            const valorTotalProjeto = dados.valores.valorTotalNum;
+            const selic = dados.valores.selicAtual || 11.25; // Fallback seguro
+
+            // Formata o input como moeda enquanto digita
+            novoInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, "");
+                value = (parseInt(value) / 100).toFixed(2) + "";
+                if (value === "NaN") value = "0.00";
+                e.target.value = value.replace(".", ","); // Apenas visual simples
                 
-                // 2. Zera o valor e reseta o feedback visual
-                novoInput.value = "";
-                const feedbackEl = document.getElementById('feedback-entrada');
-                if (feedbackEl) {
-                    feedbackEl.innerText = "";
-                    feedbackEl.className = "feedback-entrada";
+                // Debounce simples para recálculo
+                clearTimeout(window.delayCalculo);
+                window.delayCalculo = setTimeout(() => {
+                    recalcularSimulacoes(parseFloat(value));
+                }, 500);
+            });
+
+            function recalcularSimulacoes(valorEntrada) {
+                // Regras de Negócio
+                const metadeValor = valorTotalProjeto / 2;
+
+                // Limpa estados anteriores
+                feedbackEl.innerText = "";
+                feedbackEl.className = "feedback-entrada";
+
+                if (valorEntrada === 0) {
+                    // Se entrada for 0, restaura valores originais (Financiamento 100%)
+                    atualizarDOMParcelas(valorTotalProjeto);
+                    return;
                 }
 
-                const valorTotalProjeto = dados.valores.valorTotalNum;
-                const selic = dados.valores.selicAtual || 11.25; // Fallback seguro
+                if (valorEntrada >= valorTotalProjeto) {
+                    feedbackEl.innerText = "A entrada não pode ser igual ou maior que o valor total.";
+                    feedbackEl.classList.add('feedback-erro');
+                    return;
+                }
 
-                // Formata o input como moeda enquanto digita
-                novoInput.addEventListener('input', (e) => {
-                    let value = e.target.value.replace(/\D/g, "");
-                    value = (parseInt(value) / 100).toFixed(2) + "";
-                    if (value === "NaN") value = "0.00";
-                    e.target.value = value.replace(".", ","); // Apenas visual simples
-                    
-                    // Debounce simples para recálculo
-                    clearTimeout(window.delayCalculo);
-                    window.delayCalculo = setTimeout(() => {
-                        recalcularSimulacoes(parseFloat(value));
-                    }, 500);
+                if (valorEntrada < metadeValor) {
+                    feedbackEl.innerText = `Entrada mínima permitida: 50% (R$ ${metadeValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})})`;
+                    feedbackEl.classList.add('feedback-erro');
+                    // Opcional: Não atualiza os valores se a regra for violada, ou atualiza mostrando erro.
+                    // Decisão: Não atualizar para não mostrar simulação inválida.
+                    return;
+                }
+
+                // Se passou nas validações, calcula o saldo a financiar/parcelar
+                const saldoDevedor = valorTotalProjeto - valorEntrada;
+                feedbackEl.innerText = `Simulando saldo restante de: R$ ${saldoDevedor.toLocaleString('pt-BR', {minimumFractionDigits: 2})})`;
+                feedbackEl.classList.add('feedback-info');
+
+                atualizarDOMParcelas(saldoDevedor);
+            }
+
+            function atualizarDOMParcelas(valorBase) {
+                // 1. Recalcula Financiamento Bancário
+                const { parcelas: novasParcelasFinan } = calcularFinanciamento(valorBase, selic);
+                const opcoesFinan = [12, 24, 36, 48, 60, 72, 84];
+                opcoesFinan.forEach(n => {
+                    const el = document.getElementById(`parcela-${n}`);
+                    if (el) el.innerText = novasParcelasFinan[`parcela-${n}`] || '---';
                 });
 
-                function recalcularSimulacoes(valorEntrada) {
-                    // Regras de Negócio
-                    const metadeValor = valorTotalProjeto / 2;
+                // 2. Recalcula Cartão de Crédito
+                const { parcelas: novasParcelasCartao } = calcularParcelasCartao(valorBase, selic);
+                const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+                opcoesCartao.forEach(i => {
+                    const el = document.getElementById(`parcela-cc-${i}`);
+                    if (el) el.innerText = novasParcelasCartao[`parcela-${i}`] || '---';
+                });
 
-                    // Limpa estados anteriores
-                    feedbackEl.innerText = "";
-                    feedbackEl.className = "feedback-entrada";
-
-                    if (valorEntrada === 0) {
-                        // Se entrada for 0, restaura valores originais (Financiamento 100%)
-                        atualizarDOMParcelas(valorTotalProjeto);
-                        return;
-                    }
-
-                    if (valorEntrada >= valorTotalProjeto) {
-                        feedbackEl.innerText = "A entrada não pode ser igual ou maior que o valor total.";
-                        feedbackEl.classList.add('feedback-erro');
-                        return;
-                    }
-
-                    if (valorEntrada < metadeValor) {
-                        feedbackEl.innerText = `Entrada mínima permitida: 50% (R$ ${metadeValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})})`;
-                        feedbackEl.classList.add('feedback-erro');
-                        // Opcional: Não atualiza os valores se a regra for violada, ou atualiza mostrando erro.
-                        // Decisão: Não atualizar para não mostrar simulação inválida.
-                        return;
-                    }
-
-                    // Se passou nas validações, calcula o saldo a financiar/parcelar
-                    const saldoDevedor = valorTotalProjeto - valorEntrada;
-                    feedbackEl.innerText = `Simulando saldo restante de: R$ ${saldoDevedor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                    feedbackEl.classList.add('feedback-info');
-
-                    atualizarDOMParcelas(saldoDevedor);
+                // 3. Atualiza as Listas Completas (Componentes Inteligentes)
+                if (listaFinanciamento) {
+                    Array.from(listaFinanciamento.children).forEach((li, idx) => {
+                        const n = opcoesFinan[idx];
+                        li.querySelector('strong').innerText = `R$ ${novasParcelasFinan[`parcela-${n}`]}`;
+                    });
                 }
-
-                function atualizarDOMParcelas(valorBase) {
-                    // 1. Recalcula Financiamento Bancário
-                    const { parcelas: novasParcelasFinan } = calcularFinanciamento(valorBase, selic);
-                    const opcoesFinan = [12, 24, 36, 48, 60, 72, 84];
-                    opcoesFinan.forEach(n => {
-                        const el = document.getElementById(`parcela-${n}`);
-                        if (el) el.innerText = novasParcelasFinan[`parcela-${n}`] || '---';
+                if (listaCartao) {
+                    Array.from(listaCartao.children).forEach((li, idx) => {
+                        const i = opcoesCartao[idx];
+                        li.querySelector('strong').innerText = `R$ ${novasParcelasCartao[`parcela-${i}`]}`;
                     });
-
-                    // 2. Recalcula Cartão de Crédito
-                    const { parcelas: novasParcelasCartao } = calcularParcelasCartao(valorBase, selic);
-                    const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-                    opcoesCartao.forEach(i => {
-                        const el = document.getElementById(`parcela-cc-${i}`);
-                        if (el) el.innerText = novasParcelasCartao[`parcela-${i}`] || '---';
-                    });
-
-                    // 3. Atualiza as Listas Completas (Componentes Inteligentes)
-                    if (listaFinanciamento) {
-                        Array.from(listaFinanciamento.children).forEach((li, idx) => {
-                            const n = opcoesFinan[idx];
-                            li.querySelector('strong').innerText = `R$ ${novasParcelasFinan[`parcela-${n}`]}`;
-                        });
-                    }
-                    if (listaCartao) {
-                        Array.from(listaCartao.children).forEach((li, idx) => {
-                            const i = opcoesCartao[idx];
-                            li.querySelector('strong').innerText = `R$ ${novasParcelasCartao[`parcela-${i}`]}`;
-                        });
-                    }
                 }
             }
         }
+        
 
         // NOVO: Preenchimento do Detalhamento de Pagamento (Equipamentos vs Serviços)
         const detalhamentoContainer = document.getElementById('detalhamento-pagamento-container');
@@ -771,22 +724,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         return showImage(0); // Retorna a Promise de showImage
     }
 
-    function mostrarModal() {
-        // CORREÇÃO: A função stopCarouselAutoPlay precisa ser definida antes de ser chamada aqui.
-        function stopCarouselAutoPlay() {
-            clearInterval(carouselInterval);
-        }
+    function stopCarouselAutoPlay() {
+        clearInterval(carouselInterval);
+    }
 
-        // NOVO: Funções para controlar o avanço automático do carrossel
-        function startCarouselAutoPlay() {
-            stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
-            const currentImageSet = imagePaths[currentProposalType];
-            if (currentImageSet && currentImageSet.length > 1) { // Só inicia se houver mais de uma imagem
-                carouselInterval = setInterval(() => {
-                    showImage(currentImageIndex + 1);
-                }, 3000); // Avança a cada 3 segundos
-            }
+    function startCarouselAutoPlay() {
+        stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
+        const currentImageSet = imagePaths[currentProposalType];
+        if (currentImageSet && currentImageSet.length > 1) {
+            carouselInterval = setInterval(() => {
+                showImage(currentImageIndex + 1);
+            }, 5000);
         }
+    }
+
+    function mostrarModal() {
         if (modalCarrossel) {
             modalCarrossel.classList.remove('oculto');
             stopCarouselAutoPlay(); // Pausa o carrossel automático ao abrir o modal
@@ -795,21 +747,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function esconderModal() {
-        // CORREÇÃO: A função startCarouselAutoPlay precisa ser definida antes de ser chamada aqui.
-        function stopCarouselAutoPlay() {
-            clearInterval(carouselInterval);
-        }
-
-        // NOVO: Funções para controlar o avanço automático do carrossel
-        function startCarouselAutoPlay() {
-            stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
-            const currentImageSet = imagePaths[currentProposalType];
-            if (currentImageSet && currentImageSet.length > 1) { // Só inicia se houver mais de uma imagem
-                carouselInterval = setInterval(() => {
-                    showImage(currentImageIndex + 1);
-                }, 3000); // Avança a cada 3 segundos
-            }
-        }
         if (modalCarrossel) {
             startCarouselAutoPlay(); // Retoma o carrossel automático ao fechar o modal
             modalCarrossel.classList.add('oculto');
@@ -848,21 +785,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // CORREÇÃO: Mover a declaração de 'propostas' para fora do try para ser acessível no 'finally'
     let propostas;
-
-    // CORREÇÃO: Mover a definição das funções do carrossel para o escopo principal do DOMContentLoaded
-    function stopCarouselAutoPlay() {
-        clearInterval(carouselInterval);
-    }
-
-    function startCarouselAutoPlay() {
-        stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
-        const currentImageSet = imagePaths[currentProposalType];
-        if (currentImageSet && currentImageSet.length > 1) {
-            carouselInterval = setInterval(() => {
-                showImage(currentImageIndex + 1);
-            }, 5000);
-        }
-    }
 
     if (numeroProjeto && primeiroNome) {
         try {

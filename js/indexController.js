@@ -77,10 +77,7 @@ async function executarConsulta(numeroProjeto, primeiroNome) {
             const propostaDisponivel = propostaData.dados.premium || propostaData.dados.acessivel;
             const tipoProposta = propostaDisponivel ? propostaDisponivel.tipoVisualizacao : null;
 
-            if (tipoProposta === 've') { // tipoVisualizacao é 've' ou 'solar'
-                // Redireciona para a página de propostas de VE
-                window.location.href = `propostaVE.html?id=${numeroProjeto}&nome=${primeiroNome}`;
-            } else if (tipoProposta === 'solar') {
+            if (tipoProposta === 'solar') {
                 // Redireciona para a página de propostas Solar
                 window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
             } else if (tipoProposta === 'servico') {

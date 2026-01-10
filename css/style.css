@@ -3,40 +3,50 @@
 /* Importação da fonte e variáveis de cores globais */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap');
 
-/* --- Variáveis de Cores (Temas) --- */ 
+/* --- Variáveis de Cores (Temas) --- */
 /* Paleta de Cores BelEnergy (Preto e Amarelo Elétrico) */
 :root {
     /* --- DESIGN SYSTEM: ENGENHARIA PREMIUM (Refinado) --- */
-    
+
     /* Base (Cinzas Profundos e Técnicos) */
-    --bg-main: #0e1116;        /* Fundo principal (quase preto, tom azulado profundo) */
-    --bg-soft: #141820;        /* Seções intermediárias */
-    --bg-card: #1b1f27;        /* Cartões base */
-    
+    --bg-main: #0e1116;
+    /* Fundo principal (quase preto, tom azulado profundo) */
+    --bg-soft: #141820;
+    /* Seções intermediárias */
+    --bg-card: #1b1f27;
+    /* Cartões base */
+
     /* Texto e Hierarquia (Cinzas Técnicos) */
-    --text-primary: #e6e8eb;   /* Títulos e destaques */
-    --text-secondary: #b5bcc6; /* Textos explicativos (leitura confortável) */
-    --text-muted: #8a9099;     /* Microtextos / notas */
+    --text-primary: #e6e8eb;
+    /* Títulos e destaques */
+    --text-secondary: #b5bcc6;
+    /* Textos explicativos (leitura confortável) */
+    --text-muted: #8a9099;
+    /* Microtextos / notas */
 
     /* Destaques Sutis */
-    --accent-soft: #c9a24d;    /* Dourado técnico (menos saturado/elegante) */
-    --accent-line: #2a2f3a;    /* Divisórias discretas */
+    --accent-soft: #c9a24d;
+    /* Dourado técnico (menos saturado/elegante) */
+    --accent-line: #2a2f3a;
+    /* Divisórias discretas */
 
     /* Texturas e Acabamentos (Textura Silenciosa) */
     /* Gradiente sutil + Blur para profundidade */
-    --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    --card-border: 1px solid rgba(255,255,255,0.05);
+    --card-gradient: linear-gradient(145deg, rgba(30, 35, 45, 0.85), rgba(20, 25, 35, 0.95));
+    --card-border: 1px solid rgba(255, 255, 255, 0.05);
     --card-backdrop: blur(2px);
-    
+
     /* Linha Técnica (Degradê para transparente) */
-    --tech-line-gradient: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
-    
+    --tech-line-gradient: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+
     /* --- Mapeamento para Variáveis Legadas --- */
     --cor-fundo-principal: var(--bg-main);
     --cor-fundo-principal-rgb: 14, 17, 22;
     --cor-fundo-secao: var(--bg-soft);
-    --cor-fundo-logo-contraste: #222222; /* NOVO: Cor escura fixa para o fundo da logo no tema claro */
-    --cor-cartao-fundo: var(--bg-card); /* Fallback */
+    --cor-fundo-logo-contraste: #222222;
+    /* NOVO: Cor escura fixa para o fundo da logo no tema claro */
+    --cor-cartao-fundo: var(--bg-card);
+    /* Fallback */
     --cor-cartao-borda: var(--accent-line);
     --cor-header-fundo: rgba(20, 24, 32, 0.9);
     --cor-header-botoes-fundo: var(--bg-card);
@@ -56,25 +66,26 @@
 
 /* Paleta de Cores +Acessível (Tema Claro BelEnergy) */
 .theme-acessivel {
-    --cor-fundo-principal: #f3f5f8; /* Cinza gelo para o fundo geral */
-    --cor-fundo-principal-rgb: 243, 245, 248;
+    --cor-fundo-principal: #f8f9fa;
+    --cor-fundo-principal-rgb: 248, 249, 250;
     --cor-fundo-secao: #ffffff;
     --cor-cartao-fundo: #ffffff;
-    --cor-cartao-borda: #e0e6ec; /* Borda cinza clara para os cards */
+    --cor-cartao-borda: #e0e0e0;
     --cor-header-fundo: rgba(255, 255, 255, 0.9);
-    --cor-header-botoes-fundo: #e9eff5;
+    --cor-header-botoes-fundo: #f4f4f4;
     --cor-header-botoes-borda: rgba(0, 0, 0, 0.1);
-    --cor-primaria: #DAB900; /* Amarelo dessaturado para conforto visual */
-    --cor-primaria-rgb: 218, 185, 0;
-    --cor-primaria-clara: rgba(218, 185, 0, 0.3); /* Sombra amarela ajustada */
-    --cor-primaria-hover: #c2a500; /* Amarelo mais escuro para hover (ajustado) */
-    --cor-fundo-input: #FFFFFF; /* Fundo branco para inputs */
-    --cor-texto-principal: #1a1a1a; /* Preto para textos principais */
-    --cor-texto-secundario: #555555; /* Cinza escuro para textos secundários */
+    --cor-primaria: #FFD700;
+    --cor-primaria-rgb: 255, 215, 0;
+    --cor-primaria-clara: rgba(255, 215, 0, 0.2);
+    --cor-primaria-hover: #ffc800;
+    --cor-fundo-input: #f9f9f9;
+    --cor-texto-principal: #1a1a1a;
+    --cor-texto-secundario: #666666;
     --cor-sombra: rgba(0, 0, 0, 0.1);
     --cor-sombra-leve: rgba(0, 0, 0, 0.05);
-    --cor-animacao: rgba(255, 204, 0, 0.15); /* Animação amarela mais visível no fundo claro */
+    --cor-animacao: rgba(255, 215, 0, 0.15);
     --cor-grafite-suave: #ffffff;
+    --card-gradient: linear-gradient(145deg, #ffffff, #f8f9fa);
 }
 
 /* --- Estilos Globais e Padrões --- */
@@ -89,8 +100,9 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--cor-fundo-principal);
     /* Textura silenciosa (Micro-granulação técnica) */
-    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
-    background-size: 14px 14px; /* Ajustado para 14px conforme especificação técnica */
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    background-size: 24px 24px; /* Aumentado para mais respiro */
+    /* Ajustado para 14px conforme especificação técnica */
     background-attachment: fixed;
     color: var(--cor-texto-principal);
     transition: background-color 0.5s ease, color 0.5s ease;
@@ -139,7 +151,8 @@ main {
 /* NOVO: Transforma o contêiner da logo em um contêiner de posicionamento */
 .logo-container {
     position: relative;
-    display: inline-block; /* Ajusta o tamanho do contêiner ao da logo */
+    display: inline-block;
+    /* Ajusta o tamanho do contêiner ao da logo */
 }
 
 .logo,
@@ -148,7 +161,8 @@ main {
     height: auto;
     filter: drop-shadow(0 0 5px var(--cor-sombra-leve));
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative; /* Garante que a logo fique acima do fundo */
+    position: relative;
+    /* Garante que a logo fique acima do fundo */
     z-index: 2;
 }
 
@@ -156,15 +170,18 @@ main {
 .logo-header:hover {
     transform: scale(1.03);
 }
+
 /* SOLUÇÃO DEFINITIVA: Cria um fundo para a logo no tema claro usando um pseudo-elemento. */
 /* Isso não afeta o tamanho ou a cor da imagem original. */
 .theme-acessivel .logo-container::before {
     content: '';
     position: absolute;
-    inset: -0.8rem; /* Cria um espaçamento de 0.8rem ao redor da logo */
+    inset: -0.8rem;
+    /* Cria um espaçamento de 0.8rem ao redor da logo */
     background-color: var(--cor-fundo-logo-contraste);
     border-radius: 12px;
-    z-index: 1; /* Posiciona o fundo atrás da logo */
+    z-index: 1;
+    /* Posiciona o fundo atrás da logo */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -179,7 +196,8 @@ main {
 
 h1 {
     font-size: 2.5rem;
-    color: var(--cor-texto-principal); /* Usará a variável, que agora é preta por padrão */
+    color: var(--cor-texto-principal);
+    /* Usará a variável, que agora é preta por padrão */
     margin-bottom: 2rem;
     font-weight: 500;
     letter-spacing: -1.5px;
@@ -230,31 +248,37 @@ label {
     display: block;
     font-weight: 400;
     margin-bottom: 0.8rem;
-    color: var(--cor-texto-secundario); /* Usará a variável, que agora é cinza escuro */
+    color: var(--cor-texto-secundario);
+    /* Usará a variável, que agora é cinza escuro */
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 1.5px;
 }
 
-input[type="text"] {
+/* Scoped to form containers on public pages (index, central-belenergy) */
+.form-container input[type="text"],
+.form-container input[type="password"] {
     width: 100%;
     padding: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil em inputs */
-    border-radius: 12px; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Borda sutil em inputs */
+    border-radius: 12px;
     background-color: var(--cor-fundo-input);
-    color: #FFFFFF; /* Texto do input sempre branco para contrastar com o fundo escuro do input */
+    color: #FFFFFF;
+    /* Texto do input sempre branco para contrastar com o fundo escuro do input */
     font-size: 1.1rem;
     font-weight: 300;
     transition: border-color 0.4s ease, box-shadow 0.4s ease;
-    box-shadow: none; /* Remove sombra interna que não se aplica a fundos escuros */
+    box-shadow: none;
+    /* Remove sombra interna que não se aplica a fundos escuros */
 }
 
-input[type="text"]::placeholder {
+.form-container input::placeholder {
     color: #a0a0a0;
     opacity: 1;
 }
 
-input[type="text"]:focus {
+.form-container input:focus {
     outline: none;
     border-color: var(--cor-primaria);
     box-shadow: 0 0 0 4px var(--cor-primaria-clara);
@@ -267,9 +291,10 @@ input[type="text"]:focus {
     gap: 8px;
     padding: 1.2rem 3rem;
     border: none;
-    border-radius: 12px; 
+    border-radius: 12px;
     background: var(--cor-primaria);
-    color: #000000; /* Texto do botão em preto para contraste */
+    color: #000000;
+    /* Texto do botão em preto para contraste */
     font-size: 1.2rem;
     font-weight: 500;
     cursor: pointer;
@@ -397,7 +422,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 4rem;
+    padding: 1.2rem 5%; /* Padding responsivo mais elegante */
     background-color: var(--cor-header-fundo);
     backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--cor-cartao-borda);
@@ -427,7 +452,8 @@ header {
 
 .btn-proposta.selecionado {
     background: var(--cor-primaria);
-    color: #000000; /* Texto preto para contraste no botão amarelo */
+    color: #000000;
+    /* Texto preto para contraste no botão amarelo */
     box-shadow: 0 4px 15px var(--cor-primaria-clara);
     transform: scale(1.05);
 }
@@ -437,11 +463,13 @@ header {
 #secao-resumo {
     margin-top: 20px;
     margin-bottom: 40px;
-    padding: 3.5rem 4rem; 
+    padding: 3.5rem 4rem;
     box-shadow: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.05); /* Linha muito fina e discreta */
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    /* Linha muito fina e discreta */
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    background-color: var(--cor-fundo-secao); /* Fundo cinza escuro para seções */
+    background-color: var(--cor-fundo-secao);
+    /* Fundo cinza escuro para seções */
     backdrop-filter: blur(10px);
     transition: none;
 }
@@ -476,10 +504,14 @@ header {
 
 /* NOVO: Estilo para o destaque no título da seção (ex: Premium/Básico) */
 #tipo-instalacao-destaque {
-    color: var(--cor-primaria); /* Usa a cor de destaque do tema */
-    font-weight: 700; /* Deixa o texto um pouco mais forte */
-    opacity: 0.9; /* Leve transparência para suavizar */
-    margin-left: 0.5rem; /* Pequeno espaço */
+    color: var(--cor-primaria);
+    /* Usa a cor de destaque do tema */
+    font-weight: 700;
+    /* Deixa o texto um pouco mais forte */
+    opacity: 0.9;
+    /* Leve transparência para suavizar */
+    margin-left: 0.5rem;
+    /* Pequeno espaço */
 }
 
 #secao-cliente {
@@ -523,14 +555,14 @@ header {
     background: var(--card-gradient);
     border: var(--card-border);
     backdrop-filter: var(--card-backdrop);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .card-detalhe:hover {
     transform: translateY(-5px);
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03), 0 10px 30px var(--cor-sombra-leve);
-    border-color: rgba(255,255,255,0.1);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Ícones mantêm o amarelo para foco visual */
@@ -559,7 +591,8 @@ header {
 }
 
 .theme-acessivel .valor-card {
-    color: var(--cor-texto-principal); /* Preto no tema claro */
+    color: var(--cor-texto-principal);
+    /* Preto no tema claro */
 }
 
 .unidade-card {
@@ -630,7 +663,8 @@ header {
     min-width: 55px;
     height: 40px;
     background-color: var(--cor-primaria);
-    color: #000000; /* Texto preto para contraste */
+    color: #000000;
+    /* Texto preto para contraste */
     border-radius: 8px;
     margin-right: 1.5rem;
 }
@@ -654,7 +688,8 @@ header {
 }
 
 .theme-acessivel .descricao-equipamento {
-    color: var(--cor-texto-principal); /* Preto no tema claro */
+    color: var(--cor-texto-principal);
+    /* Preto no tema claro */
 }
 
 .conteudo-instalacao {
@@ -686,34 +721,6 @@ header {
     /* ALTERADO: Isso fará a imagem se ajustar mantendo a proporção */
     object-position: center;
     display: block;
-}
-
-/* NOVO: Estilos para o card da imagem de marca */
-#imagem-marca-ve {
-    max-width: 200px !important;
-    max-height: 200px !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-}
-
-.imagem-marca:hover {
-    transform: scale(1.02);
-    box-shadow: 0 15px 40px var(--cor-sombra);
-}
-
-/* Container para alinhar os cards de imagem */
-.cards-ve-container {
-    display: flex;
-    flex-wrap: wrap;
-    /* Permite que os cards quebrem a linha em telas menores */
-    justify-content: center;
-    /* Centraliza os cards */
-    gap: 3.5rem;
-    /* Adiciona o espaço lateral e vertical entre os cards */
-    margin-bottom: 2rem;
 }
 
 .detalhes-instalacao {
@@ -768,7 +775,8 @@ header {
 
 .icone-detalhe {
     font-size: 1.6rem;
-    color: var(--cor-primaria); /* Mantém a cor do ícone */
+    color: var(--cor-primaria);
+    /* Mantém a cor do ícone */
 }
 
 /* AJUSTE ESTRATÉGICO: No tema acessível, troca os ícones de detalhe para um alerta e cor neutra */
@@ -777,7 +785,8 @@ header {
 }
 
 .texto-detalhe {
-    font-size: 1rem; /* Levemente menor para caber melhor no card */
+    font-size: 1rem;
+    /* Levemente menor para caber melhor no card */
     font-weight: 400;
     color: var(--cor-texto-secundario);
     line-height: 1.5;
@@ -786,19 +795,26 @@ header {
 /* NOVO: Estilo para destacar partes do texto dentro dos cards de detalhes */
 .texto-destaque {
     /* Estilo "marcador de texto" para alto contraste, mantendo na mesma linha */
-    display: inline; /* Garante que o texto permaneça no fluxo normal */
-    padding: 0.2em 0.5em; /* Espaçamento sutil ao redor do texto */
-    margin: 0 0.1em; /* Pequeno espaço lateral para não colar nas outras palavras */
-    background-color: var(--cor-primaria); /* Fundo amarelo sólido */
-    color: #000000; /* Texto preto para máxima legibilidade */
-    border-radius: 5px; /* Bordas levemente arredondadas */
+    display: inline;
+    /* Garante que o texto permaneça no fluxo normal */
+    padding: 0.2em 0.5em;
+    /* Espaçamento sutil ao redor do texto */
+    margin: 0 0.1em;
+    /* Pequeno espaço lateral para não colar nas outras palavras */
+    background-color: var(--cor-primaria);
+    /* Fundo amarelo sólido */
+    color: #000000;
+    /* Texto preto para máxima legibilidade */
+    border-radius: 5px;
+    /* Bordas levemente arredondadas */
     font-weight: 500;
 }
 
 #resumo-instalacao-container {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Linha fina separadora */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    /* Linha fina separadora */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -889,11 +905,12 @@ header {
 .card-total {
     /* Remove a margem superior para colar no card anterior */
     margin-top: 0;
-    margin-bottom: 40px; 
+    margin-bottom: 40px;
     /* INVERSÃO: Estilo de destaque escuro agora é do tema Standard. Premium tem borda forte. */
     background: var(--card-gradient);
     border: 2px solid var(--cor-primaria);
-    color: var(--cor-primaria); /* Cor do texto principal (valor) em amarelo */
+    color: var(--cor-primaria);
+    /* Cor do texto principal (valor) em amarelo */
     flex: 1 1 100%;
     max-width: 100%;
     box-shadow: 0 10px 40px var(--cor-sombra);
@@ -902,14 +919,17 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    backdrop-filter: none; /* Remove o blur que não é mais necessário */
+    backdrop-filter: none;
+    /* Remove o blur que não é mais necessário */
 }
 
 .card-total .legenda-valores,
 .card-total .valor-total-proposta,
 .card-total .moeda {
-    color: var(--cor-primaria); /* Garante que todos os textos do valor sejam amarelos */
-    text-shadow: 0 0 10px rgba(var(--cor-primaria-rgb), 0.5); /* Leve brilho para o texto */
+    color: var(--cor-primaria);
+    /* Garante que todos os textos do valor sejam amarelos */
+    text-shadow: 0 0 10px rgba(var(--cor-primaria-rgb), 0.5);
+    /* Leve brilho para o texto */
 }
 
 .valor-total-proposta {
@@ -922,12 +942,16 @@ header {
 .etiqueta {
     position: absolute;
     top: 0;
-    right: -2px; /* Ajuste para alinhar com a nova borda */
-    background-color: var(--cor-primaria); /* Fundo amarelo */
-    color: #000000; /* Texto preto para contraste máximo */
+    right: -2px;
+    /* Ajuste para alinhar com a nova borda */
+    background-color: var(--cor-primaria);
+    /* Fundo amarelo */
+    color: #000000;
+    /* Texto preto para contraste máximo */
     padding: 8px 20px;
     border-bottom-left-radius: 12px;
-    border-top-right-radius: 10px; /* Ajuste no radius para a nova posição */
+    border-top-right-radius: 10px;
+    /* Ajuste no radius para a nova posição */
     font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -946,13 +970,15 @@ header {
 .legenda-investimento {
     font-size: 0.9rem;
     font-weight: 400;
-    color: var(--cor-texto-secundario); /* Cinza claro para a legenda */
+    color: var(--cor-texto-secundario);
+    /* Cinza claro para a legenda */
 }
 
 .valor-investimento {
     font-size: 1.6rem;
     font-weight: bold;
-    color: var(--cor-texto-principal); /* Branco para o valor do payback */
+    color: var(--cor-texto-principal);
+    /* Branco para o valor do payback */
 }
 
 /* ====================================================================== */
@@ -961,31 +987,38 @@ header {
 
 /* AJUSTE: Cards de valores com fundo claro e informações escuras no tema Standard */
 .theme-acessivel .card-valores {
-    background-color: var(--cor-cartao-fundo); /* Fundo branco */
-    border-color: var(--cor-cartao-borda); /* Borda cinza clara */
+    background-color: var(--cor-cartao-fundo);
+    /* Fundo branco */
+    border-color: var(--cor-cartao-borda);
+    /* Borda cinza clara */
     box-shadow: 0 4px 15px var(--cor-sombra-leve);
 }
 
 /* AJUSTE: Informações escuras para leitura clara */
 .theme-acessivel .card-valores .legenda-valores {
-    color: var(--cor-texto-secundario); /* Cinza escuro */
+    color: var(--cor-texto-secundario);
+    /* Cinza escuro */
 }
+
 .theme-acessivel .card-valores .valor-parcela-proposta,
 .theme-acessivel .card-valores .moeda {
-    color: var(--cor-texto-principal); /* Preto para máximo contraste */
+    color: var(--cor-texto-principal);
+    /* Preto para máximo contraste */
 }
 
 /* AJUSTE: Card total também segue o padrão claro */
 .theme-acessivel .card-total {
     background: var(--cor-cartao-fundo);
-    border: 2px solid var(--cor-primaria); /* Mantém borda amarela para destaque */
+    border: 2px solid var(--cor-primaria);
+    /* Mantém borda amarela para destaque */
     box-shadow: 0 10px 30px var(--cor-sombra-leve);
 }
 
 .theme-acessivel .card-total .legenda-valores,
 .theme-acessivel .card-total .valor-total-proposta,
 .theme-acessivel .card-total .moeda {
-    color: var(--cor-texto-principal); /* Preto */
+    color: var(--cor-texto-principal);
+    /* Preto */
     text-shadow: none;
 }
 
@@ -1000,7 +1033,8 @@ header {
 .secao-observacao-container {
     width: 100%;
     padding: 20px;
-    border-left: 3px solid var(--cor-primaria); /* Linha amarela mais fina e elegante */
+    border-left: 3px solid var(--cor-primaria);
+    /* Linha amarela mais fina e elegante */
     border-radius: 0;
     background-color: transparent;
     box-shadow: none;
@@ -1065,7 +1099,8 @@ header {
     width: 100%;
     text-align: center;
     padding: 5px;
-    box-shadow: none; /* Remove sombra padrão do input global */
+    box-shadow: none;
+    /* Remove sombra padrão do input global */
 }
 
 #valor-entrada-input:focus {
@@ -1147,7 +1182,8 @@ header {
 .timeline-pagamento::before {
     content: '';
     position: absolute;
-    left: 24px; /* Centraliza com o marcador */
+    left: 24px;
+    /* Centraliza com o marcador */
     top: 15px;
     bottom: 30px;
     width: 2px;
@@ -1237,16 +1273,20 @@ header {
     background: var(--cor-cartao-fundo);
     border-color: var(--cor-cartao-borda);
 }
+
 .theme-acessivel .card-resumo-item {
     background: #f9f9f9;
     border-color: #e0e0e0;
 }
+
 .theme-acessivel .divisor-detalhamento {
     background: #e0e0e0;
 }
+
 .theme-acessivel .timeline-pagamento::before {
     background: #e0e0e0;
 }
+
 .theme-acessivel .marcador-timeline {
     background: #fff;
 }
@@ -1312,7 +1352,7 @@ header {
     font-size: 0.85rem;
     color: var(--cor-texto-secundario);
     padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
 }
@@ -1341,6 +1381,7 @@ header {
     background: #f9f9f9;
     border-color: #e0e0e0;
 }
+
 .theme-acessivel .lista-parcelas-compacta li {
     border-bottom-color: #e0e0e0;
 }
@@ -1406,7 +1447,8 @@ header {
 }
 
 footer {
-    background-color: var(--cor-fundo-secao); /* Fundo cinza escuro para o rodapé */
+    background-color: var(--cor-fundo-secao);
+    /* Fundo cinza escuro para o rodapé */
     backdrop-filter: blur(10px);
     padding: 2.5rem;
     text-align: center;
@@ -1446,7 +1488,7 @@ footer {
     .secao-principal,
     .secao-info {
         margin-top: 20px;
-        margin-bottom: 40px; 
+        margin-bottom: 40px;
         padding: 3.5rem;
         background-color: var(--cor-fundo-secao);
         backdrop-filter: blur(10px);
@@ -1643,7 +1685,8 @@ body {
 
 /* --- Estilos Corrigidos para o Carrossel de Imagens --- */
 .imagem-instalacao-container {
-    position: relative; /* Essencial para posicionar os filhos (botões e spinner) */
+    position: relative;
+    /* Essencial para posicionar os filhos (botões e spinner) */
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
@@ -1662,68 +1705,93 @@ body {
     height: 100%;
     display: block;
     border-radius: 16px;
-    transition: opacity 0.4s ease-in-out; /* Transição suave para o spinner */
+    transition: opacity 0.4s ease-in-out;
+    /* Transição suave para o spinner */
     /* CORREÇÃO: Garante que a imagem caiba inteira sem distorcer */
     object-fit: contain;
 }
 
 .carousel-nav-btn {
-    position: absolute; /* Posiciona sobre o container pai */
+    position: absolute;
+    /* Posiciona sobre o container pai */
     top: 50%;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.4);
     color: white;
     border: none;
-    width: 45px;  /* Tamanho maior */
-    height: 45px; /* Tamanho maior */
+    width: 45px;
+    /* Tamanho maior */
+    height: 45px;
+    /* Tamanho maior */
     cursor: pointer;
-    font-size: 1.5em; /* Ícone maior */
+    font-size: 1.5em;
+    /* Ícone maior */
     border-radius: 50%;
-    z-index: 10; /* Garante que fique acima da imagem */
+    z-index: 10;
+    /* Garante que fique acima da imagem */
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s ease, opacity 0.4s ease;
-    opacity: 0.7; /* Aumenta a opacidade inicial para ser visível em todos os dispositivos */
+    opacity: 0.7;
+    /* Aumenta a opacidade inicial para ser visível em todos os dispositivos */
 }
 
 .imagem-instalacao-container:hover .carousel-nav-btn {
-    opacity: 1; /* Torna os botões totalmente visíveis ao passar o mouse */
+    opacity: 1;
+    /* Torna os botões totalmente visíveis ao passar o mouse */
 }
 
 .carousel-nav-btn:hover {
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-.prev-btn { left: 15px; }
-.next-btn { right: 15px; }
+.prev-btn {
+    left: 15px;
+}
+
+.next-btn {
+    right: 15px;
+}
 
 .image-loading-spinner {
-    position: absolute; /* Posiciona sobre o container pai */
+    position: absolute;
+    /* Posiciona sobre o container pai */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 3.5em; /* Spinner maior */
+    font-size: 3.5em;
+    /* Spinner maior */
     color: var(--cor-primaria);
-    z-index: 5; /* Fica entre a imagem e os botões */
+    z-index: 5;
+    /* Fica entre a imagem e os botões */
 }
 
 /* --- Estilos para o vídeo do Instagram --- */
 .conteudo-video {
-    display: flex; /* Mantém como flexbox */
-    flex-wrap: wrap; /* Permite que os vídeos quebrem a linha em telas menores */
-    justify-content: center; /* Centraliza os vídeos */
-    align-items: center; /* Alinha verticalmente */
-    gap: 2rem; /* Adiciona um espaço entre os vídeos */
+    display: flex;
+    /* Mantém como flexbox */
+    flex-wrap: wrap;
+    /* Permite que os vídeos quebrem a linha em telas menores */
+    justify-content: center;
+    /* Centraliza os vídeos */
+    align-items: center;
+    /* Alinha verticalmente */
+    gap: 2rem;
+    /* Adiciona um espaço entre os vídeos */
     padding: 20px 0;
 }
 
 .video-somente-container {
     /* Define o tamanho da "janela" que queremos mostrar */
-    width: 324px; /* AJUSTE: Reduzido em 2px para cortar as bordas laterais */
-    height: 398px; /* AJUSTE: Reduzido em 2px para cortar a borda inferior */
-    overflow: hidden; /* Corta o conteúdo que excede as dimensões */
-    margin: 0 auto; /* Centraliza o container */
+    width: 324px;
+    /* AJUSTE: Reduzido em 2px para cortar as bordas laterais */
+    height: 398px;
+    /* AJUSTE: Reduzido em 2px para cortar a borda inferior */
+    overflow: hidden;
+    /* Corta o conteúdo que excede as dimensões */
+    margin: 0 auto;
+    /* Centraliza o container */
     border-radius: 12px;
     box-shadow: 0 5px 20px var(--cor-sombra-leve);
 }
@@ -1745,24 +1813,28 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Fundo escuro transparente */
+    background-color: rgba(0, 0, 0, 0.9);
+    /* Fundo escuro transparente */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* Garante que fique acima de tudo */
+    z-index: 9999;
+    /* Garante que fique acima de tudo */
     opacity: 1;
     transition: opacity 0.3s ease;
 }
 
 .modal-overlay.oculto {
     opacity: 0;
-    pointer-events: none; /* Não permite clique quando oculto */
+    pointer-events: none;
+    /* Não permite clique quando oculto */
 }
 
 /* 2. Bloqueio de Scroll no Body */
 /* Essa classe é adicionada ao <body> quando o modal está aberto */
 body.modal-aberta {
-    overflow: hidden; /* Impede o scroll da página principal */
+    overflow: hidden;
+    /* Impede o scroll da página principal */
 }
 
 /* 3. Conteúdo do Modal (O Carrossel e a Imagem) */
@@ -1776,8 +1848,10 @@ body.modal-aberta {
 #imagem-modal {
     display: block;
     max-width: 100%;
-    max-height: 90vh; /* Ocupa até 90% da altura da viewport */
-    object-fit: contain; /* Garante que a imagem caiba sem cortar */
+    max-height: 90vh;
+    /* Ocupa até 90% da altura da viewport */
+    object-fit: contain;
+    /* Garante que a imagem caiba sem cortar */
 }
 
 /* 5. Botão Fechar */
@@ -1790,7 +1864,8 @@ body.modal-aberta {
     color: #fff;
     font-size: 40px;
     cursor: pointer;
-    z-index: 10000; /* Acima da imagem e navegação */
+    z-index: 10000;
+    /* Acima da imagem e navegação */
     opacity: 0.8;
     transition: opacity 0.2s;
 }
@@ -1827,11 +1902,13 @@ body.modal-aberta {
 }
 
 .nav-modal-btn.left {
-    left: -60px; /* Posição à esquerda da imagem */
+    left: -60px;
+    /* Posição à esquerda da imagem */
 }
 
 .nav-modal-btn.right {
-    right: -60px; /* Posição à direita da imagem */
+    right: -60px;
+    /* Posição à direita da imagem */
 }
 
 /* Responsividade: Ajuste a posição dos botões em telas menores */
@@ -1839,9 +1916,11 @@ body.modal-aberta {
     .nav-modal-btn.left {
         left: 5px;
     }
+
     .nav-modal-btn.right {
         right: 5px;
     }
+
     .fechar-modal-btn {
         top: 10px;
         right: 10px;
@@ -1856,8 +1935,10 @@ body.modal-aberta {
 .imagem-garantia-container {
     /* Usa a mesma largura dos vídeos para consistência */
     width: 324px;
-    max-width: 100%; /* Garante que não ultrapasse a tela em dispositivos menores */
-    margin: 0 auto; /* Centraliza o container */
+    max-width: 100%;
+    /* Garante que não ultrapasse a tela em dispositivos menores */
+    margin: 0 auto;
+    /* Centraliza o container */
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 5px 20px var(--cor-sombra-leve);
@@ -1865,8 +1946,10 @@ body.modal-aberta {
 
 .imagem-garantia {
     width: 100%;
-    height: auto; /* Mantém a proporção da imagem */
-    display: block; /* Remove espaços extras abaixo da imagem */
+    height: auto;
+    /* Mantém a proporção da imagem */
+    display: block;
+    /* Remove espaços extras abaixo da imagem */
 }
 
 /* --- Bloco de Decisão Final --- */
@@ -1899,11 +1982,13 @@ body.modal-aberta {
 /* --- ESTADO DE BLOQUEIO TOTAL (Engenharia de Software) --- */
 /* Garante que o conteúdo atrás não seja renderizado/acessível até o aceite */
 body.awaiting-acceptance {
-    overflow: hidden !important; /* Trava o scroll da página */
+    overflow: hidden !important;
+    /* Trava o scroll da página */
 }
 
 body.awaiting-acceptance main {
-    display: none !important; /* Remove o conteúdo do fluxo de renderização */
+    display: none !important;
+    /* Remove o conteúdo do fluxo de renderização */
 }
 
 /* MODAL FULL SCREEN */
@@ -1913,16 +1998,21 @@ body.awaiting-acceptance main {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10001; /* Garante prioridade máxima sobre qualquer overlay */
-    background-color: #0b0f14; /* Fundo Sólido e Opaco (Fallback) */
+    z-index: 10001;
+    /* Garante prioridade máxima sobre qualquer overlay */
+    background-color: #0b0f14;
+    /* Fundo Sólido e Opaco (Fallback) */
     background-image: radial-gradient(circle at top, rgba(255, 193, 7, 0.1), transparent 60%);
     color: #e6e6e6;
     font-family: 'Poppins', sans-serif;
     display: flex;
-    align-items: center; /* Centraliza verticalmente */
-    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center;
+    /* Centraliza verticalmente */
+    justify-content: center;
+    /* Centraliza horizontalmente */
     padding: 20px;
-    overflow-y: auto; /* Garante scroll em telas muito pequenas */
+    overflow-y: auto;
+    /* Garante scroll em telas muito pequenas */
 }
 
 /* Wrapper para centralizar e limitar largura em Desktop mantendo layout mobile */
@@ -1932,7 +2022,7 @@ body.awaiting-acceptance main {
     display: flex;
     flex-direction: column;
     /* Garante que se o conteúdo for maior que a tela, ele não fique cortado pelo align-items: center */
-    margin: auto; 
+    margin: auto;
 }
 
 .onboarding-badge {
@@ -2029,13 +2119,17 @@ body.awaiting-acceptance main {
 /* --- Estilos da Seção de Expansão --- */
 .secao-expansao-container {
     margin-top: 3.5rem;
-    padding: 2.5rem 2rem 2rem; /* Padding superior maior para acomodar o título */
-    background-color: rgba(var(--cor-fundo-principal-rgb), 0.3); /* Fundo sutil para separar visualmente */
+    padding: 2.5rem 2rem 2rem;
+    /* Padding superior maior para acomodar o título */
+    background-color: rgba(var(--cor-fundo-principal-rgb), 0.3);
+    /* Fundo sutil para separar visualmente */
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-left: 3px solid var(--cor-primaria); /* Destaque lateral mais fino */
+    border-left: 3px solid var(--cor-primaria);
+    /* Destaque lateral mais fino */
     border-radius: 8px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Grid responsivo */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* Grid responsivo */
     gap: 2rem;
     position: relative;
     transition: all 0.3s ease;
@@ -2047,7 +2141,8 @@ body.awaiting-acceptance main {
     position: absolute;
     top: -10px;
     left: 20px;
-    background-color: var(--cor-fundo-secao); /* Corta a borda visualmente */
+    background-color: var(--cor-fundo-secao);
+    /* Corta a borda visualmente */
     padding: 0 10px;
     font-size: 0.85rem;
     font-weight: 700;
@@ -2058,15 +2153,18 @@ body.awaiting-acceptance main {
 
 .item-expansao {
     display: flex;
-    flex-direction: row; /* Alinha ícone e texto lado a lado */
+    flex-direction: row;
+    /* Alinha ícone e texto lado a lado */
     align-items: center;
     gap: 1rem;
 }
 
 .icone-expansao {
     font-size: 1.8rem;
-    color: var(--cor-texto-secundario); /* Cor discreta para não competir com o valor */
-    opacity: 0.6; /* Suavidade para elegância */
+    color: var(--cor-texto-secundario);
+    /* Cor discreta para não competir com o valor */
+    opacity: 0.6;
+    /* Suavidade para elegância */
     min-width: 40px;
     text-align: center;
 }
@@ -2078,7 +2176,8 @@ body.awaiting-acceptance main {
 
 .label-expansao {
     color: var(--cor-texto-secundario);
-    font-size: 0.75rem; /* Rótulo menor e mais discreto */
+    font-size: 0.75rem;
+    /* Rótulo menor e mais discreto */
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -2088,7 +2187,8 @@ body.awaiting-acceptance main {
 
 .valor-expansao {
     color: var(--cor-primaria);
-    font-size: 1.4rem; /* Ajustado para equilibrar com o ícone */
+    font-size: 1.4rem;
+    /* Ajustado para equilibrar com o ícone */
     font-weight: 600;
     line-height: 1.2;
 }
@@ -2099,13 +2199,15 @@ body.awaiting-acceptance main {
 
 @media (max-width: 600px) {
     .secao-expansao-container {
-        grid-template-columns: 1fr; /* Coluna única no mobile */
+        grid-template-columns: 1fr;
+        /* Coluna única no mobile */
         gap: 1.5rem;
         padding: 2rem 1.5rem 1.5rem;
     }
-    
+
     .item-expansao {
-        border-bottom: 1px solid rgba(var(--cor-fundo-principal-rgb), 0.1); /* Separador sutil */
+        border-bottom: 1px solid rgba(var(--cor-fundo-principal-rgb), 0.1);
+        /* Separador sutil */
         padding-bottom: 1rem;
     }
 
@@ -2127,7 +2229,8 @@ body.awaiting-acceptance main {
 .tabela-servicos td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Linha fina separadora */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    /* Linha fina separadora */
 }
 
 .tabela-servicos th {
@@ -2140,7 +2243,8 @@ body.awaiting-acceptance main {
 }
 
 .tabela-servicos .col-descricao {
-    white-space: normal; /* NOVO: Permite que o texto longo quebre a linha */
+    white-space: normal;
+    /* NOVO: Permite que o texto longo quebre a linha */
 }
 
 .tabela-servicos .col-numerica {
@@ -2181,8 +2285,10 @@ body.awaiting-acceptance main {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: 2rem; /* Espaço acima do título */
-    margin-bottom: 1rem; /* Espaço entre o título e os cards */
+    margin-top: 2rem;
+    /* Espaço acima do título */
+    margin-bottom: 1rem;
+    /* Espaço entre o título e os cards */
     font-size: 1.2rem;
     font-weight: 500;
     color: var(--cor-texto-secundario);
@@ -2210,27 +2316,37 @@ body.awaiting-acceptance main {
     }
 
     .tabela-servicos thead {
-        display: none; /* Oculta o cabeçalho original */
+        display: none;
+        /* Oculta o cabeçalho original */
     }
 
     .tabela-servicos tr {
-        display: block; /* Mantém como bloco para layout vertical */
-        padding-bottom: 1rem; /* Espaçamento para o separador */
-        margin-bottom: 1rem; /* Espaçamento entre itens */
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Linha separadora principal */
+        display: block;
+        /* Mantém como bloco para layout vertical */
+        padding-bottom: 1rem;
+        /* Espaçamento para o separador */
+        margin-bottom: 1rem;
+        /* Espaçamento entre itens */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        /* Linha separadora principal */
     }
 
     .tabela-servicos td {
-        display: flex; /* Alinha o label e o valor na mesma linha */
-        justify-content: space-between; /* Label na esquerda, valor na direita */
+        display: flex;
+        /* Alinha o label e o valor na mesma linha */
+        justify-content: space-between;
+        /* Label na esquerda, valor na direita */
         align-items: center;
         padding: 0.75rem 0;
-        border-bottom: none; /* Remove bordas internas para um visual mais limpo */
-        text-align: right; /* Alinha o valor do dado à direita */
+        border-bottom: none;
+        /* Remove bordas internas para um visual mais limpo */
+        text-align: right;
+        /* Alinha o valor do dado à direita */
     }
 
     .tabela-servicos tr:last-child {
-        border-bottom: none; /* Remove a borda do último item da lista */
+        border-bottom: none;
+        /* Remove a borda do último item da lista */
         margin-bottom: 0;
         padding-bottom: 0;
     }
@@ -2241,12 +2357,14 @@ body.awaiting-acceptance main {
         text-align: left;
         padding-bottom: 1rem;
         margin-bottom: 1rem;
-        border-bottom: none; /* Remove bordas internas para um visual mais limpo */
+        border-bottom: none;
+        /* Remove bordas internas para um visual mais limpo */
         width: 100%;
     }
-    
+
     .tabela-servicos .col-descricao .descricao-item {
-        font-size: 1.1rem; /* Aumenta a fonte da descrição para melhor leitura */
+        font-size: 1.1rem;
+        /* Aumenta a fonte da descrição para melhor leitura */
     }
 
     /* Usa o atributo 'data-label' para criar os títulos de cada dado */
@@ -2261,12 +2379,15 @@ body.awaiting-acceptance main {
 
 /* NOVO: Estilo para o título da descrição geral do serviço */
 .titulo-descricao-geral {
-    font-size: 1rem; /* Reduzido para mais elegância */
+    font-size: 1rem;
+    /* Reduzido para mais elegância */
     font-weight: 400;
     color: var(--cor-texto-secundario);
-    text-align: justify; /* Alinhamento justificado */
+    text-align: justify;
+    /* Alinhamento justificado */
     margin-bottom: 1.5rem;
-    line-height: 1.6; /* Melhora a legibilidade do texto justificado */
+    line-height: 1.6;
+    /* Melhora a legibilidade do texto justificado */
 }
 
 /* Estilo para os Microtextos de Reforço Emocional */
@@ -2277,7 +2398,8 @@ body.awaiting-acceptance main {
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     font-size: 0.85rem;
     font-style: italic;
-    color: #e0e0e0; /* Cor clara mas sutil */
+    color: #e0e0e0;
+    /* Cor clara mas sutil */
     font-weight: 300;
     letter-spacing: 0.3px;
 }
@@ -2298,6 +2420,7 @@ body.awaiting-acceptance main {
         opacity: 0;
         transform: translateY(14px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2305,7 +2428,8 @@ body.awaiting-acceptance main {
 }
 
 .animate-fade {
-    opacity: 0; /* Começa invisível */
+    opacity: 0;
+    /* Começa invisível */
     animation: fadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
@@ -2315,15 +2439,18 @@ body.awaiting-acceptance main {
 .card-valores,
 .card-item-detalhe {
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    will-change: transform; /* Otimização de performance */
+    will-change: transform;
+    /* Otimização de performance */
 }
 
 .card-detalhe:hover,
 .card-valores:hover,
 .card-item-detalhe:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3); /* Sombra um pouco mais marcada no hover */
-    border-color: var(--cor-primaria); /* Sutil brilho na borda */
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3);
+    /* Sombra um pouco mais marcada no hover */
+    border-color: var(--cor-primaria);
+    /* Sutil brilho na borda */
 }
 
 /* ====================================================================== */
@@ -2343,7 +2470,8 @@ body.awaiting-acceptance main {
     align-items: center;
     text-align: center;
     padding: 2rem;
-    background-color: var(--cor-cartao-fundo); /* Dark no Premium, Branco no Standard */
+    background-color: var(--cor-cartao-fundo);
+    /* Dark no Premium, Branco no Standard */
     border: 1px solid var(--cor-cartao-borda);
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -2365,14 +2493,16 @@ body.awaiting-acceptance main {
 
 .card-icone i {
     font-size: 2.5rem;
-    color: var(--cor-primaria); /* Amarelo BelEnergy */
+    color: var(--cor-primaria);
+    /* Amarelo BelEnergy */
     margin-bottom: 1rem;
     transition: transform 0.3s ease;
 }
 
 .card-icone.horizontal i {
     margin-bottom: 0;
-    min-width: 50px; /* Garante alinhamento */
+    min-width: 50px;
+    /* Garante alinhamento */
     text-align: center;
 }
 
@@ -2396,7 +2526,7 @@ body.awaiting-acceptance main {
 
 /* Ajuste específico para o tema Standard (Acessível) */
 .theme-acessivel .card-icone {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* ====================================================================== */
@@ -2406,7 +2536,7 @@ body.awaiting-acceptance main {
 .bloco-prazo {
     text-align: center;
     /* O background já é definido pela classe .secao-principal, mas reforçamos o padding */
-    padding: 4rem 2rem; 
+    padding: 4rem 2rem;
 }
 
 .linha-tempo {
@@ -2422,22 +2552,43 @@ body.awaiting-acceptance main {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    opacity: 0; /* Para animação */
+    opacity: 0;
+    /* Para animação */
     transform: translateY(18px);
     transition: all 0.6s ease;
 }
 
 /* Cascata de animação manual para garantir a ordem */
-.bloco-animado.visible .etapa:nth-child(1) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
-.bloco-animado.visible .etapa:nth-child(2) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
-.bloco-animado.visible .etapa:nth-child(3) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
-.bloco-animado.visible .etapa:nth-child(4) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+.bloco-animado.visible .etapa:nth-child(1) {
+    transition-delay: 0.1s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.bloco-animado.visible .etapa:nth-child(2) {
+    transition-delay: 0.2s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.bloco-animado.visible .etapa:nth-child(3) {
+    transition-delay: 0.3s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.bloco-animado.visible .etapa:nth-child(4) {
+    transition-delay: 0.4s;
+    opacity: 1;
+    transform: translateY(0);
+}
 
 .etapa i {
     font-size: 2.2rem;
-    color: var(--cor-primaria); /* Amarelo BelEnergy */
+    color: var(--cor-primaria);
+    /* Amarelo BelEnergy */
     margin-bottom: 5px;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
 }
 
 .etapa .tempo {
@@ -2502,7 +2653,8 @@ body.awaiting-acceptance main {
     width: 120px;
     height: 1px;
     margin: 0 auto 40px;
-    background: var(--tech-line-gradient); /* Linha técnica elegante */
+    background: var(--tech-line-gradient);
+    /* Linha técnica elegante */
     opacity: 0.6;
 }
 
@@ -2519,7 +2671,8 @@ body.awaiting-acceptance main {
 }
 
 .selo-tecnico i {
-    color: var(--cor-primaria); /* Amarelo BelEnergy */
+    color: var(--cor-primaria);
+    /* Amarelo BelEnergy */
     font-size: 1.1rem;
 }
 
@@ -2581,7 +2734,8 @@ body.awaiting-acceptance main {
 /* QR Code */
 .qr-code {
     text-align: center;
-    position: relative; /* Necessário para o pulse */
+    position: relative;
+    /* Necessário para o pulse */
 }
 
 .qr-code img {
@@ -2589,7 +2743,8 @@ body.awaiting-acceptance main {
     height: 100px;
     opacity: 0.9;
     border-radius: 4px;
-    background-color: #fff; /* Fundo branco para garantir leitura do QR */
+    background-color: #fff;
+    /* Fundo branco para garantir leitura do QR */
     padding: 4px;
     position: relative;
     z-index: 2;
@@ -2623,10 +2778,13 @@ body.awaiting-acceptance main {
         transform: translate(-50%, -50%) scale(0.95);
         opacity: 0;
     }
+
     50% {
         transform: translate(-50%, -50%) scale(1.05);
-        opacity: 0.3; /* Brilho sutil */
+        opacity: 0.3;
+        /* Brilho sutil */
     }
+
     100% {
         transform: translate(-50%, -50%) scale(0.95);
         opacity: 0;
@@ -2656,7 +2814,8 @@ body.awaiting-acceptance main {
 .card-detalhe:hover .legenda-card,
 .card-valores:hover .legenda-valores,
 .card-item-detalhe:hover .texto-detalhe {
-    color: var(--cor-texto-principal); /* Traz o texto cinza para branco (ou preto no tema claro) */
+    color: var(--cor-texto-principal);
+    /* Traz o texto cinza para branco (ou preto no tema claro) */
 }
 
 /* 4. Destaque Emocional (Brilho Sutil) */
@@ -2670,13 +2829,25 @@ body.awaiting-acceptance main {
     position: absolute;
     inset: 0;
     background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.1), transparent 70%);
-    animation: brilho 6s infinite; /* 6s para ser bem calmo */
+    animation: brilho 6s infinite;
+    /* 6s para ser bem calmo */
 }
 
 @keyframes brilho {
-    0% { transform: translateX(-100%); }
-    20% { transform: translateX(100%); } /* Passa rápido */
-    100% { transform: translateX(100%); } /* Fica parado o resto do tempo */
+    0% {
+        transform: translateX(-100%);
+    }
+
+    20% {
+        transform: translateX(100%);
+    }
+
+    /* Passa rápido */
+    100% {
+        transform: translateX(100%);
+    }
+
+    /* Fica parado o resto do tempo */
 }
 
 /* ====================================================================== */
@@ -2702,10 +2873,21 @@ body.awaiting-acceptance main {
 }
 
 /* Animação progressiva */
-.story-step:nth-child(1) { animation-delay: 0.15s; }
-.story-step:nth-child(2) { animation-delay: 0.35s; }
-.story-step:nth-child(3) { animation-delay: 0.55s; }
-.story-step:nth-child(4) { animation-delay: 0.75s; }
+.story-step:nth-child(1) {
+    animation-delay: 0.15s;
+}
+
+.story-step:nth-child(2) {
+    animation-delay: 0.35s;
+}
+
+.story-step:nth-child(3) {
+    animation-delay: 0.55s;
+}
+
+.story-step:nth-child(4) {
+    animation-delay: 0.75s;
+}
 
 .story-step i {
     font-size: 1rem;
@@ -2740,7 +2922,8 @@ body.awaiting-acceptance main {
 
     /* Ajuste da Linha do Tempo no Mobile */
     .linha-tempo {
-        grid-template-columns: 1fr; /* Empilha as etapas */
+        grid-template-columns: 1fr;
+        /* Empilha as etapas */
         gap: 40px;
     }
 
@@ -2751,8 +2934,10 @@ body.awaiting-acceptance main {
         gap: 30px;
         text-align: left;
     }
+
     .qr-code {
-        align-self: center; /* Centraliza o QR code no mobile */
+        align-self: center;
+        /* Centraliza o QR code no mobile */
     }
 }
 
@@ -2768,7 +2953,7 @@ body.awaiting-acceptance main {
     border-radius: 12px;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .consciencia-texto-unico {
@@ -2803,12 +2988,13 @@ body.awaiting-acceptance main {
     width: 85%;
     max-width: 380px;
     padding: 24px;
-    border-left: 4px solid #ff6b6b; /* Vermelho elegante */
+    border-left: 4px solid #ff6b6b;
+    /* Vermelho elegante */
     background: var(--card-gradient);
     border: var(--card-border);
     backdrop-filter: var(--card-backdrop);
     border-radius: 12px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -2816,8 +3002,15 @@ body.awaiting-acceptance main {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .access-header {
@@ -2879,16 +3072,28 @@ body.awaiting-acceptance main {
 }
 
 /* 3. Delay Progressivo (Cascata Automática para listas) */
-.bloco-animado:nth-child(1) { transition-delay: 0.1s; }
-.bloco-animado:nth-child(2) { transition-delay: 0.2s; }
-.bloco-animado:nth-child(3) { transition-delay: 0.3s; }
-.bloco-animado:nth-child(4) { transition-delay: 0.4s; }
+.bloco-animado:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.bloco-animado:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.bloco-animado:nth-child(3) {
+    transition-delay: 0.3s;
+}
+
+.bloco-animado:nth-child(4) {
+    transition-delay: 0.4s;
+}
 
 /* --- Versão 1: Fade + Linha Lateral Animada (Técnica) --- */
 .bloco-linha {
     position: relative;
     padding: 24px 20px 24px 32px;
-    margin: 40px 0; /* Espaçamento vertical equilibrado */
+    margin: 40px 0;
+    /* Espaçamento vertical equilibrado */
     opacity: 0;
     transform: translateY(24px);
     transition: opacity 0.8s ease, transform 0.8s ease;
@@ -2904,15 +3109,15 @@ body.awaiting-acceptance main {
     position: absolute;
     left: 0;
     top: 0;
-    width: 3px; /* Levemente mais espessa para visibilidade mobile */
+    width: 3px;
+    /* Levemente mais espessa para visibilidade mobile */
     height: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(var(--cor-primaria-rgb), 0),
-        var(--cor-primaria),
-        rgba(var(--cor-primaria-rgb), 0)
-    );
-    transition: height 1.2s cubic-bezier(0.22, 1, 0.36, 1); /* Efeito de desenho suave */
+    background: linear-gradient(to bottom,
+            rgba(var(--cor-primaria-rgb), 0),
+            var(--cor-primaria),
+            rgba(var(--cor-primaria-rgb), 0));
+    transition: height 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    /* Efeito de desenho suave */
 }
 
 /* Animação da linha */
@@ -2941,9 +3146,10 @@ body.awaiting-acceptance main {
 .grain-bg {
     position: relative;
     /* Usa a cor de fundo do card para integração */
-    background-color: var(--bg-soft); 
+    background-color: var(--bg-soft);
     overflow: hidden;
-    border-radius: 12px; /* Suaviza cantos se usado isolado */
+    border-radius: 12px;
+    /* Suaviza cantos se usado isolado */
 }
 
 @media (max-width: 768px) {
@@ -2959,11 +3165,14 @@ body.awaiting-acceptance main {
 .micro-autoridade {
     padding: 22px 20px;
     max-width: 780px;
-    margin: 0 auto 20px; /* Margem inferior para separar do bloco seguinte */
-    color: #d6d6d6; /* Cinza claro suave */
+    margin: 0 auto 20px;
+    /* Margem inferior para separar do bloco seguinte */
+    color: #d6d6d6;
+    /* Cinza claro suave */
     font-size: 0.95rem;
     line-height: 1.5;
-    text-align: center; /* Centralizado para elegância institucional */
+    text-align: center;
+    /* Centralizado para elegância institucional */
 }
 
 .micro-autoridade .linha-principal {
@@ -2972,7 +3181,8 @@ body.awaiting-acceptance main {
 }
 
 .micro-autoridade .linha-secundaria {
-    color: #eeeeee; /* Branco suave para destaque */
+    color: #eeeeee;
+    /* Branco suave para destaque */
     font-weight: 500;
 }
 
@@ -2997,4 +3207,50 @@ body.awaiting-acceptance main {
     width: 100%;
     height: auto;
     display: block;
+}
+
+/* ====================================================================== */
+/* 🔧 CORREÇÕES DE CONTRASTE (TEMA STANDARD/ACESSÍVEL)                    */
+/* ====================================================================== */
+
+/* 
+   Sobrescreve a cor primária (Amarelo Elétrico) por um tom Amarelo Técnico/Cinzento (#947C20)
+   apenas quando o tema claro (acessível) estiver ativo. 
+   Isso garante legibilidade sobre o fundo branco.
+*/
+
+.theme-acessivel .valor-card,
+.theme-acessivel .moeda,
+.theme-acessivel .valor-total-proposta,
+.theme-acessivel .valor-parcela-proposta,
+.theme-acessivel .icone-card,
+.theme-acessivel .icone-card i,
+.theme-acessivel .icone-expansao,
+.theme-acessivel .titulo-secao,
+.theme-acessivel .valor-expansao,
+.theme-acessivel .marcador-timeline,
+.theme-acessivel .destaque-equipamento-timeline .marcador-timeline,
+.theme-acessivel .titulo-parcelamento i,
+.theme-acessivel .desc-timeline strong {
+    color: #947C20 !important; 
+}
+
+.theme-acessivel .marcador-timeline {
+    border-color: #947C20 !important;
+}
+
+.theme-acessivel .titulo-secao::after {
+    background-color: #947C20 !important;
+}
+
+.theme-acessivel .card-total {
+    border-color: #947C20 !important;
+    color: #947C20 !important;
+}
+
+.theme-acessivel .card-total .legenda-valores,
+.theme-acessivel .card-total .valor-total-proposta,
+.theme-acessivel .card-total .moeda {
+    color: #947C20 !important;
+    text-shadow: none;
 }

@@ -65,7 +65,7 @@ function showImage(index) {
 }
 
 function startCarouselAutoPlay() {
-    stopCarouselAutoPlay();
+    stopCarouselAutoPlay(); // Garante que apenas um intervalo esteja ativo
     const currentImageSet = imagePaths.premium;
     if (currentImageSet && currentImageSet.length > 1) {
         carouselInterval = setInterval(() => {
