@@ -88,13 +88,16 @@ export function organizarSecaoConfiabilidade() {
     if (videos.length > 0) {
         const divConfiabilidade = document.createElement('div');
         divConfiabilidade.className = 'secao-confiabilidade';
-        divConfiabilidade.style.marginBottom = '50px';
+        // Estilos movidos para CSS conforme documentação
         divConfiabilidade.innerHTML = `
-            <h2 class="titulo-secao" style="text-align: center; margin-bottom: 40px;">Confiabilidade</h2>
-            <div class="grid-videos" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
+            <h2 class="titulo-secao text-center mb-40">Confiabilidade</h2>
+            <div class="grid-videos flex-center-wrap gap-20"></div>
         `;
         const grid = divConfiabilidade.querySelector('.grid-videos');
-        videos.forEach(v => { v.style.maxWidth = '100%'; grid.appendChild(v); });
+        videos.forEach(v => { 
+            v.classList.add('w-full'); // Substitui style.maxWidth = '100%'
+            grid.appendChild(v); 
+        });
         container.appendChild(divConfiabilidade);
     }
 
@@ -102,11 +105,14 @@ export function organizarSecaoConfiabilidade() {
         const divGarantias = document.createElement('div');
         divGarantias.className = 'secao-garantias';
         divGarantias.innerHTML = `
-            <h2 class="titulo-secao" style="text-align: center; margin-bottom: 40px;">Garantias e Respaldo</h2>
-            <div class="grid-banners" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
+            <h2 class="titulo-secao text-center mb-40">Garantias e Respaldo</h2>
+            <div class="grid-banners flex-center-wrap gap-20"></div>
         `;
         const grid = divGarantias.querySelector('.grid-banners');
-        imagens.forEach(img => { img.style.maxWidth = '100%'; img.style.height = 'auto'; grid.appendChild(img); });
+        imagens.forEach(img => { 
+            img.classList.add('img-responsive'); // Substitui maxWidth/height inline
+            grid.appendChild(img); 
+        });
         container.appendChild(divGarantias);
     }
 }

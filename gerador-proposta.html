@@ -10,128 +10,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos para o Carrinho de Inversores e Tags */
-        .input-qtd-tabela {
-            width: 60px;
-            padding: 5px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            text-align: center;
-        }
-        .tag-inversor-selecionado {
-            display: inline-flex;
-            align-items: center;
-            background: #f1f5f9;
-            padding: 6px 12px;
-            border-radius: 20px;
-            margin: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #334155;
-            border: 1px solid #e2e8f0;
-        }
-        .tag-inversor-selecionado i { margin-left: 8px; color: #94a3b8; cursor: pointer; transition: color 0.2s; }
-        .tag-inversor-selecionado i:hover { color: #ef4444; }
-        .alerta-erro { color: #dc2626; font-weight: 600; margin-top: 10px; padding: 8px; background: #fef2f2; border-radius: 6px; border: 1px solid #fee2e2; }
-        .alerta-sucesso { color: #16a34a; font-weight: 600; margin-top: 10px; padding: 8px; background: #f0fdf4; border-radius: 6px; border: 1px solid #dcfce7; }
-        .alerta-info { color: #b45309; font-weight: 500; margin-top: 5px; font-size: 0.9rem; }
-        .label-sugestao { display: inline-block; background: #dcfce7; color: #166534; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-top: 4px; font-weight: 600; border: 1px solid #bbf7d0; }
-        
-        /* Tabela de Sugestões */
-        .tabela-sugestoes { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        .tabela-sugestoes td { padding: 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        .tabela-sugestoes tr:last-child td { border-bottom: none; }
-        .tabela-sugestoes tr.melhor-escolha { background-color: #f0fdf4; }
-        .badge-expansao { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
-
-        /* Botão Inativo */
-        .btn-proposta-desabilitado {
-            background-color: #e2e8f0;
-            color: #94a3b8;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: not-allowed;
-            transition: all 0.3s;
-            width: 100%;
-        }
-        /* Botão Ativo */
-        .btn-proposta-ativo {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
-            transition: all 0.3s;
-            width: 100%;
-        }
-        .btn-proposta-ativo:hover {
-            background-color: #15803d;
-            transform: translateY(-2px);
-        }
-
-        /* AJUSTE VISUAL: Bloqueio de Sessão (Mais claro e suave) */
-        .card-bloqueado {
-            position: relative;
-            pointer-events: none;
-            user-select: none;
-        }
-        
-        .card-bloqueado::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Cor mais clara e transparência ajustada */
-            background-color: rgba(255, 255, 255, 0.65); 
-            /* Desfoque reduzido */
-            backdrop-filter: blur(1px); 
-            z-index: 10;
-            border-radius: 8px;
-        }
-    </style>
 </head>
-<body class="theme-acessivel">
+<body class="bg-light">
     <header class="header-engenharia-fixo">
         <div class="header-container">
             <div class="logo-area">
                 <img src="imagens/Logo_Jean_Marcel.webp" alt="BelEnergy" class="logo-top-fixa">
-                <div class="divider-v"></div>
-                
-                <div class="vital-item" style="text-align: left; padding-left: 0;">
-                    <small>Cliente</small>
-                    <strong id="header_nome_cliente">--</strong>
-                </div>
-                <div class="vital-item" style="text-align: left; border-left: 1px solid #e2e8f0; padding-left: 15px; margin-left: 5px;">
-                    <small>Projeto</small>
-                    <strong id="header_nome_projeto" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; display: block;">--</strong>
-                    <div id="header_localizacao" style="font-size: 0.65rem; color: #64748b; font-weight: 500; margin-top: -2px;">--</div>
-                </div>
-                
-                <!-- DADOS ESTATICOS DO PROJETO (MOVIDOS PARA A ESQUERDA) -->
-                <div class="divider-v" style="margin: 0 15px;"></div>
-                
-                <div class="vital-item">
-                    <small>Consumo</small>
-                    <strong id="fixo_consumo">--</strong>
-                </div>
-                <div class="vital-item">
-                    <small>Rede</small>
-                    <strong id="fixo_tipo_rede">--</strong>
-                </div>
             </div>
     
             <!-- NOVA ABA DE SELEÇÃO DE MODO (STANDARD vs PREMIUM) -->
-            <div class="seletor-modo-engenharia">
-                <button onclick="window.trocarAbaProposta('standard')" class="btn-modo-eng ativo" id="btn_modo_std">Standard</button>
-                <button onclick="window.trocarAbaProposta('premium')" class="btn-modo-eng" id="btn_modo_prm"><i class="fas fa-crown"></i> Premium</button>
+            <div class="container-abas-proposta">
+                <button id="btn_modo_std" class="tab-button active" data-aba="standard" onclick="window.trocarAbaProposta('standard')">
+                    <i class="fas fa-bolt"></i> Standard
+                </button>
+                <button id="btn_modo_prm" class="tab-button" data-aba="premium" onclick="window.trocarAbaProposta('premium')">
+                    <i class="fas fa-crown"></i> Premium
+                </button>
             </div>
 
             <div class="vitals-monitor">
@@ -157,11 +51,43 @@
 
     <main class="area-trabalho-engenharia">
         
+        <!-- BARRA DE CONTEXTO FIXA (DADOS DO PROJETO) -->
+        <div id="sticky_wrapper_contexto">
+            <div id="cabecalho_contexto_projeto" class="contexto-projeto-bar">
+                <div class="ctx-item">
+                    <label>Cliente</label>
+                    <span id="ctx_cliente">--</span>
+                </div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item">
+                    <label>Localização</label>
+                    <span id="ctx_local">--</span>
+                </div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item">
+                    <label>Consumo</label>
+                    <span id="ctx_consumo">--</span>
+                </div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item">
+                    <label>Estrutura</label>
+                    <span id="ctx_estrutura">--</span>
+                </div>
+                <div class="ctx-divider"></div>
+                <div class="ctx-item">
+                    <label>Origem Venda</label>
+                    <span id="ctx_origem">--</span>
+                </div>
+            </div>
+            <!-- O Menu de Etapas será injetado aqui pelo JS -->
+        </div>
+
         <!-- INPUTS OCULTOS (Dados herdados do Projeto) -->
         <input type="hidden" id="uc_consumo" class="input-monitorado">
         <input type="hidden" id="uc_tipo_padrao" class="input-monitorado">
 
-        <!-- NOVA SEÇÃO: PREMISSAS DE ORIENTAÇÃO -->
+        <!-- ETAPA 1: PREMISSAS (Wrapper adicionado para controle de visibilidade) -->
+        <section id="container_dimensionamento" class="etapa-ativa">
         <div class="card-tecnico secao-retratil" id="card_geometria">
             <div class="secao-header clickable" onclick="toggleSecao('conteudo_geometria', 'icon_geo')">
                 <div>
@@ -179,37 +105,6 @@
                 <i class="fas fa-chevron-down btn-expandir" id="icon_geo"></i>
             </div>
             <div id="conteudo_geometria" class="secao-conteudo-oculto">
-            
-            <!-- HSP Movido para cá -->
-            <div class="grid-inputs" style="margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;">
-                <div class="form-group">
-                    <label>HSP Local (Irradiação)</label>
-                    <div class="hsp-display-luxe" style="padding: 5px 10px;">
-                        <div class="hsp-icon"><i class="fas fa-sun"></i></div>
-                        <div class="hsp-valor">
-                            <span id="hsp_bruto">4.85</span>
-                            <small>kWh/m².dia</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- NOVA SEÇÃO: ESTRUTURA DE FIXAÇÃO -->
-            <div class="grid-inputs" style="margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;">
-                <div class="form-group">
-                    <label>Tipo de Estrutura</label>
-                    <div class="hsp-display-luxe" style="padding: 8px 12px; background: #f8fafc;">
-                        <i class="fas fa-layer-group" style="color: var(--primaria);"></i> <strong id="display_tipo_estrutura" style="margin-left: 8px; color: #334155;">--</strong>
-                    </div>
-                </div>
-                <div class="form-group" id="grupo_fornecedor_estrutura" style="display:none;">
-                    <label>Fornecimento da Estrutura</label>
-                    <select id="select_origem_estrutura" class="input-monitorado" onchange="window.calcularEngenhariaFinanceira()">
-                        <option value="KIT">Incluso no Kit (Padrão)</option>
-                        <option value="PROPRIO">Fornecimento Próprio (Obra Civil)</option>
-                    </select>
-                </div>
-            </div>
             
             <div id="subsecao_simples">
                 <div class="grid-inputs">
@@ -272,14 +167,15 @@
             </div>
             <!-- Botão de Avanço Explícito -->
             <div style="margin-top: 15px; text-align: right;">
-                <button class="btn-primary-sm" onclick="window.confirmarPremissasEAvançar()">
+                <button class="btn-avancar ativo" style="padding: 8px 16px; font-size: 0.9rem;" onclick="window.confirmarPremissasEAvançar()">
                     Confirmar Premissas e Avançar <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
             </div>
         </div>
+        </section>
 
-        <div id="container_sugestao_painel" class="card-tecnico">
+        <div id="container_sugestao_painel" class="card-tecnico etapa-oculta">
             <!-- O conteúdo da sugestão de painel será injetado aqui pelo JS -->
         </div>
 
@@ -288,7 +184,7 @@
         <input type="hidden" id="total_modulos_projeto">
         <input type="hidden" id="display_modulo_selecionado">
 
-        <div class="card-tecnico" id="card-dimensionamento-inversor">
+        <div id="card-dimensionamento-inversor" class="card-tecnico etapa-oculta">
             <div class="secao-header">
                 <i class="fas fa-microchip"></i>
                 <span>Dimensionamento e Seleção do Inversor</span>
@@ -297,10 +193,10 @@
             <div class="grid-inputs" style="margin-bottom: 20px;">
                 <div class="form-group">
                     <label>Potência Total do Arranjo (kWp)</label>
-                    <div class="hsp-display-luxe">
-                        <div class="hsp-icon"><i class="fas fa-solar-panel"></i></div>
-                        <div class="hsp-valor">
-                            <span id="potencia_dc_total">0.00</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-solar-panel" style="color: var(--text-secondary);"></i>
+                        <div>
+                            <strong id="potencia_dc_total" style="font-size: 1.2rem; color: var(--accent-blue);">0.00</strong>
                             <small>Potência DC Instalada</small>
                         </div>
                     </div>
@@ -308,9 +204,7 @@
 
                 <div class="form-group">
                     <label>Limite de Oversizing DC/AC (%)</label>
-                    <div class="chips-container" id="oversizing_chips">
-                    </div>
-                    <input type="hidden" id="val_oversizing_aplicado" value="1.50">
+                    <select id="sel_oversizing" class="input-estilizado"></select>
                 </div>
             </div>
 
@@ -367,10 +261,12 @@
         </div>
 
         <!-- MÓDULO DE ENGENHARIA FINANCEIRA -->
-        <div id="wrapper-etapa-financeira" class="card-tecnico">
+        <div id="wrapper-etapa-financeira" class="card-tecnico etapa-oculta">
             <div class="secao-header">
-                <i class="fas fa-coins" style="color: #ffcc00;"></i>
-                <span>Formação de Preço (Engenharia de Custos)</span>
+                <div>
+                    <i class="fas fa-coins" style="color: #ffcc00;"></i>
+                    <span>Formação de Preço (Engenharia de Custos)</span>
+                </div>
             </div>
 
             <div class="grid-financeiro">
@@ -388,6 +284,12 @@
                     <input type="number" id="prem_aliquota_imposto" value="15" class="input-financeiro">
                     <small>Incide sobre (Custos + Lucro)</small>
                 </div>
+            </div>
+
+            <!-- NOVA SEÇÃO: OPCIONAIS PREMIUM (Injetado via JS) -->
+            <div id="container_opcionais_premium" class="card-tecnico" style="display:none;">
+                <h4><i class="fas fa-layer-group"></i> Componentes Adicionais (Premium)</h4>
+                <div id="lista_check_opcionais"></div>
             </div>
 
             <div class="painel-detalhamento-cascata">
@@ -411,7 +313,7 @@
         </div>
 
         <!-- RESUMO EXECUTIVO (CHECKOUT) -->
-        <div id="secao_resumo_executivo" class="card-tecnico" style="display:none; border-left: 5px solid #16a34a;">
+        <div id="secao_resumo_executivo" class="card-tecnico etapa-oculta" style="border-left: 5px solid #16a34a;">
             <div class="secao-header">
                 <i class="fas fa-clipboard-list" style="color: #16a34a;"></i>
                 <span style="color: #16a34a;">Resumo Executivo da Proposta</span>
@@ -439,7 +341,7 @@
         </div>
 
         <!-- PAINEL DE VALIDAÇÃO FINAL (SUBSTITUI OS BOTÕES ANTIGOS) -->
-        <div class="container-acao-final" style="margin-top: 30px; text-align: center;">
+        <div id="container-acao-final" class="container-acao-final etapa-oculta" style="margin-top: 30px; text-align: center;">
             <button id="btn_gerar_proposta" class="btn-proposta-desabilitado" disabled>
                 <i class="fas fa-file-pdf"></i> GERAR PROPOSTA COMERCIAL
             </button>

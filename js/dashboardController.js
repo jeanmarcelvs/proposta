@@ -269,6 +269,7 @@ function popularTabelaClientes() {
     `).join('');
 }
 
+// Função migrada do antigo clientesController.js
 window.filtrarTabelaLocal = function(tableId, searchTerm) {
     const table = document.getElementById(tableId);
     if (!table) return;
@@ -285,284 +286,173 @@ window.abrirPerfil = function(id) {
 };
 
 function renderizarPremissas(container) {
-    // Busca configuração salva ou usa padrão
+    // Busca todas as configurações ou define valores padrão para não dar erro
     const config = db.buscarConfiguracao('premissas_globais') || {
         engenharia: { 
-            eficienciaInversor: 98,
-            perdaTempInversor: 1.5,
-            perdaTempModulos: 10.13,
-            cabos: 2.0,
-            outros: 2.0,
-            indisponibilidade: 0.5,
-            azimute: 0, 
-            inclinacao: 10
+            eficienciaInversor: 98, perdaTempInversor: 1.5, perdaTempModulos: 10.13, 
+            cabos: 2.0, outros: 2.0, indisponibilidade: 0.5, azimute: 0, inclinacao: 10, oversizingPadrao: 50 
         },
-        // Adicionando valores padrão para materiais premium se não existirem
         materiaisPremium: {
-            va_diaria_instalador: 390.00,
-            va_qdg_mono_premium: 150.00,
-            va_qdg_trif_premum: 300.00,
-            va_eletrocalha_50: 85.00,
-            va_eletrocalha_100: 158.00,
-            va_bloco_distribuicao: 90.00,
-            va_tampa_acrilico: 335.00
+            va_diaria_instalador: 390.00, va_qdg_mono_premium: 150.00, va_qdg_trif_premum: 300.00,
+            va_eletrocalha_50: 85.00, va_eletrocalha_100: 158.00, va_bloco_distribuicao: 90.00, va_tampa_acrilico: 335.00
         },
-        // Configuração de Estruturas Especiais (Solo/Laje)
         estruturas: {
-            va_estrutura_solo: 125.00,
-            diaria_extra_solo: 0.2,
-            va_estrutura_laje: 55.00,
-            diaria_extra_laje: 0.1
+            va_estrutura_solo: 125.00, diaria_extra_solo: 0.2, va_estrutura_laje: 55.00, diaria_extra_laje: 0.1
         },
-        financeiro: { fatorLucroStandard: 1.1, fatorLucroPremium: 1.2, lucroMinimo: 2500, imposto: 15, precoCombustivel: 6.10, consumoVeiculo: 8.5, kmSuprimentos: 15, modulosPorDia: 12, tempoExtraInversor: 0.5, kmAlmoco: 5, diasMinimosObra: 2 },
+        financeiro: { 
+            imposto: 15, taxasComissao: { indicador: 3, representante: 5 }, 
+            fatorLucroStandard: 1.1, fatorLucroPremium: 1.2, lucroMinimo: 2500,
+            modulosPorDia: 10, tempoExtraInversor: 0.5, diasMinimosObra: 2, kmAlmoco: 5
+        },
+        logistica: {
+            precoCombustivel: 6.29, consumoVeiculo: 8.7, kmSuprimentos: 12, adicionalLogistica: 20
+        },
         tabelas: {
             materiais: [
                 { limite: 20, custo: 1100 }, { limite: 25, custo: 1550 }, { limite: 30, custo: 2000 },
                 { limite: 40, custo: 2450 }, { limite: 50, custo: 2750 }, { limite: 270, custo: 7700 }
             ],
             maoDeObra: [
-                { limite: 10, unitario: 150 }, { limite: 18, unitario: 110 },
-                { limite: 30, unitario: 100 }, { limite: 90, unitario: 85 }
+                { limite: 10, unitario: 150 }, { limite: 11, unitario: 140 }, { limite: 12, unitario: 130 },
+                { limite: 13, unitario: 120 }, { limite: 14, unitario: 115 }, { limite: 18, unitario: 110 },
+                { limite: 22, unitario: 107 }, { limite: 26, unitario: 104 }, { limite: 30, unitario: 100 },
+                { limite: 50, unitario: 95 }, { limite: 70, unitario: 90 }, { limite: 90, unitario: 85 },
+                { limite: 9999, unitario: 80 }
             ]
         }
     };
 
     container.innerHTML = `
-        <div class="painel-modulo">
+        <div class="card-tecnico">
             <div class="header-modulo">
-                <div>
-                    <h2><i class="fas fa-sliders-h"></i> Centro de Inteligência</h2>
-                </div>
-                
-                <button class="btn-primary" onclick="window.salvarPremissas()" style="width: auto; padding: 0.8rem 1.5rem;">
-                    <i class="fas fa-save"></i> Salvar Alterações Globais
+                <h2><i class="fas fa-sliders-h"></i> Painel de Premissas de Engenharia</h2>
+                <button class="btn-primary" onclick="salvarNovasPremissas()">
+                    <i class="fas fa-save"></i> SALVAR TODAS AS CONFIGURAÇÕES
                 </button>
             </div>
 
-            <div class="layout-premissas">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 
-                <!-- Coluna Esquerda: Parâmetros -->
-                <div class="coluna-parametros">
+                <!-- COLUNA ESQUERDA: PARÂMETROS -->
+                <div style="display: flex; flex-direction: column; gap: 20px;">
                     
-                    <!-- NOVA SEÇÃO: COMPOSIÇÃO PREMIUM -->
-                    <div class="card-premissas-tecnicas">
-                        <div class="secao-header">
-                            <i class="fas fa-gem" style="color: var(--primaria-dark);"></i>
-                            <span>Composição de Infraestrutura Premium</span>
-                        </div>
-                        <p class="instrucao-tecnica">Defina os custos unitários dos materiais e da mão de obra especializada.</p>
-
-                        <div class="grid-inputs-config">
-                            <div class="grupo-form-config" style="grid-column: span 2;">
-                                <label for="va_diaria_instalador">Valor da Diária Técnica (R$)</label>
-                                <input type="number" id="va_diaria_instalador" value="${config.materiaisPremium?.va_diaria_instalador ?? 390.00}" class="input-config">
-                                <small class="nota-alerta">
-                                    <i class="fas fa-info-circle"></i> 
-                                    <strong>Impacto Premium:</strong> Na aba Premium, soma-se <strong>+1 diária por inversor</strong> ao tempo base, multiplicando este valor e os custos de logística.
-                                </small>
-                            </div>
-
-                            <div class="grupo-form-config">
-                                <label>QDG Monofásico (R$)</label>
-                                <input type="number" id="va_qdg_mono_premium" value="${config.materiaisPremium?.va_qdg_mono_premium ?? 150.00}" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
+                    <!-- Componentes Premium -->
+                    <div class="secao-config">
+                        <h3 style="color:var(--primaria); border-bottom: 2px solid #eee; padding-bottom:10px;">
+                            <i class="fas fa-gem"></i> Componentes Premium
+                        </h3>
+                        <div class="grid-inputs">
+                            <div class="form-group">
                                 <label>QDG Trifásico (R$)</label>
-                                <input type="number" id="va_qdg_trif_premum" value="${config.materiaisPremium?.va_qdg_trif_premum ?? 300.00}" class="input-config">
+                                <input type="number" id="va_qdg_trif_premum" value="${config.materiaisPremium?.va_qdg_trif_premum || 300}" class="input-estilizado">
                             </div>
-
-                            <div class="grupo-form-config">
-                                <label>Eletrocalha 50mm (R$/3m)</label>
-                                <input type="number" id="va_eletrocalha_50" value="${config.materiaisPremium?.va_eletrocalha_50 ?? 85.00}" class="input-config">
+                            <div class="form-group">
+                                <label>QDG Monofásico (R$)</label>
+                                <input type="number" id="va_qdg_mono_premium" value="${config.materiaisPremium?.va_qdg_mono_premium || 150}" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>Eletrocalha 100mm (R$/3m)</label>
-                                <input type="number" id="va_eletrocalha_100" value="${config.materiaisPremium?.va_eletrocalha_100 ?? 158.00}" class="input-config">
+                            <div class="form-group">
+                                <label>Eletrocalha 100mm (R$)</label>
+                                <input type="number" id="va_eletrocalha_100" value="${config.materiaisPremium?.va_eletrocalha_100 || 158}" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>Bloco Distribuição (R$/un)</label>
-                                <input type="number" id="va_bloco_distribuicao" value="${config.materiaisPremium?.va_bloco_distribuicao ?? 90.00}" class="input-config">
+                            <div class="form-group">
+                                <label>Eletrocalha 50mm (R$)</label>
+                                <input type="number" id="va_eletrocalha_50" value="${config.materiaisPremium?.va_eletrocalha_50 || 85}" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>Tampa Acrílico (R$/un)</label>
-                                <input type="number" id="va_tampa_acrilico" value="${config.materiaisPremium?.va_tampa_acrilico ?? 335.00}" class="input-config">
+                            <div class="form-group">
+                                <label>Tampa Acrílico (R$)</label>
+                                <input type="number" id="va_tampa_acrilico" value="${config.materiaisPremium?.va_tampa_acrilico || 335}" class="input-estilizado">
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- NOVA SEÇÃO: ESTRUTURAS ESPECIAIS -->
-                    <div class="card-premissas-tecnicas">
-                        <div class="secao-header">
-                            <i class="fas fa-layer-group" style="color: var(--primaria-dark);"></i>
-                            <span>Estruturas Especiais (Solo / Laje)</span>
-                        </div>
-                        <p class="instrucao-tecnica">Defina custos e impacto no cronograma para estruturas próprias.</p>
-
-                        <div class="grid-inputs-config">
-                            <div class="grupo-form-config">
-                                <label>Material Solo (R$/mód)</label>
-                                <input type="number" id="va_estrutura_solo" value="${config.estruturas?.va_estrutura_solo ?? 125.00}" class="input-config">
+                            <div class="form-group">
+                                <label>Bloco Distribuição (R$)</label>
+                                <input type="number" id="va_bloco_distribuicao" value="${config.materiaisPremium?.va_bloco_distribuicao || 90}" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>M.O. Solo (Dia/mód)</label>
-                                <input type="number" id="diaria_extra_solo" value="${config.estruturas?.diaria_extra_solo ?? 0.2}" step="0.01" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Material Laje (R$/mód)</label>
-                                <input type="number" id="va_estrutura_laje" value="${config.estruturas?.va_estrutura_laje ?? 55.00}" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>M.O. Laje (Dia/mód)</label>
-                                <input type="number" id="diaria_extra_laje" value="${config.estruturas?.diaria_extra_laje ?? 0.1}" step="0.01" class="input-config">
+                            <div class="form-group">
+                                <label>Diária Instalador (R$)</label>
+                                <input type="number" id="va_diaria_instalador" value="${config.materiaisPremium?.va_diaria_instalador || 390}" class="input-estilizado">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Engenharia -->
-                    <div class="card-tecnico card-config">
-                        <div class="secao-header">
-                            <i class="fas fa-sun"></i>
-                            <span>Engenharia Solar</span>
-                        </div>
-                        <div class="grid-inputs-config">
-                            <div class="grupo-form-config">
-                                <label>Eficiência Inversor (%)</label>
-                                <input type="number" id="p_eficiencia_inversor" value="${config.engenharia.eficienciaInversor ?? 98}" step="0.1" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Perda Temp. Inv. (%)</label>
-                                <input type="number" id="p_perda_temp_inversor" value="${config.engenharia.perdaTempInversor ?? 1.5}" step="0.1" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Perda Temp. Mód. (%)</label>
-                                <input type="number" id="p_perda_temp_modulos" value="${config.engenharia.perdaTempModulos ?? 10.13}" step="0.01" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Perdas Cabos (%)</label>
-                                <input type="number" id="p_cabos" value="${config.engenharia.cabos ?? 2.0}" step="0.1" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Perdas Externas (%)</label>
-                                <input type="number" id="p_outros" value="${config.engenharia.outros ?? 2.0}" step="0.1" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Indisponibilidade (%)</label>
-                                <input type="number" id="p_indisponibilidade" value="${config.engenharia.indisponibilidade ?? 0.5}" step="0.1" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Azimute Padrão (°)</label>
-                                <input type="number" id="p_azimute" value="${config.engenharia.azimute}" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Inclinação Padrão (°)</label>
-                                <input type="number" id="p_inclinacao" value="${config.engenharia.inclinacao}" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Oversizing DC/AC Padrão (%)</label>
-                                <input type="number" id="p_oversizing" value="${config.engenharia.oversizingPadrao || 50}" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Este valor será aplicado automaticamente em novas propostas.</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Logística e Instalação (REFORMULADO) -->
-                    <div class="card-tecnico card-config">
-                        <div class="secao-header">
-                            <i class="fas fa-truck-pickup"></i>
-                            <span>Logística e Deslocamento</span>
-                        </div>
-                        <div class="grid-inputs-config">
-                            <div class="grupo-form-config">
+                    <!-- Logística -->
+                    <div class="secao-config">
+                        <h3 style="color:var(--primaria); border-bottom: 2px solid #eee; padding-bottom:10px;">
+                            <i class="fas fa-truck"></i> Logística e Deslocamento
+                        </h3>
+                        <div class="grid-inputs">
+                            <div class="form-group">
                                 <label>Preço Combustível (R$/L)</label>
-                                <input type="number" id="p_preco_combustivel" value="${config.financeiro.precoCombustivel ?? 6.10}" step="0.01" class="input-config">
+                                <input type="number" id="p_preco_combustivel" value="${config.logistica?.precoCombustivel || 6.29}" step="0.01" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
+                            <div class="form-group">
                                 <label>Consumo Veículo (km/L)</label>
-                                <input type="number" id="p_consumo_veiculo" value="${config.financeiro.consumoVeiculo ?? 8.5}" step="0.1" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Carro carregado + equipe</small>
+                                <input type="number" id="p_consumo_veiculo" value="${config.logistica?.consumoVeiculo || 8.7}" step="0.1" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>KM Suprimentos (Fixo)</label>
-                                <input type="number" id="p_km_suprimentos" value="${config.financeiro.kmSuprimentos ?? 15}" step="1" class="input-config">
+                            <div class="form-group">
+                                <label>Adicional Fixo (R$)</label>
+                                <input type="number" id="p_adicional_logistica" value="${config.logistica?.adicionalLogistica || 20}" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>KM Desvio Diário (Almoço)</label>
-                                <input type="number" id="p_km_almoco" value="${config.financeiro.kmAlmoco ?? 5}" step="1" class="input-config">
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Capacidade (Módulos/Dia)</label>
-                                <input type="number" id="p_modulos_dia" value="${config.financeiro.modulosPorDia || 12}" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Define a quantidade de diárias.</small>
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Tempo Extra p/ Inversor (Dias)</label>
-                                <input type="number" id="p_tempo_inv_extra" value="${config.financeiro.tempoExtraInversor ?? 0.5}" step="0.1" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Complexidade SEP adicional.</small>
-                            </div>
-                            <div class="grupo-form-config">
-                                <label>Dias Mínimos de Obra</label>
-                                <input type="number" id="p_dias_minimos" value="${config.financeiro.diasMinimosObra || 2}" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Piso de segurança para mobilização.</small>
+                            <div class="form-group">
+                                <label>Produtividade (Mód/Dia)</label>
+                                <input type="number" id="p_modulos_dia" value="${config.financeiro?.modulosPorDia || 10}" class="input-estilizado">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Financeiro -->
-                    <div class="card-tecnico card-config">
-                        <div class="secao-header">
-                            <i class="fas fa-balance-scale"></i>
-                            <span>Financeiro e Tributário</span>
-                        </div>
-                        <div class="grid-inputs-config">
-                            <div class="grupo-form-config">
+                    <!-- Financeiro & Comissões -->
+                    <div class="secao-config">
+                        <h3 style="color:var(--primaria); border-bottom: 2px solid #eee; padding-bottom:10px;">
+                            <i class="fas fa-hand-holding-usd"></i> Financeiro & Comissões
+                        </h3>
+                        <div class="grid-inputs">
+                            <div class="form-group">
                                 <label>Fator Lucro Standard</label>
-                                <input type="number" id="p_fator_lucro_std" value="${config.financeiro.fatorLucroStandard || 1.1}" step="0.01" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Sobre M.O. Base</small>
+                                <input type="number" id="p_lucro_standard" value="${config.financeiro?.fatorLucroStandard || 1.1}" step="0.01" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
+                            <div class="form-group">
                                 <label>Fator Lucro Premium</label>
-                                <input type="number" id="p_fator_lucro_prm" value="${config.financeiro.fatorLucroPremium || 1.2}" step="0.01" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Sobre M.O. Total</small>
+                                <input type="number" id="p_lucro_premium" value="${config.financeiro?.fatorLucroPremium || 1.2}" step="0.01" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>Lucro Mínimo (Trava R$)</label>
-                                <input type="number" id="p_lucro_minimo" value="${config.financeiro.lucroMinimo || 2500}" class="input-config">
-                                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Piso de segurança para obras pequenas.</small>
+                            <div class="form-group">
+                                <label>Piso de Lucro (R$)</label>
+                                <input type="number" id="p_lucro_minimo" value="${config.financeiro?.lucroMinimo || 0}" class="input-estilizado">
                             </div>
-                            <div class="grupo-form-config">
-                                <label>Alíquota de Imposto (%)</label>
-                                <input type="number" id="p_imposto" value="${config.financeiro.imposto}" class="input-config">
+                            <div class="form-group">
+                                <label>Imposto (%)</label>
+                                <input type="number" id="p_imposto" value="${config.financeiro?.imposto || 15}" class="input-estilizado">
+                            </div>
+                            <div class="form-group">
+                                <label>Comissão Indicação (%)</label>
+                                <input type="number" id="p_comissao_indicador" value="${config.financeiro?.taxasComissao?.indicador || 3}" step="0.1" class="input-estilizado">
+                            </div>
+                            <div class="form-group">
+                                <label>Comissão Representante (%)</label>
+                                <input type="number" id="p_comissao_representante" value="${config.financeiro?.taxasComissao?.representante || 5}" step="0.1" class="input-estilizado">
                             </div>
                         </div>
                     </div>
+
                 </div>
 
-                <!-- Coluna Direita: Tabelas -->
-                <div class="coluna-tabelas">
-                    <!-- Tabela Mão de Obra -->
-                    <div class="card-tecnico card-config">
-                        <div class="secao-header">
-                            <i class="fas fa-tools"></i>
-                            <span>Mão de Obra (Custo Base)</span>
-                            <button class="btn-icon-action" onclick="window.adicionarLinhaTabela('corpo_mo', 'mo')" title="Adicionar Faixa">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                <!-- COLUNA DIREITA: TABELAS -->
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Tabela Mão de Obra (Terceirizada) -->
+                    <div class="secao-config">
+                        <div class="secao-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="margin:0; color:var(--primaria);"><i class="fas fa-users-cog"></i> Tabela M.O. (Terceirizada)</h3>
+                            <button class="btn-icon" onclick="window.adicionarLinhaTabela('corpo_mo', 'mo')" title="Adicionar Faixa"><i class="fas fa-plus"></i></button>
                         </div>
-                        <div class="table-responsive">
-                            <table class="tabela-config">
+                        <div class="tabela-container" style="max-height: 300px; overflow-y: auto;">
+                            <table class="tabela-tecnica">
                                 <thead>
-                                    <tr>
-                                        <th>Até (Módulos)</th>
-                                        <th>Valor (R$/mod)</th>
-                                        <th style="width: 40px;"></th>
-                                    </tr>
+                                    <tr><th>Até (Módulos)</th><th>Valor (R$/mód)</th><th></th></tr>
                                 </thead>
                                 <tbody id="corpo_mo">
-                                    ${config.tabelas.maoDeObra.map(f => `
+                                    ${(config.tabelas?.maoDeObra || []).map(f => `
                                         <tr>
-                                            <td><input type="number" value="${f.limite}" class="input-tabela-config"></td>
-                                            <td><input type="number" value="${f.unitario}" class="input-tabela-config"></td>
-                                            <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon-remove"><i class="fas fa-times"></i></button></td>
+                                            <td><input type="number" value="${f.limite}" class="input-estilizado" style="height:28px; padding:4px;"></td>
+                                            <td><input type="number" value="${f.unitario}" class="input-estilizado" style="height:28px; padding:4px;"></td>
+                                            <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon"><i class="fas fa-times"></i></button></td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -571,59 +461,44 @@ function renderizarPremissas(container) {
                     </div>
 
                     <!-- Tabela Materiais -->
-                    <div class="card-tecnico card-config">
-                        <div class="secao-header">
-                            <i class="fas fa-box-open"></i>
-                            <span>Materiais (Custo Fixo)</span>
-                            <button class="btn-icon-action" onclick="window.adicionarLinhaTabela('corpo_materiais', 'mat')" title="Adicionar Faixa">
-                                <i class="fas fa-plus"></i>
-                            </button>
+                    <div class="secao-config">
+                        <div class="secao-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="margin:0; color:var(--primaria);"><i class="fas fa-box-open"></i> Tabela Materiais Base</h3>
+                            <button class="btn-icon" onclick="window.adicionarLinhaTabela('corpo_materiais', 'mat')" title="Adicionar Faixa"><i class="fas fa-plus"></i></button>
                         </div>
-                        <div class="table-responsive">
-                            <table class="tabela-config">
+                        <div class="tabela-container" style="max-height: 300px; overflow-y: auto;">
+                            <table class="tabela-tecnica">
                                 <thead>
-                                    <tr>
-                                        <th>Até (Módulos)</th>
-                                        <th>Custo Total (R$)</th>
-                                        <th style="width: 40px;"></th>
-                                    </tr>
+                                    <tr><th>Até (Módulos)</th><th>Custo Total (R$)</th><th></th></tr>
                                 </thead>
                                 <tbody id="corpo_materiais">
-                                    ${config.tabelas.materiais.map(f => `
+                                    ${(config.tabelas?.materiais || []).map(f => `
                                         <tr>
-                                            <td><input type="number" value="${f.limite}" class="input-tabela-config"></td>
-                                            <td><input type="number" value="${f.custo}" class="input-tabela-config"></td>
-                                            <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon-remove"><i class="fas fa-times"></i></button></td>
+                                            <td><input type="number" value="${f.limite}" class="input-estilizado" style="height:28px; padding:4px;"></td>
+                                            <td><input type="number" value="${f.custo}" class="input-estilizado" style="height:28px; padding:4px;"></td>
+                                            <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon"><i class="fas fa-times"></i></button></td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     `;
 }
 
-// --- Funções Auxiliares Globais para o Painel de Premissas ---
-
+// --- Funções Auxiliares para Tabelas ---
 window.adicionarLinhaTabela = function(tbodyId, tipo) {
     const tbody = document.getElementById(tbodyId);
     const tr = document.createElement('tr');
-    if (tipo === 'mo') {
-        tr.innerHTML = `
-            <td><input type="number" value="0" class="input-tabela-config"></td>
-            <td><input type="number" value="0" class="input-tabela-config"></td>
-            <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon-remove"><i class="fas fa-times"></i></button></td>
-        `;
-    } else {
-        tr.innerHTML = `
-            <td><input type="number" value="0" class="input-tabela-config"></td>
-            <td><input type="number" value="0" class="input-tabela-config"></td>
-            <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon-remove"><i class="fas fa-times"></i></button></td>
-        `;
-    }
+    tr.innerHTML = `
+        <td><input type="number" value="0" class="input-estilizado" style="height:28px; padding:4px;"></td>
+        <td><input type="number" value="0" class="input-estilizado" style="height:28px; padding:4px;"></td>
+        <td><button onclick="window.removerLinhaTabela(this)" class="btn-icon"><i class="fas fa-times"></i></button></td>
+    `;
     tbody.appendChild(tr);
 };
 
@@ -631,7 +506,11 @@ window.removerLinhaTabela = function(btn) {
     btn.closest('tr').remove();
 };
 
-window.salvarPremissas = function() {
+window.salvarNovasPremissas = function() {
+    // Busca a configuração atual para não perder dados de outras seções (ex: engenharia, tabelas)
+    const configAtual = db.buscarConfiguracao('premissas_globais') || {};
+
+    // Helper para ler tabelas
     const lerTabela = (id, campos) => {
         const linhas = document.querySelectorAll(`#${id} tr`);
         return Array.from(linhas).map(tr => {
@@ -639,22 +518,29 @@ window.salvarPremissas = function() {
             const obj = {};
             campos.forEach((campo, i) => obj[campo] = parseFloat(inputs[i].value) || 0);
             return obj;
-        }).sort((a, b) => a.limite - b.limite); // Ordena por limite para garantir a lógica de faixas
+        }).sort((a, b) => a.limite - b.limite);
     };
-
-    const config = {
-        engenharia: {
-            eficienciaInversor: parseFloat(document.getElementById('p_eficiencia_inversor').value) || 98,
-            perdaTempInversor: parseFloat(document.getElementById('p_perda_temp_inversor').value) || 1.5,
-            perdaTempModulos: parseFloat(document.getElementById('p_perda_temp_modulos').value) || 10.13,
-            cabos: parseFloat(document.getElementById('p_cabos').value) || 2.0,
-            outros: parseFloat(document.getElementById('p_outros').value) || 2.0,
-            indisponibilidade: parseFloat(document.getElementById('p_indisponibilidade').value) || 0.5,
-            azimute: parseFloat(document.getElementById('p_azimute').value) || 0,
-            inclinacao: parseFloat(document.getElementById('p_inclinacao').value) || 0,
-            oversizingPadrao: parseFloat(document.getElementById('p_oversizing').value) || 50
+    
+    const novasPremissas = {
+        ...configAtual,
+        financeiro: {
+            ...configAtual.financeiro,
+            imposto: parseFloat(document.getElementById('p_imposto').value) || 0,
+            fatorLucroStandard: parseFloat(document.getElementById('p_lucro_standard').value) || 1.1,
+            fatorLucroPremium: parseFloat(document.getElementById('p_lucro_premium').value) || 1.1,
+            lucroMinimo: parseFloat(document.getElementById('p_lucro_minimo').value) || 0,
+            modulosPorDia: parseFloat(document.getElementById('p_modulos_dia').value) || 10,
+            taxasComissao: {
+                indicador: parseFloat(document.getElementById('p_comissao_indicador').value) || 0,
+                representante: parseFloat(document.getElementById('p_comissao_representante').value) || 0
+            }
         },
-        // Captura os novos valores Premium
+        logistica: {
+            ...configAtual.logistica,
+            precoCombustivel: parseFloat(document.getElementById('p_preco_combustivel').value) || 6.29,
+            consumoVeiculo: parseFloat(document.getElementById('p_consumo_veiculo').value) || 8.7,
+            adicionalLogistica: parseFloat(document.getElementById('p_adicional_logistica').value) || 20
+        },
         materiaisPremium: {
             va_diaria_instalador: parseFloat(document.getElementById('va_diaria_instalador').value) || 0,
             va_qdg_mono_premium: parseFloat(document.getElementById('va_qdg_mono_premium').value) || 0,
@@ -664,33 +550,16 @@ window.salvarPremissas = function() {
             va_bloco_distribuicao: parseFloat(document.getElementById('va_bloco_distribuicao').value) || 0,
             va_tampa_acrilico: parseFloat(document.getElementById('va_tampa_acrilico').value) || 0
         },
-        estruturas: {
-            va_estrutura_solo: parseFloat(document.getElementById('va_estrutura_solo').value) || 0,
-            diaria_extra_solo: parseFloat(document.getElementById('diaria_extra_solo').value) || 0,
-            va_estrutura_laje: parseFloat(document.getElementById('va_estrutura_laje').value) || 0,
-            diaria_extra_laje: parseFloat(document.getElementById('diaria_extra_laje').value) || 0
-        },
-        financeiro: {
-            fatorLucroStandard: parseFloat(document.getElementById('p_fator_lucro_std').value) || 1.1,
-            fatorLucroPremium: parseFloat(document.getElementById('p_fator_lucro_prm').value) || 1.2,
-            lucroMinimo: parseFloat(document.getElementById('p_lucro_minimo').value) || 2500,
-            imposto: parseFloat(document.getElementById('p_imposto').value) || 0,
-            precoCombustivel: parseFloat(document.getElementById('p_preco_combustivel').value) || 6.10,
-            consumoVeiculo: parseFloat(document.getElementById('p_consumo_veiculo').value) || 8.5,
-            kmSuprimentos: parseFloat(document.getElementById('p_km_suprimentos').value) || 15,
-            kmAlmoco: parseFloat(document.getElementById('p_km_almoco').value) || 5,
-            modulosPorDia: parseFloat(document.getElementById('p_modulos_dia').value) || 12,
-            tempoExtraInversor: parseFloat(document.getElementById('p_tempo_inv_extra').value) || 0.5,
-            diasMinimosObra: parseFloat(document.getElementById('p_dias_minimos').value) || 2
-        },
         tabelas: {
             maoDeObra: lerTabela('corpo_mo', ['limite', 'unitario']),
             materiais: lerTabela('corpo_materiais', ['limite', 'custo'])
         }
     };
 
-    db.salvarConfiguracao('premissas_globais', config);
-    alert('Premissas globais atualizadas com sucesso! Novos projetos utilizarão estes valores.');
+    if (db.salvarConfiguracao('premissas_globais', novasPremissas)) {
+        alert("Configurações atualizadas com sucesso!");
+        navegar('premissas');
+    }
 };
 
 // Ação de Negócio: Iniciar Projeto (Vincula Cliente e Redireciona)
@@ -716,6 +585,7 @@ window.editarProjeto = function(id) {
     // Prepara a sessão para a tela de dimensionamento
     sessionStorage.setItem('cliente_ativo_id', projeto.clienteId);
     sessionStorage.setItem('projeto_ativo_id', projeto.id);
+    sessionStorage.setItem('proposta_ativa_id', id); // Adiciona o ID da proposta
     window.location.href = 'gerador-proposta.html';
 };
 

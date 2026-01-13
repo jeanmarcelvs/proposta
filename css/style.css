@@ -3194,3 +3194,140 @@ body.awaiting-acceptance main {
     height: auto;
     display: block;
 }
+
+/* ====================================================================== */
+/* 🛠️ ESTILOS DE NAVEGAÇÃO E ENGENHARIA (Substituindo Inline JS)          */
+/* ====================================================================== */
+
+/* Menu de Etapas (Topo) */
+.menu-etapas-container {
+    background: #fff;
+    border-top: 1px solid #f1f5f9;
+    padding: 10px 15px;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    -webkit-overflow-scrolling: touch;
+}
+
+.item-etapa {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.item-etapa.ativo {
+    background-color: var(--cor-primaria);
+    color: white;
+    border-color: var(--cor-primaria);
+}
+
+.item-etapa.acessivel {
+    background-color: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.item-etapa.bloqueado {
+    background-color: transparent;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* Botão Voltar */
+.nav-etapa-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-voltar-etapa {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #64748b;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-voltar-etapa:hover {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+/* Área de Ação (Botão Avançar) */
+.area-acao-navegacao {
+    margin-top: 25px;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.area-acao-navegacao.estado-valido {
+    background-color: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.area-acao-navegacao.estado-valido .feedback-validacao {
+    color: #15803d;
+}
+
+.area-acao-navegacao.estado-invalido {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.area-acao-navegacao.estado-invalido .feedback-validacao {
+    color: #64748b;
+}
+
+.feedback-validacao {
+    font-weight: 600;
+    margin-bottom: 15px;
+    transition: color 0.3s;
+}
+
+.btn-avancar {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    border-radius: 6px;
+}
+
+.btn-avancar.ativo {
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-avancar.inativo {
+    background-color: #cbd5e1;
+    color: #64748b;
+    border: 1px solid #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.container-navegacao-externa {
+    width: 100%;
+    clear: both;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 5;
+}

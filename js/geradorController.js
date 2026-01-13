@@ -45,25 +45,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const selectModulo = document.getElementById('select_modulo_comparativo');
     const totalModulosDisplay = document.getElementById('total_modulos_projeto');
     const btnGerarProposta = document.getElementById('btn_gerar_proposta');
+    const msgValidacaoElement = document.getElementById('msg_validacao'); // FIX: Referência global para evitar perda no DOM
     const inputTipoLigacao = document.getElementById('uc_tipo_padrao');
-    
+
     // Elementos da nova tabela
     const containerSugestaoPainel = document.getElementById('container_sugestao_painel'); // Agora um card
     const displayModuloSelecionado = document.getElementById('display_modulo_selecionado');
     const wrapperEtapaTecnica = document.getElementById('wrapper-etapa-tecnica');
     const wrapperEtapaFinanceira = document.getElementById('wrapper-etapa-financeira');
-    
-    // Elementos do Header Atualizados
-    const headerNomeCliente = document.getElementById('header_nome_cliente');
-    const headerNomeProjeto = document.getElementById('header_nome_projeto');
-    const headerLocalizacao = document.getElementById('header_localizacao');
 
     // --- Elementos do Painel Fixo ---
     const fixoPotMinima = document.getElementById('fixo_p_minima');
     const fixoPotReal = document.getElementById('fixo_p_real');
     const fixoGeracao = document.getElementById('fixo_geracao');
     const fixoPr = document.getElementById('fixo_pr_final');
-    const fixoConsumo = document.getElementById('fixo_consumo');
     const fixoTipoRede = document.getElementById('fixo_tipo_rede');
 
     // --- PREENCHIMENTO AUTOMÁTICO (Dados do Projeto) ---
@@ -83,11 +78,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         modoDuplo: false,
         standard: {
             selecionado: false,
-            dados: { inversores: [], modulo: null, financeiro: {}, precoCalculado: false, etapaIndex: 0 }
+            dados: { inversores: [], modulo: null, financeiro: {}, precoCalculado: false, etapaIndex: 1, maxEtapaIndex: 1 }
         },
         premium: {
             selecionado: false,
-            dados: { inversores: [], modulo: null, financeiro: {}, precoCalculado: false, etapaIndex: 0 }
+            dados: { inversores: [], modulo: null, financeiro: {}, precoCalculado: false, etapaIndex: 1, maxEtapaIndex: 1 }
         }
     };
 
@@ -95,10 +90,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     let latitude = 0;
     let dimensionamentoCompleto = null;
     let modoOrientacao = 'simples'; // 'simples' ou 'composto'
-    
+
     // Novo estado para o carrinho
     let carrinhoInversores = [];
-    
+
     // Estado visual da seleção de inversores (UX)
     let estadoSelecaoInversor = { tipo: null, id: null }; // tipo: 'SUGESTAO' | 'MANUAL'
     let estadoSelecaoModulo = { watts: null, qtd: null }; // Estado visual dos módulos
@@ -110,22 +105,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const gerenciadorEtapas = {
         // Mapeamento de índices para nomes lógicos das etapas
         ordem: ['premissas', 'modulos', 'inversores', 'financeiro', 'resumo'],
-        
+        labels: ['Premissas', 'Módulos', 'Inversores', 'Financeiro', 'Resumo'], // Labels para o menu
+
         etapas: {
-            premissas: ['card_geometria', 'card_perdas'],
-            // ATUALIZADO: IDs completos para garantir controle total da visibilidade
-            // REORDENADO: container_sugestao_painel primeiro
-            modulos: ['container_sugestao_painel', 'wrapper-etapa-paineis', 'wrapper-etapa-tecnica'], 
-            inversores: ['wrapper-etapa-inversores', 'card-dimensionamento-inversor'],
+            premissas: ['container_dimensionamento'],
+            modulos: ['container_sugestao_painel'],
+            inversores: ['card-dimensionamento-inversor'],
             financeiro: ['wrapper-etapa-financeira'],
-            resumo: ['secao_resumo_executivo', 'secao_comparativa_final']
+            resumo: ['secao_resumo_executivo', 'container-acao-final']
         },
 
         // Armazena o estado dos dados ao entrar na edição para comparação posterior
         snapshotEstado: null,
 
         // Método de compatibilidade para chamadas antigas (evita TypeError)
-        travar: function(etapa) {
+        travar: function (etapa) {
             // Mapeia 'travar' para 'avancarPara' a próxima etapa lógica
             const indiceAtual = this.ordem.indexOf(etapa);
             if (indiceAtual > -1 && indiceAtual < this.ordem.length - 1) {
@@ -133,16 +127,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         },
 
-        destravar: function(etapa) {
+        destravar: function (etapa) {
             this.recuarPara(etapa);
         },
 
         // Atualiza a interface baseada no índice da etapa atual da aba ativa (Lógica N-1)
-        sincronizarVisual: function() {
+        sincronizarVisual: function (rolarParaTopo = true) {
             const aba = projetoGerenciador.abaAtiva;
             if (!aba || !projetoGerenciador[aba]) return;
 
             const indiceAtual = projetoGerenciador[aba].dados.etapaIndex || 0;
+
+            console.log("DEBUG: Sincronizando Visual. Etapa atual:", this.ordem[indiceAtual]);
+
+            // FIX: Safeguard para garantir renderização dos módulos ao voltar
+            if (this.ordem[indiceAtual] === 'modulos') {
+                const container = document.getElementById('container_sugestao_painel');
+                // Verifica se o container está vazio, sem cards ou com mensagem de aguardando
+                if (container && (!container.querySelector('.card-modulo') || container.innerHTML.includes('Aguardando'))) {
+                    console.log("Safeguard: Restaurando estrutura visual de módulos...");
+                    if (dimensionamentoCompleto) {
+                        processarEscolhaModulo(dimensionamentoCompleto);
+                    }
+                }
+            }
 
             this.ordem.forEach((nomeEtapa, index) => {
                 const ids = this.etapas[nomeEtapa];
@@ -158,22 +166,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Limpeza de estilos antigos de bloqueio/overlay
                     const overlayAntigo = el.querySelector('.overlay-desbloqueio');
                     if (overlayAntigo) overlayAntigo.remove();
-                    
+
                     // Limpeza de botões de navegação antigos (para evitar duplicação)
                     const navAntiga = el.querySelector('.nav-etapa-container');
                     if (navAntiga) navAntiga.remove();
 
                     // LÓGICA PRINCIPAL: Mostrar apenas a etapa atual
                     if (isEtapaAtual) {
-                        el.style.display = 'block';
-                        
+                        // Substituição de style.display por classes do engenharia.css
+                        el.classList.remove('etapa-oculta');
+                        el.classList.add('etapa-ativa');
+                        el.style.display = ''; // Remove display:none inline se houver
+
                         // Reseta estilos visuais de bloqueio (caso existam no CSS)
                         el.classList.remove('card-bloqueado', 'etapa-bloqueada');
-                        el.style.opacity = "1";
-                        el.style.filter = "none";
-                        el.style.pointerEvents = "auto";
-                        el.style.backgroundColor = "";
-                        el.style.border = "";
 
                         // Injeta botão de VOLTAR se não for a primeira etapa e ainda não foi adicionado nesta etapa
                         if (index > 0 && !botaoVoltarAdicionado) {
@@ -181,38 +187,62 @@ document.addEventListener('DOMContentLoaded', async () => {
                             botaoVoltarAdicionado = true;
                         }
                     } else {
-                        // ETAPA FUTURA: TRANCADA E LIMPA (Reset em Cascata Visual)
-                        // Mantém bloqueada para evitar interação antes da hora
-                        el.style.display = 'none';
+                        // ETAPA FUTURA OU PASSADA: Oculta para focar na atual
+                        el.classList.remove('etapa-ativa');
+                        el.classList.add('etapa-oculta');
                     }
                 });
             });
-            
+
             // Rola para o topo para manter o foco na etapa atual
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (rolarParaTopo) {
+                setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+            }
+
+            // Renderiza o menu de navegação atualizado
+            this.renderizarMenuNavegacao();
+
+            // --- REVALIDAÇÃO DE ESTADO DOS BOTÕES (FIX: Garante estado correto ao navegar) ---
+            const nomeEtapaAtual = this.ordem[indiceAtual];
+            if (nomeEtapaAtual === 'premissas') {
+                if (typeof atualizarEstadoBotaoPremissas === 'function') atualizarEstadoBotaoPremissas();
+            } 
+            else if (nomeEtapaAtual === 'modulos') {
+                const temSelecao = !!(estadoSelecaoModulo.watts && estadoSelecaoModulo.qtd);
+                if (typeof renderizarBotaoNavegacao === 'function') {
+                    renderizarBotaoNavegacao('container_sugestao_painel', 'window.avancarParaInversores()', temSelecao ? 'Configuração de Módulos Definida' : 'Selecione um Módulo', 'Avançar para Inversores', temSelecao);
+                }
+            } 
+            else if (nomeEtapaAtual === 'inversores') {
+                if (typeof atualizarComposicaoFinal === 'function') atualizarComposicaoFinal();
+            } 
+            else if (nomeEtapaAtual === 'financeiro') {
+                const isPrecoOk = projetoGerenciador[aba].dados.precoCalculado;
+                if (typeof renderizarBotaoNavegacao === 'function') {
+                    renderizarBotaoNavegacao('wrapper-etapa-financeira', 'window.avancarParaResumo()', isPrecoOk ? 'Análise Financeira Concluída' : 'Defina o Valor do Kit', 'Ver Resumo e Salvar', isPrecoOk);
+                }
+            }
         },
 
         // Helper para criar o botão de voltar visualmente integrado
-        injetarBotaoVoltar: function(elementoPai, nomeEtapaAnterior) {
+        injetarBotaoVoltar: function (elementoPai, nomeEtapaAnterior) {
             const containerNav = document.createElement('div');
             containerNav.className = 'nav-etapa-container';
-            containerNav.style.cssText = "margin-bottom: 15px; display: flex; align-items: center;";
-            
+            // Estilo movido para CSS (.nav-etapa-container)
+
             const btnVoltar = document.createElement('button');
             btnVoltar.innerHTML = `<i class="fas fa-arrow-left"></i> Voltar para ${nomeEtapaAnterior.charAt(0).toUpperCase() + nomeEtapaAnterior.slice(1)}`;
             btnVoltar.onclick = () => window.voltarEtapa();
             
-            // Estilo do botão de voltar
-            btnVoltar.style.cssText = "background: transparent; border: 1px solid #cbd5e1; color: #64748b; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;";
-            btnVoltar.onmouseover = () => { btnVoltar.style.background = "#f1f5f9"; btnVoltar.style.color = "#334155"; };
-            btnVoltar.onmouseout = () => { btnVoltar.style.background = "transparent"; btnVoltar.style.color = "#64748b"; };
+            // Substituição de estilos inline por classe CSS
+            btnVoltar.className = 'btn-voltar-etapa';
 
             containerNav.appendChild(btnVoltar);
             elementoPai.insertBefore(containerNav, elementoPai.firstChild);
         },
 
         // Avança para a próxima etapa (Forward)
-        avancarPara: function(nomeEtapa) {
+        avancarPara: function (nomeEtapa) {
             const novoIndice = this.ordem.indexOf(nomeEtapa);
             const aba = projetoGerenciador.abaAtiva;
             if (novoIndice > -1 && projetoGerenciador[aba]) {
@@ -222,34 +252,50 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // CORREÇÃO SCROLL: Só sincroniza visualmente (scroll top) se houver mudança real de etapa.
                 // Isso evita que ações dentro da mesma etapa (como selecionar painel) rolem a tela.
                 if (novoIndice > indiceAtual) {
+                    // Atualiza o máximo alcançado se estiver avançando
+                    if (novoIndice > (projetoGerenciador[aba].dados.maxEtapaIndex || 0)) {
+                        projetoGerenciador[aba].dados.maxEtapaIndex = novoIndice;
+                    }
+
                     projetoGerenciador[aba].dados.etapaIndex = novoIndice;
                     this.sincronizarVisual();
+
+                    // Atualiza o header se estivermos no resumo
+                    atualizarHeaderResumo(this.ordem[novoIndice] === 'resumo');
                 }
             }
         },
 
-        // Recua para uma etapa específica SEM resetar imediatamente (Snapshot para Dirty Check)
-        recuarPara: function(nomeEtapa) {
-            const novoIndice = this.ordem.indexOf(nomeEtapa);
+        // Navegação direta via Menu (Salta para qualquer etapa permitida)
+        irPara: function (indiceAlvo) {
             const aba = projetoGerenciador.abaAtiva;
-            
-            if (novoIndice > -1 && projetoGerenciador[aba]) {
-                // 1. Captura o estado ATUAL da etapa para a qual estamos voltando
-                // Isso serve para comparar depois se o usuário mudou algo ou não
-                this.snapshotEstado = this.capturarEstado(nomeEtapa);
-                console.log(`Voltando para ${nomeEtapa}. Snapshot criado para detecção de mudanças.`);
+            if (!projetoGerenciador[aba]) return;
 
-                // 2. Apenas recua o índice visualmente
-                projetoGerenciador[aba].dados.etapaIndex = novoIndice;
+            const maxPermitido = projetoGerenciador[aba].dados.maxEtapaIndex || 0;
+
+            // Só permite ir se o índice alvo for menor ou igual ao máximo já alcançado
+            if (indiceAlvo <= maxPermitido) {
+                // FIX: Se estiver voltando para uma etapa anterior, captura o snapshot para detecção de mudanças
+                const indiceAtual = projetoGerenciador[aba].dados.etapaIndex || 0;
+                if (indiceAlvo < indiceAtual) {
+                    const nomeEtapaAlvo = this.ordem[indiceAlvo];
+                    this.snapshotEstado = this.capturarEstado(nomeEtapaAlvo);
+                    console.log(`Navegação via Menu para ${nomeEtapaAlvo}. Snapshot criado.`);
+                }
+
+                projetoGerenciador[aba].dados.etapaIndex = indiceAlvo;
                 this.sincronizarVisual();
+
+                // Atualiza o header se estivermos entrando ou saindo do resumo
+                atualizarHeaderResumo(this.ordem[indiceAlvo] === 'resumo');
             }
         },
 
         // Recua para uma etapa específica SEM resetar imediatamente (Snapshot para Dirty Check)
-        recuarPara: function(nomeEtapa) {
+        recuarPara: function (nomeEtapa) {
             const novoIndice = this.ordem.indexOf(nomeEtapa);
             const aba = projetoGerenciador.abaAtiva;
-            
+
             if (novoIndice > -1 && projetoGerenciador[aba]) {
                 // 1. Captura o estado ATUAL da etapa para a qual estamos voltando
                 // Isso serve para comparar depois se o usuário mudou algo ou não
@@ -259,22 +305,35 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 2. Apenas recua o índice visualmente
                 projetoGerenciador[aba].dados.etapaIndex = novoIndice;
                 this.sincronizarVisual();
+
+                // Atualiza o header (provavelmente saindo do resumo)
+                atualizarHeaderResumo(this.ordem[novoIndice] === 'resumo');
             }
         },
 
         // Limpa dados das etapas futuras (chamado apenas se houver alteração)
-        limparCascataFutura: function(etapaAtual) {
+        limparCascataFutura: function (etapaAtual) {
             const indiceAtual = this.ordem.indexOf(etapaAtual);
             // Limpa tudo DA PRÓXIMA etapa em diante
+            const aba = projetoGerenciador.abaAtiva;
+
+            // Reseta o progresso máximo para a etapa atual, pois o futuro foi invalidado
+            if (projetoGerenciador[aba]) {
+                projetoGerenciador[aba].dados.maxEtapaIndex = indiceAtual;
+            }
+
             for (let i = this.ordem.length - 1; i > indiceAtual; i--) {
                 const etapaNome = this.ordem[i];
                 console.log(`Resetando etapa futura: ${etapaNome}`);
+                if (etapaNome === 'modulos') {
+                    console.error("DEBUG CRÍTICO: A etapa [" + etapaAtual + "] disparou um RESET na etapa [modulos]. Verifique se o snapshot de premissas está correto.");
+                }
                 this.limparDadosEtapa(etapaNome);
             }
         },
 
         // Captura uma "foto" dos dados críticos da etapa para comparação
-        capturarEstado: function(etapa) {
+        capturarEstado: function (etapa) {
             if (etapa === 'premissas') {
                 return JSON.stringify({
                     consumo: document.getElementById('uc_consumo')?.value,
@@ -295,13 +354,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
 
         // Verifica se o estado atual difere do snapshot salvo
-        houveAlteracao: function(etapa) {
+        houveAlteracao: function (etapa) {
             const estadoAtual = this.capturarEstado(etapa);
             return estadoAtual !== this.snapshotEstado;
         },
 
         // Função auxiliar para limpar dados específicos de cada etapa
-        limparDadosEtapa: function(etapa) {
+        limparDadosEtapa: function (etapa) {
             if (etapa === 'financeiro') {
                 limparFinanceiro();
             } else if (etapa === 'inversores') {
@@ -314,14 +373,111 @@ document.addEventListener('DOMContentLoaded', async () => {
                 estadoSelecaoModulo = { watts: null, qtd: null };
                 zerarInterfaceTecnica();
             }
+        },
+
+        // Renderiza o menu de navegação logo após o header fixo
+        renderizarMenuNavegacao: function () {
+            const aba = projetoGerenciador.abaAtiva;
+            if (!aba || !projetoGerenciador[aba]) return;
+
+            const dados = projetoGerenciador[aba].dados;
+            const indiceAtual = dados.etapaIndex || 0;
+            const maxAlcancado = dados.maxEtapaIndex || 0;
+
+            // Busca ou cria o container do menu
+            let menuContainer = document.getElementById('menu_navegacao_etapas');
+
+            // Busca o wrapper sticky criado pelo cabeçalho de contexto
+            const stickyWrapper = document.getElementById('sticky_wrapper_contexto');
+
+            if (!menuContainer) {
+                menuContainer = document.createElement('div');
+                menuContainer.id = 'menu_navegacao_etapas';
+
+                if (stickyWrapper) {
+                    // Se o wrapper existe, o menu vai dentro dele (abaixo do contexto)
+                    stickyWrapper.appendChild(menuContainer);
+                } else {
+                    // Fallback: insere no topo do wrapper principal
+                    const main = document.querySelector('main') || document.body;
+                    main.insertBefore(menuContainer, main.firstChild);
+                }
+            } else if (stickyWrapper && menuContainer.parentNode !== stickyWrapper) {
+                // Se o menu já existe mas não está no wrapper (ex: recarregamento), move ele
+                stickyWrapper.appendChild(menuContainer);
+            }
+
+            // Estilos do container
+            menuContainer.className = 'menu-etapas-container';
+            // Estilos movidos para CSS (.menu-etapas-container)
+
+            let html = '';
+            this.labels.forEach((label, index) => {
+                const isAtivo = index === indiceAtual;
+                const isAcessivel = index <= maxAlcancado;
+                const isPassado = index < indiceAtual;
+
+                // Definição de classes baseada no estado
+                let classe = 'item-etapa ' + (isAtivo ? 'ativo' : (isAcessivel ? 'acessivel' : 'bloqueado'));
+
+                const onclick = isAcessivel ? `onclick="window.navegarPeloMenu(${index})"` : '';
+                const icone = isPassado ? '<i class="fas fa-check" style="font-size: 0.7rem; margin-right: 5px;"></i>' : `<span style="margin-right: 5px; opacity: 0.7;">${index + 1}.</span>`;
+
+                html += `<div class="${classe}" ${onclick}>${icone}${label}</div>`;
+
+                // Separador visual (opcional)
+                if (index < this.labels.length - 1) {
+                    html += `<div class="separador-etapa"><i class="fas fa-chevron-right"></i></div>`;
+                }
+            });
+
+            menuContainer.innerHTML = html;
+        }
+    };
+
+    // NOVA FUNÇÃO: Gerencia a exibição do botão no header durante o resumo
+    function atualizarHeaderResumo(isResumo) {
+        const btn = document.getElementById('btn_gerar_proposta');
+        const cabecalhoContexto = document.getElementById('cabecalho_contexto_projeto');
+        // Tenta encontrar o container de stats. Assumindo estrutura comum de dashboard.
+        // Se não encontrar classe específica, usa o parent do fixoPotReal como referência.
+        const containerStats = document.querySelector('.area-indicadores-fixos') || fixoPotReal?.parentElement?.parentElement;
+        const headerContainer = document.querySelector('.painel-fixo') || containerStats?.parentElement;
+
+        if (!btn || !containerStats || !headerContainer) return;
+
+        if (isResumo) {
+            containerStats.style.display = 'none'; // Oculta os números
+            // Move o botão para o header
+            headerContainer.appendChild(btn);
+            btn.classList.add('btn-header-destaque'); // Classe para estilizar no header
+
+            // Oculta o cabeçalho de contexto no resumo para limpar a visão
+            if (cabecalhoContexto) cabecalhoContexto.style.display = 'none';
+        } else {
+            containerStats.style.display = ''; // Mostra os números
+            // Devolve o botão para o final da página
+            const containerOriginal = document.getElementById('container_botao_salvar_final');
+            if (containerOriginal) containerOriginal.appendChild(btn);
+            btn.classList.remove('btn-header-destaque');
+
+            // Mostra o cabeçalho de contexto nas outras etapas
+            if (cabecalhoContexto) cabecalhoContexto.style.display = 'flex';
+        }
+    }
+
+    // NOVA FUNÇÃO: Exposta globalmente para o onclick do HTML gerado
+    window.navegarPeloMenu = function (index) {
+        if (typeof gerenciadorEtapas !== 'undefined') {
+            gerenciadorEtapas.irPara(index);
         }
     };
 
     // NOVA FUNÇÃO: Voltar Etapa (Genérica)
-    window.voltarEtapa = function() {
+    window.voltarEtapa = function () {
         const aba = projetoGerenciador.abaAtiva;
         if (!aba || !projetoGerenciador[aba]) return;
-        
+
         const indiceAtual = projetoGerenciador[aba].dados.etapaIndex;
         if (indiceAtual > 0) {
             const etapaAnterior = gerenciadorEtapas.ordem[indiceAtual - 1];
@@ -330,36 +486,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // --- NOVA FUNÇÃO: CONFIRMAR PREMISSAS E AVANÇAR ---
-    window.confirmarPremissasEAvançar = function() {
-        // VALIDAÇÃO: Consumo Obrigatório
-        const consumo = parseFloat(document.getElementById('uc_consumo')?.value) || 0;
-        if (consumo <= 0) {
-            alert("Por favor, informe um Consumo Médio válido (maior que zero) para prosseguir.");
-            const input = document.getElementById('uc_consumo');
-            if(input) input.focus();
-            return;
-        }
-
+    window.confirmarPremissasEAvançar = function () {
         console.log("Iniciando transição: Premissas -> Módulos");
 
-        // 1. Verifica se houve mudança real nas premissas
-        if (typeof gerenciadorEtapas !== 'undefined') {
-            if (gerenciadorEtapas.houveAlteracao('premissas')) {
-                console.log("Alterações detectadas nas premissas. Resetando etapas futuras.");
-                gerenciadorEtapas.limparCascataFutura('premissas');
-            } else {
-                console.log("Nenhuma alteração nas premissas. Mantendo dados futuros.");
-            }
+        // 1. Antes de qualquer coisa, sincronizamos o snapshot para evitar resets falsos
+        if (gerenciadorEtapas.houveAlteracao('premissas')) {
+            console.warn("Mudança real detectada. Limpando apenas se necessário.");
+            // Se mudou, precisamos recalcular, mas não podemos deixar o container vazio
+            recalcularDimensionamento();
+            processarEscolhaModulo(dimensionamentoCompleto);
         }
 
-        // 2. Força um recálculo para garantir que os dados estão atualizados
-        recalcularDimensionamento();
-
-        // 3. Avança para a etapa de Módulos (Índice 1)
-        // Isso vai trancar as premissas e liberar a seleção de módulos
-        if (typeof gerenciadorEtapas !== 'undefined') {
-            gerenciadorEtapas.avancarPara('modulos');
+        // 2. FORÇA A EXIBIÇÃO DA GRID ANTES DE AVANÇAR
+        const container = document.getElementById('container_sugestao_painel');
+        if (container && (!container.querySelector('.grid-sugestoes') || container.innerHTML.includes('Aguardando'))) {
+            console.log("Recuperando cards antes do avanço...");
+            processarEscolhaModulo(dimensionamentoCompleto);
         }
+
+        // 3. Garante que o CSS não está escondendo o container
+        const wrapper = document.getElementById('wrapper-etapa-paineis');
+        if (wrapper) {
+            wrapper.classList.remove('etapa-oculta');
+            wrapper.classList.add('etapa-ativa');
+            wrapper.classList.remove('card-bloqueado', 'disabled');
+        }
+
+        gerenciadorEtapas.avancarPara('modulos');
     };
 
     // ======================================================================
@@ -393,7 +546,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
-    window.configurarGerador = function(modo) {
+    window.configurarGerador = function (modo) {
         // 1. Define no objeto global o que será processado (Schema D1)
         projetoGerenciador.tipoEscopo = modo;
         projetoGerenciador.modoDuplo = (modo === 'AMBAS');
@@ -407,23 +560,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 3. Define qual aba deve ser a inicial
         let abaParaAbrir = (modo === 'PREMIUM') ? 'premium' : 'standard';
-        
+
         // 4. Fecha o modal e inicia o gerador
         const modal = document.getElementById('modal_inicial_escopo');
         if (modal) modal.remove();
-        
+
         // 5. Troca para a aba correta e limpa o topo
         // Precisamos garantir que o sistema saiba que mudou
         projetoGerenciador.abaAtiva = ''; // Força a troca
         window.trocarAbaProposta(abaParaAbrir);
-        zerarInterfaceTecnica();
     };
 
     // ======================================================================
     // � GERENCIAMENTO DE ABAS (STANDARD / PREMIUM)
     // ======================================================================
 
-    window.trocarAbaProposta = function(novaAba) {
+    window.trocarAbaProposta = function (novaAba) {
         if (projetoGerenciador.abaAtiva === novaAba) return;
 
         // 1. Salva o estado da aba atual
@@ -439,15 +591,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.body.classList.remove('modo-premium');
         }
 
-        // Sincroniza os botões do cabeçalho (se existirem)
-        const btnStd = document.getElementById('btn_modo_std');
-        const btnPrm = document.getElementById('btn_modo_prm');
-        if (btnStd && btnPrm) {
-            // Remove classe 'ativo' de ambos e adiciona no correto
-            btnStd.classList.toggle('ativo', novaAba === 'standard');
-            btnPrm.classList.toggle('ativo', novaAba === 'premium');
-        }
+        // Sincroniza os botões do cabeçalho (novo método com data-aba)
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-aba') === novaAba);
+        });
 
+        // 3. O SEGREDO: Remove 'active' de todos os conteúdos e mostra só o alvo
+        document.querySelectorAll('.aba-content').forEach(content => {
+            if(content.getAttribute('data-aba') === novaAba) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+        console.log("Navegando para aba:", novaAba);
         // 4. Carrega o estado da nova aba
         carregarEstadoAba(novaAba);
 
@@ -460,11 +617,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (estadoSelecaoModulo.watts) {
             recalcularDimensionamento();
         }
+
+        // --- LÓGICA DE AUTOMAÇÃO UNIFICADA (STANDARD E PREMIUM) ---
+        // Se a aba ainda não tem preço calculado (ou seja, está "virgem" ou incompleta),
+        // executamos o fluxo de dimensionamento automático.
+        const estadoNovaAba = projetoGerenciador[novaAba];
+        if (estadoNovaAba && !estadoNovaAba.dados.precoCalculado) {
+             console.log(`Iniciando automação para aba: ${novaAba}`);
+             setTimeout(() => {
+                 autoDimensionarCompleto();
+             }, 200);
+        }
+
+        // FIX: Restaura a posição do botão no header se estivermos no resumo
+        // O cálculo financeiro pode ter movido o botão para o container de resumo
+        const estado = projetoGerenciador[novaAba];
+        const indiceAtual = estado.dados.etapaIndex || 0;
+        const isResumo = gerenciadorEtapas.ordem[indiceAtual] === 'resumo';
+        atualizarHeaderResumo(isResumo);
     };
 
     function salvarEstadoAbaAtual() {
         const aba = projetoGerenciador.abaAtiva;
-        
+
         // CORREÇÃO: Se a aba não estiver definida ou for inválida, não tenta salvar
         if (!aba || !projetoGerenciador[aba]) return;
 
@@ -481,7 +656,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             fatorLucro: document.getElementById('prem_fator_lucro').value, // Salva o fator usado nesta aba
             precoCalculado: statusTecnicoSistema.valido && carrinhoInversores.length > 0,
             // FIX: Preserva o índice da etapa atual para não resetar o fluxo
-            etapaIndex: indiceAtual
+            etapaIndex: indiceAtual,
+            maxEtapaIndex: estado.dados.maxEtapaIndex || indiceAtual,
+            // NOVO: Salva o resumo financeiro calculado para listagem rápida
+            resumoFinanceiro: {
+                valorTotal: parseFloat(document.getElementById('res_valor_total_proposta')?.innerText.replace(/[^\d,]/g, '').replace(',', '.')) || 0,
+                potenciaTotal: parseFloat(document.getElementById('potencia_dc_total')?.innerText) || 0
+            }
         };
     }
 
@@ -492,11 +673,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         carrinhoInversores = [];
         estadoSelecaoInversor = { tipo: null, id: null };
         estadoSelecaoModulo = { watts: null, qtd: null };
-        
+
         // Limpa inputs ocultos por padrão (serão restaurados se houver dados)
         if (selectModulo) selectModulo.value = '';
         if (totalModulosDisplay) totalModulosDisplay.value = '';
-        
+
         if (estado.selecionado) {
             // Restaura dados
             carrinhoInversores = [...estado.dados.inversores];
@@ -504,9 +685,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (estado.dados.estadoSelecaoInversor) {
                 estadoSelecaoInversor = { ...estado.dados.estadoSelecaoInversor };
             }
-            
+
             document.getElementById('valor_kit_fornecedor').value = estado.dados.valorKit || '';
-            
+
             // Restaura o fator de lucro salvo ou carrega o padrão da aba
             if (estado.dados.fatorLucro) {
                 document.getElementById('prem_fator_lucro').value = estado.dados.fatorLucro;
@@ -528,40 +709,55 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // --- FIX: Atualiza Potência DC Total e Header ---
                 const potDC = (estadoSelecaoModulo.watts * estadoSelecaoModulo.qtd);
                 document.getElementById('potencia_dc_total').innerText = (potDC / 1000).toFixed(2);
-                sincronizarEngenhariaUnica(); 
+                sincronizarEngenhariaUnica();
             }
 
             // Restaura visual dos inversores
             renderizarTabelaHuawei();
             atualizarComposicaoFinal();
+
+            // Atualiza o resumo superior se estivermos na etapa financeira
+            renderizarResumoSuperiorFinanceiro();
         } else {
             // Se a aba está vazia, reseta a interface técnica
             zerarInterfaceTecnica();
-            
+            // Garante que o PR e outros dados do header sejam atualizados mesmo sem módulos
+            sincronizarEngenhariaUnica();
+
             // Limpa o valor do kit para não herdar da aba anterior
             const inputKit = document.getElementById('valor_kit_fornecedor');
             if (inputKit) inputKit.value = '';
-            
+
             // Carrega o fator de lucro padrão para esta aba (novo ou limpo)
             carregarFatorLucroPadrao(aba);
 
             // --- FIX: Zera Potência DC Total ---
             document.getElementById('potencia_dc_total').innerText = "0.00";
-            
+
             // Re-renderiza módulos para remover qualquer seleção visual anterior
             if (dimensionamentoCompleto) {
                 processarEscolhaModulo(dimensionamentoCompleto);
             }
-            
+
             renderizarTabelaHuawei();
             atualizarComposicaoFinal();
 
             // --- FIX: Limpa Financeiro ---
             limparFinanceiro();
+
+            // Limpa resumo superior
+            const resumoDiv = document.getElementById('resumo-topo-financeiro');
+            if (resumoDiv) resumoDiv.remove();
         }
 
         // Aplica as travas visuais corretas para esta aba
-        gerenciadorEtapas.sincronizarVisual();
+        gerenciadorEtapas.sincronizarVisual(false);
+        gerenciadorEtapas.renderizarMenuNavegacao(); // Garante que o menu apareça ao trocar de aba
+
+        // FIX: Se carregou na etapa de premissas, tira snapshot inicial para evitar falso positivo de alteração
+        if (projetoGerenciador[aba].dados.etapaIndex === 0) {
+            gerenciadorEtapas.snapshotEstado = gerenciadorEtapas.capturarEstado('premissas');
+        }
     }
 
     // Helper para carregar o fator correto das premissas globais
@@ -589,13 +785,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (projetoGerenciador.abaAtiva && projetoGerenciador[projetoGerenciador.abaAtiva]) {
                 projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado = false;
             }
-            
+
             // FIX: Oculta o resumo executivo visualmente para evitar dados fantasmas
             const secaoResumo = document.getElementById('secao_resumo_executivo');
             if (secaoResumo) secaoResumo.style.display = 'none';
-            
+
             const secaoComparativo = document.getElementById('secao_comparativa_final');
-            if (secaoComparativo) secaoComparativo.style.display = 'none';
+            if (secaoComparativo) secaoComparativo.classList.add('etapa-oculta');
 
             validarBotaoFinal(); // Revalida para bloquear o botão
         } else if (acao === 'VALIDAR') {
@@ -622,7 +818,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const campos = [
             'res_custo_materiais', 'res_custo_mo_base', 'res_logistica',
             'res_lucro_proposta', 'res_imposto_cascata', 'res_preco_venda_servico',
-            'res_valor_total_proposta'
+            'res_valor_total_proposta', 'res_linha_comissao_valor'
         ];
         campos.forEach(id => {
             const el = document.getElementById(id);
@@ -632,12 +828,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado = false;
         }
         
+        // Oculta linha de comissão se existir
+        const elComissao = document.getElementById('res_linha_comissao_valor');
+        if (elComissao) {
+            elComissao.closest('.linha-custo').style.display = 'none';
+        }
+
         // FIX: Garante que o resumo da aba anterior não permaneça visível
         const secaoResumo = document.getElementById('secao_resumo_executivo');
         if (secaoResumo) secaoResumo.style.display = 'none';
-        
+
         const secaoComparativo = document.getElementById('secao_comparativa_final');
-        if (secaoComparativo) secaoComparativo.style.display = 'none';
+        if (secaoComparativo) secaoComparativo.classList.add('etapa-oculta');
 
         validarBotaoFinal();
     }
@@ -660,11 +862,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- FUNÇÕES DE EVENTO (Declaradas antes do uso) ---
     function handlePremiseChange(event) {
         console.log("Alteração detectada em:", event.target.id);
-        
+
         // Feedback visual imediato
         gerenciarEstadoCalculo('INVALIDAR');
         const btn = document.getElementById('btn_gerar_proposta');
-        if(btn) btn.innerText = "Recalculando...";
+        if (btn) btn.innerText = "Recalculando...";
 
         // Sincroniza o modo composto se a alteração for no modo simples
         if (event.target.id === 'azimute_geral' || event.target.id === 'inclinacao_geral') {
@@ -674,7 +876,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
             // O recálculo agora decide se mantém ou limpa os dados
             recalcularDimensionamento();
-            
+
             // Restaura texto do botão se ainda houver seleção válida
             if (estadoSelecaoModulo.watts && btn) btn.innerText = "Salvar Proposta";
         }, 500);
@@ -686,7 +888,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Função para atualizar os labels de resumo nos cards retráteis
     function atualizarResumosVisiveis() {
         console.log("Atualizando labels de resumo...");
-        
+
         // 1. Resumo de Geometria
         const az = document.getElementById('azimute_geral')?.value || '0';
         const inc = document.getElementById('inclinacao_geral')?.value || '0';
@@ -707,50 +909,114 @@ document.addEventListener('DOMContentLoaded', async () => {
     * Inicializa os componentes de interface e eventos da seção de Inversores
     */
     function initComponentesInversor() {
-        const container = document.getElementById('oversizing_chips');
-        if (!container) return;
-        container.innerHTML = ''; // Limpa para evitar duplicados
-        
+        const select = document.getElementById('sel_oversizing');
+        if (!select) return;
+        select.innerHTML = ''; // Limpa
+
+        // LÊ O PADRÃO DAS PREMISSAS GLOBAIS (Conexão com Central BelEnergy)
+        const premissas = db.buscarConfiguracao('premissas_globais');
+        const padrao = premissas?.engenharia?.oversizingPadrao || 50; // Default 50% se não configurado
+
         for (let i = 10; i <= 80; i += 5) {
-            const chip = document.createElement('div');
-            chip.className = `chip-os ${i === 50 ? 'active' : ''}`; 
-            chip.innerText = `${i}%`;
-            chip.onclick = () => {
-                document.querySelectorAll('.chip-os').forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                document.getElementById('val_oversizing_aplicado').value = (1 + i / 100).toFixed(2);
-                renderizarTabelaHuawei();
-            };
-            container.appendChild(chip);
+            const option = document.createElement('option');
+            option.value = (1 + i / 100).toFixed(2);
+            option.text = `${i}%`;
+            if (i === padrao) option.selected = true;
+            select.appendChild(option);
         }
-        document.getElementById('val_oversizing_aplicado').value = "1.50";
+        
+        select.addEventListener('change', () => renderizarTabelaHuawei());
+    }
+
+    // --- REMOÇÃO DE ELEMENTOS REDUNDANTES (Limpeza de Interface) ---
+    function limparInterfaceFinanceira() {
+        const wrapper = document.getElementById('wrapper-etapa-financeira');
+        if (wrapper) {
+            // Remove títulos redundantes como "Formação de Preço"
+            const titulos = wrapper.querySelectorAll('h2, h3, .titulo-secao');
+            titulos.forEach(t => {
+                if (t.innerText.includes('Formação de Preço') || t.innerText.includes('Engenharia de Custos')) {
+                    t.style.display = 'none';
+                }
+            });
+        }
     }
 
     // --- Funções de Inicialização ---
     function inicializarBaseDeDados() {
-        // Preenchimento do Header com dados do Projeto
-        if (headerNomeCliente) headerNomeCliente.innerText = projetoCompleto.nome;
-        if (headerNomeProjeto) headerNomeProjeto.innerText = projetoCompleto.projeto.nome_projeto;
-        if (headerLocalizacao) headerLocalizacao.innerText = `${projetoCompleto.projeto.cidade} - ${projetoCompleto.projeto.uf}`;
-        
-        // Preenchimento dos Vitals de Contexto
-        // Inicializa o tipo de estrutura com o valor do projeto
-        if (document.getElementById('display_tipo_estrutura')) {
-            document.getElementById('display_tipo_estrutura').innerText = projetoCompleto.projeto.tipoTelhado || 'Não informado';
+        // Restaura estilos críticos (CSS-in-JS) para garantir visualização dos cards
+        injetarEstilosDinamicos();
+
+        // INJEÇÃO DO BOTÃO CANCELAR (FIXO NO HEADER) - Visível constantemente
+        const headerContainer = document.querySelector('.header-container');
+        if (headerContainer && !document.getElementById('btn_cancelar_global')) {
+            const btnCancel = document.createElement('button');
+            btnCancel.id = 'btn_cancelar_global';
+            btnCancel.innerHTML = '<i class="fas fa-times"></i> Sair';
+            // Estilos inline para garantir visibilidade imediata no header escuro
+            btnCancel.style.cssText = `
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #e2e8f0;
+                padding: 6px 14px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.85rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-left: 20px;
+                transition: all 0.2s;
+                height: 36px;
+            `;
+            btnCancel.onmouseover = () => { btnCancel.style.background = 'rgba(255, 255, 255, 0.2)'; btnCancel.style.color = '#fff'; };
+            btnCancel.onmouseout = () => { btnCancel.style.background = 'rgba(255, 255, 255, 0.1)'; btnCancel.style.color = '#e2e8f0'; };
+            btnCancel.onclick = () => {
+                if(confirm("Tem certeza que deseja sair? O progresso não salvo será perdido.")) {
+                    const pid = sessionStorage.getItem('projeto_ativo_id');
+                    window.location.href = pid ? `projeto-detalhes.html?id=${pid}` : 'dashboard-admin.html';
+                }
+            };
+
+            // Insere logo após a logo-area para ficar à esquerda
+            const logoArea = headerContainer.querySelector('.logo-area');
+            if (logoArea) logoArea.insertAdjacentElement('afterend', btnCancel);
         }
+
+        // Esconde o botão de gerar proposta inicialmente para evitar que apareça nas premissas
+        if (btnGerarProposta) btnGerarProposta.style.display = 'none';
+
+        // FIX: Esconde o container estático da ação final para não poluir as premissas
+        const containerFinal = document.querySelector('.container-acao-final');
+        if (containerFinal) containerFinal.style.display = 'none';
+
+        // --- POPULA A NOVA BARRA DE CONTEXTO ---
+        const elCtxCliente = document.getElementById('ctx_cliente');
+        const elCtxLocal = document.getElementById('ctx_local');
+        const elCtxConsumo = document.getElementById('ctx_consumo');
+        const elCtxEstrutura = document.getElementById('ctx_estrutura');
+        const elCtxOrigem = document.getElementById('ctx_origem');
+
+        if (elCtxCliente) elCtxCliente.innerText = projetoCompleto.nome;
+        if (elCtxLocal) elCtxLocal.innerText = `${projetoCompleto.projeto.cidade}/${projetoCompleto.projeto.uf}`;
+        if (elCtxConsumo) elCtxConsumo.innerText = `${projetoCompleto.projeto.consumo || 0} kWh (${projetoCompleto.projeto.tipoLigacao === 'monofasico' ? 'Mono' : 'Tri'})`;
+        if (elCtxEstrutura) elCtxEstrutura.innerText = projetoCompleto.projeto.tipoTelhado || 'Telhado';
+        
+        const origemMap = {
+            'nenhum': 'Venda Direta', 'venda_direta': 'Venda Direta',
+            'indicador': 'Indicação', 'representante': 'Representante'
+        };
+        if (elCtxOrigem) elCtxOrigem.innerText = origemMap[projetoCompleto.projeto.origemVenda] || 'Venda Direta';
+
         if (typeof window.verificarTipoEstrutura === 'function') {
             window.verificarTipoEstrutura(); // Atualiza visibilidade do fornecedor
-        }
-        if (fixoConsumo) fixoConsumo.innerText = `${projetoCompleto.projeto.consumo} kWh`;
-        if (fixoTipoRede) {
-            const tipo = projetoCompleto.projeto.tipoLigacao;
-            fixoTipoRede.innerText = tipo === 'monofasico' ? 'Mono' : (tipo === 'bifasico' ? 'Bif' : 'Tri');
         }
 
         const { cidade, uf } = projetoCompleto.projeto; // Usa o endereço do projeto
         const cidadeNormalizada = cidade.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         const dadosCidade = baseDadosAlagoas[cidadeNormalizada];
-        
+
         // 1. Obter Fator de Geração (Prioriza o HSP salvo no projeto)
         if (projetoCompleto.projeto.hsp && projetoCompleto.projeto.hsp > 0) {
             hspBruto = projetoCompleto.projeto.hsp;
@@ -772,30 +1038,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Inicializa componentes dinâmicos da proposta
         initComponentesInversor();
 
+        // Inicializa os opcionais premium
+        renderizarOpcionaisPremium();
+
+        // Limpa elementos redundantes da interface financeira
+        limparInterfaceFinanceira();
+
         // Força um recálculo inicial para garantir que o estado esteja limpo/pronto
         recalcularDimensionamento();
 
+        // GARANTIA: Força a atualização visual do header fixo mesmo se o recálculo não tiver módulos selecionados
+        sincronizarEngenhariaUnica();
+
         // Renderiza o botão de avançar na etapa de Premissas (sem scroll inicial)
-        // Verifica consumo inicial
-        const consumoInicial = parseFloat(document.getElementById('uc_consumo')?.value) || 0;
-        renderizarBotaoNavegacao('card_perdas', 'window.confirmarPremissasEAvançar()', consumoInicial > 0 ? 'Premissas de Projeto' : 'Informe o Consumo', 'Ir para Seleção de Módulos', consumoInicial > 0);
+        atualizarEstadoBotaoPremissas();
     }
 
     // --- CARGA DE PREMISSAS GLOBAIS ---
     const premissasGlobais = db.buscarConfiguracao('premissas_globais');
     if (premissasGlobais) {
         // Atualiza inputs de engenharia (Azimute/Inclinação)
-        if(document.getElementById('azimute_geral')) document.getElementById('azimute_geral').value = premissasGlobais.engenharia.azimute;
-        if(document.getElementById('inclinacao_geral')) document.getElementById('inclinacao_geral').value = premissasGlobais.engenharia.inclinacao;
-        
+        if (document.getElementById('azimute_geral')) document.getElementById('azimute_geral').value = premissasGlobais.engenharia.azimute;
+        if (document.getElementById('inclinacao_geral')) document.getElementById('inclinacao_geral').value = premissasGlobais.engenharia.inclinacao;
+
         // Atualiza inputs de perdas detalhadas (se existirem na configuração)
         if (premissasGlobais.engenharia) {
-            if(document.getElementById('p_efici_inv')) document.getElementById('p_efici_inv').value = premissasGlobais.engenharia.eficienciaInversor ?? 98;
-            if(document.getElementById('p_temp_inv')) document.getElementById('p_temp_inv').value = premissasGlobais.engenharia.perdaTempInversor ?? 1.5;
-            if(document.getElementById('p_temp_mod')) document.getElementById('p_temp_mod').value = premissasGlobais.engenharia.perdaTempModulos ?? 10.13;
-            if(document.getElementById('p_cabos_total')) document.getElementById('p_cabos_total').value = premissasGlobais.engenharia.cabos ?? 2.0;
-            if(document.getElementById('p_extras')) document.getElementById('p_extras').value = premissasGlobais.engenharia.outros ?? 2.0;
-            if(document.getElementById('p_indisp')) document.getElementById('p_indisp').value = premissasGlobais.engenharia.indisponibilidade ?? 0.5;
+            if (document.getElementById('p_efici_inv')) document.getElementById('p_efici_inv').value = premissasGlobais.engenharia.eficienciaInversor ?? 98;
+            if (document.getElementById('p_temp_inv')) document.getElementById('p_temp_inv').value = premissasGlobais.engenharia.perdaTempInversor ?? 1.5;
+            if (document.getElementById('p_temp_mod')) document.getElementById('p_temp_mod').value = premissasGlobais.engenharia.perdaTempModulos ?? 10.13;
+            if (document.getElementById('p_cabos_total')) document.getElementById('p_cabos_total').value = premissasGlobais.engenharia.cabos ?? 2.0;
+            if (document.getElementById('p_extras')) document.getElementById('p_extras').value = premissasGlobais.engenharia.outros ?? 2.0;
+            if (document.getElementById('p_indisp')) document.getElementById('p_indisp').value = premissasGlobais.engenharia.indisponibilidade ?? 0.5;
         }
 
         // Atualiza inputs financeiros
@@ -803,7 +1076,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (document.getElementById('prem_fator_lucro')) {
             document.getElementById('prem_fator_lucro').value = premissasGlobais.financeiro.fatorLucroStandard || 1.1;
         }
+        if (document.getElementById('prem_lucro_minimo')) {
+            document.getElementById('prem_lucro_minimo').value = premissasGlobais.financeiro.lucroMinimo || 0;
+        }
         if (document.getElementById('prem_aliquota_imposto')) document.getElementById('prem_aliquota_imposto').value = premissasGlobais.financeiro.imposto;
+    }
+
+    // --- VERIFICAÇÃO DE EDIÇÃO DE PROPOSTA ---
+    const propostaIdEdicao = sessionStorage.getItem('proposta_ativa_id');
+    let modoEdicao = false;
+
+    if (propostaIdEdicao) {
+        const propostaSalva = db.listar('propostas').find(p => p.id === propostaIdEdicao);
+        if (propostaSalva) {
+            console.log("Modo Edição: Carregando proposta", propostaIdEdicao);
+            modoEdicao = true;
+
+            // 1. Restaura Escopo
+            if (propostaSalva.escopo) {
+                projetoGerenciador.tipoEscopo = propostaSalva.escopo;
+                projetoGerenciador.modoDuplo = (propostaSalva.escopo === 'AMBAS');
+                
+                // Atualiza botões de escopo no header
+                const btnStd = document.getElementById('btn_modo_std');
+                const btnPrm = document.getElementById('btn_modo_prm');
+                if (btnStd) btnStd.style.display = (propostaSalva.escopo === 'STANDARD' || propostaSalva.escopo === 'AMBAS') ? '' : 'none';
+                if (btnPrm) btnPrm.style.display = (propostaSalva.escopo === 'PREMIUM' || propostaSalva.escopo === 'AMBAS') ? '' : 'none';
+            }
+
+            // 2. Restaura Dados das Versões
+            if (propostaSalva.versoes.standard) {
+                projetoGerenciador.standard.dados = propostaSalva.versoes.standard;
+                projetoGerenciador.standard.selecionado = true;
+            }
+            if (propostaSalva.versoes.premium) {
+                projetoGerenciador.premium.dados = propostaSalva.versoes.premium;
+                projetoGerenciador.premium.selecionado = true;
+            }
+
+            // 3. Define Aba Inicial (Premium tem prioridade)
+            if (projetoGerenciador.premium.selecionado) {
+                projetoGerenciador.abaAtiva = 'premium';
+                document.body.classList.add('modo-premium');
+            } else {
+                projetoGerenciador.abaAtiva = 'standard';
+            }
+            
+            // Atualiza botões de aba visualmente
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-aba') === projetoGerenciador.abaAtiva);
+            });
+        }
     }
 
     // Oculta o campo de imposto da interface (Controlado via premissas globais)
@@ -820,36 +1143,42 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     function sincronizarEngenhariaUnica(prOverride = null) {
         // 1. Higienização e Captura das "Primícias"
-        const consumo = parseFloat(higienizarParaCalculo(uc_consumo.value)) || 0;
+        const valConsumo = inputConsumo ? inputConsumo.value : '0';
+        const consumo = parseFloat(higienizarParaCalculo(valConsumo)) || 0;
         const hsp = hspBruto || parseFloat(inputHSPBruto.innerText) || 0; // Usa variável global para precisão
-        
+
         // 2. Cálculo do PR Real de Projeto (Unificado)
         // Se passarmos um override, usamos ele (tempo real), senão pegamos do último dimensionamento salvo
         const prFinal = prOverride !== null ? prOverride : (dimensionamentoCompleto?.prCalculado || 0);
 
         // 3. Potência Real (Módulos Selecionados)
         const wattsMod = parseFloat(selectModulo.value) || 0;
-        const qtdTotal = parseInt(totalModulosDisplay.value) || 0;        
+        const qtdTotal = parseInt(totalModulosDisplay.value) || 0;
         const potReal = (qtdTotal * wattsMod) / 1000;
 
         // 4. Potência Mínima Requerida
-        const potMinima = hsp > 0 && prFinal > 0 ? consumo / (hsp * 30.4166 * prFinal) : 0;
+        const potMinima = hsp > 0 && prFinal > 0 ? consumo / (hsp * 30.4166 * prFinal) : 1;
 
         // 5. Atualização Visual no Header
-        fixoPotMinima.innerText = potMinima.toFixed(2) + " kWp";
-        fixoPotReal.innerText = potReal.toFixed(2) + " kWp";
-        fixoPr.innerText = (prFinal * 100).toFixed(2) + "%";
-        fixoGeracao.innerText = Math.round(potReal * hsp * 30.4166 * prFinal) + " kWh";
+        if (fixoPotMinima) fixoPotMinima.innerText = potMinima.toFixed(2) + " kWp";
+        if (fixoPotReal) fixoPotReal.innerText = potReal.toFixed(2) + " kWp";
+        if (fixoPr) fixoPr.innerText = (prFinal * 100).toFixed(2) + "%";
+        if (fixoGeracao) fixoGeracao.innerText = Math.round(potReal * hsp * 30.4166 * prFinal) + " kWh";
 
         // 6. Validação dos 4% (Status Dot)
-        fixoPotReal.classList.remove('valor-ok', 'valor-atencao', 'valor-critico'); // Reseta classes de validação
-        const diff = potMinima > 0 ? (potReal / potMinima) - 1 : 0;
-        if (potReal > 0 && diff < -0.04) {
-            fixoPotReal.classList.add("valor-critico");
-        } else if (potReal > 0 && diff < 0) {
-            fixoPotReal.classList.add("valor-atencao");
-        } else {
-            fixoPotReal.classList.add("valor-ok");
+        if (fixoPotReal) {
+            fixoPotReal.classList.remove('valor-ok', 'valor-atencao', 'valor-critico'); // Limpa classes anteriores
+            const diff = potMinima > 0 ? (potReal / potMinima) - 1 : 0;
+
+            if (potReal > 0) {
+                if (diff < -0.04) {
+                    fixoPotReal.classList.add("valor-critico");
+                } else if (diff < 0) {
+                    fixoPotReal.classList.add("valor-atencao");
+                } else {
+                    fixoPotReal.classList.add("valor-ok");
+                }
+            }
         }
     }
 
@@ -858,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Invalida o estado sempre que um recálculo de base é iniciado.
         gerenciarEstadoCalculo('INVALIDAR');
 
-        const consumo = parseFloat(higienizarParaCalculo(uc_consumo.value)) || 0;
+        const consumo = parseFloat(higienizarParaCalculo(inputConsumo.value)) || 0;
         let prPonderado = 0;
 
         const perdasExtras = {
@@ -895,51 +1224,59 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Atualiza o botão de avançar das premissas
         atualizarEstadoBotaoPremissas();
-        
+
         // 3. Executa o Dimensionamento Completo (Motor de Seleção 540W-715W)
         if (consumo > 0 && hspBruto > 0) {
             // Usa o PR PONDERADO para dimensionar
             const paramsDimensionamento = { rendimentoFinal: prPonderado }; // O model.js agora só precisa do PR final.
             // Passa MODELOS_FOCO para garantir que o cálculo matemático bata com o estoque
             dimensionamentoCompleto = dimensionarSistema(consumo, hspBruto, paramsDimensionamento, MODELOS_FOCO);
-            
+
             // 3. Atualiza a Tabela e Seleção Inteligente
             processarEscolhaModulo(dimensionamentoCompleto);
         }
-        
+
         // 4. VALIDAÇÃO DE CONTINUIDADE DOS MÓDULOS
         // Verifica se a seleção atual ainda é válida com as novas perdas
         if (estadoSelecaoModulo.watts && estadoSelecaoModulo.qtd) {
             const potReal = (estadoSelecaoModulo.qtd * estadoSelecaoModulo.watts) / 1000;
             const geracaoNova = potReal * hspBruto * 30.4166 * prPonderado;
-            
+
             // Se a nova geração caiu abaixo do consumo (com tolerância de 1%), invalida tudo.
             if (geracaoNova < consumo * 0.99) {
                 console.warn("Premissa alterada tornou a seleção atual insuficiente. Resetando.");
-                
+
                 // Limpeza Profunda de Estado
                 estadoSelecaoModulo = { watts: null, qtd: null };
-                
+
                 // >>> CORREÇÃO: Zera o Topo Fixo e Inputs imediatamente <<<
                 zerarInterfaceTecnica();
-                
+
                 // Limpeza Visual
                 document.getElementById('container_selecionados').style.display = 'none';
                 document.getElementById('potencia_dc_total').innerText = "0.00";
-                
+
                 // Força re-renderização limpa
                 renderizarTabelaHuawei();
                 atualizarComposicaoFinal(); // Isso vai limpar os textos de expansão/geração futura
-                
+
+                // FIX: Bloqueia navegação para etapas futuras (Inversores, Financeiro)
+                const aba = projetoGerenciador.abaAtiva;
+                if (projetoGerenciador[aba]) {
+                    // Define o máximo permitido como 1 (Módulos), forçando o usuário a resolver a pendência lá
+                    projetoGerenciador[aba].dados.maxEtapaIndex = 1;
+                }
+                if (typeof gerenciadorEtapas !== 'undefined') gerenciadorEtapas.renderizarMenuNavegacao();
+
                 // Avisa o usuário
                 alert("A alteração nas premissas reduziu a geração abaixo do consumo. Por favor, selecione um novo conjunto de módulos.");
             } else {
                 // Se ainda for válido, atualiza os números mantendo a seleção
                 sincronizarEngenhariaUnica(prPonderado); // Garante atualização com PR novo
-                
+
                 // Atualiza a composição para refletir novos cálculos (ex: Geração Máxima com novo PR)
                 atualizarComposicaoFinal();
-                
+
                 if (carrinhoInversores.length > 0) {
                     window.calcularEngenhariaFinanceira();
                 }
@@ -957,11 +1294,18 @@ document.addEventListener('DOMContentLoaded', async () => {
      * Usa a lista de foco de mercado + sugestão técnica
      */
     function processarEscolhaModulo(resultadoDimensionamento) {
+        console.warn("DEBUG: A função processarEscolhaModulo foi chamada. Gerando HTML...");
+
+        if (!containerSugestaoPainel) {
+            console.error("ERRO CRÍTICO: containerSugestaoPainel não encontrado no DOM!");
+            return;
+        }
+
         if (!resultadoDimensionamento || !resultadoDimensionamento.melhorSugestao) {
             containerSugestaoPainel.innerHTML = `<div class="alerta-reset">Aguardando dados de consumo e local...</div>`;
             return;
         }
-        
+
         const pMinimaKwp = resultadoDimensionamento.kwpNecessario;
 
         // 1. OBTENÇÃO DOS DADOS: A lista de modelos já vem ordenada por precisão do model.js
@@ -981,25 +1325,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <i class="fas fa-check-circle" style="color: #ffcc00;"></i>
                 <span>Sugestões de Módulos (Top 4)</span>
             </div>
-            <div class="alerta-engenharia-topo" style="background: #f1f5f9; border: none; padding: 10px; text-align: center; color: #475569; margin-bottom: 1rem;">
-                 Potência Mínima Requerida (100%): <strong>${pMinimaKwp.toFixed(2)} kWp</strong>
-            </div>
             <div class="grid-sugestoes">
         `;
 
         top4Campeoes.forEach((mod, index) => {
             const isMelhor = index === 0;
-            
+
             // Lógica Visual Unificada
             const isSelecionado = estadoSelecaoModulo.watts === mod.watts && estadoSelecaoModulo.qtd === mod.quantidade;
-            let classesCard = 'card-modulo';
+            let classesCard = 'card-modulo bloco-animado';
             if (isMelhor) classesCard += ' recomendado-ia';
             if (isSelecionado) classesCard += ' selecionado-usuario';
 
             htmlSugestoes += `
                 <div class="${classesCard}" id="card_mod_${mod.watts}_${mod.quantidade}">
-                    ${!isMelhor ? `<div class="selo-opcao">OPÇÃO ${index + 1}</div>` : ''}
-                    <span class="label-potencia">MODELO ${mod.watts}W</span>
+                    ${!isMelhor ? `<div class="selo-opcao" style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">Opção ${index + 1}</div>` : ''}
+                    <span class="label-potencia">${mod.watts}W</span>
                     <div class="dados-resumo">
                         <p>Quantidade: <strong>${mod.quantidade} un</strong></p>
                         <p>Potência Total: <strong>${mod.potenciaTotal.toFixed(2)} kWp</strong></p>
@@ -1028,8 +1369,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }
 
+        console.log(`DEBUG: Injetando HTML de sugestões no container. Tamanho: ${htmlSugestoes.length}`);
         containerSugestaoPainel.innerHTML = htmlSugestoes;
-        
+
         // Prepara a lista completa, mas deixa oculta
         if (restante.length > 0) {
             prepararListaCompleta(restante, pMinimaKwp);
@@ -1051,12 +1393,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // NOVA FUNÇÃO: Valida a seleção antes de confirmar
-    window.validarEConfirmarModulo = function(watts, qtd, pMinima) {
+    window.validarEConfirmarModulo = function (watts, qtd, pMinima) {
         // 1. Atualiza o estado visual (DOM) imediatamente
         document.querySelectorAll('.card-modulo').forEach(card => {
             card.classList.remove('selecionado-usuario');
         });
-        
+
         const cardId = `card_mod_${watts}_${qtd}`;
         const cardSelecionado = document.getElementById(cardId);
         if (cardSelecionado) {
@@ -1071,32 +1413,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (percentualAtendimento >= 100) {
             confirmarModulo(watts, qtd); // Atendimento pleno, confirma direto
-        } 
+        }
         else if (percentualAtendimento >= 96) {
             // ZONA DE TOLERÂNCIA (4%)
             const confirmar = confirm(`Atenção: Este sistema atende ${percentualAtendimento.toFixed(1)}% da necessidade (abaixo dos 100%). Deseja prosseguir com esta tolerância?`);
             if (confirmar) {
                 confirmarModulo(watts, qtd);
             }
-        } 
+        }
         else {
             alert("Erro: O sistema selecionado está abaixo da tolerância permitida de 4%. Por favor, selecione uma configuração mais potente.");
         }
     }
 
     // Função interna que efetivamente seleciona o módulo
-    function confirmarModulo(watts, qtd) {
+    function confirmarModulo(watts, qtd, auto = false) {
+        // FIX: Atualiza o estado global para garantir consistência na automação e resumos
+        estadoSelecaoModulo = { watts: watts, qtd: qtd };
+
         // 1. Define o inventário fixo do projeto
         selectModulo.value = watts; // Input hidden
         displayModuloSelecionado.value = `Módulo ${watts}W`;
         totalModulosDisplay.value = qtd;
-        
+
         // 2. Destrava a etapa técnica e financeira, mas mantém o estado inválido até o cálculo financeiro ser refeito.
         if (wrapperEtapaTecnica) wrapperEtapaTecnica.classList.remove('etapa-bloqueada');
         if (wrapperEtapaFinanceira) wrapperEtapaFinanceira.classList.remove('etapa-bloqueada');
 
         // 🔒 SEGURANÇA: Trava as premissas anteriores
-        gerenciadorEtapas.travar('premissas');
+        // gerenciadorEtapas.travar('premissas'); // Removido para evitar scroll automático indesejado
 
         // ATUALIZADO: Atualiza o painel de inversores com a nova potência DC
         const potDCInstaladaWp = (watts * qtd);
@@ -1104,6 +1449,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Sincroniza o painel fixo com a nova seleção
         sincronizarEngenhariaUnica(); // Aqui usa o PR salvo no dimensionamentoCompleto
+
+        // FIX: Atualiza visualmente o botão de avançar para habilitado imediatamente
+        renderizarBotaoNavegacao('container_sugestao_painel', 'window.avancarParaInversores()', 'Configuração de Módulos Definida', 'Avançar para Inversores', true);
 
         // VERIFICAÇÃO DE ALTERAÇÃO (DIRTY CHECK)
         if (typeof gerenciadorEtapas !== 'undefined') {
@@ -1115,16 +1463,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // AVANÇO DE ETAPA: REMOVIDO AUTO-AVANÇO
-        // Agora exibe o botão para o usuário confirmar a intenção de avançar
-        renderizarBotaoNavegacao('container_sugestao_painel', 'window.avancarParaInversores()', 'Configuração de Módulos Definida', 'Avançar para Inversores', true);
-
         // 3. GATILHO DE REAVALIAÇÃO EM CASCATA: Verifica se o carrinho atual ainda é válido
         atualizarComposicaoFinal();
+
+        // Atualiza o resumo para a etapa financeira (mesmo que oculto ainda)
+        renderizarResumoSuperiorFinanceiro();
 
         // Atualiza a tabela de sugestões (agora sem pré-seleção automática única)
         renderizarTabelaHuawei();
 
+        // RESTAURANDO O AVANÇO AUTOMÁTICO
+        // Se não for uma chamada automática, avança para a próxima etapa.
+        if (typeof gerenciadorEtapas !== 'undefined' && !auto) {
+            gerenciadorEtapas.avancarPara('inversores');
+        }
     }
 
     // NOVA FUNÇÃO GENÉRICA: Renderiza botão de navegação padronizado (Atualiza estado se já existir)
@@ -1139,52 +1491,228 @@ document.addEventListener('DOMContentLoaded', async () => {
             isNew = true;
             areaAcao = document.createElement('div');
             areaAcao.className = 'area-acao-navegacao';
-            // Estilo base com transição suave
-            areaAcao.style.cssText = "margin-top: 25px; text-align: center; padding: 20px; border: 1px solid; border-radius: 8px; transition: all 0.3s ease;";
             container.appendChild(areaAcao);
         }
 
-        // Definição de cores e estados baseados na validade
-        const corFundo = isValid ? '#f0fdf4' : '#f8fafc'; // Verde claro vs Cinza claro
-        const corBorda = isValid ? '#bbf7d0' : '#e2e8f0';
-        const corTexto = isValid ? '#15803d' : '#64748b';
-        const iconClass = isValid ? 'fa-check-circle' : 'fa-lock'; 
-        
-        // Atualiza container
-        areaAcao.style.backgroundColor = corFundo;
-        areaAcao.style.borderColor = corBorda;
+        // Alternância de classes de estado
+        areaAcao.classList.toggle('estado-valido', isValid);
+        areaAcao.classList.toggle('estado-invalido', !isValid);
 
-        // Estilo do Botão
-        const btnStyle = isValid 
-            ? "padding: 12px 30px; font-size: 1.1rem; transition: all 0.3s; cursor: pointer;" 
-            : "padding: 12px 30px; font-size: 1.1rem; background-color: #cbd5e1; color: #64748b; border: 1px solid #94a3b8; cursor: not-allowed; opacity: 0.7;";
-        
+        const iconClass = isValid ? 'fa-check-circle' : 'fa-lock';
+
         const disabledAttr = isValid ? '' : 'disabled';
-        const btnClass = isValid ? 'btn-primary' : ''; 
+        const btnClass = isValid ? 'btn-avancar ativo' : 'btn-avancar inativo';
 
         areaAcao.innerHTML = `
-            <p style="color: ${corTexto}; font-weight: 600; margin-bottom: 15px; transition: color 0.3s;">
+            <p class="feedback-validacao">
                 <i class="fas ${iconClass}"></i> ${textoFeedback}
             </p>
-            <button class="${btnClass}" onclick="${acaoGlobal}" style="${btnStyle}" ${disabledAttr}>
+            <button class="${btnClass}" onclick="${acaoGlobal}" ${disabledAttr}>
                 ${textoBotao} <i class="fas fa-arrow-right"></i>
             </button>
         `;
     }
 
-    window.avancarParaInversores = function() {
-        if (typeof gerenciadorEtapas !== 'undefined') {
-            gerenciadorEtapas.avancarPara('inversores');
+    // --- FUNÇÃO DE AUTOMAÇÃO (Cálculo + Seleção + Avanço) ---
+    window.autoDimensionarCompleto = async function () {
+        console.warn("🚀 INICIANDO FLUXO SEGURO PASSO A PASSO...");
+
+        // PASSO 1: Cálculo Interno
+        recalcularDimensionamento();
+
+        if (!dimensionamentoCompleto || !dimensionamentoCompleto.melhorSugestao) {
+            console.warn("Automação abortada: Dimensionamento incompleto.");
+            return;
+        }
+
+        // PASSO 2: Garantir que a Seção está aberta antes de desenhar
+        const secaoModulos = document.getElementById('wrapper-etapa-paineis');
+        if (secaoModulos) {
+            secaoModulos.classList.remove('etapa-oculta');
+            secaoModulos.classList.add('etapa-ativa');
+            secaoModulos.classList.remove('card-bloqueado', 'disabled', 'oculto');
+            secaoModulos.style.opacity = '1';
+            secaoModulos.style.pointerEvents = 'auto';
+        }
+
+        // PASSO 3: Renderizar e AGUARDAR a confirmação do DOM
+        await new Promise((resolve) => {
+            console.log("🛠️ Passo 3: Renderizando Cards...");
+            const container = document.getElementById('container_sugestao_painel');
+            if (container) container.innerHTML = ''; // Limpa o "Aguardando..."
+            processarEscolhaModulo(dimensionamentoCompleto);
+
+            // Usamos requestAnimationFrame para garantir que o navegador pintou o HTML
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    console.log("✅ Cards confirmados no DOM.");
+                    resolve();
+                });
+            });
+        });
+
+        // PASSO 4: Destacar o selecionado E LIBERAR O BLOQUEIO
+        const melhorMod = dimensionamentoCompleto.melhorSugestao;
+        const cardId = `card_mod_${melhorMod.watts}_${melhorMod.quantidade}`;
+        const cardAlvo = document.getElementById(cardId);
+
+        if (cardAlvo) {
+            document.querySelectorAll('.card-modulo').forEach(c => c.classList.remove('selecionado-usuario'));
+            cardAlvo.classList.add('selecionado-usuario', 'recomendado-ia');
+            console.log("🎨 Módulo selecionado destacado.");
+
+            // 🚀 O SEGREDO: Atualiza a variável de estado que o sistema usa para destravar o botão
+            estadoSelecaoModulo = { watts: melhorMod.watts, qtd: melhorMod.quantidade };
+            
+            // FIX: Valida visualmente o botão de avançar da etapa de módulos para ficar verde/habilitado
+            renderizarBotaoNavegacao('container_sugestao_painel', 'window.avancarParaInversores()', 'Configuração de Módulos Definida', 'Avançar para Inversores', true);
+        }
+
+        // Atualiza inputs ocultos essenciais para o funcionamento do sistema
+        const selectModulo = document.getElementById('select_modulo_comparativo');
+        const displayModuloSelecionado = document.getElementById('display_modulo_selecionado');
+        const totalModulosDisplay = document.getElementById('total_modulos_projeto');
+
+        if (selectModulo) selectModulo.value = melhorMod.watts;
+        if (displayModuloSelecionado) displayModuloSelecionado.value = `Módulo ${melhorMod.watts}W`;
+        if (totalModulosDisplay) totalModulosDisplay.value = melhorMod.quantidade;
+
+        // Atualiza Potência DC Total e Header
+        const potDCInstaladaWp = (melhorMod.watts * melhorMod.quantidade);
+        document.getElementById('potencia_dc_total').innerText = (potDCInstaladaWp / 1000).toFixed(2);
+        sincronizarEngenhariaUnica();
+
+        // PASSO 5: Dimensionar Inversores (Sem pressa)
+        console.log("⚡ Passo 5: Dimensionando Inversores...");
+        const sugestoes = gerarSugestoesCompostas();
+        if (sugestoes.length > 0) {
+            const wattsModulo = melhorMod.watts;
+            const sugestoesOrdenadas = sugestoes.sort((a, b) => {
+                const expA = Math.floor((a.capTotal - potDCInstaladaWp) / wattsModulo);
+                const expB = Math.floor((b.capTotal - potDCInstaladaWp) / wattsModulo);
+                return expA - expB;
+            });
+            const melhorInv = sugestoesOrdenadas[0];
+
+            carrinhoInversores = [];
+            melhorInv.itens.forEach(it => {
+                carrinhoInversores.push({ modelo: it.mod, nominal: it.nom, tipo: it.tipo, qtd: it.qtd });
+            });
+
+            // Atualiza estado visual
+            estadoSelecaoInversor = { tipo: 'SUGESTAO', id: 0 };
+            renderizarTabelaHuawei();
+            atualizarComposicaoFinal();
+
+            // PASSO 6: Finalizar e LIMPAR TRAVAS VISUAIS
+            console.log("💰 Passo 6: Finalizando no Financeiro.");
+
+            if (typeof gerenciadorEtapas !== 'undefined') {
+                // Forçamos o índice da etapa para 'financeiro' sem disparar o reset de cascata
+                const aba = projetoGerenciador.abaAtiva;
+
+                // Atualiza o máximo alcançado para habilitar a navegação no menu (Validação de Abas)
+                if (3 > (projetoGerenciador[aba].dados.maxEtapaIndex || 0)) {
+                    projetoGerenciador[aba].dados.maxEtapaIndex = 3;
+                }
+
+                projetoGerenciador[aba].dados.etapaIndex = 3; // Índice do financeiro
+                
+                // Sincroniza visualmente após garantir que o DOM está pronto
+                setTimeout(() => {
+                    gerenciadorEtapas.sincronizarVisual();
+                }, 50);
+            }
+        } else {
+            console.warn("Automação: Nenhum inversor compatível encontrado automaticamente.");
+        }
+
+        renderizarResumoSuperiorFinanceiro();
+        if (typeof window.calcularEngenhariaFinanceira === 'function') {
+            window.calcularEngenhariaFinanceira(); // Aplica seu Fator 1.1 e Impostos
+        }
+
+        // Foca no kit para finalizar
+        const inputKit = document.getElementById('valor_kit_fornecedor');
+        if (inputKit) {
+            inputKit.focus();
+            inputKit.select();
         }
     };
 
-    window.avancarParaFinanceiro = function() {
+    // --- FUNÇÃO DE RESUMO SUPERIOR (Design Leve) ---
+    function renderizarResumoSuperiorFinanceiro() {
+        const wrapper = document.getElementById('wrapper-etapa-financeira');
+        if (!wrapper) return;
+
+        let resumoDiv = document.getElementById('resumo-topo-financeiro');
+        if (!resumoDiv) {
+            resumoDiv = document.createElement('div');
+            resumoDiv.id = 'resumo-topo-financeiro';
+            // Insere no topo do wrapper financeiro
+            wrapper.insertBefore(resumoDiv, wrapper.firstChild);
+        }
+
+        // Coleta dados atuais
+        const modulosTxt = estadoSelecaoModulo.qtd ? `${estadoSelecaoModulo.qtd}x ${estadoSelecaoModulo.watts}W` : '---';
+        const potTotal = estadoSelecaoModulo.qtd ? ((estadoSelecaoModulo.qtd * estadoSelecaoModulo.watts) / 1000).toFixed(2) + ' kWp' : '0 kWp';
+
+        const invsTxt = carrinhoInversores.length > 0
+            ? carrinhoInversores.map(i => `${i.qtd}x ${i.modelo}`).join(', ')
+            : 'Nenhum selecionado';
+
+        // CÁLCULO DE EXPANSÃO (Quantidade e Geração Futura)
+        const wattsModulo = estadoSelecaoModulo.watts || 580;
+        const qtdModulosAtual = estadoSelecaoModulo.qtd || 0;
+        const potDCInstaladaWp = (wattsModulo * qtdModulosAtual);
+        
+        const potNominalTotalAC = carrinhoInversores.reduce((acc, i) => acc + (i.nominal * i.qtd), 0);
+        
+        // Limite técnico baseado no Oversizing configurado (ex: 150%)
+        const overAlvo = parseFloat(document.getElementById('sel_oversizing')?.value) || 1.35;
+        const limiteTecnicoExpansao = potNominalTotalAC * overAlvo;
+        const wattsExpansao = limiteTecnicoExpansao - potDCInstaladaWp;
+        const numPlacasExp = Math.floor(Math.max(0, wattsExpansao) / wattsModulo);
+        
+        const geracaoAtual = parseFloat(document.getElementById('fixo_geracao')?.innerText) || 0;
+        const geracaoPorModulo = qtdModulosAtual > 0 ? geracaoAtual / qtdModulosAtual : 0;
+        const geracaoExpansao = numPlacasExp * geracaoPorModulo;
+        
+        const expansaoTxt = `+${numPlacasExp} mod (+${Math.round(geracaoExpansao)} kWh)`;
+
+        resumoDiv.innerHTML = `
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--primaria); padding: 12px 20px; margin-bottom: 25px; border-radius: 6px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; font-size: 0.9rem; color: #475569; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="display:block; font-size:0.7rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.5px;">Módulos</span> <button class="btn-icon-sm" onclick="window.navegarPeloMenu(1)" title="Editar Módulos"><i class="fas fa-pencil-alt"></i></button></div>
+                    <strong style="color:#0f172a; font-size:1rem;">${modulosTxt}</strong> <span style="color:#64748b;">(${potTotal})</span>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="display:block; font-size:0.7rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.5px;">Inversores</span> <button class="btn-icon-sm" onclick="window.navegarPeloMenu(2)" title="Editar Inversores"><i class="fas fa-pencil-alt"></i></button></div>
+                    <strong style="color:#0f172a; font-size:1rem;">${invsTxt}</strong>
+                </div>
+                 <div>
+                    <span style="display:block; font-size:0.7rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.5px;">Expansão Futura</span>
+                    <strong style="color:#0f172a; font-size:1rem;">${expansaoTxt}</strong>
+                </div>
+            </div>
+        `;
+    }
+
+    window.avancarParaInversores = function () {
+        if (typeof gerenciadorEtapas !== 'undefined') {
+            gerenciadorEtapas.avancarPara('inversores');
+            // Garante que o botão de navegação da próxima etapa seja renderizado
+            atualizarComposicaoFinal();
+        }
+    };
+
+    window.avancarParaFinanceiro = function () {
         if (typeof gerenciadorEtapas !== 'undefined') {
             gerenciadorEtapas.avancarPara('financeiro');
         }
     };
 
-    window.avancarParaResumo = function() {
+    window.avancarParaResumo = function () {
         if (typeof gerenciadorEtapas !== 'undefined') {
             gerenciadorEtapas.avancarPara('resumo');
         }
@@ -1195,11 +1723,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ======================================================================
 
     // --- ALGORITMO DE SUGESTÃO DE COMPOSIÇÕES ---
+    // TODO: Mover lógica de engenharia para 'model.js' conforme documentacao_tecnica.md (Seção 5.2)
     function gerarSugestoesCompostas() {
         const potDCInstaladaWp = parseFloat(document.getElementById('potencia_dc_total').innerText) * 1000;
         if (!potDCInstaladaWp || potDCInstaladaWp <= 0) return [];
 
-        const overAlvo = parseFloat(document.getElementById('val_oversizing_aplicado').value);
+        const overAlvo = parseFloat(document.getElementById('sel_oversizing').value);
         const tipoRedeUC = document.getElementById('uc_tipo_padrao').value;
         const limiteExpansaoWp = potDCInstaladaWp * 2.1; // Limite de engenharia (2.1x)
 
@@ -1208,7 +1737,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 1. Inversores Únicos
         inversoresHuawei.forEach(inv => {
             if (tipoRedeUC === "monofasico" && inv.tipo !== "monofásico") return;
-            
+
             const capEntrada = inv.nom * overAlvo;
             // Aceita se cobrir a potência E não for absurdamente grande (max 1.5x o limite de expansão)
             if (capEntrada >= potDCInstaladaWp && capEntrada <= limiteExpansaoWp * 1.5) {
@@ -1234,7 +1763,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     if (capCombinada >= potDCInstaladaWp && capCombinada <= limiteExpansaoWp) {
                         // Verifica se são iguais para agrupar a quantidade
-                        const itens = (i === j) 
+                        const itens = (i === j)
                             ? [{ ...inv1, qtd: 2 }]
                             : [{ ...inv1, qtd: 1 }, { ...inv2, qtd: 1 }];
 
@@ -1242,7 +1771,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             itens: itens,
                             capTotal: capCombinada,
                             // Penalidade de 15% no score para desencorajar multi-inversor se um único resolver
-                            score: (inv1.nom + inv2.nom) * 1.15 
+                            score: (inv1.nom + inv2.nom) * 1.15
                         });
                     }
                 }
@@ -1257,28 +1786,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         const corpo = document.getElementById('corpo_tabela_huawei');
         const corpoSugestoes = document.getElementById('corpo_tabela_sugestoes_inteligentes');
         const areaSugestoes = document.getElementById('area_sugestoes_inteligentes');
-        
+
         // Premissas para cálculo de Geração Potencial
-        const hsp = parseFloat(document.getElementById('hsp_bruto').innerText) || 0;
-        const prTexto = document.getElementById('fixo_pr_final').innerText.replace('%','');
+        const elHsp = document.getElementById('hsp_bruto');
+        const hsp = elHsp ? (parseFloat(elHsp.innerText) || 0) : 0;
+
+        const elPr = document.getElementById('fixo_pr_final');
+        const prTexto = elPr ? elPr.innerText.replace('%', '') : '80';
         const pr = parseFloat(prTexto) / 100 || 0.80;
 
         // --- DADOS PARA CÁLCULO LINEAR (PROJEÇÃO REAL) ---
-        const geracaoAtual = parseFloat(document.getElementById('fixo_geracao').innerText) || 0;
-        const qtdModulosAtual = parseInt(document.getElementById('total_modulos_projeto').value) || 0;
-        const wattsModulo = parseFloat(document.getElementById('select_modulo_comparativo').value) || 580;
+        const elGeracao = document.getElementById('fixo_geracao');
+        const geracaoAtual = elGeracao ? (parseFloat(elGeracao.innerText) || 0) : 0;
+
+        const elQtdMod = document.getElementById('total_modulos_projeto');
+        const qtdModulosAtual = elQtdMod ? (parseInt(elQtdMod.value) || 0) : 0;
+
+        const elModComp = document.getElementById('select_modulo_comparativo');
+        const wattsModulo = elModComp ? (parseFloat(elModComp.value) || 580) : 580;
+
         const geracaoPorModulo = (qtdModulosAtual > 0) ? (geracaoAtual / qtdModulosAtual) : 0;
 
         // 1. HERANÇA DE DADOS DO PROJETO (Sincronização total com o Painel Geral)
-        const potDCInstaladaWp = parseFloat(document.getElementById('potencia_dc_total').innerText) * 1000;
+        const elPotDC = document.getElementById('potencia_dc_total');
+        const potDCInstaladaWp = elPotDC ? (parseFloat(elPotDC.innerText) * 1000) : 0;
 
         // Controle de visibilidade das sugestões
         if (potDCInstaladaWp > 0) {
             areaSugestoes.style.display = 'block';
-            
+
             // RENDERIZA SUGESTÕES INTELIGENTES
             const sugestoes = gerarSugestoesCompostas();
-            
+
             // ORDENAÇÃO: Menor expansão para maior expansão (Custo-Benefício)
             const potDCInstaladaWp = parseFloat(document.getElementById('potencia_dc_total').innerText) * 1000;
             const sugestoesOrdenadas = sugestoes.sort((a, b) => {
@@ -1287,7 +1826,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return expA - expB;
             });
 
-            corpoSugestoes.innerHTML = sugestoesOrdenadas.map((sug, index) => {
+            const htmlRows = sugestoesOrdenadas.map((sug, index) => {
                 // Transforma a composição em Badges visuais (ETIQUETAS)
                 const htmlComposicao = sug.itens.map(it => {
                     const dadosInv = inversoresHuawei.find(i => i.mod === it.mod);
@@ -1321,7 +1860,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (isSelecionado) classesLinha += ' selecionado';
 
                 return `
-                    <tr class="${classesLinha}" style="border-bottom: 1px solid #f1f5f9; transition: all 0.3s ease;">
+                    <tr class="${classesLinha}">
                         <td class="col-detalhe-inv" style="vertical-align: middle; padding: 12px;">
                             ${isIdeal ? '<span class="badge-recomendado"><i class="fas fa-star"></i> RECOMENDADO</span><br>' : ''}
                             ${htmlComposicao}
@@ -1342,6 +1881,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 `;
             }).join('');
 
+            // Envolve em tabela limpa se não estiver
+            corpoSugestoes.innerHTML = htmlRows;
+
             if (sugestoes.length === 0) {
                 corpoSugestoes.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#64748b;">Nenhuma combinação automática encontrada. Use o catálogo abaixo.</td></tr>`;
             }
@@ -1350,71 +1892,77 @@ document.addEventListener('DOMContentLoaded', async () => {
             areaSugestoes.style.display = 'none';
         }
 
-        const overAlvo = parseFloat(document.getElementById('val_oversizing_aplicado').value);
+        const overAlvo = parseFloat(document.getElementById('sel_oversizing').value);
         const tipoRedeUC = document.getElementById('uc_tipo_padrao').value;
         const termoFiltro = document.getElementById('filtro_huawei').value.toLowerCase();
 
-        // 3. FILTRAGEM DO CATÁLOGO COMPLETO (Mantido para personalização)
-        const listaFiltrada = inversoresHuawei
+        // 3. FILTRAGEM, PRÉ-CÁLCULO E ORDENAÇÃO
+        const listaProcessada = inversoresHuawei
             .filter(inv => {
-                const capMaxEntradaWp = inv.nom * overAlvo;
-                
-                // Regra 1: Filtro de Fase (Rigoroso para Monofásico, Flexível para Trifásico)
-                if (tipoRedeUC === "monofasico" && inv.tipo !== "monofásico") return false;
-                
-                // Regra 2: Limite superior visual (evita poluição com inversores gigantescos desnecessários)
-                // Mas permite inversores pequenos para composição
-                const limiteSuperior = capMaxEntradaWp <= (potDCInstaladaWp * 2.2);
-
-                // Regra 3: Filtro de texto do input
                 const atendeTexto = termoFiltro ? (inv.mod.toLowerCase().includes(termoFiltro) || inv.nom.toString().includes(termoFiltro)) : true;
-
-                return limiteSuperior && atendeTexto;
+                if (tipoRedeUC === "monofasico" && inv.tipo !== "monofásico") return false;
+                return atendeTexto;
             })
-            .sort((a, b) => a.nom - b.nom);
+            .map(inv => {
+                const capMaxUnit = inv.nom * overAlvo;
+                // PRÉ-CÁLCULO: Quantidade necessária para cobrir a potência DC
+                const qtdNecessaria = Math.ceil(potDCInstaladaWp / capMaxUnit) || 1;
+
+                // Cálculo da Geração Potencial Total (Qtd * Unitário)
+                let geracaoPotencialTotal;
+                if (geracaoPorModulo > 0) {
+                    const maxModulosCabem = Math.floor((capMaxUnit * qtdNecessaria) / wattsModulo);
+                    geracaoPotencialTotal = maxModulosCabem * geracaoPorModulo;
+                } else {
+                    geracaoPotencialTotal = ((capMaxUnit * qtdNecessaria) / 1000) * hsp * 30.4166 * pr;
+                }
+
+                return {
+                    ...inv,
+                    qtdCalculada: qtdNecessaria,
+                    geracaoTotal: geracaoPotencialTotal,
+                    capMaxUnit: capMaxUnit
+                };
+            })
+            // Regra 3: Limite superior visual (evita inversores gigantescos onde 1 já sobra muito)
+            // Exibe se a capacidade total for razoável OU se for um inversor pequeno (para composição)
+            .filter(inv => (inv.capMaxUnit * inv.qtdCalculada) <= (potDCInstaladaWp * 2.5) || inv.qtdCalculada > 1)
+            .sort((a, b) => a.geracaoTotal - b.geracaoTotal); // ORDENAÇÃO: Geração Máxima Crescente
 
         // 4. RENDERIZAÇÃO LIMPA
-        if (listaFiltrada.length === 0) {
+        if (listaProcessada.length === 0) {
             corpo.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">
-                Nenhum inversor Huawei compatível encontrado para ${ (potDCInstaladaWp/1000).toFixed(1) } kWp (${tipoRedeUC}).
+                Nenhum inversor Huawei compatível encontrado para ${(potDCInstaladaWp / 1000).toFixed(1)} kWp (${tipoRedeUC}).
             </td></tr>`;
             return;
         }
 
-        corpo.innerHTML = listaFiltrada.map((inv, index) => {
-            const capMaxEntradaWp = inv.nom * overAlvo;
-            
+        const htmlManual = listaProcessada.map((inv, index) => {
             // Lógica de Classes UX (Manual)
             const isSelecionado = estadoSelecaoInversor.tipo === 'MANUAL' && estadoSelecaoInversor.id === inv.mod;
             const classeManual = isSelecionado ? 'item-inversor-manual selecionado' : 'item-inversor-manual';
-            
-            // Cálculo inicial para 1 unidade (Linear ou Teórico)
-            let geracaoPotencialUnit;
-            if (geracaoPorModulo > 0) {
-                const maxModulosCabem = Math.floor(capMaxEntradaWp / wattsModulo);
-                geracaoPotencialUnit = maxModulosCabem * geracaoPorModulo;
-            } else {
-                geracaoPotencialUnit = (capMaxEntradaWp / 1000) * hsp * 30.4166 * pr;
-            }
-            
+
+            // Usa os valores pré-calculados
+            const geracaoDisplay = Math.round(inv.geracaoTotal);
+
             return `
-                <tr class="${classeManual}" style="transition: all 0.3s ease;">
+                <tr class="${classeManual}">
                     <td>
                         <strong>${inv.mod}</strong>
                     </td>
                     <td>
-                        ${(inv.nom/1000).toFixed(1)} kW<br>
+                        ${(inv.nom / 1000).toFixed(1)} kW<br>
                         <small class="tag-tipo">${inv.tipo}</small>
                     </td>
                     <td style="text-align: center;">${inv.mppt}</td>
-                    <td>${(capMaxEntradaWp/1000).toFixed(1)} kWp</td>
+                    <td>${(inv.capMaxUnit / 1000).toFixed(1)} kWp</td>
                     
                     <td style="text-align: center;">
-                        <input type="number" id="qtd_${inv.mod.replace(/\s/g, '')}" value="1" min="1" max="10" class="input-qtd-tabela" oninput="window.atualizarPotencialLinha('${inv.mod}', ${inv.nom})">
+                        <input type="number" id="qtd_${inv.mod.replace(/\s/g, '')}" value="${inv.qtdCalculada}" min="1" max="10" class="input-qtd-tabela" oninput="window.atualizarPotencialLinha('${inv.mod}', ${inv.nom})">
                     </td>
 
                     <td style="text-align: center; font-weight: 600; color: #64748b;">
-                        <span id="potencial_${inv.mod.replace(/\s/g, '')}">${Math.round(geracaoPotencialUnit)} kWh</span>
+                        <span id="potencial_${inv.mod.replace(/\s/g, '')}">${geracaoDisplay} kWh</span>
                     </td>
                     
                     <td style="text-align: center;">
@@ -1426,54 +1974,222 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </tr>
             `;
         }).join('');
+
+        corpo.innerHTML = htmlManual;
+
     }
 
     // NOVA FUNÇÃO: Atualiza a coluna de Geração Máxima em tempo real ao digitar a quantidade
-    window.atualizarPotencialLinha = function(modelo, nominal) {
+    window.atualizarPotencialLinha = function (modelo, nominal) {
         const idQtd = `qtd_${modelo.replace(/\s/g, '')}`;
         const idDestino = `potencial_${modelo.replace(/\s/g, '')}`;
         const elQtd = document.getElementById(idQtd);
         const elDestino = document.getElementById(idDestino);
-        
+
         if (!elQtd || !elDestino) return;
-        
+
         const qtd = parseInt(elQtd.value) || 0;
-        const over = parseFloat(document.getElementById('val_oversizing_aplicado').value) || 1.0;
-        const hsp = parseFloat(document.getElementById('hsp_bruto').innerText) || 0;
-        const pr = parseFloat(document.getElementById('fixo_pr_final').innerText.replace('%','')) / 100 || 0.80;
+        const over = parseFloat(document.getElementById('sel_oversizing').value) || 1.0;
+        
+        const elHsp = document.getElementById('hsp_bruto');
+        const hsp = elHsp ? (parseFloat(elHsp.innerText) || 0) : 0;
+
+        const elPr = document.getElementById('fixo_pr_final');
+        const pr = elPr ? (parseFloat(elPr.innerText.replace('%', '')) / 100 || 0.80) : 0.80;
 
         // Dados para cálculo linear
-        const geracaoAtual = parseFloat(document.getElementById('fixo_geracao').innerText) || 0;
-        const qtdModulosAtual = parseInt(document.getElementById('total_modulos_projeto').value) || 0;
-        const wattsModulo = parseFloat(document.getElementById('select_modulo_comparativo').value) || 580;
-        
+        const elGeracao = document.getElementById('fixo_geracao');
+        const geracaoAtual = elGeracao ? (parseFloat(elGeracao.innerText) || 0) : 0;
+
+        const elQtdMod = document.getElementById('total_modulos_projeto');
+        const qtdModulosAtual = elQtdMod ? (parseInt(elQtdMod.value) || 0) : 0;
+
+        const elModComp = document.getElementById('select_modulo_comparativo');
+        const wattsModulo = elModComp ? (parseFloat(elModComp.value) || 580) : 580;
+
         const capMaxDC_Watts = nominal * qtd * over;
-        
+
         let geracaoPotencial;
         if (qtdModulosAtual > 0 && geracaoAtual > 0) {
-             const geracaoPorModulo = geracaoAtual / qtdModulosAtual;
-             const maxModulosCabem = Math.floor(capMaxDC_Watts / wattsModulo);
-             geracaoPotencial = maxModulosCabem * geracaoPorModulo;
+            const geracaoPorModulo = geracaoAtual / qtdModulosAtual;
+            const maxModulosCabem = Math.floor(capMaxDC_Watts / wattsModulo);
+            geracaoPotencial = maxModulosCabem * geracaoPorModulo;
         } else {
-             geracaoPotencial = (capMaxDC_Watts / 1000) * hsp * 30.4166 * pr;
+            geracaoPotencial = (capMaxDC_Watts / 1000) * hsp * 30.4166 * pr;
         }
-        
+
         elDestino.innerText = Math.round(geracaoPotencial) + " kWh";
+    }
+
+    // ======================================================================
+    // ⚙️ MOTOR DE OPCIONAIS PREMIUM (Instalação Industrial)
+    // ======================================================================
+    function renderizarOpcionaisPremium() {
+        // Target the wrapper to replace the entire content with the new Clean Table design
+        const containerWrapper = document.getElementById('container_opcionais_premium');
+        if (!containerWrapper) return;
+
+        // 1. Captura estado atual para preservar seleções durante re-renderização
+        const estadoAnterior = {};
+        // Check if we have rendered before by looking for checkboxes inside the wrapper
+        const checkboxesExistentes = containerWrapper.querySelectorAll('.chk-opcional');
+        const teveRenderizacao = checkboxesExistentes.length > 0;
+        checkboxesExistentes.forEach(chk => {
+            estadoAnterior[chk.dataset.id] = chk.checked;
+        });
+
+        // 2. Dados do Projeto e Configuração
+        const config = db.buscarConfiguracao('premissas_globais') || {};
+        const pMatPrem = config.materiaisPremium || {};
+        
+        const tipoRede = document.getElementById('uc_tipo_padrao')?.value || 'monofasico';
+        const isTrifasico = tipoRede.toLowerCase().includes('trif');
+        
+        // Quantidade de Inversores (Mínimo 1 para exibição inicial)
+        const qtdInversores = Math.max(1, carrinhoInversores.reduce((acc, i) => acc + i.qtd, 0));
+        
+        // Potência Total (para decisão de eletrocalha)
+        const potTotalAC_kW = carrinhoInversores.reduce((acc, i) => acc + (i.nominal * i.qtd), 0) / 1000;
+        const limitePotencia = pMatPrem.limite_potencia_mono || 12;
+
+        // 3. Definição Dinâmica dos Itens (Lógica de Engenharia)
+        const itens = [];
+
+        // A. QDG (Filtrado por Rede)
+        if (isTrifasico) {
+            itens.push({ 
+                id: "qdg_trif", 
+                nome: "QDG Trifásico", 
+                badge: "Trifásico",
+                valor: pMatPrem.va_qdg_trif_premum || 300.00, 
+                obrigatorio: false, 
+                selecionadoPadrao: true 
+            });
+        } else {
+            itens.push({ 
+                id: "qdg_mono", 
+                nome: "QDG Monofásico", 
+                badge: "Monofásico",
+                valor: pMatPrem.va_qdg_mono_premium || 150.00, 
+                obrigatorio: false, 
+                selecionadoPadrao: true 
+            });
+        }
+
+        // B. Eletrocalha (Decisão Técnica 50mm vs 100mm baseada em potência/qtd)
+        // Regra: > Limite(12kW) OU > 1 Inversor usa 100mm
+        const usa100mm = potTotalAC_kW > limitePotencia || qtdInversores > 1;
+        const custoEletrocalhaUnit = usa100mm ? (pMatPrem.va_eletrocalha_100 || 158.00) : (pMatPrem.va_eletrocalha_50 || 85.00);
+        const nomeEletrocalha = "Eletrocalha Galvanizada";
+        const dimEletrocalha = usa100mm ? "100mm" : "50mm";
+        
+        itens.push({
+            id: "eletrocalha_dinamica",
+            nome: nomeEletrocalha,
+            badge: dimEletrocalha,
+            qtd: qtdInversores,
+            valor: custoEletrocalhaUnit * qtdInversores,
+            obrigatorio: false,
+            selecionadoPadrao: true
+        });
+
+        // C. Bloco de Distribuição (Qtd baseada na rede: 3 para Mono/Bi, 5 para Tri)
+        const qtdBlocos = isTrifasico ? 5 : 3;
+        const custoBlocoUnit = pMatPrem.va_bloco_distribuicao || 90.00;
+        
+        itens.push({
+            id: "bloco_dist",
+            nome: "Blocos de Distribuição DIN",
+            badge: isTrifasico ? "5 Polos" : "3 Polos",
+            qtd: qtdBlocos,
+            valor: custoBlocoUnit * qtdBlocos,
+            obrigatorio: false,
+            selecionadoPadrao: true
+        });
+
+        // D. Tampa Acrílico (1 Por Inversor)
+        const custoTampaUnit = pMatPrem.va_tampa_acrilico || 335.00;
+        
+        itens.push({
+            id: "tampa_acrilico",
+            nome: "Proteção Acrílica (QDG)",
+            badge: "Padrão",
+            qtd: qtdInversores,
+            valor: custoTampaUnit * qtdInversores,
+            obrigatorio: false,
+            selecionadoPadrao: true
+        });
+
+        // RENDERIZAÇÃO DA TABELA CLEAN
+        let html = `
+            <div class="card-tecnico" style="margin-top: 10px; padding: 10px 15px;">
+                <h4 style="color: #334155; font-size: 0.9rem; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;"><i class="fas fa-microchip" style="color: #ffcc00;"></i> Composição Técnica Premium</h4>
+                <table class="tabela-transversal" style="font-size: 0.85rem;">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px; text-align: center; padding: 4px;">Inc.</th>
+                            <th style="padding: 4px;">Item de Infraestrutura</th>
+                            <th style="padding: 4px;">Dimensionamento</th>
+                            <th style="text-align: center; padding: 4px;">Qtd</th>
+                            <th style="text-align: right; padding: 4px;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        html += itens.map(item => {
+            let isChecked = item.selecionadoPadrao;
+            
+            // Se já existia no DOM, preserva a escolha do usuário
+            if (teveRenderizacao && estadoAnterior.hasOwnProperty(item.id)) {
+                isChecked = estadoAnterior[item.id];
+            }
+            
+            if (item.obrigatorio) isChecked = true;
+
+            const checkedAttr = isChecked ? 'checked' : '';
+            const isDisabled = item.obrigatorio ? 'disabled' : '';
+            const qtdDisplay = item.qtd ? `${item.qtd} un` : '1 un';
+            const valorDisplay = item.valor.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+
+            return `
+                <tr style="height: 32px;">
+                    <td style="text-align: center; padding: 2px;">
+                        <input type="checkbox" 
+                               class="chk-opcional input-financeiro" 
+                               style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primaria, #16a34a);"
+                               data-id="${item.id}" 
+                               data-valor="${item.valor}"
+                               ${checkedAttr}
+                               ${isDisabled}
+                               onchange="window.calcularEngenhariaFinanceira()">
+                    </td>
+                    <td style="color: #334155; font-weight: 500; padding: 2px 5px;">${item.nome}</td>
+                    <td style="padding: 2px 5px;"><span class="badge" style="background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem;">${item.badge}</span></td>
+                    <td style="text-align: center; color: #64748b; padding: 2px 5px;">${qtdDisplay}</td>
+                    <td style="text-align: right; color: #0f172a; font-weight: 600; padding: 2px 5px;">${valorDisplay}</td>
+                </tr>
+            `;
+        }).join('');
+
+        html += `</tbody></table></div>`;
+        
+        containerWrapper.innerHTML = html;
     }
 
     // ======================================================================
     // 🛒 LÓGICA DO CARRINHO DE INVERSORES (MULTI-INVERSOR)
     // ======================================================================
 
-    window.aplicarComposicao = function(itensJson, indexSugestao) {
+    window.aplicarComposicao = function (itensJson, indexSugestao) {
         const itens = JSON.parse(decodeURIComponent(itensJson));
         carrinhoInversores = []; // Limpa o carrinho atual
-        
+
         itens.forEach(it => {
             // Adiciona diretamente ao carrinho
             carrinhoInversores.push({ modelo: it.mod, nominal: it.nom, tipo: it.tipo, qtd: it.qtd });
         });
-        
+
         // Atualiza estado visual
         estadoSelecaoInversor = { tipo: 'SUGESTAO', id: indexSugestao };
         renderizarTabelaHuawei(); // Re-renderiza para aplicar classes
@@ -1484,10 +2200,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         atualizarComposicaoFinal();
     }
 
-    window.adicionarAoCarrinho = function(modelo, nominal, tipo) {
+    window.adicionarAoCarrinho = function (modelo, nominal, tipo) {
         const qtdInput = document.getElementById(`qtd_${modelo.replace(/\s/g, '')}`);
         const qtd = parseInt(qtdInput ? qtdInput.value : 1) || 1;
-        
+
         // Verifica se já existe, se sim aumenta a qtd, se não adiciona
         const index = carrinhoInversores.findIndex(i => i.modelo === modelo);
         if (index > -1) {
@@ -1495,7 +2211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             carrinhoInversores.push({ modelo, nominal, tipo, qtd });
         }
-        
+
         // Atualiza estado visual para Manual
         estadoSelecaoInversor = { tipo: 'MANUAL', id: modelo };
         renderizarTabelaHuawei(); // Re-renderiza para aplicar classes
@@ -1506,16 +2222,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         atualizarComposicaoFinal();
     }
 
-    window.removerDoCarrinho = function(index) {
+    window.removerDoCarrinho = function (index) {
         carrinhoInversores.splice(index, 1);
         atualizarComposicaoFinal();
-        
+
         // Se esvaziar, limpa a seleção visual
         if (carrinhoInversores.length === 0) {
             estadoSelecaoInversor = { tipo: null, id: null };
             renderizarTabelaHuawei();
             // Se esvaziar, garante que estamos na etapa de Inversores e limpa o financeiro
-            gerenciadorEtapas.recuarPara('inversores'); 
+            gerenciadorEtapas.recuarPara('inversores');
         }
     }
 
@@ -1523,7 +2239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = document.getElementById('container_selecionados');
         const lista = document.getElementById('lista_inversores_escolhidos');
         const resumo = document.getElementById('resumo_tecnico_combinado');
-        const overAlvo = parseFloat(document.getElementById('val_oversizing_aplicado').value);
+        const overAlvo = parseFloat(document.getElementById('sel_oversizing').value);
 
         // Exibe ou oculta o container de itens selecionados
         if (carrinhoInversores.length === 0) {
@@ -1532,15 +2248,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             container.style.display = 'block';
         }
-        
+
         // 1. Dados do Projeto
-        const potDCInstaladaWp = parseFloat(document.getElementById('potencia_dc_total').innerText) * 1000;
-        const hsp = parseFloat(document.getElementById('hsp_bruto').innerText) || 5.0;
-        
+        const elPotDC = document.getElementById('potencia_dc_total');
+        const potDCInstaladaWp = elPotDC ? (parseFloat(elPotDC.innerText) * 1000) : 0;
+
+        const elHsp = document.getElementById('hsp_bruto');
+        const hsp = elHsp ? (parseFloat(elHsp.innerText) || 5.0) : 5.0;
+
         // Recalcula PR (Unificado)
-        const geracaoX_Projeto = parseFloat(document.getElementById('fixo_geracao').innerText) || 0;
+        const elGeracao = document.getElementById('fixo_geracao');
+        const geracaoX_Projeto = elGeracao ? (parseFloat(elGeracao.innerText) || 0) : 0;
+
         const prProjeto = geracaoX_Projeto > 0 && potDCInstaladaWp > 0 && hsp > 0
-            ? (geracaoX_Projeto * 1000) / (potDCInstaladaWp * hsp * 30.4166) 
+            ? (geracaoX_Projeto * 1000) / (potDCInstaladaWp * hsp * 30.4166)
             : 0.83;
 
         let capTotalEntradaDC = 0;
@@ -1556,7 +2277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <li class="tag-inversor-selecionado">
                     <strong>${inv.qtd}x</strong>&nbsp;${inv.modelo}
                     <span style="font-weight:normal; margin-left:5px; font-size:0.8em; color:#64748b;">
-                        (${(capDC/1000).toFixed(1)} kWp)
+                        (${(capDC / 1000).toFixed(1)} kWp)
                     </span>
                     <i class="fas fa-times-circle" onclick="window.removerDoCarrinho(${idx})" title="Remover"></i>
                 </li>`;
@@ -1575,7 +2296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // A expansão é baseada no limite seguro do inversor (ex: 1.35x) menos o que já está instalado
         // Se o inversor já está saturado (Overloading alto), a expansão é zero.
-        const limiteTecnicoExpansao = potNominalTotalAC * 1.35; // Limite técnico seguro (135%)
+        const limiteTecnicoExpansao = potNominalTotalAC * overAlvo; // Usa o limite configurado (ex: 150%)
         const wattsExpansao = limiteTecnicoExpansao - potDCInstaladaWp;
         const numPlacasExp = Math.floor(Math.max(0, wattsExpansao) / wattsModulo);
 
@@ -1590,7 +2311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (ratioOverloading > 1.50) {
             avisos.push(`<div class='alerta-critico'><i class="fas fa-radiation-alt"></i> <strong>CRÍTICO: Overloading de ${percentualCarregamento.toFixed(0)}%</strong>. O inversor está perigosamente subdimensionado. Risco de perda de garantia e danos. <strong>A proposta será bloqueada.</strong></div>`);
             statusTecnicoSistema = { valido: false, nivel: 'CRITICO', mensagem: 'Overloading Excessivo' };
-        } 
+        }
         // NÍVEL 2: ALERTA DE CLIPPING (> 130%)
         else if (ratioOverloading > 1.30) {
             avisos.push(`<div class='alerta-atencao'><i class="fas fa-exclamation-triangle"></i> <strong>Atenção: Overloading de ${percentualCarregamento.toFixed(0)}%</strong>. O sistema operará com Clipping (perda de energia) nos horários de pico. Verifique se isso é intencional.</div>`);
@@ -1608,8 +2329,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Validação de Potência Absoluta (Caso o usuário force manual muito errado)
         if (potNominalTotalAC * 2 < potDCInstaladaWp / 1000) {
-             avisos.push(`<div class='alerta-erro'><i class="fas fa-ban"></i> <strong>Erro Fatal:</strong> Potência DC é mais que o dobro da AC. Configuração inválida.</div>`);
-             statusTecnicoSistema.valido = false;
+            avisos.push(`<div class='alerta-erro'><i class="fas fa-ban"></i> <strong>Erro Fatal:</strong> Potência DC é mais que o dobro da AC. Configuração inválida.</div>`);
+            statusTecnicoSistema.valido = false;
         }
 
         // Aviso de Multi-Inversor
@@ -1635,6 +2356,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             ${avisos.length > 0 ? `<div class="avisos-tecnicos" style="margin-top: 10px;">${avisos.join('')}</div>` : ''}
         `;
 
+        // ATUALIZAÇÃO DOS OPCIONAIS PREMIUM (Quantidades Dinâmicas baseadas nos inversores)
+        renderizarOpcionaisPremium();
+
         // Chama a validação final
         validarBotaoFinal();
 
@@ -1647,14 +2371,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Renderiza o botão de avançar SEMPRE, mas desabilitado se vazio
         // Alvo alterado para 'card-dimensionamento-inversor' para ficar visível mesmo com carrinho vazio
         const temItens = carrinhoInversores.length > 0;
+
+        // Atualiza o resumo superior (caso esteja visível ou vá ficar)
+        renderizarResumoSuperiorFinanceiro();
+
         renderizarBotaoNavegacao('card-dimensionamento-inversor', 'window.avancarParaFinanceiro()', temItens ? 'Inversores Definidos' : 'Selecione os Inversores', 'Avançar para Financeiro', temItens);
     }
 
-    window.filtrarTabelaHuawei = function() {
+    window.filtrarTabelaHuawei = function () {
         renderizarTabelaHuawei();
     };
 
-    window.toggleListaCompleta = function() {
+    window.toggleListaCompleta = function () {
         const lista = document.getElementById('lista_completa_scroll');
         if (lista.style.display === 'none') {
             lista.style.display = 'block';
@@ -1662,12 +2390,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             lista.style.display = 'none';
         }
     }
-    
+
     function prepararListaCompleta(listaRestante, pMinimaKwp) {
         const container = document.getElementById('lista_completa_scroll');
         if (!container) return;
-        
-        let tableHTML = '<table class="tabela-comparativa-modulos"><thead><tr><th>Modelo</th><th>Qtd</th><th>Pot. Total</th><th>Ação</th></tr></thead><tbody>';
+
+        let tableHTML = '<table class="tabela-tecnica"><thead><tr><th>Modelo</th><th>Qtd</th><th>Pot. Total</th><th>Ação</th></tr></thead><tbody>';
         listaRestante.forEach(mod => {
             tableHTML += `
                 <tr>
@@ -1685,7 +2413,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ======================================================================
     // 📐 MOTOR DE ORIENTAÇÃO COMPOSTA
     // ======================================================================
-    window.alternarModoOrientacao = function(modo) {
+    window.alternarModoOrientacao = function (modo) {
         modoOrientacao = modo;
         const subSimples = document.getElementById('subsecao_simples');
         const subComposto = document.getElementById('subsecao_composto');
@@ -1704,7 +2432,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         recalcularDimensionamento();
     };
 
-    window.adicionarLinhaOrientacao = function(primeira = false) {
+    window.adicionarLinhaOrientacao = function (primeira = false) {
         const container = document.getElementById('container_orientacoes_compostas');
         const azimuteGeral = document.getElementById('azimute_geral').value;
         const inclinacaoGeral = document.getElementById('inclinacao_geral').value;
@@ -1747,7 +2475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.validarSomaOrientacao();
     };
 
-    window.removerLinhaOrientacao = function(btn) {
+    window.removerLinhaOrientacao = function (btn) {
         const container = document.getElementById('container_orientacoes_compostas');
         if (container.children.length > 1) {
             btn.closest('.linha-orientacao').remove();
@@ -1758,7 +2486,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    window.validarSomaOrientacao = function(apenasVisual = false) {
+    window.validarSomaOrientacao = function (apenasVisual = false) {
         if (modoOrientacao === 'simples') return true;
 
         const inputs = document.querySelectorAll('#container_orientacoes_compostas .input-perc');
@@ -1785,7 +2513,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // --- NOVA FUNÇÃO: VERIFICAR TIPO DE ESTRUTURA (SOLO/LAJE) ---
-    window.verificarTipoEstrutura = function() {
+    window.verificarTipoEstrutura = function () {
         const selectEst = document.getElementById('select_tipo_estrutura');
         const wrapperOrigem = document.getElementById('wrapper_origem_estrutura');
 
@@ -1807,10 +2535,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Função para expandir/recolher seções
-    window.toggleSecao = function(idConteudo, idIcone) {
+    window.toggleSecao = function (idConteudo, idIcone) {
         const conteudo = document.getElementById(idConteudo);
         const icone = document.getElementById(idIcone);
-        
+
         if (conteudo.style.display === "block") {
             conteudo.style.display = "none";
             icone.classList.remove('rotated');
@@ -1830,23 +2558,62 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- NOVA FUNÇÃO: Validação em Tempo Real das Premissas ---
     function atualizarEstadoBotaoPremissas() {
+        // 1. Validação de Consumo
         const consumo = parseFloat(document.getElementById('uc_consumo')?.value) || 0;
         const consumoValido = consumo > 0;
-        
+
+        // 2. Validação de Orientação (Geometria)
         let orientacaoValida = true;
         if (modoOrientacao === 'composto') {
             const inputs = document.querySelectorAll('#container_orientacoes_compostas .input-perc');
             let soma = 0;
             inputs.forEach(input => soma += parseFloat(input.value) || 0);
             orientacaoValida = (Math.abs(soma - 100) < 0.1);
+        } else {
+            // Modo Simples: Verifica se Azimute e Inclinação estão preenchidos e são números
+            const az = document.getElementById('azimute_geral')?.value;
+            const inc = document.getElementById('inclinacao_geral')?.value;
+            orientacaoValida = (az !== '' && inc !== '' && !isNaN(parseFloat(az)) && !isNaN(parseFloat(inc)));
         }
 
-        const premissasValidas = consumoValido && orientacaoValida;
-        let textoBotao = 'Premissas de Projeto';
-        if (!consumoValido) textoBotao = 'Informe o Consumo';
-        else if (!orientacaoValida) textoBotao = 'Ajuste as Orientações (Total 100%)';
+        // 3. Validação de Perdas (Campos Críticos)
+        const efici = document.getElementById('p_efici_inv')?.value;
+        const perdasValidas = (efici !== '' && !isNaN(parseFloat(efici)));
 
-        renderizarBotaoNavegacao('card_perdas', 'window.confirmarPremissasEAvançar()', textoBotao, 'Ir para Seleção de Módulos', premissasValidas);
+        const premissasValidas = consumoValido && orientacaoValida && perdasValidas;
+
+        let textoFeedback = 'Premissas Definidas';
+        if (!consumoValido) textoFeedback = 'Informe o Consumo';
+        else if (!orientacaoValida) textoFeedback = 'Verifique Orientação/Inclinação';
+        else if (!perdasValidas) textoFeedback = 'Verifique os Parâmetros de Perdas';
+
+        // POSICIONAMENTO EXTERNO (Abaixo do Card de Perdas ou Geometria)
+        const cardPerdas = document.getElementById('card_perdas');
+        const cardGeometria = document.getElementById('card_geometria');
+        const anchorElement = cardPerdas || cardGeometria;
+
+        if (anchorElement) {
+            // 1. Limpa qualquer botão de navegação DENTRO do card (legado)
+            const btnInterno = anchorElement.querySelector('.area-acao-navegacao');
+            if (btnInterno) btnInterno.remove();
+
+            // Remove botão solto legado se existir (Limpeza de HTML estático)
+            const btnSolto = anchorElement.querySelector('button[onclick*="confirmarPremissasEAvançar"]');
+            if (btnSolto) btnSolto.remove();
+
+            // 2. Garante que existe o container externo
+            let navContainer = document.getElementById('nav_premissas_externo');
+            if (!navContainer) {
+                navContainer = document.createElement('div');
+                navContainer.id = 'nav_premissas_externo';
+                navContainer.className = 'container-navegacao-externa';
+                // Insere visualmente após o elemento âncora
+                anchorElement.insertAdjacentElement('afterend', navContainer);
+            }
+
+            // 3. Renderiza o botão no container externo
+            renderizarBotaoNavegacao('nav_premissas_externo', 'window.confirmarPremissasEAvançar()', textoFeedback, 'Avançar para Módulos', premissasValidas);
+        }
     }
 
     // --- Event Listeners ---
@@ -1887,13 +2654,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     inputsFinanceiros.forEach(input => {
         // Ao tocar no financeiro, garante que estamos na etapa financeira (se já passamos pelos inversores)
         // input.addEventListener('focus', () => gerenciadorEtapas.avancarPara('financeiro'));
-        
+
         // Usa 'input' para cálculo em tempo real ou 'change' para cálculo ao sair
         input.addEventListener('input', () => window.calcularEngenhariaFinanceira());
     });
 
     // Garante que fator de lucro, imposto e kit disparem o recálculo explicitamente
-    const idsFinanceiros = ['prem_fator_lucro', 'prem_aliquota_imposto', 'valor_kit_fornecedor'];
+    const idsFinanceiros = ['prem_fator_lucro', 'prem_aliquota_imposto', 'valor_kit_fornecedor', 'prem_lucro_minimo'];
     idsFinanceiros.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -1908,86 +2675,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         selectOrigemListener.addEventListener('change', () => window.calcularEngenhariaFinanceira());
     }
 
+    // Listener para Origem da Venda (Garante recálculo de comissão)
+    const selectOrigemVendaListener = document.getElementById('origem_venda');
+    if (selectOrigemVendaListener) {
+        selectOrigemVendaListener.addEventListener('change', () => window.calcularEngenhariaFinanceira());
+    }
+
     // ======================================================================
     // 💲 MOTOR DE ENGENHARIA FINANCEIRA (CÁLCULO DE PREÇO)
     // ======================================================================
-    
-    window.calcularEngenhariaFinanceira = function() {
+
+    // TODO: Mover lógica financeira para 'model.js' conforme documentacao_tecnica.md (Seção 5.2)
+    window.calcularEngenhariaFinanceira = function () {
         // Define a função de formatação no início do escopo para evitar ReferenceError
         const formatarMoeda = (val) => (val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-        // --- FUNÇÃO AUXILIAR: RENDERIZAÇÃO DO RESUMO DE MATERIAIS PREMIUM ---
-        function renderizarResumoMateriaisPremium(dadosEletrocalha, dadosQDG, custoTampas, totalMateriais, potAC, rede) {
-            let container = document.getElementById('container_resumo_materiais');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'container_resumo_materiais';
-                const wrapper = document.getElementById('wrapper-etapa-financeira');
-                if (wrapper) wrapper.appendChild(container);
-            }
-
-            if (projetoGerenciador.abaAtiva !== 'premium') {
-                container.style.display = 'none';
-                return;
-            }
-            container.style.display = 'block';
-
-            const nInv = carrinhoInversores.reduce((acc, i) => acc + i.qtd, 0);
-
-            // Calcula o custo base para mostrar apenas o adicional premium no resumo
-            const qtdModulos = parseInt(document.getElementById('total_modulos_projeto')?.value) || 0;
-            const premissas = db.buscarConfiguracao('premissas_globais');
-            const custoBase = calcularCustoMateriaisBasicos(qtdModulos, premissas?.tabelas?.materiais);
-            // const custoInfraPremium = totalMateriais - custoBase; // Unused variable
-
-            container.innerHTML = `
-                <div class="check-list-premium" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-top: 20px;">
-                    <h4 style="color: #0f172a; margin-bottom: 10px; font-size: 1rem; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">
-                        <i class="fas fa-list-check" style="color: var(--primaria);"></i> Detalhamento da Infraestrutura (Automático)
-                    </h4>
-                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">
-                        Nota técnica: Dimensionado para <strong>${potAC.toFixed(2)} kW</strong> de potência AC em rede <strong>${rede}</strong>.
-                    </div>
-                    <ul style="list-style: none; padding: 0; font-size: 0.9rem; color: #334155;">
-                        <li style="margin-bottom: 6px; display: flex; justify-content: space-between;">
-                            <span><i class="fas fa-box"></i> <strong>Quadro:</strong> 1x ${dadosQDG.tipo}</span>
-                            <span>${formatarMoeda(dadosQDG.custoQDG)}</span>
-                        </li>
-                        <li style="margin-bottom: 6px; display: flex; justify-content: space-between;">
-                            <span><i class="fas fa-th"></i> <strong>Barramento:</strong> ${dadosQDG.qtdBlocos}x Blocos de Distribuição</span>
-                            <span>${formatarMoeda(dadosQDG.custoBlocos)}</span>
-                        </li>
-                        <li style="margin-bottom: 6px; display: flex; justify-content: space-between;">
-                            <span><i class="fas fa-road"></i> <strong>Passagem:</strong> ${nInv}x Eletrocalha <strong>${dadosEletrocalha.tipo}</strong> (3m)</span>
-                            <span>${formatarMoeda(nInv * dadosEletrocalha.custoUnit)}</span>
-                        </li>
-                        <li style="margin-bottom: 6px; display: flex; justify-content: space-between;">
-                            <span><i class="fas fa-shield-alt"></i> <strong>Proteção:</strong> ${nInv}x Tampas de Acrílico</span>
-                            <span>${formatarMoeda(custoTampas)}</span>
-                        </li>
-                    </ul>
-                </div>
-            `;
-        }
-
         const premissas = db.buscarConfiguracao('premissas_globais');
         const aba = projetoGerenciador.abaAtiva;
-        
+
         // Elementos DOM
         const elQtdModulos = document.getElementById('total_modulos_projeto');
         const elOrigemEstrutura = document.getElementById('select_origem_estrutura');
         const elFatorLucro = document.getElementById('prem_fator_lucro');
         const elValorKit = document.getElementById('valor_kit_fornecedor');
         const elImposto = document.getElementById('prem_aliquota_imposto');
+        const elLucroMinimo = document.getElementById('prem_lucro_minimo');
+        // Origem da venda vem do projeto, não mais de um input na tela
+        const origemVenda = projetoCompleto.projeto.origemVenda || 'nenhum';
 
         const qtdModulos = parseInt(elQtdModulos?.value) || 0;
         // LÊ DIRETO DO PROJETO (Segurança de Dados)
-        const tipoEstrutura = (projetoCompleto.projeto.tipoTelhado || 'Telhado').toLowerCase(); 
+        const tipoEstrutura = (projetoCompleto.projeto.tipoTelhado || 'Telhado').toLowerCase();
         const origemEstrutura = elOrigemEstrutura?.value || 'KIT';
-        
+
         // Premissas
         const pFin = premissas?.financeiro || {};
         const pEst = premissas?.estruturas || {};
+        const pLog = premissas?.logistica || {}; // NOVO: Leitura correta da logística
         const pMatPrem = premissas?.materiaisPremium || {};
         const tabelaMat = premissas?.tabelas?.materiais;
         const tabelaMO = premissas?.tabelas?.maoDeObra;
@@ -2008,36 +2732,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Adicional Premium (Se for a aba Premium, SOMA ao invés de substituir)
-        if (aba === 'premium') {
-            const qtdInversores = carrinhoInversores.reduce((acc, i) => acc + i.qtd, 0);
-            const tipoRede = document.getElementById('uc_tipo_padrao')?.value || 'monofasico';
-            const isTrifasico = tipoRede.toLowerCase().includes('trif');
-            
-            const custoQDG = isTrifasico ? (pMatPrem.va_qdg_trif_premum || 300) : (pMatPrem.va_qdg_mono_premium || 150);
-            const qtdBlocos = isTrifasico ? 5 : 3;
-            const custoBlocos = qtdBlocos * (pMatPrem.va_bloco_distribuicao || 90);
-            
-            const potTotalInversoresAC_kW = carrinhoInversores.length > 0 ? carrinhoInversores.reduce((acc, i) => acc + (i.nominal * i.qtd), 0) / 1000 : 0;
-            let custoUnitEletrocalha = (pMatPrem.va_eletrocalha_50 || 85);
-            if (potTotalInversoresAC_kW > 12 || qtdInversores > 1) {
-                custoUnitEletrocalha = (pMatPrem.va_eletrocalha_100 || 158);
-            }
-            const custoEletrocalhas = qtdInversores * custoUnitEletrocalha;
-            const custoTampas = qtdInversores * (pMatPrem.va_tampa_acrilico || 335);
+        // Controle de visibilidade dos Opcionais (Mantido)
+        const containerOpcionais = document.getElementById('container_opcionais_premium');
 
-            custoMateriais += (custoQDG + custoBlocos + custoEletrocalhas + custoTampas);
-            
-            // Renderiza Checklist Premium
-            renderizarResumoMateriaisPremium(
-                { tipo: (custoUnitEletrocalha === (pMatPrem.va_eletrocalha_100 || 158)) ? "100mm" : "50mm", custoUnit: custoUnitEletrocalha },
-                { tipo: isTrifasico ? "Trifásico Amplo" : "Monofásico Amplo", custoQDG: custoQDG, qtdBlocos: qtdBlocos, custoBlocos: custoBlocos },
-                custoTampas, custoMateriais, potTotalInversoresAC_kW, tipoRede
-            );
-        } else {
-            // Oculta checklist se não for premium
-            const containerResumo = document.getElementById('container_resumo_materiais');
-            if (containerResumo) containerResumo.style.display = 'none';
+        if (containerOpcionais) {
+            containerOpcionais.style.display = (aba === 'premium') ? 'block' : 'none';
+        }
+
+        // REMOÇÃO DEFINITIVA: Remove o resumo automático de materiais (Legado) se existir no DOM
+        const containerResumo = document.getElementById('container_resumo_materiais');
+        if (containerResumo) containerResumo.remove();
+
+        // =================================================================
+        // 1.1 CÁLCULO DE OPCIONAIS PREMIUM (Tempo Real)
+        // =================================================================
+        let custoOpcionais = 0;
+        if (aba === 'premium') {
+            document.querySelectorAll('.chk-opcional:checked').forEach(chk => {
+                custoOpcionais += parseFloat(chk.dataset.valor || 0);
+            });
         }
 
         // =================================================================
@@ -2047,7 +2760,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const modulosPorDia = pFin.modulosPorDia || 12;
         let diasBase = qtdModulos > 0 ? Math.ceil(qtdModulos / modulosPorDia) : 0;
         let diasExtras = 0;
-        
+
         // Adicional Estrutura (Tempo) - Afeta AMBAS as propostas
         if (tipoEstrutura.includes('solo')) {
             diasExtras += (qtdModulos * (pEst.diaria_extra_solo || 0.2));
@@ -2060,7 +2773,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const qtdInversores = carrinhoInversores.reduce((acc, i) => acc + i.qtd, 0);
             // Adiciona 1 dia fixo se for premium (configuração técnica) ou 1 por inversor se preferir
             // Mantendo a lógica anterior de +1.0 dia base
-            diasExtras += 1.0; 
+            diasExtras += 1.0;
         }
 
         const diasTotais = diasBase + diasExtras;
@@ -2072,14 +2785,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // --- CUSTO DE MÃO DE OBRA (Híbrido: Tabela Base + Extras por Tempo) ---
         const valorDiariaTecnica = pMatPrem.va_diaria_instalador || 390;
-        
+
         // 1. M.O. Base: Busca da Tabela de Premissas (ex: R$ 150/módulo)
         // Isso corrige o erro de calcular apenas dias * diária para a base
         const custoMOBase = calcularMaoObraBase(qtdModulos, tabelaMO);
-        
+
         // 2. M.O. Extra: Cobra apenas o tempo excedente (Solo/Laje/Premium)
         const custoMOExtra = diasExtras * valorDiariaTecnica;
-        
+
         const custoMO = custoMOBase + custoMOExtra;
 
         // Logística (Baseada em KM e Dias)
@@ -2089,65 +2802,157 @@ document.addEventListener('DOMContentLoaded', async () => {
         const kmSuprimentos = pFin.kmSuprimentos || 15;
         const kmDiario = (distanciaIda * 2) + (pFin.kmAlmoco || 5);
         const kmTotal = kmSuprimentos + (diasFinais * kmDiario);
-        const custoLogistica = (kmTotal / (pFin.consumoVeiculo || 8.5)) * (pFin.precoCombustivel || 6.10);
+        const custoLogistica = (kmTotal / (pLog.consumoVeiculo || 8.5)) * (pLog.precoCombustivel || 6.10);
 
         // =================================================================
-        // 3. TOTALIZADOR FINAL (MARKUP POR ITEM)
+        // 2.1 CÁLCULO DE COMISSÃO (Custo Variável de Venda)
+         // 3. TOTALIZADOR FINAL (MARKUP POR ITEM)
         // =================================================================
         const fatorLucro = parseFloat(elFatorLucro?.value) || 1.1;
-        const lucroMinimo = pFin.lucroMinimo || 0; // Piso de lucro
+        const lucroMinimo = parseFloat(elLucroMinimo?.value) || pFin.lucroMinimo || 0; // Piso de lucro
         const aliquotaImposto = (parseFloat(elImposto?.value) || 0) / 100;
         const divisorImposto = (1 - aliquotaImposto) > 0 ? (1 - aliquotaImposto) : 1;
-        
-        // A. MÃO DE OBRA (Custo Base + Extras)
-        // Aplica o markup do imposto sobre o custo da M.O.
-        const precoVendaMO = custoMO / divisorImposto;
-        
-        // B. LUCRO (Calculado sobre a M.O. sem imposto)
-        // Regra: Lucro = Custo M.O. * Fator (ex: 1500 * 1.1 = 1650 de lucro nominal)
-        let lucroNominal = custoMO * fatorLucro;
+        const valorKit = parseFloat(elValorKit?.value) || 0;
 
-        // APLICAÇÃO DO PISO (TRAVA DE SEGURANÇA)
+        // B. LUCRO (Regra Jean Marcel: 1.1 * M.O. Integral)
+        // Garante que o lucro seja exatamente o fator aplicado sobre a Mão de Obra
+        const fatorAplicado = fatorLucro > 0 ? fatorLucro : 1.1;
+        // CORREÇÃO: O lucro é calculado sobre a M.O. FINAL (Base + Extras) conforme solicitado
+        let lucroNominal = custoMO * fatorAplicado;
+
+        // APLICAÇÃO DO PISO DE LUCRO (Solicitação: Se calculado < piso, usa piso)
         if (lucroNominal < lucroMinimo) {
             lucroNominal = lucroMinimo;
         }
 
+        // =================================================================
+        // 2.1 CÁLCULO DE COMISSÃO (Custo Variável de Venda sobre TOTAL DA PROPOSTA)
+        // =================================================================
+        const taxasComissao = pFin.taxasComissao || { indicador: 2.0, representante: 5.0 };
+        
+        let taxaComissaoAplicada = 0;
+        if (origemVenda === 'indicador') taxaComissaoAplicada = taxasComissao.indicador || 0;
+        if (origemVenda === 'representante') taxaComissaoAplicada = taxasComissao.representante || 0;
+        
+        const taxaComissaoDecimal = taxaComissaoAplicada / 100;
+
+        // CÁLCULO REVERSO: Preço Serviço deve cobrir Custos + (TotalProposta * TaxaComissao)
+        // TotalProposta = PrecoServico + ValorKit
+        // Fórmula derivada: PrecoServico = (CustosFixos + (ValorKit * TaxaComissao)) / (1 - Imposto - TaxaComissao)
+        
+        const custosFixosServico = custoMO + custoLogistica + custoMateriais + custoOpcionais + lucroNominal;
+        
+        // Denominador do Markup Global (Imposto + Comissão)
+        const denominadorGlobal = (1 - aliquotaImposto - taxaComissaoDecimal);
+        const divisorGlobal = denominadorGlobal > 0.01 ? denominadorGlobal : 0.01;
+
+        // Preço de Venda do Serviço Necessário para cobrir tudo
+        const precoVendaServico = (custosFixosServico + (valorKit * taxaComissaoDecimal)) / divisorGlobal;
+
+        // Valor absoluto da comissão (Sobre o Total: Serviço + Kit)
+        const valorComissao = (precoVendaServico + valorKit) * taxaComissaoDecimal;
+
+        
+
+        // A. MÃO DE OBRA (Custo Base + Extras)
+        // Aplica o markup do imposto sobre o custo da M.O.
+        const precoVendaMO = custoMO / divisorImposto;
+
+        // B. LUCRO (Já calculado acima)
         const precoVendaLucro = lucroNominal / divisorImposto;
 
         // C. LOGÍSTICA (Repasse com Imposto)
         const precoVendaLogistica = custoLogistica / divisorImposto;
-        
-        // D. MATERIAIS (Instalação/Infra com Imposto)
-        const precoVendaMateriais = custoMateriais / divisorImposto;
 
-        // PREÇO FINAL DO SERVIÇO (Soma dos itens com Gross-up)
-        const precoVendaServico = precoVendaMO + precoVendaLucro + precoVendaLogistica + precoVendaMateriais;
-        
+        // D. MATERIAIS (Instalação/Infra com Imposto)
+        const precoVendaMateriais = (custoMateriais + custoOpcionais) / divisorImposto;
+
+        // E. COMISSÃO (Repasse com Imposto)
+        // Nota: Aqui calculamos o componente de comissão dentro do preço do serviço para exibição
+        const precoVendaComissao = valorComissao / divisorImposto;
+
         // Cálculo Reverso do Imposto Real (Para exibição)
         // Base Total = Custos + Lucro Nominal
-        const baseTotal = custoMO + lucroNominal + custoLogistica + custoMateriais;
+        const baseTotal = custoMO + lucroNominal + custoLogistica + custoMateriais + custoOpcionais + valorComissao;
         const valorImposto = precoVendaServico - baseTotal;
-        
+
         // Lucro para exibição
         const lucro = lucroNominal;
 
         // VALOR TOTAL = SERVIÇO + MATERIAIS + KIT
         // Nota: custoMateriais já está embutido no precoVendaServico (taxado), então não somamos novamente.
         // O Valor Total é o Serviço (que contém MO, Logística, Materiais e Impostos) + Kit.
-        const valorKit = parseFloat(elValorKit?.value) || 0;
         const valorTotalCliente = precoVendaServico + valorKit;
 
         // VALIDAÇÃO: O Kit deve ter valor coerente para avançar
         const isKitValido = valorKit > 0;
 
         // 4. ATUALIZAÇÃO UI
-        if(document.getElementById('res_custo_materiais')) document.getElementById('res_custo_materiais').innerText = formatarMoeda(custoMateriais);
-        if(document.getElementById('res_custo_mo_base')) document.getElementById('res_custo_mo_base').innerText = `${formatarMoeda(custoMO)} (${diasFinais}d)`;
-        if(document.getElementById('res_logistica')) document.getElementById('res_logistica').innerText = formatarMoeda(custoLogistica);
-        if(document.getElementById('res_lucro_proposta')) document.getElementById('res_lucro_proposta').innerText = formatarMoeda(lucro);
-        if(document.getElementById('res_imposto_cascata')) document.getElementById('res_imposto_cascata').innerText = formatarMoeda(valorImposto);
-        if(document.getElementById('res_preco_venda_servico')) document.getElementById('res_preco_venda_servico').innerText = formatarMoeda(precoVendaServico);
-        if(document.getElementById('res_valor_total_proposta')) document.getElementById('res_valor_total_proposta').innerText = formatarMoeda(valorTotalCliente);
+        const custoMatTotal = custoMateriais + custoOpcionais;
+
+        // --- RECONSTRUÇÃO DO PAINEL FINANCEIRO (Layout Clean) ---
+        const containerCascata = document.querySelector('.painel-detalhamento-cascata');
+        if (containerCascata) {
+            const formatarLinha = (label, valor, idElemento, destaque = false, mostrarPerc = true, suffix = '') => {
+                const moeda = formatarMoeda(valor);
+                
+                // Percentuais
+                const percServico = precoVendaServico > 0 ? ((valor / precoVendaServico) * 100).toFixed(1) : '0.0';
+                const percTotal = valorTotalCliente > 0 ? ((valor / valorTotalCliente) * 100).toFixed(1) : '0.0';
+                
+                const styleLabel = destaque ? 'font-weight: 700; color: #0f172a;' : 'color: #334155;';
+                const styleValor = destaque ? 'font-weight: 700; color: #0f172a;' : 'font-weight: 600; color: #0f172a;';
+                
+                let htmlPerc = '';
+                if (mostrarPerc) {
+                    htmlPerc = `
+                        <span style="font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 1px 4px; border-radius: 4px; margin-left: 6px;" title="% sobre Serviço">${percServico}% Srv</span>
+                        <span style="font-size: 0.7rem; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0px 4px; border-radius: 4px; margin-left: 4px;" title="% sobre Total">${percTotal}% Tot</span>
+                    `;
+                }
+
+                return `
+                    <div class="linha-custo" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="${styleLabel}">${label}</span>
+                            ${suffix}
+                            ${htmlPerc}
+                        </div>
+                        <span id="${idElemento}" style="${styleValor}">${moeda}</span>
+                    </div>
+                `;
+            };
+
+            let html = `<h4><i class="fas fa-list"></i> Itens de Custo do Serviço</h4>`;
+            
+            html += formatarLinha('Materiais de Inst:', custoMatTotal, 'res_custo_materiais');
+            
+            const suffixDias = `<span style="font-size: 0.85em; color: #94a3b8; font-weight: normal; margin-left: 5px;">(${diasFinais}d)</span>`;
+            html += formatarLinha('M.O.:', custoMO, 'res_custo_mo_base', false, true, suffixDias);
+            
+            html += formatarLinha('Logística:', custoLogistica, 'res_logistica');
+            
+            if (valorComissao > 0) {
+                const labelComissao = `Comissão (${origemVenda === 'indicador' ? 'Ind.' : 'Rep.'}):`;
+                html += formatarLinha(labelComissao, valorComissao, 'res_linha_comissao_valor');
+            }
+
+            html += `<hr style="margin: 10px 0; border-color: #e2e8f0;">`;
+            html += formatarLinha('Lucro:', lucro, 'res_lucro_proposta', true);
+            html += formatarLinha('Imposto:', valorImposto, 'res_imposto_cascata', true);
+            html += `<hr style="margin: 10px 0; border-color: #e2e8f0;">`;
+            html += formatarLinha('Serviço:', precoVendaServico, 'res_preco_venda_servico', true, true);
+
+            html += `
+                <div class="total-geral-proposta" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 2px solid #e2e8f0;">
+                    <span style="font-weight: 800; color: #0f172a; font-size: 1.1rem;">Total Proposta:</span>
+                    <strong id="res_valor_total_proposta" style="font-weight: 800; color: #16a34a; font-size: 1.2rem;">${formatarMoeda(valorTotalCliente)}</strong>
+                </div>
+            `;
+
+            containerCascata.innerHTML = html;
+        }
+
 
         // Estado
         if (projetoGerenciador.abaAtiva && projetoGerenciador[projetoGerenciador.abaAtiva]) {
@@ -2186,8 +2991,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Só exibe se houver preço calculado
         if (projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado) {
-            // A visibilidade agora é controlada pelo gerenciadorEtapas (etapa 'resumo')
-            // secao.style.display = 'block'; 
+            // CORREÇÃO: Só exibe se estivermos na etapa de Resumo
+            const aba = projetoGerenciador.abaAtiva;
+            const indiceAtual = projetoGerenciador[aba].dados.etapaIndex || 0;
+            const isResumo = gerenciadorEtapas.ordem[indiceAtual] === 'resumo';
+            
+            // A visibilidade agora é controlada pelo gerenciadorEtapas via classe .etapa-oculta
 
             // --- DADOS COMPLETOS PARA O RESUMO ---
             const clienteNome = projetoCompleto.nome || 'Cliente';
@@ -2195,11 +3004,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const local = `${projetoCompleto.projeto.cidade}/${projetoCompleto.projeto.uf}`;
             const consumo = projetoCompleto.projeto.consumo || 0;
             const tipoTelhado = projetoCompleto.projeto.tipoTelhado || 'Não informado';
-            
+
             // Dados Técnicos
             const potSistema = ((dados.qtdModulos * dados.potenciaModulo) / 1000).toFixed(2);
             const modulosDesc = `${dados.qtdModulos}x ${dados.potenciaModulo}W`;
-            
+
             // Cálculo da Potência AC Total (Inversores)
             const potInversoresAC = dados.inversores.reduce((acc, i) => acc + (i.nominal * i.qtd), 0) / 1000;
 
@@ -2242,7 +3051,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <div style="display: grid; grid-template-columns: 1fr; gap: 10px; font-size: 1rem; color: #475569;">
                                 <div style="display: flex; justify-content: space-between;"><span>Potência DC:</span> <strong style="color: #0f172a;">${potSistema} kWp</strong></div>
                                 <div style="display: flex; justify-content: space-between;"><span>Módulos:</span> <strong style="color: #0f172a;">${modulosDesc}</strong></div>
-                                <div style="display: flex; justify-content: space-between;"><span>Potência AC:</span> <strong style="color: #0f172a;">${potInversoresAC.toFixed(2)} kW</strong></div>
+                                <div style="display: flex; justify-content: space-between;"><span>Potência Nominal Inversores:</span> <strong style="color: #0f172a;">${potInversoresAC.toFixed(2)} kW</strong></div>
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start;"><span>Inversores:</span> <div style="text-align: right; color: #0f172a;">${invDesc}</div></div>
                                 <div style="display: flex; justify-content: space-between;"><span>Geração Estimada:</span> <strong style="color: #16a34a;">${dados.geracaoMensal} kWh/mês</strong></div>
                                 <div style="display: flex; justify-content: space-between;"><span>Expansão:</span> <strong style="color: #0f172a;">${dados.geracaoMax}</strong></div>
@@ -2275,15 +3084,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 </div>
             `;
-            
+
             secao.innerHTML = html;
 
             // Move o botão de salvar para dentro do resumo
-            const btnSalvar = document.getElementById('btn_gerar_proposta');
+            // Usa a variável do escopo (btnGerarProposta) pois o elemento pode ter sido removido do DOM ao limpar o innerHTML
+            const btnSalvar = btnGerarProposta;
+            const msgValidacao = msgValidacaoElement; // Usa referência global
             const containerBtn = document.getElementById('container_botao_salvar_final');
-            
+
             if (btnSalvar && containerBtn) {
-                containerBtn.appendChild(btnSalvar);
+                containerBtn.innerHTML = ''; // Limpa container
+                
+                // Wrapper para alinhar botão e mensagem
+                const wrapperAction = document.createElement('div');
+                wrapperAction.style.cssText = "display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;";
+                containerBtn.appendChild(wrapperAction);
+
+                wrapperAction.appendChild(btnSalvar);
+                
+                if (msgValidacao) {
+                    wrapperAction.appendChild(msgValidacao);
+                    msgValidacao.style.display = 'block';
+                }
+
                 // Estilização do botão para ficar imponente
                 btnSalvar.style.width = 'auto';
                 btnSalvar.style.minWidth = '250px';
@@ -2307,7 +3131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = document.getElementById('secao_comparativa_final');
         // Verifica se ambas as abas têm dados calculados
         if (!projetoGerenciador.standard.dados.precoCalculado || !projetoGerenciador.premium.dados.precoCalculado) {
-            if(container) container.style.display = 'none';
+            if (container) container.style.display = 'none';
             return;
         }
 
@@ -2324,7 +3148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Extrai valores numéricos do sessionStorage ou do objeto salvo
         // Nota: Para simplificar, vamos assumir que os valores formatados estão salvos ou recalcular.
         // Aqui faremos uma comparação visual simples baseada no que foi salvo.
-        
+
         // Implementação visual simplificada para o prompt
         container.innerHTML = `
             <div class="card-comparativo-limpo" style="background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%); border: 1px solid #16a34a; border-radius: 12px; padding: 15px; margin-top: 15px;">
@@ -2336,21 +3160,41 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>
         `;
-        // A visibilidade é controlada pelo gerenciadorEtapas
+        
+        // CORREÇÃO: Só exibe se estivermos na etapa de Resumo
+        const aba = projetoGerenciador.abaAtiva;
+        const indiceAtual = projetoGerenciador[aba].dados.etapaIndex || 0;
+        const isResumo = gerenciadorEtapas.ordem[indiceAtual] === 'resumo';
+
+        container.style.display = isResumo ? 'block' : 'none';
     }
 
     // ======================================================================
     // 🔒 VALIDAÇÃO FINAL (GATEKEEPER)
     // ======================================================================
     function validarBotaoFinal() {
-        const btn = document.getElementById('btn_gerar_proposta');
-        const msg = document.getElementById('msg_validacao');
-        
+        const btn = btnGerarProposta; // Usa referência global
+        const msg = msgValidacaoElement; // Usa referência global
+
+        if (!btn || !msg) return; // Safeguard contra erros de renderização
+
         // Verifica se há inversores no carrinho
         const temInversor = carrinhoInversores.length > 0;
-        const temPreco = (projetoGerenciador.abaAtiva && projetoGerenciador[projetoGerenciador.abaAtiva]) 
-            ? projetoGerenciador[projetoGerenciador.abaAtiva].dados.precoCalculado 
-            : false;
+
+        // VALIDAÇÃO DE ESCOPO (AMBAS, STANDARD, PREMIUM)
+        const escopo = projetoGerenciador.tipoEscopo;
+        const stdOk = projetoGerenciador.standard.dados.precoCalculado;
+        const prmOk = projetoGerenciador.premium.dados.precoCalculado;
+
+        let temPreco = false;
+        if (escopo === 'AMBAS') {
+            temPreco = stdOk && prmOk;
+        } else if (escopo === 'PREMIUM') {
+            temPreco = prmOk;
+        } else {
+            temPreco = stdOk;
+        }
+
         const sistemaTecnicamenteValido = statusTecnicoSistema.valido;
 
         if (temInversor && temPreco && sistemaTecnicamenteValido) {
@@ -2360,12 +3204,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             btn.disabled = true;
             btn.className = "btn-proposta-desabilitado";
-            
+
             let pendencias = [];
             if (!sistemaTecnicamenteValido) pendencias.push("Correção Técnica (Overloading)");
             if (!temInversor) pendencias.push("Inversor");
-            if (!temPreco) pendencias.push("Custos");
-            
+
+            if (escopo === 'AMBAS') {
+                if (!stdOk) pendencias.push("Standard");
+                if (!prmOk) pendencias.push("Premium");
+            } else {
+                if (!temPreco) pendencias.push("Custos");
+            }
+
             msg.innerText = `* Pendente: ${pendencias.join(" e ")}`;
             if (!sistemaTecnicamenteValido) {
                 msg.innerHTML += '<br><span style="color:#dc2626; font-weight:bold;">⚠️ O sistema possui erros críticos de dimensionamento.</span>';
@@ -2379,47 +3229,86 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 1. Consolida os dados da aba atual
             salvarEstadoAbaAtual();
 
-            // 2. Prepara o objeto para o banco de dados (D1 Structure)
+            // 2. Determina qual versão será a "capa" da proposta na listagem (Prioridade: Premium > Standard)
+            const dadosStd = projetoGerenciador.standard.dados.precoCalculado ? projetoGerenciador.standard.dados : null;
+            const dadosPrm = projetoGerenciador.premium.dados.precoCalculado ? projetoGerenciador.premium.dados : null;
+
+            const versaoPrincipal = dadosPrm || dadosStd;
+
+            if (!versaoPrincipal) {
+                alert("Erro: Nenhuma versão válida (com preço calculado) encontrada para salvar.");
+                return;
+            }
+
+            const resumo = versaoPrincipal.resumoFinanceiro || { valorTotal: 0, potenciaTotal: 0 };
+
+            // 3. Prepara o objeto para o banco de dados (Estrutura compatível com D1)
             const propostaParaGravar = {
-                id_proposta: `PROP-${Date.now()}`,
+                projetoId: projetoCompleto.projeto.id, // Relacionamento com Projeto
+                clienteId: projetoCompleto.id,         // Relacionamento com Cliente
+                
+                // Campos de Resumo para Listagem Rápida (Desnormalização)
+                valor: resumo.valorTotal,
+                potenciaKwp: resumo.potenciaTotal,
+                
+                // Metadados da Proposta
                 escopo: projetoGerenciador.tipoEscopo, // Salva a decisão inicial
-                id_projeto: projetoCompleto.projeto.id,
-                data_criacao: new Date().toISOString(),
+                origemVenda: document.getElementById('origem_venda')?.value || projetoCompleto.projeto.origemVenda,
+                
+                // Estrutura de Versões (JSON B para futuro D1)
                 configuracao: {
                     temStandard: projetoGerenciador.standard.dados.precoCalculado,
                     temPremium: projetoGerenciador.premium.dados.precoCalculado
                 },
-                premissas_comuns: {
+                versoes: {
+                    standard: dadosStd,
+                    premium: dadosPrm
+                },
+                premissasSnapshot: {
                     consumo: parseFloat(higienizarParaCalculo(inputConsumo.value)),
                     cidade: projetoCompleto.projeto.cidade,
                     uf: projetoCompleto.projeto.uf
                 },
-                versoes: {
-                    standard: projetoGerenciador.standard.dados.precoCalculado ? projetoGerenciador.standard.dados : null,
-                    premium: projetoGerenciador.premium.dados.precoCalculado ? projetoGerenciador.premium.dados : null
-                },
                 status: 'Gerada'
             };
 
-            // 3. Salva no LocalStorage (Simulando D1)
-            const propostasExistentes = JSON.parse(localStorage.getItem('db_propostas_d1')) || [];
-            propostasExistentes.push(propostaParaGravar);
-            localStorage.setItem('db_propostas_d1', JSON.stringify(propostasExistentes));
+            // 4. Salva usando o serviço centralizado
+            db.salvar('propostas', propostaParaGravar);
 
-            alert("Proposta salva com sucesso! Você será redirecionado para a visualização.");
-            // window.location.href = 'lista-propostas.html'; // Exemplo de redirecionamento
+            alert("Proposta salva com sucesso!");
+            window.location.href = `projeto-detalhes.html?id=${projetoCompleto.projeto.id}`;
         });
     }
 
     // --- Execução Inicial ---
     inicializarBaseDeDados();
-    validarBotaoFinal(); // Garante estado inicial correto
     
-    // Inicializa o visual das etapas (Premissas aberta, resto fechado)
-    gerenciadorEtapas.sincronizarVisual();
-    
-    window.alternarModoOrientacao('simples'); // Garante o estado inicial correto
-    
-    // Injeta o Modal de Decisão
-    renderizarModalEscopo();
+    if (!modoEdicao) {
+        // FLUXO NOVO: Inicia do zero
+        projetoGerenciador.standard.dados.etapaIndex = 0;
+        projetoGerenciador.abaAtiva = 'standard';
+        gerenciadorEtapas.sincronizarVisual();
+        window.alternarModoOrientacao('simples');
+        window.autoDimensionarCompleto();
+    } else {
+        // FLUXO EDIÇÃO: Carrega estado salvo
+        carregarEstadoAba(projetoGerenciador.abaAtiva);
+        gerenciadorEtapas.sincronizarVisual();
+        
+        // Recalcula financeiro para atualizar totais na tela sem perder o valor do kit
+        if (carrinhoInversores.length > 0) {
+            window.calcularEngenhariaFinanceira();
+        }
+        renderizarResumoSuperiorFinanceiro();
+    }
 });
+
+// ======================================================================
+// 🎨 HELPER DE ESTILOS (Injeção de CSS Crítico - Fallback)
+// ======================================================================
+function injetarEstilosDinamicos() {
+    const styleId = 'estilos-gerador-dinamicos';
+    // Função esvaziada para usar apenas o CSS externo (engenharia.css)
+    // Mantida vazia para evitar erros de referência se chamada em outros lugares
+    if (document.getElementById(styleId)) return;
+}

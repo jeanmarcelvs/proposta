@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // NOVOS CAMPOS: Dados da UC centralizados no projeto
             consumo: consumo,
             tipoLigacao: document.getElementById('projeto_tipo_ligacao').value || 'monofasico',
+            origemVenda: document.getElementById('projeto_origem_venda')?.value || 'nenhum',
             hsp: parseFloat(document.getElementById('display_hsp').innerText) || 0
         };
 
@@ -81,5 +82,33 @@ function prepararNovoProjeto(cliente) {
     const hsp = obterHSPBruto(fatorHistorico);
     
     document.getElementById('display_hsp').innerText = hsp.toFixed(2);
+    
+    // Injeta o campo de Origem da Venda se ele não existir no HTML
+    injetarCampoOrigemVenda();
+    
     document.getElementById('nome_projeto').focus();
+}
+
+function injetarCampoOrigemVenda() {
+    const consumoInput = document.getElementById('projeto_consumo');
+    // Só injeta se o campo ainda não existir
+    if (consumoInput && !document.getElementById('projeto_origem_venda')) {
+        const container = consumoInput.closest('.form-group') || consumoInput.parentElement;
+        if (container && container.parentElement) {
+            const novoGrupo = document.createElement('div');
+            novoGrupo.className = 'form-group'; // Mantém o padrão de estilo do formulário
+            novoGrupo.style.marginTop = '15px';
+            novoGrupo.innerHTML = `
+                <label for="projeto_origem_venda" style="display:block; margin-bottom:5px; font-weight:500; color:#334155;">Origem da Venda / Comissão</label>
+                <select id="projeto_origem_venda" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #fff; font-size: 1rem; color: #0f172a;">
+                    <option value="nenhum">Venda Direta (Sem Comissão)</option>
+                    <option value="indicador">Indicação (Parceiro)</option>
+                    <option value="representante">Representante Comercial</option>
+                </select>
+                <small style="color: #64748b; font-size: 0.8rem;">Define a taxa de comissão aplicada na proposta.</small>
+            `;
+            // Insere logo após o campo de consumo
+            container.parentElement.insertBefore(novoGrupo, container.nextSibling);
+        }
+    }
 }

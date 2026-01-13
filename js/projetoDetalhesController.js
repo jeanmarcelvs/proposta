@@ -41,6 +41,14 @@ function carregarDetalhesProjeto(id) {
     document.getElementById('detalhe_localizacao').value = `${projeto.cidade} / ${projeto.uf}`;
     document.getElementById('detalhe_concessionaria').value = projeto.concessionaria;
     document.getElementById('detalhe_estrutura').value = projeto.tipoTelhado;
+    
+    const origemMap = {
+        'nenhum': 'Venda Direta',
+        'venda_direta': 'Venda Direta',
+        'indicador': 'Indicação',
+        'representante': 'Representante'
+    };
+    document.getElementById('detalhe_origem').value = origemMap[projeto.origemVenda] || 'Venda Direta';
 
     // Carrega a lista de propostas associadas
     carregarPropostasDoProjeto(id);
@@ -67,7 +75,7 @@ function carregarPropostasDoProjeto(projetoId) {
                 <td>${valorFormatado}</td>
                 <td style="text-align: right;">
                     <button class="btn-icon" onclick="window.visualizarProposta('${prop.id}')" title="Visualizar Proposta"><i class="fas fa-eye"></i></button>
-                    <button class="btn-icon" onclick="window.editarPropostaDoProjeto()" title="Editar Proposta"><i class="fas fa-pencil-alt"></i></button>
+                    <button class="btn-icon" onclick="window.editarPropostaDoProjeto('${prop.id}')" title="Editar Proposta"><i class="fas fa-pencil-alt"></i></button>
                     <button class="btn-icon" onclick="window.excluirPropostaDoProjeto('${prop.id}')" title="Excluir Proposta"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
@@ -82,12 +90,18 @@ window.novaPropostaParaProjeto = function() {
     if (!projeto) return;
     sessionStorage.setItem('cliente_ativo_id', projeto.clienteId);
     sessionStorage.setItem('projeto_ativo_id', projeto.id);
+    sessionStorage.removeItem('proposta_ativa_id'); // Garante que é uma NOVA proposta
     window.location.href = 'gerador-proposta.html';
 };
 
-window.editarPropostaDoProjeto = function() {
-    // A edição de qualquer proposta leva para a tela de dimensionamento do projeto pai.
-    window.novaPropostaParaProjeto(); // Reutiliza a mesma lógica
+window.editarPropostaDoProjeto = function(propostaId) {
+    const projeto = db.buscarPorId('projetos', projetoId);
+    if (!projeto) return;
+    
+    sessionStorage.setItem('cliente_ativo_id', projeto.clienteId);
+    sessionStorage.setItem('projeto_ativo_id', projeto.id);
+    sessionStorage.setItem('proposta_ativa_id', propostaId); // Define qual proposta carregar
+    window.location.href = 'gerador-proposta.html';
 };
 
 window.excluirPropostaDoProjeto = function(propostaId) {
