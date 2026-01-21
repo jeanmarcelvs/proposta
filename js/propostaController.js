@@ -1,4 +1,5 @@
-import { buscarETratarProposta, validarValidadeProposta, verificarAcessoDispositivo, calcularFinanciamento, calcularParcelasCartao } from './model.js';
+import { getSelicTaxa } from './api.js';
+import { validarValidadeProposta, verificarAcessoDispositivo, calcularFinanciamento, calcularParcelasCartao } from './model.js';
 import { mostrarLoadingOverlay, esconderLoadingOverlay, exibirMensagemBloqueio, organizarSecaoConfiabilidade, criarBlocoLinhaTecnica } from './utils.js';
 
 // FUNÇÃO CORRIGIDA: Gerencia a nova imagem da marca de equipamentos
@@ -22,6 +23,7 @@ function atualizarImagemEquipamentos(proposta) {
 
         // 3. Define os Handlers (Load e Error)
         const handleLoad = () => {
+            imagemEquipamentos.style.display = ''; // Garante que esteja visível se carregar
             imagemEquipamentos.removeEventListener('load', handleLoad);
             imagemEquipamentos.removeEventListener('error', handleError);
             resolve(); // Resolve a Promise com sucesso
@@ -29,9 +31,10 @@ function atualizarImagemEquipamentos(proposta) {
 
         const handleError = () => {
             console.error(`ERRO: Falha ao carregar a imagem de marca: ${imageUrl}`);
+            imagemEquipamentos.style.display = 'none'; // Oculta a imagem quebrada
             imagemEquipamentos.removeEventListener('load', handleLoad);
             imagemEquipamentos.removeEventListener('error', handleError);
-            reject(new Error('Falha no carregamento da imagem de marca.')); // Rejeita a Promise com erro
+            resolve(); // Resolve mesmo com erro para não travar a aplicação
         };
 
         imagemEquipamentos.addEventListener('load', handleLoad);
@@ -231,7 +234,6 @@ function preencherDadosProposta(dados) {
         // 4. Valores Finais e Financiamento (Lógica Solar)
         const valorTotalEl = document.getElementById('valor-total');
         const paybackContainer = document.getElementById('payback-container');
-        const financiamentoContainer = document.getElementById('financiamento-container');
         const inputEntrada = document.getElementById('valor-entrada-input');
 
         if (valorTotalEl) valorTotalEl.innerText = dados.valores?.valorTotal || "Não informado";
@@ -242,58 +244,102 @@ function preencherDadosProposta(dados) {
             console.error("ERRO: Elemento com ID 'payback-valor' não encontrado no DOM.");
         }
         if (paybackContainer) paybackContainer.classList.remove('oculto');
-        if (financiamentoContainer) financiamentoContainer.classList.remove('oculto');
         
-        // Preenche os cards principais (12, 36, 60, 84)
+        // --- RECONSTRUÇÃO DA SEÇÃO FINANCEIRA (Card Único + Tabela) ---
+        const containerValores = document.querySelector('.valores-container');
         const opcoesParcelas = [12, 24, 36, 48, 60, 72, 84];
-        opcoesParcelas.forEach(n => {
-            const parcelaKey = `parcela-${n}`;
-            const elementoParcela = document.getElementById(parcelaKey);
-            if (elementoParcela) {
-                elementoParcela.innerText = dados.valores?.parcelas[parcelaKey] || 'N/A';
-            } else {
-            }
-            const elementoTaxa = document.getElementById(`taxa-${n}`);
-            if (elementoTaxa) {
-                elementoTaxa.innerText = '';
-            }
-        });
+        const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 
-        // NOVO: Preenche a lista completa de financiamento (Componente Inteligente)
-        const listaFinanciamento = document.getElementById('lista-financiamento-completa');
-        if (listaFinanciamento && dados.valores?.parcelas) {
-            listaFinanciamento.innerHTML = '';
+        if (containerValores) {
+            // Preserva o card total (que está no final)
+            const cardTotal = containerValores.querySelector('.card-total');
+            
+            // Remove elementos antigos de financiamento/cartão (tudo exceto card-total, detalhamento e validade)
+            Array.from(containerValores.children).forEach(child => {
+                const isCardTotal = child.classList.contains('card-total');
+                const isDetalhamento = child.id === 'detalhamento-pagamento-container';
+                const isValidade = child.querySelector && child.querySelector('#texto-validade');
+
+                if (!isCardTotal && !isDetalhamento && !isValidade) {
+                    child.remove();
+                }
+            });
+
+            // HTML Financiamento (Card 60x + Tabela)
+            const htmlFinanciamento = `
+                <div class="titulo-secao-financiamento" style="width: 100%; text-align: center; margin-bottom: 10px;">
+                    <h3 style="font-size: 1.2rem; color: var(--cor-texto-secundario); font-weight: 500;">Financiamento Bancário</h3>
+                </div>
+                
+                <div class="card-destaque-unico bloco-animado">
+                    <div class="info-parcela">60x de</div>
+                    <div class="valor-parcela">R$ <span id="destaque-fin-60">...</span></div>
+                </div>
+
+                <table class="tabela-simulacao bloco-animado">
+                    <thead><tr><th>Parcelas</th><th>Valor</th></tr></thead>
+                    <tbody id="tbody-financiamento"></tbody>
+                </table>
+
+                <div class="secao-observacao-container" style="border: none; padding: 10px 0;">
+                    <p class="texto-observacao" style="font-size: 0.85rem;"><span style="color: var(--cor-primaria); font-weight: bold;">*</span> <span id="texto-observacao">${dados.valores?.observacao || ''}</span></p>
+                </div>
+            `;
+
+            // HTML Cartão (Card 12x + Tabela)
+            const htmlCartao = `
+                <div class="titulo-parcelamento" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px; margin-bottom: 10px;">
+                    <i class="fas fa-credit-card" style="color: var(--cor-primaria); font-size: 1.5rem;"></i>
+                    <span style="font-size: 1.2rem; font-weight: 500; color: var(--cor-texto-secundario);">Parcelamento no Cartão</span>
+                </div>
+
+                <div class="card-destaque-unico bloco-animado">
+                    <div class="info-parcela">12x de</div>
+                    <div class="valor-parcela">R$ <span id="destaque-cc-12">...</span></div>
+                </div>
+
+                <table class="tabela-simulacao bloco-animado">
+                    <thead><tr><th>Parcelas</th><th>Valor</th></tr></thead>
+                    <tbody id="tbody-cartao"></tbody>
+                </table>
+
+                <div class="secao-observacao-container" style="border: none; padding: 10px 0;">
+                    <p class="texto-observacao" style="font-size: 0.85rem;"><span style="color: var(--cor-primaria); font-weight: bold;">*</span> Simulação sujeita a reajuste...</p>
+                </div>
+            `;
+
+            // Insere o novo conteúdo antes do card-total
+            const divWrapper = document.createElement('div');
+            divWrapper.innerHTML = htmlFinanciamento + htmlCartao;
+            while (divWrapper.firstChild) {
+                containerValores.insertBefore(divWrapper.firstChild, cardTotal);
+            }
+        }
+
+        // Preenche Tabela Financiamento
+        const tbodyFin = document.getElementById('tbody-financiamento');
+        const destaqueFin60 = document.getElementById('destaque-fin-60');
+        if (tbodyFin && dados.valores?.parcelas) {
+            tbodyFin.innerHTML = '';
             opcoesParcelas.forEach(n => {
                 const valor = dados.valores.parcelas[`parcela-${n}`] || 'N/A';
-                const taxa = dados.valores.taxasPorParcela ? dados.valores.taxasPorParcela[`taxaNominal-${n}`] : '';
-                // Cria o item da lista compacta
-                const li = document.createElement('li');
-                li.innerHTML = `<span>${n}x</span> <strong>R$ ${valor}</strong>`;
-                listaFinanciamento.appendChild(li);
+                const row = `<tr><td>${n}x</td><td><strong>R$ <span id="val-fin-${n}">${valor}</span></strong></td></tr>`;
+                tbodyFin.insertAdjacentHTML('beforeend', row);
+                if (n === 60 && destaqueFin60) destaqueFin60.innerText = valor;
             });
         }
 
-        // NOVO: Preenche as parcelas do cartão de crédito
-        const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-        opcoesCartao.forEach(i => {
-            const el = document.getElementById(`parcela-cc-${i}`);
-            if (el) {
-                const key = `parcela-${i}`;
-                el.innerText = dados.valores?.parcelasCartao?.[key] || 'N/A';
-            }
-        });
-
-        // NOVO: Preenche a lista completa de cartão (Componente Inteligente)
-        const listaCartao = document.getElementById('lista-cartao-completa');
-        if (listaCartao && dados.valores?.parcelasCartao) {
-            listaCartao.innerHTML = '';
-            opcoesCartao.forEach(i => {
-                const key = `parcela-${i}`;
-                const valor = dados.valores.parcelasCartao[key] || 'N/A';
-                const label = i === 'debito' ? 'Débito' : `${i}x`;
-                const li = document.createElement('li');
-                li.innerHTML = `<span>${label}</span> <strong>R$ ${valor}</strong>`;
-                listaCartao.appendChild(li);
+        // Preenche Tabela Cartão
+        const tbodyCartao = document.getElementById('tbody-cartao');
+        const destaqueCC12 = document.getElementById('destaque-cc-12');
+        if (tbodyCartao && dados.valores?.parcelasCartao) {
+            tbodyCartao.innerHTML = '';
+            opcoesCartao.forEach(key => {
+                const valor = dados.valores.parcelasCartao[`parcela-${key}`] || 'N/A';
+                const label = key === 'debito' ? 'Débito' : `${key}x`;
+                const row = `<tr><td>${label}</td><td><strong>R$ <span id="val-cc-${key}">${valor}</span></strong></td></tr>`;
+                tbodyCartao.insertAdjacentHTML('beforeend', row);
+                if (key === '12' && destaqueCC12) destaqueCC12.innerText = valor;
             });
         }
 
@@ -369,33 +415,23 @@ function preencherDadosProposta(dados) {
             function atualizarDOMParcelas(valorBase) {
                 // 1. Recalcula Financiamento Bancário
                 const { parcelas: novasParcelasFinan } = calcularFinanciamento(valorBase, selic);
-                const opcoesFinan = [12, 24, 36, 48, 60, 72, 84];
-                opcoesFinan.forEach(n => {
-                    const el = document.getElementById(`parcela-${n}`);
+                opcoesParcelas.forEach(n => {
+                    // Atualiza células da tabela
+                    const el = document.getElementById(`val-fin-${n}`);
                     if (el) el.innerText = novasParcelasFinan[`parcela-${n}`] || '---';
+                    // Atualiza destaque 60x
+                    if (n === 60 && destaqueFin60) destaqueFin60.innerText = novasParcelasFinan[`parcela-${n}`];
                 });
 
                 // 2. Recalcula Cartão de Crédito
                 const { parcelas: novasParcelasCartao } = calcularParcelasCartao(valorBase, selic);
-                const opcoesCartao = ['debito', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
                 opcoesCartao.forEach(i => {
-                    const el = document.getElementById(`parcela-cc-${i}`);
+                    // Atualiza células da tabela
+                    const el = document.getElementById(`val-cc-${i}`);
                     if (el) el.innerText = novasParcelasCartao[`parcela-${i}`] || '---';
+                    // Atualiza destaque 12x
+                    if (i === '12' && destaqueCC12) destaqueCC12.innerText = novasParcelasCartao[`parcela-${i}`];
                 });
-
-                // 3. Atualiza as Listas Completas (Componentes Inteligentes)
-                if (listaFinanciamento) {
-                    Array.from(listaFinanciamento.children).forEach((li, idx) => {
-                        const n = opcoesFinan[idx];
-                        li.querySelector('strong').innerText = `R$ ${novasParcelasFinan[`parcela-${n}`]}`;
-                    });
-                }
-                if (listaCartao) {
-                    Array.from(listaCartao.children).forEach((li, idx) => {
-                        const i = opcoesCartao[idx];
-                        li.querySelector('strong').innerText = `R$ ${novasParcelasCartao[`parcela-${i}`]}`;
-                    });
-                }
             }
         }
         
@@ -405,7 +441,7 @@ function preencherDadosProposta(dados) {
         if (detalhamentoContainer) {
             const detalhe = dados.valores?.detalhamento;
             
-            if (detalhe && detalhe.equipamentos > 0) {
+            if (detalhe) {
                 detalhamentoContainer.classList.remove('oculto');
                 
                 // Helper para formatar moeda sem R$
@@ -420,10 +456,9 @@ function preencherDadosProposta(dados) {
                 document.getElementById('fluxo-valor-equipamentos').innerText = fmt(detalhe.equipamentos);
                 document.getElementById('fluxo-valor-entrega').innerText = fmt(detalhe.servicoEntrega);
                 document.getElementById('fluxo-valor-conclusao').innerText = fmt(detalhe.servicoConclusao);
-            } else {
-                // Se não houver valor de kit definido, oculta a seção para evitar mostrar dados zerados/errados
-                detalhamentoContainer.classList.add('oculto');
             }
+            // Removido o 'else' que ocultava a seção, já que você quer que ela apareça.
+            // Se os dados não existirem, os campos ficarão vazios ou com o valor padrão do HTML.
         }
 
         // 5. Observações e Validade
@@ -437,8 +472,7 @@ function preencherDadosProposta(dados) {
             seloPremiumEl.classList.toggle('oculto', dados.tipo !== 'premium');
         }
 
-
-        // NOVO: Atualiza o destaque do título da seção de instalação
+        // Atualiza o destaque do título da seção de instalação
         const tituloSecaoInstalacaoEl = document.getElementById('titulo-secao-instalacao') || document.querySelector('#secao-instalacao .titulo-secao');
         if (tituloSecaoInstalacaoEl) {
             // 1. Define apenas o título principal (mantendo a linha de destaque do CSS no H2)
@@ -528,6 +562,16 @@ function preencherDadosProposta(dados) {
         // NOVO: Organiza a seção de confiabilidade e garantias
         organizarSecaoConfiabilidade();
 
+        // REORDENAÇÃO DE SEÇÃO: Move "Padrão de Instalação" para antes de "Sua Proposta Inclui"
+        const secaoInstalacao = document.getElementById('secao-instalacao');
+        const secoes = Array.from(document.querySelectorAll('.secao-principal'));
+        // Encontra a seção pelo título, já que ela não tem ID
+        const secaoEscopo = secoes.find(s => s.querySelector('h2.titulo-secao')?.textContent.includes('Sua Proposta Inclui'));
+
+        if (secaoInstalacao && secaoEscopo) {
+            secaoEscopo.parentNode.insertBefore(secaoInstalacao, secaoEscopo);
+        }
+
     } catch (error) {
         console.error("ERRO DENTRO DE preencherDadosProposta:", error);
     }
@@ -556,11 +600,11 @@ function iniciarAnimacaoScroll() {
 }
 
 // --- Função principal de inicialização ---
-document.addEventListener('DOMContentLoaded', async () => {
+async function carregarProposta(idProposta) {
     document.addEventListener('contextmenu', function(evento) {
         evento.preventDefault();
     });
-    document.addEventListener('keydown', function(evento) {
+    document.addEventListener('keydown', function(evento) { // This listener might be added multiple times. It's better to have it in DOMContentLoaded. I'll move it.
         if ((evento.ctrlKey || evento.metaKey) && evento.key === 'p') {
             evento.preventDefault();
         }
@@ -568,10 +612,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             evento.preventDefault();
         }
     });
-
-    // 🚀 INICIALIZAÇÃO IMEDIATA: Ativa o storytelling para elementos estáticos do HTML
-    iniciarAnimacaoScroll();
-
     // --- Lógica do Modal de Aceite Consciente (Movido do HTML) ---
     const modalAceite = document.getElementById('proposalModal');
     const checkboxAceite = document.getElementById('acceptProposal');
@@ -602,16 +642,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    mostrarLoadingOverlay();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const numeroProjeto = urlParams.get('id');
-    const primeiroNome = urlParams.get('nome');
-
     const seletorTipoProposta = document.querySelector('.seletor-tipo-proposta');
     const btnPremium = document.getElementById('btn-premium');
     const btnAcessivel = document.getElementById('btn-acessivel');
     const btnVoltar = document.querySelector('.btn-voltar-proposta');
+
+    // Função para exibir aviso amigável (Modal)
+    function exibirAvisoAmigavel(titulo, mensagem, urlDestino) {
+        const modal = document.getElementById('modal-aviso');
+        const elTitulo = document.getElementById('titulo-aviso');
+        const elMsg = document.getElementById('mensagem-aviso');
+        const btn = document.getElementById('btn-aviso');
+        const icone = document.getElementById('icone-aviso');
+
+        if (modal && elTitulo && elMsg && btn) {
+            elTitulo.innerText = titulo;
+            elMsg.innerHTML = mensagem;
+            
+            if (titulo.toLowerCase().includes('expirada') || titulo.toLowerCase().includes('validade')) {
+                icone.className = 'fas fa-clock';
+                icone.style.color = '#f59e0b'; // Amber
+            } else {
+                icone.className = 'fas fa-exclamation-circle';
+                icone.style.color = '#ef4444'; // Red
+            }
+
+            modal.classList.remove('oculto');
+            esconderLoadingOverlay(); // Garante que o loading saia
+
+            btn.onclick = function() {
+                window.location.href = urlDestino;
+            };
+        } else {
+            // Fallback caso o modal não exista no DOM
+            alert(mensagem.replace(/<br>/g, '\n'));
+            window.location.href = urlDestino;
+        }
+    }
 
     // =================================================================
     // 🌟 REESTRUTURAÇÃO: Variáveis do Carrossel e Modal (Corrigindo ReferenceError)
@@ -780,20 +847,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     let propostas;
     let redirecionando = false; // Flag para evitar flash de conteúdo em redirecionamentos
 
-    if (numeroProjeto && primeiroNome) {
+    if (idProposta) {
         try {
-            propostas = await buscarETratarProposta(numeroProjeto, primeiroNome);
+            propostas = await buscarPropostaPorId(idProposta);
 
             if (!propostas.sucesso) {
-                // Determine o código de erro a ser passado na URL
-                let codigoErro = 'acesso-negado'; // Valor padrão
+                let msgErro = 'Não foi possível localizar esta proposta. Verifique o link ou entre em contato.';
                 if (propostas.mensagem && propostas.mensagem.includes('expirada')) {
-                    codigoErro = 'proposta-expirada';
+                    msgErro = 'Esta proposta excedeu o prazo de validade.';
                 }
-                
-                // Redireciona para a página inicial com o código de erro correto
+                exibirAvisoAmigavel('Atenção', msgErro, 'index.html'); // Outros erros
                 redirecionando = true;
-                window.location.href = `index.html?erro=${codigoErro}`;
                 return;
             }
 
@@ -819,16 +883,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const modal = document.getElementById('proposalModal');
                 if (modal) modal.style.display = 'none';
                 document.body.classList.remove('awaiting-acceptance');
-                document.body.innerHTML = ''; // Limpa o DOM para evitar flash de conteúdo
                 
+                exibirAvisoAmigavel(
+                    'Proposta Expirada', 
+                    'O prazo de validade desta proposta encerrou.<br>Você será redirecionado para a página do engenheiro responsável para solicitar uma atualização.', 
+                    'index.html'
+                );
                 redirecionando = true;
-                window.location.href = 'index.html?erro=proposta-expirada';
                 return;
             }
 
             // 2. VERIFICAÇÃO DE SEGURANÇA (FINGERPRINT) - APÓS VALIDAR DATA
             // Só verifica o dispositivo se a proposta estiver válida (data ok)
-            const acessoPermitido = await verificarAcessoDispositivo(numeroProjeto);
+            const acessoPermitido = await verificarAcessoDispositivo(idProposta);
             if (!acessoPermitido) {
                 exibirMensagemBloqueio();
                 redirecionando = true; // Impede que o finally esconda o overlay ou execute lógica extra
@@ -850,9 +917,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 // Caso de erro genérico (nenhuma proposta retornada ou erro de lógica)
                 console.error("Nenhuma proposta válida para exibir após buscar.");
-                document.body.innerHTML = ''; // Limpa o DOM
+                exibirAvisoAmigavel('Erro', 'Não foi possível exibir os dados da proposta.', 'index.html');
                 redirecionando = true;
-                window.location.href = 'index.html?erro=acesso-negado';
                 return;
             }
 
@@ -895,8 +961,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error("ERRO: Falha ao carregar ou exibir a proposta.", error);
+            exibirAvisoAmigavel('Erro', 'Ocorreu um erro inesperado ao processar sua solicitação.', 'index.html');
             redirecionando = true;
-            window.location.href = 'index.html?erro=acesso-negado';
         } finally {
             if (!redirecionando) {
                 esconderLoadingOverlay();
@@ -909,13 +975,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     } else {
-        window.location.href = 'index.html?erro=parametros-ausentes';
+        // Caso acesse sem ID na URL
+        exibirAvisoAmigavel('Link Inválido', 'O link acessado não contém o identificador da proposta.', 'index.html');
     }
 
     // =================================================================
     // 🖱️ EVENT LISTENERS
     // =================================================================
     if (nextImageBtn) nextImageBtn.addEventListener('click', () => {
+        stopCarouselAutoPlay();
+        showImage(currentImageIndex + 1);
+        startCarouselAutoPlay();
+    });
+    if (prevImageBtn) prevImageBtn.addEventListener('click', () => {
         stopCarouselAutoPlay();
         showImage(currentImageIndex + 1);
         startCarouselAutoPlay();
@@ -983,74 +1055,252 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- Event Listeners do Carrossel e Modal ---
+    // O restante dos event listeners já estão dentro da função carregarProposta
+}
 
-    // 1. Abertura do Modal ao clicar na imagem
-    if (installationImage) {
-        installationImage.style.cursor = 'pointer'; // Dá uma dica visual
-        installationImage.addEventListener('click', () => {
-            // Abre o modal na imagem que estava sendo visualizada na página principal
-            showImageInModal(currentImageIndex);
-            mostrarModal();
+// =================================================================
+// 🛠️ FUNÇÕES AUXILIARES DE BUSCA E TRATAMENTO (BYPASS MODEL)
+// =================================================================
+
+async function buscarPropostaPorId(id) { // id é o ID curto da proposta
+    try {
+        // 1. Busca a taxa Selic para cálculos financeiros
+        const selicAtual = await getSelicTaxa() || 11.25;
+
+        // 2. Busca a proposta pelo ID (curto ou completo)
+        const response = await fetch('https://gdis-api-service.jeanmarcel-vs.workers.dev/security/find-proposta', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ propostaId: id })
         });
-    }
 
-    // 2. Navegação no Modal
-    if (nextModalBtn) {
-        nextModalBtn.addEventListener('click', () => {
-            showImageInModal(currentImageIndex + 1);
-        });
-    }
-
-    if (prevModalBtn) {
-        prevModalBtn.addEventListener('click', () => {
-            showImageInModal(currentImageIndex - 1);
-        });
-    }
-
-    // --- Lógica dos Botões "Ver Mais" (Listas de Parcelas) ---
-    const setupToggle = (btnId, wrapperId) => {
-        const btn = document.getElementById(btnId);
-        const wrapper = document.getElementById(wrapperId);
-        if (btn && wrapper) {
-            btn.addEventListener('click', () => {
-                wrapper.classList.toggle('oculto');
-                btn.classList.toggle('ativo');
-                const icon = btn.querySelector('i');
-                // O CSS já trata a rotação, mas podemos mudar o texto se quiser
-            });
+        if (!response.ok) { // Erros 400, 404, 500
+            const err = await response.json().catch(() => ({}));
+            return { sucesso: false, mensagem: err.message || 'Proposta não encontrada.' };
         }
-    };
-    setupToggle('btn-toggle-financiamento', 'wrapper-financiamento');
-    setupToggle('btn-toggle-cartao', 'wrapper-cartao');
 
-    // 3. Fechar Modal
-    if (fecharModalBtn) {
-        fecharModalBtn.addEventListener('click', esconderModal);
-    }
+        const rawData = await response.json();
+        const proposta = rawData.dadosProposta || rawData;
 
-    // Fechar Modal ao clicar fora
-    if (modalCarrossel) {
-        modalCarrossel.addEventListener('click', (e) => {
-            if (e.target === modalCarrossel) {
-                esconderModal();
+        // CORREÇÃO: Se 'dados' vier como string do D1 (SQLite), fazemos o parse manual
+        if (proposta.dados && typeof proposta.dados === 'string') {
+            try {
+                proposta.dados = JSON.parse(proposta.dados);
+                Object.assign(proposta, proposta.dados);
+            } catch (e) {
+                console.warn("Aviso: Falha ao converter string JSON em objeto (campo dados).", e);
             }
-        });
-    }
+        }
 
-    // Fechar Modal com ESC
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modalCarrossel && !modalCarrossel.classList.contains('oculto')) {
-            esconderModal();
+        // 3. Busca dados complementares (Projeto e Cliente) se não estiverem no JSON
+        let projeto = proposta.projeto || (proposta.dados && proposta.dados.projeto);
+        let cliente = proposta.cliente || (proposta.dados && proposta.dados.cliente);
+
+        if ((!projeto || !cliente) && proposta.projetoId && proposta.clienteId) {
+            try {
+                const [resProj, resCli] = await Promise.all([
+                    fetch(`https://gdis-api-service.jeanmarcel-vs.workers.dev/erp/projetos/${proposta.projetoId}`),
+                    fetch(`https://gdis-api-service.jeanmarcel-vs.workers.dev/erp/clientes/${proposta.clienteId}`)
+                ]);
+                if (resProj.ok) projeto = await resProj.json();
+                if (resCli.ok) cliente = await resCli.json();
+            } catch (e) {
+                console.warn("Erro ao buscar dados complementares:", e);
+            }
+        }
+
+        projeto = projeto || {};
+        cliente = cliente || {};
+
+        // 4. Monta o objeto completo para o tratador
+        const dadosCompletos = { proposta, projeto, cliente };
+
+        // 5. Passa para a função de tratamento que mapeia para o formato da View
+        const dadosTratados = tratarDadosProposta(dadosCompletos, selicAtual);
+        return { sucesso: true, dados: dadosTratados };
+
+    } catch (error) {
+        console.error("Erro ao buscar proposta:", error);
+        return { sucesso: false, mensagem: 'Erro de conexão ao buscar os dados da proposta.' };
+    }
+}
+
+function tratarDadosProposta(dadosCompletos, selicAtual = 11.25) {
+    const { proposta, projeto, cliente } = dadosCompletos;
+    const tratado = {};
+    const formatar = (v) => v ? parseFloat(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00';
+
+    // Helper para formatar payback em Anos e Meses
+    const formatarPayback = (valor) => {
+        if (!valor) return 'N/A';
+        const anosFloat = parseFloat(valor);
+        if (isNaN(anosFloat)) return 'N/A';
+
+        const anos = Math.floor(anosFloat);
+        const meses = Math.round((anosFloat - anos) * 12);
+
+        if (meses === 0) return `${anos} anos`;
+        if (meses === 12) return `${anos + 1} anos`;
+        
+        return `${anos} anos e ${meses} meses`;
+    };
+
+    const caminhosImagens = {
+        premium: 'imagens/huawei.webp',
+        acessivel: 'imagens/auxsolar.webp'
+    };
+
+    ['premium', 'standard'].forEach(key => {
+        const versao = proposta.versoes?.[key];
+        if (!versao) return;
+
+        const tipo = key === 'standard' ? 'acessivel' : 'premium';
+        
+        const dadosTecnicos = versao.dados || {};
+        const resumoFinanceiro = versao.resumoFinanceiro || {};
+
+        const descInversor = dadosTecnicos.inversores?.map(i => {
+            const potenciaKw = (i.nominal || 0) / 1000;
+            return `${potenciaKw.toLocaleString('pt-BR')} kW`;
+        }).join(' + ') || 'Inversor';
+        const qtdInversor = dadosTecnicos.inversores?.reduce((acc, i) => acc + i.qtd, 0) || 1;
+
+        const moduloPrincipal = dadosTecnicos.modulo || { watts: 0, qtd: 0 };
+        const descPainel = `${moduloPrincipal.watts || 0}W`;
+        const qtdPainel = moduloPrincipal.qtd || 0;
+
+        const geracaoMedia = proposta.geracaoMensal || 0;
+        const tarifa = projeto.tarifaGrupoB || proposta.premissasSnapshot?.viabilidade?.tarifaGrupoB || 0.95;
+        const idealPara = geracaoMedia * tarifa;
+
+        // Lógica de Detalhamento do Investimento (Equipamentos vs Serviços)
+        const valorTotal = resumoFinanceiro.valorTotal || 0;
+        const valorEquipamentos = resumoFinanceiro.valorKit || 0;
+        let detalhamentoPagamento = null;
+
+        if (valorEquipamentos > 0 && valorEquipamentos < valorTotal) {
+            const valorServicosTotal = valorTotal - valorEquipamentos;
+            
+            // Regra: 24% do Total da Proposta, com mínimo de R$ 1.200,00
+            let valorProjeto = valorTotal * 0.24;
+            if (valorProjeto < 1200) valorProjeto = 1200;
+
+            // O que sobra do serviço é dividido em 2 (Entrega + Conclusão)
+            const valorRestanteInstalacao = valorServicosTotal - valorProjeto;
+            const valorParcelaInstalacao = valorRestanteInstalacao / 2;
+
+            detalhamentoPagamento = {
+                equipamentos: valorEquipamentos,
+                servicosTotal: valorServicosTotal,
+                servicoEntrada: valorProjeto,       // 1ª Parcela: Projeto/Entrada
+                servicoEntrega: valorParcelaInstalacao, // 2ª Parcela: Entrega (50% do restante)
+                servicoConclusao: valorParcelaInstalacao // 3ª Parcela: Conclusão (50% do restante)
+            };
+        }
+
+        // Lógica de exibição da validade com suporte a horas
+        let textoValidade = `Proposta válida por até 3 dias corridos. Após esse prazo, condições técnicas, custos e disponibilidade podem ser reavaliados.`;
+        if (proposta.dataValidade) {
+            const dataVal = new Date(proposta.dataValidade);
+            if (!isNaN(dataVal.getTime())) {
+                // Se a string tem mais de 10 caracteres (ISO com hora), mostra o horário
+                if (proposta.dataValidade.length > 10) {
+                    textoValidade = `Válida até ${dataVal.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+                } else {
+                    textoValidade = `Válida até ${dataVal.toLocaleDateString('pt-BR')}`;
+                }
+            }
+        }
+
+        tratado[tipo] = {
+            tipo: tipo,
+            cliente: cliente.nome || 'Cliente',
+            local: projeto.cidade ? `${projeto.cidade}/${projeto.uf}` : 'Local',
+            dataProposta: proposta.dataCriacao ? new Date(proposta.dataCriacao).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR'),
+            validade: textoValidade,
+            dataExpiracao: proposta.dataValidade,
+            
+            sistema: {
+                geracaoMedia: `${Math.round(geracaoMedia)} kWh/mês`,
+                instalacaoPaineis: projeto.tipoTelhado || 'Telhado',
+                idealPara: `${formatar(idealPara)}`
+            },
+            equipamentos: {
+                descricaoInversor: descInversor,
+                quantidadeInversor: qtdInversor,
+                descricaoPainel: descPainel,
+                quantidadePainel: qtdPainel,
+                imagem: caminhosImagens[tipo] || ''
+            },
+            valores: {
+                valorTotal: formatar(versao.resumoFinanceiro?.valorTotal || 0),
+                valorTotalNum: versao.resumoFinanceiro?.valorTotal || 0,
+                payback: proposta.analiseFinanceira?.[key]?.paybackSimples ? formatarPayback(proposta.analiseFinanceira[key].paybackSimples) : 'N/A',
+                parcelas: versao.financeiro?.parcelas || {},
+                parcelasCartao: versao.financeiro?.parcelasCartao || {},
+                selicAtual: selicAtual,
+                observacao: 'Os valores de financiamento são estimativas baseadas em taxas médias de mercado, com carência de até 120 dias. As condições finais podem variar conforme análise de crédito da instituição financeira.',
+                detalhamento: detalhamentoPagamento
+            },
+            instalacao: {
+                detalhesInstalacao: tipo === 'premium' ? [
+                    { icone: 'fa-user-shield', titulo: 'Pensado para durar', texto: 'Projeto técnico que reduz riscos ao longo do tempo.' },
+                    { icone: 'fa-chart-line', titulo: 'Engenharia real', texto: 'Dimensionamento preciso evita perdas futuras.' },
+                    { icone: 'fa-home', titulo: 'Perfil criterioso', texto: 'Para quem prioriza decisões bem fundamentadas.' }
+                ] : [
+                    { icone: 'fa-info-circle', titulo: 'Solução Básica', texto: 'Atende o básico com menor investimento inicial.', microtexto: 'Infraestrutura simplificada.' }
+                ],
+                checklist: tipo === 'premium' ? [
+                    'Infraestrutura metálica de padrão industrial',
+                    'Proteção elétrica coordenada em múltiplos níveis',
+                    'Menor risco de manutenção futura'
+                ] : [
+                    'Infraestrutura simplificada de uso residencial',
+                    'Proteções básicas',
+                    'Maior dependência de manutenção futura'
+                ]
+            },
+            variables: []
+        };
+
+        // Recalcula parcelas se não vierem preenchidas (usando funções do model)
+        if ((!tratado[tipo].valores.parcelas || Object.keys(tratado[tipo].valores.parcelas).length === 0) && typeof calcularFinanciamento === 'function') {
+             tratado[tipo].valores.parcelas = calcularFinanciamento(tratado[tipo].valores.valorTotalNum, selicAtual).parcelas;
+        }
+        if ((!tratado[tipo].valores.parcelasCartao || Object.keys(tratado[tipo].valores.parcelasCartao).length === 0) && typeof calcularParcelasCartao === 'function') {
+             tratado[tipo].valores.parcelasCartao = calcularParcelasCartao(tratado[tipo].valores.valorTotalNum, selicAtual).parcelas;
         }
     });
+
+    return tratado;
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') e.preventDefault();
+        if (e.key === 'F12') e.preventDefault();
+    });
+
+    iniciarAnimacaoScroll();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idProposta = urlParams.get('id');
+
+    if (idProposta) {
+        mostrarLoadingOverlay();
+        const acessoPermitido = await verificarAcessoDispositivo(idProposta);
+        if (!acessoPermitido) {
+            exibirMensagemBloqueio();
+            return; // Interrompe a execução
+        }
+        // Se o acesso for permitido, carrega a proposta
+        await carregarProposta(idProposta);
+    } else {
+        exibirAvisoAmigavel('Link Inválido', 'O link acessado não contém o identificador da proposta.', 'index.html');
+    }
 });
 
-// --- Script para forçar o recarregamento dos vídeos do Instagram (Movido do HTML) ---
 window.addEventListener('load', function () {
-    setTimeout(function () {
-        if (window.instgrm) {
-            window.instgrm.Embeds.process();
-        }
-    }, 1000); // Aguarda 1 segundo para garantir que tudo carregou
+    if (window.instgrm) window.instgrm.Embeds.process();
 });

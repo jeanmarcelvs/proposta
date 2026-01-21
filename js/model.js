@@ -1,5 +1,5 @@
 // Importa as funções da API
-import { get, patch, post, getSelicTaxa, validarDispositivoHardware } from './api.js';
+import { get, patch, post, getSelicTaxa, validarDispositivoHardware, buscarDadosCompletos, buscarPropostaPorIdENome } from './api.js';
 
 // Re-exporta post para uso nos controllers
 export { post };
@@ -236,16 +236,18 @@ export function validarValidadeProposta(proposta) {
         }
 
         // Tratamento robusto de data
-        // Se for formato ISO simples (YYYY-MM-DD), forçamos o final do dia local
+        // 1. Formato D1 ERP (YYYY-MM-DD) -> Define para final do dia (23:59:59)
         if (/^\d{4}-\d{2}-\d{2}$/.test(dataString)) {
-            dataExpiracao = new Date(dataString + 'T23:59:59');
+            // Divide e cria manualmente para garantir fuso local (evita UTC do Date.parse)
+            const partes = dataString.split('-');
+            dataExpiracao = new Date(partes[0], partes[1] - 1, partes[2], 23, 59, 59);
         } 
-        // Suporte explícito para formato brasileiro DD/MM/YYYY (evita confusão com MM/DD)
+        // 2. Formato Brasileiro (DD/MM/YYYY) -> Define para final do dia
         else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataString)) {
             const partes = dataString.split('/');
-            // new Date(ano, mesIndex, dia, hora, min, seg) - mesIndex é 0-based
             dataExpiracao = new Date(partes[2], partes[1] - 1, partes[0], 23, 59, 59);
         }
+        // 3. Formato ISO Completo ou outros aceitos pelo Date constructor
         else {
             dataExpiracao = new Date(dataString);
         }
@@ -259,7 +261,7 @@ export function validarValidadeProposta(proposta) {
         const agora = new Date();
         
         // Debug para rastrear validação em produção (Verifique o console do navegador)
-        console.log(`[Validade] Data Proposta: ${dataString} | Interpretada: ${dataExpiracao} | Agora: ${agora} | Válida: ${agora <= dataExpiracao}`);
+        // console.log(`[Validade] Data Proposta: ${dataString} | Limite: ${dataExpiracao.toLocaleString()} | Agora: ${agora.toLocaleString()} | Válida: ${agora <= dataExpiracao}`);
 
         return agora <= dataExpiracao;
     } catch (error) {
@@ -340,7 +342,7 @@ export async function verificarAcessoDispositivo(projectId) {
 
         // 2. Monta o payload para o Worker
         const payload = {
-            projectId: projectId,
+            propostaId: projectId, // Agora passamos o ID da Proposta (o parâmetro projectId da função recebe o ID da URL)
             dispositivoNome: `${dadosEstaveis.tipoDispositivo} via ${dadosEstaveis.navegadorLimpo}`,
             os: dadosEstaveis.os,
             navegador: dadosEstaveis.navegador, // Envia 'Chrome::UUID' para garantir hash único
@@ -357,13 +359,10 @@ export async function verificarAcessoDispositivo(projectId) {
         if (resposta.sucesso) {
             // Caso 1: O Worker diz que este é o DONO.
             if (resposta.status === 'dono') {
-                // Verificamos no localStorage se já registramos um dono para este projeto antes.
+                // Se já temos a chave, é apenas um reload ou retorno do mesmo dispositivo.
                 if (localStorage.getItem(storageKey)) {
-                    // ANOMALIA DETECTADA: O Worker está criando um segundo "dono".
-                    // Isso significa que o dispositivo atual é diferente do primeiro.
-                    // BLOQUEAMOS por segurança, pois o Worker deveria ter retornado 'pendente'.
-                    console.error("[Segurança] ANOMALIA: Worker tentou registrar um segundo 'dono'. Bloqueando acesso.");
-                    return false;
+                    console.log(`[Segurança] Dono retornando (Reload). Acesso autorizado.`);
+                    return true;
                 } else {
                     // É o primeiro "dono" legítimo. Permitimos o acesso e marcamos no localStorage.
                     console.log(`[Segurança] Acesso autorizado. Status: ${resposta.status}. Registrando dono localmente.`);
@@ -483,36 +482,37 @@ export function calcularFinanciamento(valorProjeto, selicAnual) {
 
 /**
  * Função para tratar e formatar os dados brutos da API para o formato que a página precisa.
- * @param {object} dadosApi O objeto de dados brutos recebido da API.
+ * @param {object} dadosCompletos O objeto contendo { projeto, proposta, cliente }.
  * @param {string} tipoProposta O tipo da proposta (ex: 'premium' ou 'acessivel').
  * @param {number} selicAtual A taxa Selic atual em formato decimal.
  * @returns {object} Um objeto com os dados formatados para a página.
  */
-function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
+function tratarDadosParaProposta(dadosCompletos, tipoProposta, selicAtual) {
     // Log para confirmar que a versão com os novos textos e Aceite Consciente foi carregada
     console.log(`[Model] Processando proposta ${tipoProposta} - Versão atualizada com Aceite Consciente.`);
 
-    if (!dadosApi || !dadosApi.dados) {
-        console.error("Modelo: Dados da API não encontrados ou incompletos.");
-        return null;
-    }
+    const { projeto, proposta, cliente } = dadosCompletos;
+    
+    // Mapeamento do JSON do ERP para o Model da View
+    // O ERP salva em 'versoes.standard' e 'versoes.premium'
+    const chaveVersao = tipoProposta === 'acessivel' ? 'standard' : 'premium';
+    const dadosVersao = proposta.versoes[chaveVersao];
+    const resumoFin = dadosVersao.resumoFinanceiro;
+    const dadosTec = dadosVersao.dados;
 
-    const dados = dadosApi.dados.data;
-    const variables = dados.variables || [];
-
-    const tipoVisualizacao = extrairValorVariavelPorChave(variables, 'cap_visualizacao') || 'SOLAR';
+    const tipoVisualizacao = 'SOLAR'; // Padrão ERP atual é Solar
     const tipoVisualizacaoUpper = tipoVisualizacao.trim().toUpperCase();
     const isServico = tipoVisualizacaoUpper === 'SERVICO';
 
     // Variáveis comuns a ambos os tipos de proposta
-    const nomeCliente = extrairValorVariavelPorChave(variables, 'cliente_nome') || 'Não informado';
-    const dataProposta = formatarData(dados.generatedAt) || 'Não informado';
-    const idProposta = dados.id || null;
-    const linkProposta = dados.linkPdf || '#';
-    const cidade = extrairValorVariavelPorChave(variables, 'cliente_cidade') || 'Não informado';
-    const estado = extrairValorVariavelPorChave(variables, 'cliente_estado') || 'Não informado';
-    const valorTotal = extrairValorNumericoPorChave(variables, 'preco') || 0;
-    const dataExpiracao = dados.expirationDate || 'Não informado';
+    const nomeCliente = cliente.nome || 'Não informado';
+    const dataProposta = formatarData(proposta.dataCriacao) || 'Não informado';
+    const idProposta = proposta.id || null;
+    const linkProposta = '#'; // Não usado no modelo novo
+    const cidade = projeto.cidade || 'Não informado';
+    const estado = projeto.uf || 'Não informado';
+    const valorTotal = resumoFin.valorTotal || 0;
+    const dataExpiracao = proposta.dataValidade || 'Não informado';
 
     // Lógica para extração de dados específicos de cada tipo
     let sistema = {};
@@ -521,14 +521,30 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     let instalacao = {};
     let dadosServico = {};
     
-    const geracaoMediaValor = extrairValorNumericoPorChave(variables, 'geracao_mensal') || 0;
-    const payback = extrairValorVariavelPorChave(variables, 'payback') || 'Não informado';
-    const tarifaEnergia = extrairValorNumericoPorChave(variables, 'tarifa_distribuidora_uc1') || 0;
+    // Dados de Engenharia
+    const geracaoMediaValor = proposta.geracaoMensal || 0;
+    
+    // Payback vem da análise financeira se existir, senão calcula estimado
+    let payback = '3.5 anos';
+    if (proposta.analiseFinanceira) {
+        const valPb = tipoProposta === 'premium' ? proposta.analiseFinanceira.premium.paybackSimples : proposta.analiseFinanceira.standard.paybackSimples;
+        if (valPb) {
+            const anosFloat = parseFloat(valPb);
+            const anos = Math.floor(anosFloat);
+            const meses = Math.round((anosFloat - anos) * 12);
+            
+            if (meses === 0) payback = `${anos} anos`;
+            else if (meses === 12) payback = `${anos + 1} anos`;
+            else payback = `${anos} anos e ${meses} meses`;
+        }
+    }
+        
+    const tarifaEnergia = projeto.tarifaGrupoB || 0.95;
     const idealParaValor = geracaoMediaValor * tarifaEnergia;
 
     // NOVO: Lógica de Detalhamento do Investimento (Equipamentos vs Serviços)
     // Extrai o valor dos equipamentos da variável 'preco_equipamentos'
-    const valorEquipamentos = extrairValorNumericoPorChave(variables, 'preco_equipamentos') || 0;
+    const valorEquipamentos = resumoFin.valorKit || 0;
     let detalhamentoPagamento = null;
 
     if (valorEquipamentos > 0 && valorEquipamentos < valorTotal) {
@@ -574,6 +590,13 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         'Proteções básicas',
         'Maior dependência de manutenção futura'
     ];
+
+    // Extração de Equipamentos do JSON do ERP
+    const inversorPrincipal = dadosTec.inversores[0] || { modelo: 'N/A', qtd: 0 };
+    const moduloPrincipal = dadosTec.modulo || { watts: 0, qtd: 0 };
+    
+    // Descrição Inversor
+    const descInversor = dadosTec.inversores.map(i => i.modelo).join(' + ');
 
     if (isServico) {
         // Lógica simplificada para Serviços
@@ -629,17 +652,19 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     } else {
         // Lógica existente para Solar (VE removido)
         sistema = {
-            geracaoMedia: `${extrairValorVariavelPorChave(variables, 'geracao_mensal')} kWh/mês`,
+            geracaoMedia: `${geracaoMediaValor.toFixed(0)} kWh/mês`,
             unidadeGeracao: 'kWh',
-            instalacaoPaineis: extrairValorVariavelPorChave(variables, 'vc_tipo_de_estrutura') || 'Não informado',
-            idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+            instalacaoPaineis: projeto.tipoTelhado || 'Não informado',
+            idealPara: idealParaValor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
+            expansaoModulos: proposta.geracaoExpansao ? `+${Math.round(proposta.geracaoExpansao / 60)}` : '0', // Estimativa visual se não tiver qtd exata
+            geracaoExpansao: proposta.geracaoExpansao ? `+${proposta.geracaoExpansao} kWh` : '0 kWh'
         };
         equipamentos = {
             imagem: caminhosImagens.solar.equipamentos[tipoProposta],
-            quantidadePainel: extrairValorVariavelPorChave(variables, 'modulo_quantidade') || 0,
-            descricaoPainel: (extrairValorVariavelPorChave(variables, 'modulo_potencia') || 'Não informado') + ' W',
-            quantidadeInversor: extrairValorVariavelPorChave(variables, 'inversores_utilizados') || 0,
-            descricaoInversor: (extrairValorVariavelPorChave(variables, 'inversor_potencia_nominal_1') || 'Não informado') + ' W'
+            quantidadePainel: moduloPrincipal.qtd || 0,
+            descricaoPainel: (moduloPrincipal.watts || '0') + ' W',
+            quantidadeInversor: inversorPrincipal.qtd || 0,
+            descricaoInversor: descInversor
         };
         instalacao = {
             imagem: caminhosImagens.solar.instalacao[tipoProposta],
@@ -663,7 +688,7 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
     const retorno = {
         tipo: tipoProposta,
         tipoVisualizacao: tipoVisualizacao.toLowerCase(),
-        id: dados.project.id,
+        id: projeto.id,
         propostaId: idProposta,
         cliente: nomeCliente,
         local: `${cidade} / ${estado}`,
@@ -678,37 +703,51 @@ function tratarDadosParaProposta(dadosApi, tipoProposta, selicAtual) {
         valores,
         validade: `Proposta válida por até 3 dias corridos. Após esse prazo, condições técnicas, custos e disponibilidade podem ser reavaliados.`,
         // Adiciona o array completo de variáveis para uso no controller (ex: seção de expansão)
-        variables: variables
+        variables: [] // Mantido vazio pois agora usamos objeto estruturado
     };
 
     return retorno;
 }
 
 // **RESTANTE DO CÓDIGO** (permanece inalterado)
-export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) {
-    // PASSO 1: Buscar a proposta primeiro (comportamento original para Solar/VE)
-    const endpointProposta = `/projects/${numeroProjeto}/proposals`;
-    const dadosApiProposta = await get(endpointProposta);
+export async function buscarETratarProposta(propostaId, primeiroNomeCliente) {
+    // PASSO 1: Buscar a proposta validando o nome (Nova Rota de Segurança)
+    const resProposta = await buscarPropostaPorIdENome(propostaId, primeiroNomeCliente);
 
-    if (!dadosApiProposta.sucesso || !dadosApiProposta.dados.data) {
-        console.error('Falha na busca da proposta ou dados.data está vazio.');
+    if (!resProposta.sucesso) {
+        console.error('Falha na busca da proposta:', resProposta.erro);
         return {
             sucesso: false,
-            mensagem: 'Proposta não encontrada ou dados inválidos.'
+            mensagem: resProposta.erro || 'Proposta não encontrada ou dados inválidos.'
         };
     }
 
-    const propostaPrincipal = dadosApiProposta.dados.data;
-    const variablesDaProposta = propostaPrincipal.variables || [];
+    const proposta = resProposta.dadosProposta;
 
-    // PASSO 2: Validar o nome do cliente usando os dados da proposta
-    const nomeCompletoApi = extrairValorVariavelPorChave(variablesDaProposta, 'cliente_nome');
-    const primeiroNomeApi = nomeCompletoApi ? nomeCompletoApi.split(' ')[0] : null;
-
-    if (!primeiroNomeApi || primeiroNomeApi.toLowerCase() !== primeiroNomeCliente.toLowerCase()) {
-        console.error("Tentativa de acesso não autorizado. Nome não corresponde.");
-        return { sucesso: false, mensagem: 'Nome do cliente não corresponde ao projeto.' };
+    // CORREÇÃO: Se 'dados' vier como string do D1 (SQLite), fazemos o parse manual
+    if (proposta && proposta.dados && typeof proposta.dados === 'string') {
+        try {
+            proposta.dados = JSON.parse(proposta.dados);
+        } catch (e) {
+            console.warn("Aviso: Falha ao converter string JSON em objeto (campo dados) no Model.", e);
+        }
     }
+
+    // PASSO 2: Usar dados complementares (Projeto e Cliente) já injetados no JSON da proposta
+    // O Worker agora retorna o "Super JSON" com tudo aninhado.
+    // ROBUSTNESS: Verifica se está na raiz ou dentro de .dados (caso venha do DB raw)
+    const projetoAninhado = proposta.projeto || (proposta.dados && proposta.dados.projeto) || {};
+    const clienteAninhado = proposta.cliente || (proposta.dados && proposta.dados.cliente) || {};
+
+    if (!projetoAninhado.id && !clienteAninhado.nome) {
+        console.warn("Aviso: Objeto Proposta não contém cliente/projeto aninhados. Verifique se o ERP está salvando o JSON completo.");
+    }
+
+    const dadosCompletos = {
+        projeto: projetoAninhado,
+        proposta: proposta,
+        cliente: clienteAninhado
+    };
 
     const selicAtual = await getSelicTaxa();
     if (selicAtual === null) {
@@ -722,63 +761,23 @@ export async function buscarETratarProposta(numeroProjeto, primeiroNomeCliente) 
     dadosProposta.acessivel = null;
 
     // PASSO 3: Verificar o tipo de visualização
-    const tipoVisualizacao = extrairValorVariavelPorChave(variablesDaProposta, 'cap_visualizacao');
+    // No ERP novo, a proposta sempre contém as versões Standard e Premium se configurado
+    const config = proposta.configuracao || {};
 
-    // PASSO 4: Lógica condicional
-    if (tipoVisualizacao && tipoVisualizacao.trim().toUpperCase() === 'SERVICO') {
-        // É um serviço. Usa os dados da PROPOSTA, conforme restaurado.
-        const propostaServico = tratarDadosParaProposta(dadosApiProposta, 'unico', selicAtual);
-
-        if (!propostaServico) {
-            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta de Serviço.' };
+    if (config.temPremium) {
+        const propostaPremiumTratada = tratarDadosParaProposta(dadosCompletos, 'premium', selicAtual);
+        if (!propostaPremiumTratada) {
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
         }
+        dadosProposta.premium = propostaPremiumTratada;
+    }
 
-        dadosProposta.premium = propostaServico; // Armazena no slot principal
-
-    } else {
-        // É Solar. Usar a lógica original com os dados da proposta já buscados.
-        let tipoPropostaPrincipal = extrairValorVariavelPorChave(variablesDaProposta, 'cape_padrao_instalacao');
-        const idProjetoAcessivel = extrairValorVariavelPorChave(variablesDaProposta, 'vc_projeto_acessivel');
-
-        if (!tipoPropostaPrincipal) {
-            if (idProjetoAcessivel && parseInt(idProjetoAcessivel) > 0) {
-                tipoPropostaPrincipal = 'PREMIUM';
-            }
-            else if (!tipoVisualizacao || tipoVisualizacao.trim().toUpperCase() === 'SOLAR') {
-                tipoPropostaPrincipal = 'STANDARD';
-            }
+    if (config.temStandard) {
+        const propostaAcessivelTratada = tratarDadosParaProposta(dadosCompletos, 'acessivel', selicAtual);
+        if (!propostaAcessivelTratada) {
+            return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
         }
-
-        if (tipoPropostaPrincipal === 'PREMIUM' && idProjetoAcessivel && idProjetoAcessivel > 0) {
-            const propostaPremiumTratada = tratarDadosParaProposta(dadosApiProposta, 'premium', selicAtual);
-            if (!propostaPremiumTratada) {
-                return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
-            }
-            dadosProposta.premium = propostaPremiumTratada;
-
-            const endpointAcessivel = `/projects/${idProjetoAcessivel}/proposals`;
-            const dadosApiAcessivel = await get(endpointAcessivel);
-            if (dadosApiAcessivel.sucesso) {
-                const propostaAcessivel = tratarDadosParaProposta(dadosApiAcessivel, 'acessivel', selicAtual);
-                if (propostaAcessivel) {
-                    dadosProposta.acessivel = propostaAcessivel;
-                }
-            }
-        } else if (tipoPropostaPrincipal === 'PREMIUM') {
-            const propostaPremiumTratada = tratarDadosParaProposta(dadosApiProposta, 'premium', selicAtual);
-            if (!propostaPremiumTratada) {
-                return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Premium.' };
-            }
-            dadosProposta.premium = propostaPremiumTratada;
-        } else if (tipoPropostaPrincipal === 'BASIC' || tipoPropostaPrincipal === 'STANDARD') {
-            const propostaAcessivelTratada = tratarDadosParaProposta(dadosApiProposta, 'acessivel', selicAtual);
-            if (!propostaAcessivelTratada) {
-                return { sucesso: false, mensagem: 'Falha ao processar dados da proposta Acessível.' };
-            }
-            dadosProposta.acessivel = propostaAcessivelTratada;
-        } else {
-            return { sucesso: false, mensagem: `Padrão de instalação da proposta não reconhecido: ${tipoPropostaPrincipal} (esperado PREMIUM ou BASIC/STANDARD).` };
-        }
+        dadosProposta.acessivel = propostaAcessivelTratada;
     }
 
     if (!dadosProposta.premium && !dadosProposta.acessivel) {

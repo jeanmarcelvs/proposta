@@ -1,180 +1,69 @@
-import { buscarETratarProposta, validarValidadeProposta } from './model.js';
-
-// Função para centralizar a atualização do estado do botão
-// Função para centralizar a atualização do estado do botão
-function atualizarEstadoBotao(estado, mensagem = '') {
-    const btnConsultar = document.getElementById('btn-consultar');
-    const numeroProjetoInput = document.getElementById('numero-projeto');
-    const primeiroNomeInput = document.getElementById('primeiro-nome');
-    const mensagemFeedback = document.getElementById('mensagem-feedback');
-
-    if (!btnConsultar || !numeroProjetoInput || !primeiroNomeInput || !mensagemFeedback) {
-        return;
-    }
-
-    const btnTexto = btnConsultar.querySelector('.btn-texto');
-    const iconeLoading = btnConsultar.querySelector('.icone-loading');
-    const iconeSucesso = btnConsultar.querySelector('.icone-sucesso');
-    const iconeErro = btnConsultar.querySelector('.icone-erro');
-
-    // Reseta o estado do botão
-    btnConsultar.disabled = false;
-    numeroProjetoInput.disabled = false;
-    primeiroNomeInput.disabled = false;
-    btnConsultar.classList.remove('loading', 'success', 'error');
-
-    // Remove a classe do botão de loading
-    if (iconeLoading) {
-        iconeLoading.classList.remove('icone-loading-centralizado');
-    }
-
-    mensagemFeedback.classList.remove('show', 'success-msg', 'error-msg');
-    mensagemFeedback.innerText = '';
-
-    // Aplica o novo estado
-    switch (estado) {
-        case 'carregando':
-            btnConsultar.disabled = true;
-            numeroProjetoInput.disabled = true;
-            primeiroNomeInput.disabled = true;
-            btnConsultar.classList.add('loading');
-            break;
-        case 'sucesso':
-            btnConsultar.classList.add('success');
-            if (mensagemFeedback) {
-                mensagemFeedback.innerText = mensagem;
-                mensagemFeedback.classList.add('show', 'success-msg');
-            }
-            break;
-        case 'erro':
-            btnConsultar.classList.add('error');
-            if (mensagemFeedback) {
-                mensagemFeedback.innerText = mensagem;
-                mensagemFeedback.classList.add('show', 'error-msg');
-            }
-            break;
-        case 'normal':
-        default:
-            break;
-    }
-}
-
-// AQUI: Adicione esta função para manipular o redirecionamento
-// AQUI: Adicione esta função para manipular o redirecionamento
-async function executarConsulta(numeroProjeto, primeiroNome) {
-    if (!numeroProjeto || !primeiroNome) {
-        atualizarEstadoBotao('erro', 'Por favor, preencha todos os campos.');
-        setTimeout(() => atualizarEstadoBotao('normal'), 10000);
-        return;
-    }
-
-    try {
-        atualizarEstadoBotao('carregando');
-        const propostaData = await buscarETratarProposta(numeroProjeto, primeiroNome);
-
-        if (propostaData.sucesso) {
-            // VALIDAÇÃO DE EXPIRAÇÃO ANTES DO REDIRECIONAMENTO
-            // Evita que o usuário acesse a página da proposta (e veja modais/conteúdo) se já estiver vencida
-            const pPremium = propostaData.dados.premium;
-            const pAcessivel = propostaData.dados.acessivel;
-            
-            const isPremiumValida = pPremium && validarValidadeProposta(pPremium);
-            const isAcessivelValida = pAcessivel && validarValidadeProposta(pAcessivel);
-
-            if (!isPremiumValida && !isAcessivelValida && (pPremium || pAcessivel)) {
-                atualizarEstadoBotao('erro', 'Esta proposta encontra-se expirada. Por favor, solicite uma nova proposta.');
-                setTimeout(() => atualizarEstadoBotao('normal'), 10000);
-                return;
-            }
-
-            // CORREÇÃO: Determina o tipo de visualização a partir da proposta que existe (premium ou acessível)
-            const propostaDisponivel = propostaData.dados.premium || propostaData.dados.acessivel;
-            const tipoProposta = propostaDisponivel ? propostaDisponivel.tipoVisualizacao : null;
-
-            if (tipoProposta === 'solar') {
-                // Redireciona para a página de propostas Solar
-                window.location.href = `proposta.html?id=${numeroProjeto}&nome=${primeiroNome}`;
-            } else if (tipoProposta === 'servico') {
-                // Redireciona para a página de propostas de Serviços
-                window.location.href = `propostaServicos.html?id=${numeroProjeto}&nome=${primeiroNome}`;
-            } else {
-                // Caso o tipo seja desconhecido, mostra um erro
-                atualizarEstadoBotao('erro', 'Tipo de proposta desconhecido.');
-                setTimeout(() => atualizarEstadoBotao('normal'), 10000);
-            }
-        } else {
-            // Se a busca falhar, exibe a mensagem de erro
-            atualizarEstadoBotao('erro', propostaData.mensagem);
-            setTimeout(() => atualizarEstadoBotao('normal'), 10000);
-        }
-    } catch (erro) {
-        console.error('Erro na consulta:', erro);
-        atualizarEstadoBotao('erro', 'Erro ao carregar a proposta.');
-        setTimeout(() => atualizarEstadoBotao('normal'), 10000);
-    }
-}
+// Controlador da Página de Apresentação (Index)
+// Gerencia a exibição de mensagens de erro/aviso caso o usuário seja redirecionado para cá.
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('form-consulta');
-    const mainContent = document.querySelector('main');
     const urlParams = new URLSearchParams(window.location.search);
-    const parametroErro = urlParams.get('erro');
+    const erro = urlParams.get('erro');
+    const msg = urlParams.get('msg');
 
-    const numeroProjetoInput = document.getElementById('numero-projeto');
-    const primeiroNomeInput = document.getElementById('primeiro-nome');
+    if (erro || msg) {
+        let titulo = 'Atenção';
+        let mensagemTexto = msg || 'Ocorreu uma situação inesperada.';
+        let iconeClass = 'fa-exclamation-circle';
+        let corIcone = '#ef4444'; // Vermelho padrão
 
-    if (!form || !numeroProjetoInput || !primeiroNomeInput) {
-        return;
-    }
-
-    if (mainContent) {
-        setTimeout(() => {
-            mainContent.classList.remove('main-oculto');
-            mainContent.classList.add('main-visivel');
-        }, 300);
-    }
-
-    // NOVO: Verifica os parâmetros e chama a função diretamente, sem simular um evento
-    const idProjetoURL = urlParams.get('id');
-    const nomeURL = urlParams.get('nome');
-
-    if (idProjetoURL && nomeURL) {
-        numeroProjetoInput.value = idProjetoURL;
-        primeiroNomeInput.value = nomeURL;
-
-        // CORRETO: Chama a função de consulta a partir do evento de URL
-        executarConsulta(idProjetoURL, nomeURL);
-    }
-
-    if (parametroErro) {
-        let mensagem = '';
-        switch (parametroErro) {
-            case 'parametros-ausentes':
-                mensagem = 'Os parâmetros da URL estão ausentes.';
-                break;
-            // CORREÇÃO: O caso 'proposta-expirada' agora exibe a mensagem completa e profissional
-            case 'proposta-expirada':
-                mensagem = 'Esta proposta encontra-se expirada. Por favor, solicite uma nova proposta.';
-                break;
-            case 'acesso-negado':
-                mensagem = 'A proposta não pode ser acessada. Verifique os dados.';
-                break;
-            default:
-                mensagem = 'Ocorreu um erro desconhecido.';
+        // Tratamento de códigos de erro específicos
+        if (erro === 'parametros-ausentes') {
+            titulo = 'Link Incompleto';
+            mensagemTexto = 'O link que você acessou parece estar incompleto ou incorreto.';
+            iconeClass = 'fa-link';
+            corIcone = '#f59e0b';
+        } else if (erro === 'proposta-expirada') {
+            titulo = 'Proposta Expirada';
+            mensagemTexto = 'O prazo de validade desta proposta encerrou. Entre em contato para uma atualização.';
+            iconeClass = 'fa-clock';
+            corIcone = '#f59e0b';
+        } else if (erro === 'acesso-negado') {
+            titulo = 'Acesso Indisponível';
+            mensagemTexto = 'Não foi possível carregar a proposta solicitada.';
         }
-        atualizarEstadoBotao('erro', mensagem);
-        setTimeout(() => {
-            atualizarEstadoBotao('normal');
-        }, 10000);
+
+        exibirModalAvisoIndex(titulo, mensagemTexto, iconeClass, corIcone);
+        
+        // Limpa a URL para não mostrar o erro novamente ao recarregar
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
-
-    form.addEventListener('submit', async (evento) => {
-        evento.preventDefault();
-
-        const numeroProjeto = numeroProjetoInput.value;
-        const primeiroNome = primeiroNomeInput.value;
-
-        // CORRETO: Chama a função de consulta a partir do evento de submit
-        executarConsulta(numeroProjeto, primeiroNome);
-    });
 });
+
+function exibirModalAvisoIndex(titulo, mensagem, icone, cor) {
+    // Cria o HTML do modal dinamicamente
+    const modalHTML = `
+        <div id="modal-aviso-index" class="modal-overlay" style="display:flex; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; backdrop-filter:blur(5px); opacity:0; transition:opacity 0.3s ease;">
+            <div class="modal-conteudo" style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); padding:30px; border-radius:16px; max-width:90%; width:350px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.5); transform:scale(0.9); transition:transform 0.3s ease;">
+                <div style="margin-bottom:15px;">
+                    <i class="fas ${icone}" style="font-size:3rem; color:${cor};"></i>
+                </div>
+                <h3 style="color:#f1f5f9; margin:0 0 10px 0; font-size:1.3rem;">${titulo}</h3>
+                <p style="color:#cbd5e1; font-size:0.95rem; line-height:1.5; margin-bottom:25px;">${mensagem}</p>
+                <button id="btn-fechar-aviso" style="background:var(--primaria, #16a34a); color:#fff; border:none; padding:12px 25px; border-radius:8px; font-weight:600; cursor:pointer; width:100%; transition:filter 0.2s;">
+                    Entendi
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Animação de entrada
+    setTimeout(() => {
+        const modal = document.getElementById('modal-aviso-index');
+        const conteudo = modal.querySelector('.modal-conteudo');
+        if (modal) modal.style.opacity = '1';
+        if (conteudo) conteudo.style.transform = 'scale(1)';
+        
+        document.getElementById('btn-fechar-aviso').onclick = () => {
+            modal.style.opacity = '0';
+            setTimeout(() => modal.remove(), 300);
+        };
+    }, 100);
+}

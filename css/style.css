@@ -25,7 +25,7 @@
     /* Microtextos / notas */
 
     /* Destaques Sutis */
-    --accent-soft: #c9a24d;
+    --accent-soft: #eecb66;
     /* Dourado técnico (menos saturado/elegante) */
     --accent-line: #2a2f3a;
     /* Divisórias discretas */
@@ -52,15 +52,15 @@
     --cor-header-botoes-fundo: var(--bg-card);
     --cor-header-botoes-borda: var(--accent-line);
     --cor-primaria: var(--accent-soft);
-    --cor-primaria-rgb: 201, 162, 77;
-    --cor-primaria-clara: rgba(201, 162, 77, 0.2);
-    --cor-primaria-hover: #b08d42;
+    --cor-primaria-rgb: 238, 203, 102;
+    --cor-primaria-clara: rgba(238, 203, 102, 0.2);
+    --cor-primaria-hover: #d4af4a;
     --cor-fundo-input: var(--bg-card);
     --cor-texto-principal: var(--text-primary);
     --cor-texto-secundario: var(--text-secondary);
     --cor-sombra: rgba(0, 0, 0, 0.3);
     --cor-sombra-leve: rgba(0, 0, 0, 0.15);
-    --cor-animacao: rgba(201, 162, 77, 0.05);
+    --cor-animacao: rgba(238, 203, 102, 0.05);
     --cor-grafite-suave: var(--bg-card);
 }
 
@@ -974,6 +974,13 @@ header {
 /* ====================================================================== */
 /* 🎨 AJUSTES DE TEMA PARA VALORES (STANDARD/ACESSÍVEL)                   */
 /* ====================================================================== */
+
+/* AJUSTE: Contraste de texto branco para elementos com fundo primário no tema Standard */
+.theme-acessivel .btn-proposta.selecionado,
+.theme-acessivel .quantidade-equipamento,
+.theme-acessivel .etiqueta {
+    color: #ffffff;
+}
 
 /* AJUSTE: Cards de valores com fundo claro e informações escuras no tema Standard */
 .theme-acessivel .card-valores {
@@ -1942,6 +1949,71 @@ body.modal-aberta {
     /* Remove espaços extras abaixo da imagem */
 }
 
+/* ====================================================================== */
+/* 🖼️ GRID DE MÍDIA (Vídeos e Garantias) - Galeria Responsiva             */
+/* ====================================================================== */
+
+/* Classes injetadas via JS (utils.js) */
+.grid-videos,
+.grid-banners {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    gap: 30px; /* Espaçamento padrão desktop */
+    margin-top: 20px;
+}
+
+.flex-center-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.gap-20 {
+    gap: 20px; /* Fallback */
+}
+
+.w-full {
+    width: 100%;
+    max-width: 324px; /* Mantém a largura de corte do vídeo */
+}
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ajuste Mobile: Vertical com separação organizada */
+@media (max-width: 768px) {
+    .grid-videos,
+    .grid-banners {
+        flex-direction: column;
+        align-items: center;
+        gap: 50px !important; /* Aumenta o respiro vertical para dar sensação de organização */
+    }
+    
+    /* Remove margens laterais que podem atrapalhar no mobile */
+    .grid-videos > div,
+    .grid-banners > div {
+        margin: 0;
+    }
+
+    /* Espaço vertical antes da seção de Garantias no mobile */
+    .secao-garantias {
+        margin-top: 60px;
+    }
+}
+
+/* Ajuste Desktop: Garante comportamento de Galeria */
+@media (min-width: 769px) {
+    .grid-videos > div,
+    .grid-banners > div {
+        margin: 0; /* Remove margin:auto que causava empilhamento */
+    }
+}
+
 /* --- Bloco de Decisão Final --- */
 .bloco-decisao-final {
     max-width: 90%;
@@ -2263,6 +2335,73 @@ body.awaiting-acceptance main {
 
 .tabela-servicos tr:last-child td {
     border-bottom: none;
+}
+
+/* --- Tabela de Simulação (Financiamento e Cartão) --- */
+.tabela-simulacao {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 12px; /* Solicitado: Fonte pequena */
+    background-color: transparent; /* Solicitado: Transparente */
+}
+
+.tabela-simulacao th, .tabela-simulacao td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--cor-texto-secundario);
+}
+
+.tabela-simulacao th {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--cor-primaria);
+    border-bottom: 1px solid var(--cor-primaria);
+}
+
+.tabela-simulacao td strong {
+    color: var(--cor-texto-principal);
+    font-weight: 600;
+}
+
+/* Card Destaque Único (60x e 12x) */
+.card-destaque-unico {
+    background: var(--card-gradient);
+    border: 1px solid var(--cor-primaria);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px var(--cor-sombra-leve);
+}
+
+.card-destaque-unico .valor-parcela {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    line-height: 1.2;
+}
+
+.card-destaque-unico .info-parcela {
+    font-size: 1rem;
+    color: var(--cor-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Ajustes para tema claro */
+.theme-acessivel .tabela-simulacao th, 
+.theme-acessivel .tabela-simulacao td {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+.theme-acessivel .tabela-simulacao th {
+    border-bottom-color: var(--cor-primaria);
+}
+.theme-acessivel .card-destaque-unico {
+    background: var(--cor-cartao-fundo);
+    border-color: var(--cor-primaria);
 }
 
 /* NOVO: Estilo para o título da seção de parcelamento no cartão */

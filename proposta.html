@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proposta Comercial | BelEnergy</title>
+    <title>Proposta Comercial</title>
     <link rel="stylesheet" href="css/style.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -481,7 +481,7 @@
                     </div>
 
                     <!-- NOVO: Detalhamento do Pagamento (Equipamentos vs Serviços) -->
-                    <div id="detalhamento-pagamento-container" class="detalhamento-pagamento oculto bloco-animado">
+                    <div id="detalhamento-pagamento-container" class="detalhamento-pagamento bloco-animado">
                         <h4 class="titulo-detalhamento">Composição do Investimento</h4>
                         
                         <!-- 1. Resumo dos Totais -->
@@ -606,6 +606,40 @@
         </div>
     </div>
 
+    <!-- Modal de Aviso Amigável (Erro/Expiração) -->
+    <div id="modal-aviso" class="modal-overlay oculto" style="z-index: 10000; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px);">
+        <div class="modal-conteudo" style="max-width: 400px; text-align: center; padding: 40px 30px; border-radius: 16px; background: #fff; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div style="margin-bottom: 20px;">
+                <i id="icone-aviso" class="fas fa-exclamation-circle" style="font-size: 3.5rem; color: #f59e0b;"></i>
+            </div>
+            <h2 id="titulo-aviso" style="color: #1e293b; margin: 0 0 10px 0; font-size: 1.5rem; font-weight: 700;">Atenção</h2>
+            <p id="mensagem-aviso" style="color: #64748b; margin-bottom: 30px; line-height: 1.6; font-size: 1rem;">Ocorreu um problema ao carregar a proposta.</p>
+            <button id="btn-aviso" class="btn-primary" style="width: 100%; justify-content: center; height: 48px; font-size: 1rem; border-radius: 8px;">
+                Entendi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Atualiza dinamicamente o ícone de instalação conforme o texto recebido do controller
+        const observerIcone = new MutationObserver(() => {
+            const elTexto = document.getElementById('instalacao-paineis');
+            const elIcone = document.getElementById('icone-instalacao');
+            
+            if (elTexto && elIcone) {
+                const texto = elTexto.innerText.toLowerCase();
+                elIcone.className = 'fas'; // Reset mantendo a classe base
+
+                if (texto.includes('solo') || texto.includes('usina')) elIcone.classList.add('fa-solar-panel');
+                else if (texto.includes('laje')) elIcone.classList.add('fa-layer-group');
+                else if (texto.includes('metalico') || texto.includes('metálico')) elIcone.classList.add('fa-industry');
+                else elIcone.classList.add('fa-house-chimney');
+            }
+        });
+
+        const targetInstalacao = document.getElementById('instalacao-paineis');
+        if (targetInstalacao) observerIcone.observe(targetInstalacao, { childList: true, characterData: true, subtree: true });
+    </script>
 </body>
 
 </html>
