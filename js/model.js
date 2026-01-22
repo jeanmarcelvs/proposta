@@ -540,7 +540,12 @@ function tratarDadosParaProposta(dadosCompletos, tipoProposta, selicAtual) {
     }
         
     const tarifaEnergia = projeto.tarifaGrupoB || 0.95;
-    const idealParaValor = geracaoMediaValor * tarifaEnergia;
+    
+    let idealParaValor = geracaoMediaValor * tarifaEnergia;
+    const analiseFin = proposta.analiseFinanceira?.[chaveVersao];
+    if (analiseFin?.detalhes?.faturaSemSolarAno1) {
+        idealParaValor = analiseFin.detalhes.faturaSemSolarAno1;
+    }
 
     // NOVO: Lógica de Detalhamento do Investimento (Equipamentos vs Serviços)
     // Extrai o valor dos equipamentos da variável 'preco_equipamentos'

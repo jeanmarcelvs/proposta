@@ -1171,7 +1171,11 @@ function tratarDadosProposta(dadosCompletos, selicAtual = 11.25) {
 
         const geracaoMedia = proposta.geracaoMensal || 0;
         const tarifa = projeto.tarifaGrupoB || proposta.premissasSnapshot?.viabilidade?.tarifaGrupoB || 0.95;
-        const idealPara = geracaoMedia * tarifa;
+        
+        let idealPara = geracaoMedia * tarifa;
+        if (proposta.analiseFinanceira?.[key]?.detalhes?.faturaSemSolarAno1) {
+            idealPara = proposta.analiseFinanceira[key].detalhes.faturaSemSolarAno1;
+        }
 
         // Lógica de Detalhamento do Investimento (Equipamentos vs Serviços)
         const valorTotal = resumoFinanceiro.valorTotal || 0;
