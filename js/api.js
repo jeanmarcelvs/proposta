@@ -22,6 +22,9 @@ export async function buscarPropostaService(propostaId) {
     }
 }
 
+// Exporta um alias para resolver o conflito de nomes no model.js
+export { buscarPropostaService as buscarDadosCompletos };
+
 /**
  * Valida o Fingerprint do dispositivo no Cloudflare
  */
