@@ -39,11 +39,6 @@ async function validarDispositivoService(payload) {
     }
 }
 
-/**
- * EXPORTAÇÃO COMPATÍVEL COM model.js
- */
-export const buscarDadosCompletos = buscarPropostaService;
-
 async function getSelic() {
     try {
         const res = await fetch('https://gdis-api-service.jeanmarcel-vs.workers.dev/selic');
@@ -54,9 +49,13 @@ async function getSelic() {
     }
 }
 
-// EXPORTAÇÃO ÚNICA E LIMPA
+/**
+ * EXPORTAÇÕES
+ * Centralizamos tudo em um único bloco para evitar erros de Syntax no Cloudflare
+ */
 export { 
     buscarPropostaService, 
-    validarDispositivoService, 
-    getSelic 
+    validarDispositivoService,
+    getSelic,
+    buscarPropostaService as buscarDadosCompletos
 };
