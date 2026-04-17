@@ -26,7 +26,7 @@ export async function buscarPropostaService(propostaId) {
 /**
  * Exportação para compatibilidade com model.js
  */
-export { buscarPropostaService as buscarDadosCompletos };
+export const buscarDadosCompletos = buscarPropostaService;
 
 /**
  * Valida o Fingerprint do dispositivo no Cloudflare
