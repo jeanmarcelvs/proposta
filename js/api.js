@@ -39,6 +39,11 @@ async function validarDispositivoService(payload) {
     }
 }
 
+/**
+ * EXPORTAÇÃO COMPATÍVEL COM model.js
+ */
+export const buscarDadosCompletos = buscarPropostaService;
+
 async function getSelic() {
     try {
         const res = await fetch('https://gdis-api-service.jeanmarcel-vs.workers.dev/selic');
@@ -52,7 +57,6 @@ async function getSelic() {
 // EXPORTAÇÃO ÚNICA E LIMPA
 export { 
     buscarPropostaService, 
-    buscarPropostaService as buscarDadosCompletos, 
     validarDispositivoService, 
     getSelic 
 };
