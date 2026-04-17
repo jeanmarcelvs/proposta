@@ -9,12 +9,12 @@ function getHeaders() {
  * Busca os dados da proposta no Worker
  * Ajustado para enviar 'idAlvo' e 'primeiroNome' conforme o seu Worker espera
  */
-async function buscarPropostaService(idAlvo, primeiroNome) {
+async function buscarPropostaService(propostaId, primeiroNome) {
     try {
         const response = await fetch(`${SECURITY_URL}/find-proposta`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ idAlvo, primeiroNome }) // Sincronizado com o Worker
+            body: JSON.stringify({ propostaId, primeiroNome }) // Sincronizado com a expectativa do Worker
         });
         if (!response.ok) return { sucesso: false };
         return await response.json();
