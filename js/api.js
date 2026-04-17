@@ -7,13 +7,14 @@ function getHeaders() {
 
 /**
  * Busca os dados da proposta no Worker
+ * Ajustado para enviar 'idAlvo' e 'primeiroNome' conforme o seu Worker espera
  */
-async function buscarPropostaService(propostaId) {
+async function buscarPropostaService(idAlvo, primeiroNome) {
     try {
         const response = await fetch(`${SECURITY_URL}/find-proposta`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify({ propostaId })
+            body: JSON.stringify({ idAlvo, primeiroNome }) // Sincronizado com o Worker
         });
         if (!response.ok) return { sucesso: false };
         return await response.json();
@@ -50,12 +51,12 @@ async function getSelic() {
 }
 
 /**
- * EXPORTAÇÕES
- * Centralizamos tudo em um único bloco para evitar erros de Syntax no Cloudflare
+ * EXPORTAÇÃO ÚNICA E LIMPA
+ * Resolve o SyntaxError: não pode haver export const e export {} com o mesmo nome.
  */
 export { 
     buscarPropostaService, 
     validarDispositivoService,
     getSelic,
-    buscarPropostaService as buscarDadosCompletos
+    buscarPropostaService as buscarDadosCompletos // Apelido para compatibilidade
 };

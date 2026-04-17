@@ -4,6 +4,7 @@ import { mostrarLoading } from './utils.js';
 
 const app = {
     idProposta: new URLSearchParams(window.location.search).get('id'),
+    primeiroNome: new URLSearchParams(window.location.search).get('n'),
     propostaAtiva: 'standard', 
     etapaAtual: 0,
     dados: null,
@@ -64,7 +65,7 @@ async function init() {
         }
 
         // 2. Busca de Dados da Proposta
-        const resposta = await buscarPropostaService(app.idProposta);
+        const resposta = await buscarPropostaService(app.idProposta, app.primeiroNome);
         
         if (resposta && resposta.sucesso) {
             // Garante a captura dos dados independentemente da estrutura de retorno da API
