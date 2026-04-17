@@ -1,0 +1,51 @@
+<div class="view-content animate-in">
+    <div class="view-header">
+        <h2>Padrão de Instalação</h2>
+        <p>Selecione o padrão de projeto que melhor atende às suas exigências:</p>
+    </div>
+
+    <div class="selecao-instalacao-container">
+        <div class="card-opcao disabled" id="opt-basic">
+            <div class="check-indicator"></div>
+            <h4>Projeto Basic</h4>
+            <div class="valor-card">Descontinuado (por padrão de qualidade)</div>
+            <p>
+                Infraestrutura com <strong>materiais mais frágeis</strong> e <strong>durabilidade duvidosa</strong>.
+            </p>
+        </div>
+
+        <div class="card-opcao" id="opt-standard" onclick="window.app.mudarPlano('standard')">
+            <div class="check-indicator"><i class="fas fa-check"></i></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <h4>Projeto Standard</h4>
+                <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirFoto('./assets/inversor-standard.webp')">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="valor-card" data-field="valor_standard">---</div>
+            <p>
+                Um pouco superior ao básico de mercado. Concepção de projeto de <strong>infraestrutura em PVC rígido</strong>.
+            </p>
+        </div>
+        
+        <div class="card-opcao" id="opt-premium" onclick="window.app.mudarPlano('premium')">
+            <div class="check-indicator"><i class="fas fa-check"></i></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <h4>Projeto Premium</h4>
+                <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirFoto('./assets/inst_premium.webp')">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="selo-texto-card premium"><i class="fas fa-star"></i> PADRÃO INDUSTRIAL</div>
+            <div class="valor-card" data-field="valor_premium">---</div>
+            <p>
+                Foco em <strong>maior durabilidade e segurança</strong>. Concepção de projeto de <strong>infraestrutura metálica</strong> e <strong>ABS</strong> (polímero industrial, proteção IP65).
+            </p>
+            <ul class="premium-features">
+                <li><i class="fas fa-check-circle"></i> Proteção elétrica com Sistema de Coordenação.</li>
+                <li><i class="fas fa-check-circle"></i> Dispositivos Padronizados pela marca CLAMPER.</li>
+                <li><i class="fas fa-check-circle"></i> Práticas de engenharia e Acessórios de qualidade industrial.</li>
+            </ul>
+        </div>
+    </div>
+</div>

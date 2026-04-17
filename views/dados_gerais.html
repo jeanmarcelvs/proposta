@@ -1,0 +1,46 @@
+<div class="view-content animate-in">
+    <div class="view-header">
+        <h2>SISTEMA FOTOVOLTAICO</h2>
+    </div>
+
+    <div class="apresentacao-dossie">
+        <div class="dossie-bloco">
+            <label>Proprietário do Projeto</label>
+            <div class="valor" data-field="cliente_nome"></div>
+            <div class="sub-valor"><span data-field="cidade"></span> / <span data-field="uf"></span></div>
+        </div>
+    </div>
+
+    <div class="grid-dados">
+        <div class="campo-info">
+            <div class="campo-header">
+                <i class="fas fa-chart-area" style="color: var(--detalhe); font-size: 0.8rem;"></i>
+                <label>Performance Mensal Esperada</label>
+            </div>
+            <span data-field="geracao_mensal"></span>
+        </div>
+
+        <div class="campo-info">
+            <div class="campo-header">
+                <i class="fas fa-receipt" style="color: var(--detalhe); font-size: 0.8rem;"></i>
+                <label>Valor Máximo de Fatura Atendida</label>
+            </div>
+            <span data-field="fatura_atendida"></span>
+        </div>
+    </div>
+
+    <div class="info-expansao-texto">
+        <div class="campo-header">
+            <i class="fas fa-arrow-trend-up" style="color: var(--detalhe); font-size: 0.8rem;"></i>
+            <label>Capacidade de Expansão</label>
+        </div>
+        <div style="display: flex; flex-direction: column; padding-left: 28px; margin-top: 4px;">
+            <span data-field="geracao_expansao" style="font-weight: 700; font-size: 1.1rem; color: var(--texto);"></span>
+            <span data-field="qtd_modulos_expansao" style="font-size: 0.75rem; color: var(--detalhe); font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;"></span>
+        </div>
+    </div>
+
+    <div class="view-footer-msg">
+        <i class="fas fa-info-circle"></i> Os valores de performance são baseados no histórico climático da região e simulações de irradiância local para o seu imóvel.
+    </div>
+</div>

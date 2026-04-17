@@ -1,0 +1,1209 @@
+/* Definições de Variáveis e Reset */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --cinza-fundo: #F8FAFC;
+    --borda-suave: rgba(0, 0, 0, 0.08);
+    --transicao: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-header: 'Inter', sans-serif;
+    --blueprint-dot: rgba(32, 58, 67, 0.1);
+}
+
+/* Tema Standard: Identidade Técnica e Limpa */
+.theme-standard {
+    --primaria: #203A43; /* Seu Azul Petróleo */
+    --secundaria: #2C5364;
+    --detalhe: #34495E;
+    --texto: #1E293B;
+    --bg-card: #FFFFFF;
+}
+
+/* Tema Premium: Identidade de Alto Valor */
+.theme-premium {
+    --primaria: #1A202C; /* Azul escuro para contraste */
+    --secundaria: #2D3748; /* Azul escuro mais claro */
+    --detalhe: #C5A059;  /* Dourado Nobre */
+    --texto: #2D3748;    /* Texto escuro para fundo claro */
+    --cinza-fundo: #F9F7F2; /* Fundo creme/pérola */
+    --bg-card: #FFFFFF;
+    --borda-suave: rgba(197, 160, 89, 0.2); /* Borda dourada sutil */
+    --blueprint-dot: rgba(197, 160, 89, 0.15); /* Pontos dourados sutis */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--cinza-fundo);
+    color: var(--texto);
+    overflow-x: hidden;
+    transition: var(--transicao);
+    /* Micro-pontos de Engenharia */
+    background-image: radial-gradient(var(--blueprint-dot) 1px, transparent 1px); /* Pontos de 1px */
+    background-size: 25px 25px; /* Espaçamento entre os pontos */
+}
+
+/* Cabeçalho Fixo */
+.header-fixo {
+    position: fixed;
+    top: 0; width: 100%;
+    height: 80px;
+    background: var(--primaria);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Seletor removido do topo para ficar dentro da view */
+.seletor-proposta {
+    display: none;
+}
+
+.btn-toggle {
+    background: transparent;
+    color: #fff;
+    border: 1px dashed rgba(255,255,255,0.4);
+    padding: 8px 25px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: var(--transicao);
+}
+
+.btn-toggle.active {
+    background: rgba(255,255,255,0.15);
+    border-style: solid;
+    border-color: var(--detalhe);
+}
+
+/* Rodapé Fixo */
+.footer-fixo {
+    position: fixed;
+    bottom: 0; width: 100%;
+    height: 70px;
+    background: #FFF;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    box-sizing: border-box;
+    border-top: 1px solid var(--borda-suave);
+    z-index: 1000;
+}
+
+.btn-nav {
+    background: var(--primaria);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Espaçamento para o conteúdo não ficar escondido */
+#view-container {
+    padding-top: 90px;
+    padding-bottom: 90px;
+    min-height: 100vh;
+    width: 95%;
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 0.9rem;
+}
+
+#view-container h2 { 
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 2px; 
+    border-left: 3px solid var(--detalhe);
+    padding-left: 15px;
+    color: var(--primaria);
+}
+
+.view-header p {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--texto);
+    margin: 4px 0 0 0;
+    padding-left: 18px;
+    text-transform: none; /* Descrição tradicional */
+    opacity: 0.9;
+}
+
+/* Badges para Scannability Técnica */
+.badge-tecnico {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Espaço para o ícone */
+    background: rgba(32, 58, 67, 0.08);
+    border: 1px solid var(--primaria);
+    color: var(--primaria);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 2px 2px 0px var(--primaria);
+    transition: var(--transicao);
+}
+
+.theme-premium .badge-tecnico {
+    background: var(--detalhe);
+    color: #fff;
+    border-color: var(--detalhe);
+    box-shadow: 3px 3px 0px rgba(197, 160, 89, 0.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Estrutura de Dossiê para a Capa da Proposta */
+.apresentacao-dossie {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 10px 0 25px 18px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.dossie-bloco {
+    display: flex;
+    flex-direction: column;
+}
+
+.dossie-bloco label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--detalhe);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.dossie-bloco .valor {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primaria);
+    line-height: 1.2;
+}
+
+.dossie-bloco .sub-valor {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+/* Estilo da Logo Compacta */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 0;
+    max-width: fit-content;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.logo-container .nome {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #FFF;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    line-height: 0.85;
+}
+
+.logo-container .divider {
+    width: 100%;
+    height: 1px;
+    margin: 6px 0;
+    background: linear-gradient(90deg, transparent 0%, var(--detalhe) 50%, transparent 100%);
+}
+
+.logo-container .subtitulo {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--detalhe);
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    margin: 0;
+    line-height: 1;
+    margin-right: -0.35em;
+}
+
+.assinatura-final {
+    margin-top: 50px;
+    padding: 35px 25px;
+    background: transparent;
+    border: 1px solid var(--borda-suave);
+    border-top: 2px solid var(--detalhe);
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+
+.signature-header {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cinza-fundo);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--detalhe);
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.signature-seal {
+    width: 60px;
+    height: 60px;
+    border: 1px solid var(--detalhe);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    color: var(--detalhe);
+    font-size: 1.5rem;
+    background: rgba(var(--detalhe-rgb), 0.05);
+}
+
+.technical-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primaria);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+/* Certificação Técnica Ultra-Sofisticada */
+.certification-section {
+    margin-top: 60px;
+    padding-bottom: 40px;
+}
+
+.certification-card {
+    background: #fff;
+    border: 1px solid var(--borda-suave);
+    border-radius: 15px;
+    padding: 40px 30px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+
+.cert-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--detalhe);
+    opacity: 0.6;
+}
+
+.cert-body {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.cert-seal {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--detalhe);
+    font-size: 1.8rem;
+}
+
+.cert-seal svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: rotateSeal 20s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes rotateSeal {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.cert-info {
+    text-align: left;
+}
+
+.cert-label {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--detalhe);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.cert-main-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primaria);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.cert-crea {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 5px;
+    letter-spacing: 1px;
+}
+
+.btn-contract-ultra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--primaria);
+    color: #fff !important;
+    text-decoration: none;
+    padding: 20px 30px;
+    border-radius: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(var(--primaria-rgb), 0.2);
+}
+
+.btn-contract-ultra:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(var(--primaria-rgb), 0.3);
+    background: var(--detalhe);
+}
+
+/* Cronograma Profissional de Pagamento */
+.cronograma-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.cronograma-step {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(248, 250, 252, 0.6);
+    border: 1px solid var(--borda-suave);
+    border-radius: 8px;
+    transition: var(--transicao);
+}
+
+.cronograma-step:hover {
+    border-color: var(--detalhe);
+    background: #FFF;
+    transform: translateX(4px);
+}
+
+.cronograma-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.cronograma-label { font-size: 0.55rem; font-weight: 800; color: var(--detalhe); text-transform: uppercase; letter-spacing: 0.5px; }
+.cronograma-desc { font-size: 0.85rem; font-weight: 700; color: var(--primaria); }
+.cronograma-prazo { font-size: 0.65rem; color: #94a3b8; font-weight: 500; }
+
+.cronograma-valor-box { 
+    font-size: 0.95rem; 
+    font-weight: 800; 
+    color: var(--primaria); 
+    text-align: right;
+    margin-left: 10px;
+}
+
+.assinatura-nome {
+    font-family: 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 1.8rem;
+    color: var(--primaria);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.assinatura-crea {
+    font-size: 0.55rem;
+    color: var(--detalhe);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+#view-container h3 { font-size: 1.1rem; margin-top: 20px; }
+
+/* Utilitários para exibição densa de dados */
+.view-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+}
+
+.campo-info {
+    padding: 10px 18px;
+    border: 1px solid var(--borda-suave);
+    background: var(--bg-card);
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Empilhamento vertical */
+    align-items: flex-start;
+    gap: 4px;
+    transition: var(--transicao);
+    margin-bottom: -1px; /* Sobreposição de bordas para efeito de lista única */
+}
+
+/* Estilização específica para Expansão Futura */
+.campo-info.expansao {
+    opacity: 0.95;
+}
+
+/* Estado quando não há expansão (Inversor no limite) */
+.campo-info.expansao.limitada {
+    background: linear-gradient(90deg, #fefce8 0%, #f1f5f9 100%);
+    border-color: #e2e8f0;
+}
+
+.campo-info.expansao.limitada label {
+    color: #94a3b8;
+    opacity: 0.8;
+}
+
+/* Descrição de Expansão (Sem formato de Card) */
+.info-expansao-texto {
+    padding: 10px 18px;
+    transition: var(--transicao);
+}
+
+.info-expansao-texto.limitada {
+    background: linear-gradient(90deg, #fefce8 0%, #f1f5f9 100%);
+    border-radius: 4px;
+}
+
+.campo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.campo-info label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--detalhe);
+    margin-bottom: 0;
+}
+
+.campo-info span {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--texto);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.campo-info small {
+    font-size: 0.7rem;
+    color: var(--detalhe);
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
+
+.container-hibrido {
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(var(--detalhe-rgb), 0.04);
+    border-left: 3px solid var(--detalhe);
+    border-radius: 0 4px 4px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hibrido-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--detalhe);
+    font-size: 0.55rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hibrido-item span {
+    font-size: 0.55rem !important; /* Força o tamanho pequeno para não herdar o 1rem global */
+    font-weight: 800 !important;
+    display: inline !important; /* Impede que o span ocupe 100% da largura */
+    width: auto !important;
+}
+
+.hibrido-item i {
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
+
+.view-footer-msg {
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* Cantos técnicos estilo Blueprint */
+.campo-info::before, .campo-info::after {
+    content: '';
+    position: absolute;
+    width: 8px; height: 8px; /* Tamanho dos cantos */
+    border: 1px solid var(--detalhe);
+}
+.campo-info::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.campo-info::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+.investimento-box {
+    text-align: center;
+    padding: 30px 20px; /* Reduzido para melhor aproveitamento vertical */
+    background: var(--bg-card);
+    border: 1px solid var(--borda-suave); /* Borda sutil */
+    border-radius: 2px; /* Cantos levemente arredondados */
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.03); /* Sombra suave */
+}
+
+.investimento-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; width: 60px; height: 3px; /* Linha de destaque no topo */
+    background: var(--detalhe);
+    transform: translateX(-50%);
+}
+
+.valor-principal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Espaçamento entre elementos */
+    font-size: 2rem; /* Tamanho da fonte do valor */
+    font-weight: 600; /* Peso da fonte */
+    color: var(--texto); /* Cor do texto */
+    margin: 20px 0; /* Margem vertical */
+    letter-spacing: -0.05em; /* Espaçamento entre letras */
+}
+
+.tag-a-vista {
+    display: inline-block;
+    background: var(--detalhe);
+    color: white;
+    font-size: 0.55rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 800;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+/* Grid para organizar informações em colunas e economizar espaço */
+.grid-dados {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaçamento entre os cards de informação */
+    width: 100%;
+}
+
+/* Modal de Aceite */
+.overlay-aceite {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--primaria); /* Fundo sólido para foco total */
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.modal-conteudo {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.logo-modal { max-width: 120px; margin-bottom: 20px; }
+
+.texto-termo {
+    text-align: left;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #475569;
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.checkbox-container {
+    display: block;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Botão de Acesso */
+.btn-acesso-bloqueado {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 6px;
+    background: #cbd5e1;
+    color: #64748b;
+    font-weight: bold;
+    cursor: not-allowed;
+    transition: var(--transicao);
+}
+
+.btn-acesso-bloqueado.ativo {
+    background: var(--primaria);
+    color: white;
+    cursor: pointer;
+}
+
+/* Novas classes para Escolha de Instalação */
+.selecao-instalacao-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.card-opcao {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: var(--transicao);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-opcao.disabled {
+    opacity: 0.75; /* Aumentado para dar mais nitidez */
+    cursor: not-allowed;
+    border-color: var(--borda-suave);
+    background-color: #f1f5f9;
+    filter: grayscale(0.4); /* Reduzido o efeito de cinza */
+}
+
+.premium-tag.alert {
+    background: #e11d48; /* Vermelho vibrante para o alerta */
+    top: 0;
+    right: 0;
+}
+
+.card-opcao.disabled .valor-card {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.card-opcao.disabled h4,
+.card-opcao.disabled p {
+    color: var(--texto);
+    opacity: 0.6;
+}
+
+
+.card-opcao.ativa {
+    border-color: var(--detalhe);
+    background: rgba(197, 160, 89, 0.08);
+}
+
+/* Identidade Fixa para o Card Standard: Mantém as cores originais mesmo no tema Premium */
+#opt-standard {
+    --primaria: #203A43;
+    --detalhe: #34495E;
+}
+
+#opt-standard.ativa {
+    border-color: #34495E;
+    background: rgba(32, 58, 67, 0.08);
+}
+
+.check-indicator {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 26px;
+    height: 26px;
+    background: var(--detalhe);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    opacity: 0;
+    transform: scale(0);
+    transition: var(--transicao);
+    z-index: 20;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.card-opcao.ativa .check-indicator {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.card-opcao h4 { 
+    margin: 0; 
+    font-size: 0.85rem;
+    color: var(--primaria); 
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.card-opcao p { 
+    font-size: 0.7rem; 
+    line-height: 1.3; 
+    color: #475569; 
+    margin: 5px 0 8px 0; 
+}
+
+.valor-card {
+    font-size: 1.1rem;
+    font-weight: 500; /* Menos negrito para elegância */
+    color: var(--detalhe);
+    margin: 4px 0 8px 0;
+    letter-spacing: -0.2px;
+}
+
+.premium-tag {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--detalhe);
+    color: white;
+    font-size: 0.55rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.premium-tag.industrial {
+    top: 24px; /* Posiciona abaixo da primeira tag */
+    background: var(--primaria);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.premium-features {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    font-size: 0.65rem;
+    color: #64748b;
+    text-align: left;
+}
+
+.premium-features li {
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.premium-features li i {
+    color: var(--detalhe);
+    font-size: 0.7rem;
+}
+
+
+.floating-badge {
+    position: fixed;
+    top: 85px;
+    right: 20px;
+    background: var(--detalhe);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 999;
+    animation: slideIn 0.5s ease-out;
+}
+
+/* LOGO ESTRUTURAL CSS */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px;
+}
+
+.logo-simbolo {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--detalhe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Detalhe das linhas que remetem a circuitos/plantas */
+.logo-simbolo::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    border: 1px dashed var(--detalhe);
+    opacity: 0.5;
+}
+
+.logo-texto {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.logo-texto .nome {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: var(--texto-logo, #FFF);
+}
+
+.logo-texto .subtitulo {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    font-weight: 400;
+    color: var(--detalhe);
+    margin-top: 4px;
+}
+
+/* Ajuste da logo para o cabeçalho fixo */
+.header-logo .logo-simbolo {
+    width: 30px;
+    height: 30px;
+}
+
+.header-logo .nome {
+    font-size: 1rem;
+}
+
+/* Botão WhatsApp - Página Final */
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background-color: #25D366;
+    color: #fff !important;
+    padding: 16px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 35px; /* Espaço superior para não sufocar a descrição */
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.25);
+    transition: var(--transicao);
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.35);
+    background-color: #20ba5a;
+}
+
+.validade-nota {
+    margin-top: 30px;
+    padding: 15px;
+    background: rgba(32, 58, 67, 0.05);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #475569;
+}
+
+/* Responsividade para celulares muito pequenos */
+@media (max-width: 400px) {
+    .header-logo {
+        display: flex; 
+        transform: scale(0.85); /* Reduz um pouco em vez de esconder */
+    }
+    .selecao-instalacao-container { grid-template-columns: 1fr; }
+    .card-opcao { padding: 10px; }
+    .card-opcao h4 { font-size: 0.8rem; }
+    .valor-card { font-size: 1rem; }
+    .card-opcao p { font-size: 0.65rem; }
+    .premium-features { font-size: 0.6rem; }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Ajuste específico para o Modal (Fundo Branco) */
+
+.modal-logo-wrapper {
+    background: var(--primaria); /* Fundo escuro apenas para a logo */
+    margin: -30px -30px 25px -30px; /* Anula o padding do modal pai */
+    padding: 15px 30px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: center;
+}
+
+.modal-logo-wrapper .logo-container .nome { 
+    color: #FFF; 
+    font-size: 1rem; 
+}
+
+.modal-logo-wrapper .logo-container .subtitulo { 
+    font-size: 0.55rem; 
+}
+
+/* Ajuste para a logo em fundos escuros (Header e Modal Wrapper) */
+.header-fixo .logo-container .subtitulo,
+.modal-logo-wrapper .logo-container .subtitulo {
+    color: #FFF;
+    opacity: 0.9;
+}
+
+.header-fixo .logo-container .divider,
+.modal-logo-wrapper .logo-container .divider {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+}
+
+/* NOVO: Detalhes dourados para a logo no tema Premium (cabeçalho e modal) */
+.theme-premium .header-fixo .logo-container .subtitulo,
+.theme-premium .modal-logo-wrapper .logo-container .subtitulo {
+    color: var(--detalhe); /* Usa o dourado do tema Premium */
+    opacity: 1; /* Garante visibilidade total */
+}
+
+.theme-premium .header-fixo .logo-container .divider,
+.theme-premium .modal-logo-wrapper .logo-container .divider {
+    background: linear-gradient(90deg, transparent 0%, var(--detalhe) 50%, transparent 100%); /* Gradiente dourado */
+}
+
+/* --- Refinamento dos Cards de Equipamentos --- */
+
+.product-description {
+    display: block !important;
+    width: 100% !important;
+    font-weight: 700 !important; /* Descrição do modelo em Negrito */
+    color: var(--primaria) !important;
+    font-size: 0.95rem !important;
+    margin-top: 2px;
+}
+
+.product-qty {
+    display: inline-block !important;
+    width: auto !important;
+    font-weight: 400 !important; 
+    color: var(--texto);
+    opacity: 0.7;
+    margin-right: 0px; /* Removida a margem para ficarem colados */
+}
+
+.product-details-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--borda-suave);
+    width: 100%;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    min-width: 65px;
+}
+
+.detail-label {
+    font-size: 0.45rem !important; /* Forçado para ignorar o 1rem global de spans em campo-info */
+    color: #94a3b8;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.detail-label i { 
+    color: var(--detalhe);
+    font-size: 0.8rem; /* Tamanho de ícone padrão (mesmo peso visual do ícone de bateria) */
+    width: 14px;
+    text-align: center;
+}
+
+.detail-value {
+    font-size: 0.55rem !important; /* Forçado para escala micro-detalhe */
+    color: var(--primaria);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: -1px;
+    padding-left: 19px; /* Alinhamento compensando o ícone acima */
+}
+
+/* Remove cantos de engenharia para um look mais clean nos produtos */
+.equipamento-card {
+    border-radius: 8px !important;
+    margin-bottom: 12px !important;
+}
+
+.equipamento-card::before, .equipamento-card::after {
+    display: none;
+}
+
+/* Estilos do Modal de Vídeo */
+.video-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.video-content-box {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    overflow: visible;
+}
+
+#video-player {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: #000;
+}
+
+.btn-close-video {
+    position: absolute;
+    top: -45px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.btn-video {
+    background: transparent;
+    border: 1px solid var(--detalhe);
+    color: var(--detalhe);
+    border-radius: 6px;
+    padding: 6px 10px;
+    background: rgba(var(--detalhe), 0.05);
+    font-size: 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transicao);
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.btn-video i {
+    font-size: 1.1rem; /* Ajustado para um tamanho imponente mas não conflitante */
+}
+
+.btn-video:hover {
+    background: var(--detalhe);
+    color: white;
+}
+
+.selo-texto-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem; /* Reduzido levemente para evitar conflito com o título */
+    
+    font-weight: 800;
+    text-transform: uppercase;
+    
+    letter-spacing: 1px;
+    margin: 8px 0; 
+    background: var(--detalhe); /* Cor de fundo original */
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    width: fit-content;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}

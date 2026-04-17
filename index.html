@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta de Engenharia Solar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-standard">
+
+    <div id="modal-aceite" class="overlay-aceite">
+        <div class="modal-conteudo">
+            <div class="modal-logo-wrapper">
+                <div class="logo-container">
+                    <span class="nome">Jean Marcel</span>
+                    <div class="divider"></div>
+                    <span class="subtitulo">Engenheiro Eletricista</span>
+                </div>
+            </div>
+
+            <h2>Consultoria em Engenharia</h2>
+            <div class="texto-termo">
+                <p>Esta não é uma simples oferta de kit solar. É um serviço de <strong>engenharia consultiva e gestão</strong>.</p>
+                <p>Como engenheiro responsável, eu gerencio a integração entre as suas necessidades e as melhores soluções técnicas, garantindo segurança e performance.</p>
+                <p>Ao prosseguir, você declara estar ciente de que este documento contém dados técnicos e comerciais exclusivos para o seu perfil.</p>
+            </div>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="check-aceite">
+                <span class="checkmark"></span>
+                Li e compreendo o modelo de trabalho.
+            </label>
+
+            <button id="btn-acessar" class="btn-acesso-bloqueado" disabled>Acessar Proposta</button>
+        </div>
+    </div>
+
+    <header class="header-fixo">
+        <div class="logo-container header-logo">
+            <span class="nome">Jean Marcel</span>
+            <div class="divider"></div>
+            <span class="subtitulo">Engenheiro Eletricista</span>
+        </div>
+
+        <div class="seletor-proposta">
+            <button id="btn-standard" class="btn-toggle active">Standard</button>
+            <button id="btn-premium" class="btn-toggle">Premium</button>
+        </div>
+    </header>
+
+    <main id="view-container">
+        </main>
+
+    <footer class="footer-fixo">
+        <button id="btn-voltar" class="btn-nav">
+            <i class="fas fa-chevron-left"></i> Voltar
+        </button>
+
+        <div class="indicador-etapa">
+            <span id="etapa-atual">1</span> / 5
+        </div>
+
+        <button id="btn-avancar" class="btn-nav">
+            Próximo <i class="fas fa-chevron-right"></i>
+        </button>
+    </footer>
+
+    <!-- Modal de Vídeo Global -->
+    <div id="modal-video" class="video-overlay" style="display:none;">
+        <div class="video-content-box">
+            <button class="btn-close-video" onclick="window.app.fecharVideo()">&times;</button>
+            <video id="video-player" controls playsinline></video>
+        </div>
+    </div>
+
+    <!-- Modal de Foto Global -->
+    <div id="modal-foto" class="video-overlay" style="display:none;" onclick="window.app.fecharFoto()">
+        <div class="video-content-box" onclick="event.stopPropagation()">
+            <button class="btn-close-video" onclick="window.app.fecharFoto()">&times;</button>
+            <img id="foto-display" src="" alt="Padrão de Instalação" style="width: 100%; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+        </div>
+    </div>
+
+    <script src="js/api.js" type="module"></script>
+    <script src="js/utils.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
+</body>
+</html>
