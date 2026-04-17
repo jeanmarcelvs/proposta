@@ -18,11 +18,14 @@ export async function buscarPropostaService(propostaId) {
         if (!response.ok) return { sucesso: false };
         return await response.json();
     } catch (error) {
-        return { sucesso: false };
+        console.error("Erro na busca da proposta:", error);
+        return { sucesso: false, erro: error.message };
     }
 }
 
-// Exporta um alias para resolver o conflito de nomes no model.js
+/**
+ * Exportação para compatibilidade com model.js
+ */
 export { buscarPropostaService as buscarDadosCompletos };
 
 /**
