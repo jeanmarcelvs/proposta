@@ -8,7 +8,7 @@ function getHeaders() {
 /**
  * Busca os dados da proposta no Worker
  */
-export async function buscarPropostaService(propostaId) {
+async function buscarPropostaService(propostaId) {
     try {
         const response = await fetch(`${SECURITY_URL}/find-proposta`, {
             method: 'POST',
@@ -24,14 +24,9 @@ export async function buscarPropostaService(propostaId) {
 }
 
 /**
- * Exportação para compatibilidade com model.js
- */
-export const buscarDadosCompletos = buscarPropostaService;
-
-/**
  * Valida o Fingerprint do dispositivo no Cloudflare
  */
-export async function validarDispositivoService(payload) {
+async function validarDispositivoService(payload) {
     try {
         const response = await fetch(`${SECURITY_URL}/validate-hardware`, {
             method: 'POST',
@@ -44,7 +39,7 @@ export async function validarDispositivoService(payload) {
     }
 }
 
-export async function getSelic() {
+async function getSelic() {
     try {
         const res = await fetch('https://gdis-api-service.jeanmarcel-vs.workers.dev/selic');
         const data = await res.json();
@@ -53,3 +48,11 @@ export async function getSelic() {
         return 11.25;
     }
 }
+
+// EXPORTAÇÃO ÚNICA E LIMPA
+export { 
+    buscarPropostaService, 
+    buscarPropostaService as buscarDadosCompletos, 
+    validarDispositivoService, 
+    getSelic 
+};
