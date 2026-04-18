@@ -115,8 +115,12 @@ async function exibirStatusProposta(motivo) {
 
         if (motivo === 'bloqueado') {
             if (titulo) titulo.innerText = "Acesso Restrito";
-            if (msg) msg.innerText = "Este dispositivo ainda não está autorizado para visualizar esta proposta. Entre em contato com o engenheiro para autorização.";
+            if (msg) msg.innerText = "Este dispositivo ainda não possui autorização de hardware para visualizar este projeto. Por favor, solicite a liberação ao gestor.";
             if (icone) icone.className = "fas fa-shield-halved";
+        } else if (motivo === 'expirada') {
+            if (titulo) titulo.innerText = "Proposta Expirada";
+            if (msg) msg.innerText = "Este documento técnico teve seu prazo de validade encerrado. Os valores e condições precisam ser reavaliados pelo setor de engenharia.";
+            if (icone) icone.className = "fas fa-hourglass-end";
         }
         
         // Oculta elementos que não devem aparecer em estados de erro

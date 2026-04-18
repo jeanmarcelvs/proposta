@@ -1,29 +1,15 @@
-<div class="view-content animate-in" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 30px;">
-    
-    <div id="status-icon-container" style="margin-bottom: 20px;">
-        <i class="fas fa-clock" id="status-icon" style="font-size: 4rem; color: var(--primaria);"></i>
-    </div>
-
-    <h2 id="status-title" style="margin-bottom: 15px; color: var(--texto);">Proposta Expirada</h2>
-    
-    <p id="status-message" style="color: var(--detalhe); max-width: 400px; line-height: 1.6; margin-bottom: 30px;">
-        O prazo de validade desta proposta encerrou ou o acesso através deste dispositivo precisa de autorização técnica.
-    </p>
-
-    <div style="width: 100%; max-width: 350px; gap: 15px; display: flex; flex-direction: column;">
-        <a href="https://wa.me/5582999469016?text=Olá, minha proposta expirou ou está bloqueada. Pode me ajudar?" 
-           target="_blank" 
-           class="btn-nav" 
-           style="background: var(--primaria); color: #000; text-decoration: none; justify-content: center; font-weight: 700;">
-            <i class="fab fa-whatsapp"></i> SOLICITAR ATUALIZAÇÃO
-        </a>
+<div class="status-wrapper">
+    <div class="status-card">
+        <div class="status-icon-container">
+            <i id="status-icon" class="fas fa-clock"></i>
+        </div>
+        <h1 id="status-title">Proposta Offline</h1>
+        <p id="status-message">
+            As informações técnicas e comerciais deste projeto não estão disponíveis para este terminal ou o prazo de validade expirou.
+        </p>
         
-        <button onclick="window.location.reload()" class="btn-nav" style="background: transparent; border: 1px solid var(--borda-suave); justify-content: center;">
-            <i class="fas fa-sync"></i> TENTAR NOVAMENTE
-        </button>
+        <a href="https://wa.me/5582999469016" class="btn-whatsapp" style="margin-top: 0;">
+            <i class="fab fa-whatsapp"></i> Contatar Engenheiro Responsável
+        </a>
     </div>
-
-    <p style="font-size: 0.7rem; color: var(--detalhe); margin-top: 40px; opacity: 0.6;">
-        ID da Tentativa: <span id="debug-device-id"></span>
-    </p>
 </div>
