@@ -144,6 +144,24 @@ body {
     opacity: 0.9;
 }
 
+/* Nota Técnica de Importância */
+.nota-tecnica-header {
+    background: rgba(241, 245, 249, 0.5);
+    border-left: 3px solid var(--detalhe);
+    padding: 15px 20px;
+    margin: 15px 0 25px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.nota-tecnica-header p {
+    font-size: 0.95rem !important; /* Fonte menor para densidade técnica */
+    line-height: 1.5;
+    color: #475569;
+    margin: 0;
+    padding-left: 0 !important;
+    font-weight: 500;
+}
+
 /* Badges para Scannability Técnica */
 .badge-tecnico {
     display: inline-flex;
@@ -1174,7 +1192,6 @@ body {
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     background: #000;
     object-fit: contain; /* Garante que o vídeo caiba sem cortes */
-    pointer-events: none; /* Bloqueia qualquer interação e menu de contexto no vídeo */
 }
 
 .btn-close-video {
