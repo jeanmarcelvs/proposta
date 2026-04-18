@@ -386,20 +386,21 @@ function atualizarDinamicos(info) {
  * Gerencia o balão flutuante informativo
  */
 function atualizarInterfaceSelecao() {
-    // 1. Balão flutuante
-    let badge = document.getElementById('floating-premium-badge');
-    const container = document.getElementById('view-container');
+    const slot = document.getElementById('premium-badge-slot');
+    if (!slot) return;
 
     if (app.propostaAtiva === 'premium') {
-        if (!badge && container) {
-            badge = document.createElement('div');
-            badge.id = 'floating-premium-badge';
-            badge.className = 'floating-badge';
-            badge.innerHTML = '<i class="fas fa-crown"></i> Concepção Premium';
-            container.prepend(badge); // Insere no topo do container para empurrar o conteúdo
-        }
-    } else if (badge) {
-        badge.remove();
+        slot.classList.add('active');
+        slot.innerHTML = `
+            <div class="badge-wrapper">
+                <div class="floating-badge">
+                    <i class="fas fa-crown"></i> Concepção Premium
+                </div>
+            </div>`;
+    } else {
+        slot.classList.remove('active');
+        // Limpa o conteúdo após a animação de fechamento para não interferir no DOM
+        setTimeout(() => { if (!slot.classList.contains('active')) slot.innerHTML = ''; }, 400);
     }
 
     // 2. Estado dos cards (se estiver na view de instalação)

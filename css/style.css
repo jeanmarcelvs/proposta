@@ -1001,9 +1001,9 @@ body {
     .premium-features { font-size: 0.6rem; }
 }
 
-@keyframes slideIn {
-    from { transform: translate(100px, -50%); opacity: 0; }
-    to { transform: translate(0, -50%); opacity: 1; }
+@keyframes slideInRight {
+    from { transform: translateX(30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 /* Ajuste específico para o Modal (Fundo Branco) */
