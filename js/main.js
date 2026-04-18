@@ -388,13 +388,15 @@ function atualizarDinamicos(info) {
 function atualizarInterfaceSelecao() {
     // 1. Balão flutuante
     let badge = document.getElementById('floating-premium-badge');
+    const container = document.getElementById('view-container');
+
     if (app.propostaAtiva === 'premium') {
-        if (!badge) {
+        if (!badge && container) {
             badge = document.createElement('div');
             badge.id = 'floating-premium-badge';
             badge.className = 'floating-badge';
             badge.innerHTML = '<i class="fas fa-crown"></i> Concepção Premium';
-            document.body.appendChild(badge);
+            container.prepend(badge); // Insere no topo do container para empurrar o conteúdo
         }
     } else if (badge) {
         badge.remove();
