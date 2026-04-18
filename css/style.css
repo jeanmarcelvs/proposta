@@ -124,13 +124,13 @@ body {
 }
 
 #view-container h2 { 
-    font-size: 1.25rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 2px; 
-    border-left: 3px solid var(--detalhe);
-    padding-left: 15px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px; 
+    text-transform: none; /* Remove uppercase */
+    border-bottom: 2px solid var(--detalhe);
+    padding-bottom: 5px;
     color: var(--primaria);
 }
 
@@ -152,13 +152,11 @@ body {
     background: rgba(32, 58, 67, 0.08);
     border: 1px solid var(--primaria);
     color: var(--primaria);
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 6px;
-    font-size: 1.05rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    box-shadow: 2px 2px 0px var(--primaria);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: none; /* Mais amigável */
     transition: var(--transicao);
 }
 
@@ -186,9 +184,9 @@ body {
 }
 
 .dossie-bloco label {
-    font-size: 1.05rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    font-size: 0.95rem;
+    text-transform: none;
+    letter-spacing: 0.5px;
     color: var(--detalhe);
     font-weight: 700;
     margin-bottom: 4px;
@@ -273,8 +271,8 @@ body {
     gap: 8px;
     color: var(--detalhe);
     font-size: 1.05rem;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: 700;
+    text-transform: none;
     letter-spacing: 2px;
     white-space: nowrap;
 }
@@ -324,7 +322,7 @@ body {
     right: 20px;
     font-size: 1rem;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: var(--detalhe);
     opacity: 0.6;
 }
@@ -369,8 +367,8 @@ body {
     font-size: 1.05rem;
     font-weight: 800;
     color: var(--detalhe);
-    letter-spacing: 3px;
-    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-transform: none;
     margin-bottom: 8px;
 }
 
@@ -437,7 +435,7 @@ body {
 }
 
 .cronograma-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-.cronograma-label { font-size: 1.05rem; font-weight: 800; color: var(--detalhe); text-transform: uppercase; letter-spacing: 0.5px; }
+.cronograma-label { font-size: 1.05rem; font-weight: 800; color: var(--detalhe); text-transform: none; letter-spacing: 0.5px; }
 .cronograma-desc { font-size: 0.85rem; font-weight: 700; color: var(--primaria); }
 .cronograma-prazo { font-size: 1rem; color: #94a3b8; font-weight: 500; }
 
@@ -461,8 +459,8 @@ body {
 .assinatura-crea {
     font-size: 1.05rem;
     color: var(--detalhe);
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-transform: none;
     font-weight: 700;
     opacity: 0.8;
 }
@@ -524,9 +522,9 @@ body {
 }
 
 .campo-info label {
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
+    font-size: 0.9rem;
+    text-transform: none;
+    font-weight: 700;
     color: var(--detalhe);
     margin-bottom: 0;
 }
@@ -569,14 +567,14 @@ body {
     gap: 10px;
     color: var(--detalhe);
     font-size: 1.05rem;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: 700;
+    text-transform: none;
     letter-spacing: 1px;
 }
 
 .hibrido-item span {
     font-size: 1.05rem !important; /* Elevado para legibilidade */
-    font-weight: 800 !important;
+    font-weight: 700 !important;
     display: inline !important; /* Impede que o span ocupe 100% da largura */
     width: auto !important;
 }
@@ -641,8 +639,8 @@ body {
     font-size: 1.05rem;
     padding: 2px 6px;
     border-radius: 3px;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: 700;
+    text-transform: none;
     vertical-align: middle;
     margin-left: 8px;
 }
@@ -729,7 +727,7 @@ body {
     border: 2px solid #e2e8f0;
     border-radius: 6px;
     padding: 12px;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: var(--transicao);
     position: relative;
     display: flex;
@@ -776,8 +774,9 @@ body {
 }
 
 #opt-standard.ativa {
-    border-color: #34495E;
-    background: rgba(32, 58, 67, 0.08);
+    border: 2px solid #34495E;
+    background: rgba(32, 58, 67, 0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .check-indicator {
@@ -839,7 +838,7 @@ body {
     font-size: 1.05rem;
     padding: 4px 12px;
     border-radius: 50px;
-    font-weight: 800;
+    font-weight: 700;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     z-index: 10;
     white-space: nowrap;
@@ -934,7 +933,7 @@ body {
 
 .logo-texto .subtitulo {
     font-size: 1.05rem;
-    letter-spacing: 3px;
+    letter-spacing: 1px;
     font-weight: 400;
     color: var(--detalhe);
     margin-top: 4px;
@@ -1090,8 +1089,8 @@ body {
 .detail-label {
     font-size: 1.05rem !important;
     color: #94a3b8;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: 700;
+    text-transform: none;
     letter-spacing: 0.5px;
     display: flex;
     align-items: center;
@@ -1108,8 +1107,8 @@ body {
 .detail-value {
     font-size: 1.2rem !important;
     color: var(--primaria);
-    font-weight: 700;
-    text-transform: uppercase;
+    font-weight: 600;
+    text-transform: none;
     margin-top: -1px;
     padding-left: 19px; /* Alinhamento compensando o ícone acima */
 }
@@ -1171,14 +1170,14 @@ body {
     padding: 6px 10px;
     background: rgba(var(--detalhe), 0.05);
     font-size: 1.1rem;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     margin-left: auto;
     display: inline-flex;
     align-items: center;
     gap: 4px;
     transition: var(--transicao);
-    text-transform: uppercase;
+    text-transform: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
@@ -1197,8 +1196,8 @@ body {
     gap: 6px;
     font-size: 1.1rem; 
     
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: 700;
+    text-transform: none;
     
     letter-spacing: 1px;
     margin: 8px 0; 

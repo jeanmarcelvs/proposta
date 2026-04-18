@@ -392,14 +392,13 @@ function atualizarInterfaceSelecao() {
     if (app.propostaAtiva === 'premium') {
         slot.classList.add('active');
         slot.innerHTML = `
-            <div class="badge-wrapper">
-                <div class="floating-badge">
-                    <i class="fas fa-crown"></i> Concepção Premium
-                </div>
-            </div>`;
+        <div class="badge-wrapper">
+            <div class="floating-badge">
+                <i class="fas fa-crown"></i> Concepção Premium
+            </div>
+        </div>`;
     } else {
         slot.classList.remove('active');
-        // Limpa o conteúdo após a animação de fechamento para não interferir no DOM
         setTimeout(() => { if (!slot.classList.contains('active')) slot.innerHTML = ''; }, 400);
     }
 
