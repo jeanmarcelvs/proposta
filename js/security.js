@@ -13,7 +13,7 @@ function extrairFingerprint() {
     }
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-    const os = ua.includes("Win") ? "Windows" : ua.includes("Mac") ? "MacOS" : ua.includes("Android") ? "Android" : ua.includes("iOS") ? "iOS" : "Linux";
+    const os = ua.includes("Win") ? "Windows" : ua.includes("Mac") ? "MacOS" : ua.includes("Android") ? "Android" : (/iPhone|iPad|iPod/.test(ua)) ? "iOS" : "Linux";
     
     let browser = "Chrome";
     if (ua.includes("Firefox")) browser = "Firefox";

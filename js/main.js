@@ -114,12 +114,12 @@ async function exibirStatusProposta(motivo) {
         const icone = document.getElementById('status-icon');
 
         if (motivo === 'bloqueado') {
-            if (titulo) titulo.innerText = "Acesso Restrito";
-            if (msg) msg.innerText = "Este dispositivo ainda não possui autorização de hardware para visualizar este projeto. Por favor, solicite a liberação ao gestor.";
-            if (icone) icone.className = "fas fa-shield-halved";
+            if (titulo) titulo.innerText = "Acesso Exclusivo";
+            if (msg) msg.innerText = "Este documento contém informações personalizadas e exclusivas. Por questões de segurança e privacidade, o acesso é restrito ao titular do projeto. Por favor, valide sua identidade com o consultor técnico.";
+            if (icone) icone.className = "fas fa-user-shield";
         } else if (motivo === 'expirada') {
-            if (titulo) titulo.innerText = "Proposta Expirada";
-            if (msg) msg.innerText = "Este documento técnico teve seu prazo de validade encerrado. Os valores e condições precisam ser reavaliados pelo setor de engenharia.";
+            if (titulo) titulo.innerText = "Vigência Encerrada";
+            if (msg) msg.innerText = "Esta proposta técnica possui um prazo de validade para garantir as condições comerciais e a disponibilidade dos equipamentos. O período de vigência expirou e os valores precisam ser atualizados pela engenharia.";
             if (icone) icone.className = "fas fa-hourglass-end";
         }
         
