@@ -135,7 +135,7 @@ body {
 }
 
 .view-header p {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 400;
     color: var(--texto);
     margin: 4px 0 0 0;
@@ -154,7 +154,7 @@ body {
     color: var(--primaria);
     padding: 4px 12px;
     border-radius: 6px;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -186,7 +186,7 @@ body {
 }
 
 .dossie-bloco label {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     color: var(--detalhe);
@@ -202,7 +202,7 @@ body {
 }
 
 .dossie-bloco .sub-valor {
-    font-size: 1rem;
+    font-size: 1.1rem;
     opacity: 0.7;
     margin-top: 2px;
 }
@@ -272,7 +272,7 @@ body {
     align-items: center;
     gap: 8px;
     color: var(--detalhe);
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -322,7 +322,7 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 900;
     letter-spacing: 2px;
     color: var(--detalhe);
@@ -366,7 +366,7 @@ body {
 
 .cert-label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: var(--detalhe);
     letter-spacing: 3px;
@@ -383,7 +383,7 @@ body {
 }
 
 .cert-crea {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #64748b;
     margin-top: 5px;
@@ -437,9 +437,9 @@ body {
 }
 
 .cronograma-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-.cronograma-label { font-size: 0.9rem; font-weight: 800; color: var(--detalhe); text-transform: uppercase; letter-spacing: 0.5px; }
+.cronograma-label { font-size: 1.05rem; font-weight: 800; color: var(--detalhe); text-transform: uppercase; letter-spacing: 0.5px; }
 .cronograma-desc { font-size: 0.85rem; font-weight: 700; color: var(--primaria); }
-.cronograma-prazo { font-size: 0.9rem; color: #94a3b8; font-weight: 500; }
+.cronograma-prazo { font-size: 1rem; color: #94a3b8; font-weight: 500; }
 
 .cronograma-valor-box { 
     font-size: 1.05rem; 
@@ -459,7 +459,7 @@ body {
 }
 
 .assinatura-crea {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: var(--detalhe);
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -524,7 +524,7 @@ body {
 }
 
 .campo-info label {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     text-transform: uppercase;
     letter-spacing: 1.2px;
     color: var(--detalhe);
@@ -533,7 +533,7 @@ body {
 
 .campo-info span {
     font-weight: 500;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     color: var(--texto);
     display: flex;
     align-items: center;
@@ -544,7 +544,7 @@ body {
 }
 
 .campo-info small {
-    font-size: 1rem;
+    font-size: 1.15rem;
     color: var(--detalhe);
     font-weight: 600;
     margin-top: 4px;
@@ -568,14 +568,14 @@ body {
     align-items: center;
     gap: 10px;
     color: var(--detalhe);
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .hibrido-item span {
-    font-size: 0.7rem !important; /* Elevado para legibilidade */
+    font-size: 1.05rem !important; /* Elevado para legibilidade */
     font-weight: 800 !important;
     display: inline !important; /* Impede que o span ocupe 100% da largura */
     width: auto !important;
@@ -588,7 +588,7 @@ body {
 }
 
 .view-footer-msg {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     color: #64748b;
     line-height: 1.5;
     font-style: italic;
@@ -638,7 +638,7 @@ body {
     display: inline-block;
     background: var(--detalhe);
     color: white;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     padding: 2px 6px;
     border-radius: 3px;
     font-weight: 800;
@@ -815,7 +815,7 @@ body {
 }
 
 .card-opcao p { 
-    font-size: 0.95rem; 
+    font-size: 1.1rem; 
     line-height: 1.3; 
     color: #475569; 
     margin: 5px 0 8px 0; 
@@ -836,7 +836,7 @@ body {
     transform: translate(-50%, -50%);
     background: var(--detalhe);
     color: white;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     padding: 4px 12px;
     border-radius: 50px;
     font-weight: 800;
@@ -855,7 +855,7 @@ body {
     list-style: none;
     padding: 0;
     margin: 10px 0 0 0;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: #64748b;
     text-align: left;
 }
@@ -882,7 +882,7 @@ body {
     color: white;
     padding: 8px 15px;
     border-radius: 50px;
-    font-size: 0.85rem;
+    font-size: 1.15rem;
     font-weight: 800;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     z-index: 999;
@@ -933,7 +933,7 @@ body {
 }
 
 .logo-texto .subtitulo {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     letter-spacing: 3px;
     font-weight: 400;
     color: var(--detalhe);
@@ -982,7 +982,7 @@ body {
     padding: 15px;
     background: rgba(32, 58, 67, 0.05);
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     line-height: 1.5;
     color: #475569;
 }
@@ -1088,7 +1088,7 @@ body {
 }
 
 .detail-label {
-    font-size: 0.85rem !important;
+    font-size: 1.05rem !important;
     color: #94a3b8;
     font-weight: 800;
     text-transform: uppercase;
@@ -1106,7 +1106,7 @@ body {
 }
 
 .detail-value {
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
     color: var(--primaria);
     font-weight: 700;
     text-transform: uppercase;
@@ -1170,7 +1170,7 @@ body {
     border-radius: 6px;
     padding: 6px 10px;
     background: rgba(var(--detalhe), 0.05);
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 800;
     cursor: pointer;
     margin-left: auto;
@@ -1195,7 +1195,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.95rem; 
+    font-size: 1.1rem; 
     
     font-weight: 800;
     text-transform: uppercase;
