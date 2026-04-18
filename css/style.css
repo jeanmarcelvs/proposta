@@ -114,8 +114,8 @@ body {
 
 /* Espaçamento para o conteúdo não ficar escondido */
 #view-container {
-    padding-top: 90px;
-    padding-bottom: 90px;
+    padding-top: 85px;
+    padding-bottom: 120px; /* Espaço para o botão flutuante do zap */
     min-height: 100vh;
     width: 95%;
     max-width: 800px;
@@ -127,7 +127,7 @@ body {
     font-size: 1.4rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 12px; 
+    margin-bottom: 8px; 
     text-transform: none; 
     border-bottom: 2px solid var(--detalhe);
     padding-bottom: 5px;
@@ -135,10 +135,10 @@ body {
 }
 
 .view-header p {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 400;
     color: var(--texto);
-    margin: 4px 0 0 0;
+    margin: 2px 0 0 0;
     padding-left: 18px;
     text-transform: none; /* Descrição tradicional */
     opacity: 0.9;
@@ -172,10 +172,10 @@ body {
 .apresentacao-dossie {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 12px;
     padding: 10px 0 25px 18px;
     position: relative;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 
 .dossie-bloco {
@@ -302,15 +302,15 @@ body {
 }
 /* Certificação Técnica Ultra-Sofisticada */
 .certification-section {
-    margin-top: 60px;
-    padding-bottom: 40px;
+    margin-top: 30px;
+    padding-bottom: 20px;
 }
 
 .certification-card {
     background: #fff;
     border: 1px solid var(--borda-suave);
     border-radius: 15px;
-    padding: 40px 30px;
+    padding: 25px 20px;
     position: relative;
     box-shadow: 0 20px 40px rgba(0,0,0,0.04);
     overflow: hidden;
@@ -349,7 +349,6 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    animation: rotateSeal 20s linear infinite;
     opacity: 0.3;
 }
 
@@ -440,11 +439,32 @@ body {
 .cronograma-prazo { font-size: 1rem; color: #94a3b8; font-weight: 500; }
 
 .cronograma-valor-box { 
-    font-size: 1.05rem; 
+    font-size: 1.15rem; 
     font-weight: 800; 
     color: var(--primaria); 
     text-align: right;
     margin-left: 10px;
+}
+
+/* Botão de Vídeo Minimalista */
+.btn-video-mini {
+    background: none;
+    border: none;
+    color: var(--detalhe);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transicao);
+    margin-left: auto; /* Joga para a direita no flex */
+    opacity: 0.8;
+}
+
+.btn-video-mini:hover {
+    transform: scale(1.15);
+    opacity: 1;
 }
 
 .assinatura-nome {
@@ -471,7 +491,7 @@ body {
 .view-content {
     display: flex;
     flex-direction: column;
-    gap: 20px; 
+    gap: 12px; 
 }
 
 .campo-info {
@@ -604,7 +624,7 @@ body {
 
 .investimento-box {
     text-align: center;
-    padding: 30px 20px; /* Reduzido para melhor aproveitamento vertical */
+    padding: 20px 15px;
     background: var(--bg-card);
     border: 1px solid var(--borda-suave); /* Borda sutil */
     border-radius: 2px; /* Cantos levemente arredondados */
@@ -625,9 +645,9 @@ body {
     align-items: center;
     justify-content: center;
     gap: 12px; /* Espaçamento entre elementos */
-    font-size: 2rem; /* Tamanho da fonte do valor */
-    font-weight: 600; /* Peso da fonte */
-    color: var(--texto); /* Cor do texto */
+    font-size: 2.2rem;
+    font-weight: 800; /* Mais negrito no valor principal */
+    color: var(--primaria);
     margin: 20px 0; /* Margem vertical */
     letter-spacing: -0.05em; /* Espaçamento entre letras */
 }
@@ -649,7 +669,7 @@ body {
 .grid-dados {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espaçamento entre os cards de informação */
+    gap: 10px;
     width: 100%;
 }
 
@@ -753,6 +773,11 @@ body {
     font-weight: 600;
     font-size: 0.75rem;
     opacity: 0.7;
+}
+
+.icon-descontinuado {
+    color: #475569; /* Tom Grafite Sóbrio */
+    margin-right: 6px;
 }
 
 .card-opcao.disabled h4,
@@ -1031,18 +1056,18 @@ body {
 .product-description {
     display: block !important;
     width: 100% !important;
-    font-weight: 700 !important; /* Descrição do modelo em Negrito */
+    font-weight: 800 !important; /* Destaque máximo na descrição */
     color: var(--primaria) !important;
-    font-size: 0.95rem !important;
+    font-size: 1.05rem !important;
     margin-top: 2px;
 }
 
 .product-qty {
     display: inline-block !important;
     width: auto !important;
-    font-weight: 400 !important; 
-    color: var(--texto);
-    opacity: 0.7;
+    font-weight: 900 !important; /* Quantidade em destaque total */
+    color: var(--detalhe);
+    opacity: 1;
     margin-right: 0px; /* Removida a margem para ficarem colados */
 }
 
@@ -1114,29 +1139,43 @@ body {
 
 .video-content-box {
     position: relative;
-    width: 90%;
-    max-width: 500px;
+    width: 95%;
+    max-width: 800px; /* Aumentado para melhor visualização em desktops */
+    max-height: 80vh; /* Garante que o vídeo não suma em telas baixas */
     border-radius: 12px;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #video-player {
     width: 100%;
-    border-radius: 8px;
+    height: auto;
+    max-height: 80vh;
+    border-radius: 10px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     background: #000;
+    object-fit: contain; /* Garante que o vídeo caiba sem cortes */
 }
 
 .btn-close-video {
     position: absolute;
-    top: -45px;
-    right: 0;
+    top: -50px;
+    right: 10px;
     background: none;
     border: none;
     color: white;
-    font-size: 2.5rem;
+    font-size: 3rem;
     cursor: pointer;
     line-height: 1;
+    z-index: 3100;
+    transition: var(--transicao);
+}
+
+.btn-close-video:hover {
+    transform: scale(1.1);
+    color: var(--detalhe);
 }
 
 .btn-video {

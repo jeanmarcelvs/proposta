@@ -1,12 +1,11 @@
 <div class="view-content animate-in">
     <div class="view-header">
         <h2>Financeiro</h2>
-        <p>Investimento, cronograma de pagamentos e análise de viabilidade econômica.</p>
     </div>
 
     <!-- Bloco de Destaque do Investimento -->
     <div class="investimento-box">
-        <label><i class="fas fa-wallet"></i> Valor do Investimento <span class="tag-a-vista">À vista</span></label>
+        <label>Valor do Investimento <span class="tag-a-vista">À vista</span></label>
         <div class="valor-principal">
             <span data-field="valor_total">---</span>
         </div>
@@ -33,25 +32,29 @@
         </div>
     </div>
 
-    <div class="view-header" style="margin-top: 25px;">
-        <h3>Cronograma Profissional de Pagamento</h3>
+    <p style="font-size: 0.75rem; color: #64748b; margin-top: 10px; font-weight: 400; line-height: 1.3; padding: 0 5px;">
+        O retorno do investimento e a economia total são calculados considerando uma inflação energética de <strong><span data-field="inflacao_energetica"></span>% ao ano</strong>.
+    </p>
+
+    <div class="view-header" style="margin-top: 15px;">
+        <h3>À Vista Flexibilizado</h3>
     </div>
 
     <div class="cronograma-list">
         <div class="cronograma-step">
             <div class="cronograma-info">
                 <span class="cronograma-label">Ato da Contratação</span>
-                <span class="cronograma-desc">Aquisição de Equipamentos (Faturamento Direto)</span>
+                <span class="cronograma-desc">Elaboração de Projeto e Trâmites (Equatorial)</span>
             </div>
-            <div class="cronograma-valor-box" data-field="valorPgtoKit">---</div>
+            <div class="cronograma-valor-box" data-field="valorPgtoEquatorial">---</div>
         </div>
 
         <div class="cronograma-step">
             <div class="cronograma-info">
-                <span class="cronograma-label">Protocolo de Engenharia</span>
-                <span class="cronograma-desc">Após Parecer de Acesso (50% do Serviço)</span>
+                <span class="cronograma-label">Distribuidor</span>
+                <span class="cronograma-desc">Aquisição de Equipamentos (Faturamento Direto)</span>
             </div>
-            <div class="cronograma-valor-box" data-field="valorPgtoEquatorial">---</div>
+            <div class="cronograma-valor-box" data-field="valorPgtoKit">---</div>
         </div>
 
         <div class="cronograma-step">
@@ -71,12 +74,65 @@
         </div>
     </div>
 
+    <div class="view-header" style="margin-top: 15px;">
+        <h3>Financiamento Solar</h3>
+    </div>
+    <div class="grid-dados">
+        <div class="campo-info">
+            <div class="campo-header">
+                <i class="fas fa-landmark" style="color: var(--detalhe); font-size: 0.8rem;"></i>
+                <label>Parcelamento</label>
+            </div>
+            <span style="font-size: 1.1rem; font-weight: 600;">Em até 96 meses</span>
+        </div>
+        <div class="campo-info">
+            <div class="campo-header">
+                <i class="fas fa-calendar-check" style="color: var(--detalhe); font-size: 0.8rem;"></i>
+                <label>Carência</label>
+            </div>
+            <span style="font-size: 1.1rem; font-weight: 600;">Até 120 dias para o 1º pagamento</span>
+        </div>
+    </div>
+    <p style="font-size: 0.75rem; color: #64748b; margin-top: 8px; font-weight: 400; line-height: 1.3; padding: 0 5px;">
+        * O financiamento solar está sujeito a análise e aprovação de crédito junto às instituições financeiras parceiras.
+    </p>
+
+    <div class="view-header" style="margin-top: 15px;">
+        <h3>Cartão de Crédito</h3>
+    </div>
+    <div class="grid-dados">
+        <div class="campo-info">
+            <div class="campo-header">
+                <i class="fas fa-credit-card" style="color: var(--detalhe); font-size: 0.8rem;"></i>
+                <label>Parcelamento</label>
+            </div>
+            <span style="font-size: 1.1rem; font-weight: 600;">Em até 12x (Consulte taxas)</span>
+        </div>
+    </div>
+
+    <div class="certification-section">
+        <div class="certification-card">
+            <div class="cert-body">
+                <div class="cert-seal">
+                    <i class="fas fa-stamp"></i>
+                    <svg viewBox="0 0 100 100">
+                        <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent"/>
+                    </svg>
+                </div>
+                <div class="cert-info">
+                    <span class="cert-label">Engenheiro Responsável</span>
+                    <h3 class="cert-main-title">Jean Marcel</h3>
+                    <span class="cert-crea">CREA-AL: 02148596-1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/5582999469016" class="btn-whatsapp" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-whatsapp"></i> Iniciar Implantação do Projeto
+    </a>
+
     <div class="notas-tecnicas-financeiras" style="font-size: 0.75rem; color: #64748b; line-height: 1.6;">
-        <p>
-            <i class="fas fa-calculator" style="color: var(--detalhe); margin-right: 5px;"></i>
-            O retorno do investimento e a economia total são calculados considerando uma 
-            <strong>inflação energética de <span data-field="inflacao_energetica"></span>% ao ano</strong>.
-        </p>
         <p style="margin-bottom: 10px;">
             <i class="fas fa-info-circle" style="color: var(--detalhe); margin-right: 5px;"></i>
             Este orçamento técnico e comercial é válido <strong>até <span data-field="data_validade"></span></strong> (ou enquanto durarem os estoques). 
@@ -87,6 +143,6 @@
     
 
     <div class="view-footer-msg">
-        * Condições comerciais sujeitas a alterações devido à volatilidade de mercado.
+        * Proposta sujeita a análise técnica local para validação do projeto e readequações necessárias.
     </div>
 </div>

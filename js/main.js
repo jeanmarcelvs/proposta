@@ -8,7 +8,7 @@ const app = {
     propostaAtiva: 'standard', 
     etapaAtual: 0,
     dados: null,
-    etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro', 'total']
+    etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro']
 };
 
 // Expõe para o escopo global para o onclick do HTML
@@ -156,6 +156,7 @@ function preencherDadosView() {
     const dadosConsolidados = {
         clienteNome: app.dados.clienteNome,
         id: app.dados.id,
+        localidade: app.dados.localidade || `${app.dados.premissasSnapshot?.cidade || app.dados.cidade || '---'} / ${(app.dados.premissasSnapshot?.uf || app.dados.uf || '---').toUpperCase()}`,
         potenciaKwp: app.dados.potenciaKwp,
         geracaoMensal: app.dados.geracaoMensal,
         geracaoExpansao: app.dados.geracaoExpansao,

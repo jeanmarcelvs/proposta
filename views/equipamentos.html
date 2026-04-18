@@ -1,25 +1,23 @@
 <div class="view-content animate-in">
     <div class="view-header">
         <h2>Equipamentos</h2>
-        <p>Descrição técnica dos módulos, inversores e sistemas de proteção selecionados.</p>
     </div>
 
     <!-- Card de Módulos -->
     <div class="campo-info equipamento-card">
         <div class="campo-header">
             <i class="fas fa-solar-panel" style="color: var(--detalhe);"></i>
-            <label>Gerador Fotovoltaico (Módulos)</label>
+            <label>Painel Solar</label>
+            <button class="btn-video-mini" onclick="window.app.playVideo('assets/painel.mp4')" title="Ver Detalhes">
+                <i class="fas fa-play-circle"></i>
+            </button>
         </div>
         <span class="product-description" data-field="modulo_modelo">---</span>
         
         <div class="product-details-grid">
             <div class="detail-item">
-                <div class="detail-label"><i class="fas fa-industry"></i> Marca</div>
-                <div class="detail-value" data-field="modulo_marca">---</div>
-            </div>
-            <div class="detail-item">
                 <div class="detail-label"><i class="fas fa-shield-alt"></i> Garantia</div>
-                <div class="detail-value" data-field="modulo_garantia">---</div>
+                <div class="detail-value">30 anos</div>
             </div>
         </div>
     </div>
@@ -28,23 +26,26 @@
     <div class="campo-info equipamento-card">
         <div class="campo-header">
             <i class="fas fa-microchip" style="color: var(--detalhe);"></i>
-            <label>Unidade de Processamento (Inversor)</label>
+            <label>Inversor</label>
+            <button class="btn-video-mini" onclick="window.app.playVideo('assets/inversor.mp4')" title="Ver Detalhes">
+                <i class="fas fa-play-circle"></i>
+            </button>
         </div>
         <span class="product-description" data-field="inversor_modelo">---</span>
 
         <div class="product-details-grid">
             <div class="detail-item">
-                <div class="detail-label"><i class="fas fa-industry"></i> Marca</div>
-                <div class="detail-value" data-field="inversor_marca">---</div>
+                <div class="detail-label"><i class="fas fa-shield-alt"></i> Garantia</div>
+                <div class="detail-value">10 anos</div>
             </div>
             <div class="detail-item">
-                <div class="detail-label"><i class="fas fa-wifi"></i> Gestão</div>
-                <div class="detail-value" data-field="inversor_monitorizacao">---</div>
+                <div class="detail-label"><i class="fas fa-gear"></i> Tecnologia</div>
+                <div class="detail-value">Híbrido</div>
             </div>
         </div>
     </div>
 
     <div class="view-footer-msg">
-        * Equipamentos com certificação Tier 1 e suporte técnico especializado.
+        * Equipamentos com certificação compulsória INMETRO e em conformidade com as normas NBR vigentes.
     </div>
 </div>

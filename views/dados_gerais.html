@@ -1,9 +1,4 @@
 <div class="view-content animate-in">
-    <div class="view-header">
-        <h2>Dados Gerais</h2>
-        <p>Informações fundamentais sobre a unidade consumidora e o titular do projeto.</p>
-    </div>
-
     <!-- Estrutura de Dossiê para Identidade -->
     <div class="apresentacao-dossie">
         <div class="dossie-bloco">
@@ -11,20 +6,16 @@
             <span class="valor" data-field="cliente_nome">---</span>
         </div>
         <div class="dossie-bloco">
-            <label><i class="fas fa-fingerprint"></i> Identificação Técnica</label>
-            <span class="valor" style="font-family: monospace; font-size: 1rem;" data-field="id">---</span>
+            <label><i class="fas fa-location-dot"></i> Cidade e Estado</label>
+            <span class="valor" data-field="localidade">---</span>
         </div>
     </div>
 
-    <div class="grid-dados">
-        <div class="campo-info">
-            <div class="campo-header">
-                <i class="fas fa-bolt" style="color: var(--detalhe);"></i>
-                <label>Capacidade Instalada</label>
-            </div>
-            <span data-field="potencia_kwp">---</span>
-        </div>
+    <div class="view-header">
+        <h2>Solução</h2>
+    </div>
 
+    <div class="grid-dados">
         <div class="campo-info">
             <div class="campo-header">
                 <i class="fas fa-chart-line" style="color: var(--detalhe);"></i>
@@ -35,11 +26,25 @@
 
         <div class="campo-info">
             <div class="campo-header">
-                <i id="icone-telhado" class="fas fa-house-chimney" style="color: var(--detalhe);"></i>
-                <label>Padrão de Fixação</label>
+                <i class="fas fa-receipt" style="color: var(--detalhe);"></i>
+                <label>Faturas de até</label>
             </div>
-            <span data-field="tipo_telhado">---</span>
+            <span data-field="fatura_atendida">---</span>
         </div>
+    </div>
+
+    <!-- Recuperação da Capacidade de Expansão -->
+    <div class="info-expansao-texto" style="margin-top: 15px; border-top: 1px dashed var(--borda-suave); padding-top: 15px;">
+        <label style="color: var(--detalhe); font-weight: 700; font-size: 1.05rem;">
+            <i class="fas fa-arrow-up-right-dots"></i> Capacidade de Expansão Futura
+        </label>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+            <span data-field="geracao_expansao" style="font-weight: 700; font-size: 1.25rem; color: var(--primaria);">---</span>
+            <small data-field="qtd_modulos_expansao" style="color: var(--detalhe); font-weight: 800; font-size: 1rem;"></small>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px; line-height: 1.4;">
+            Potencial máximo de geração considerando a reserva técnica do inversor selecionado.
+        </p>
     </div>
 
     <div class="validade-nota" style="margin-top: 20px;">
