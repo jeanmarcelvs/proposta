@@ -859,21 +859,6 @@ body {
     text-align: left;
 }
 
-.premium-slot {
-    max-width: 800px;
-    margin: 85px auto 0 auto;
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.4s ease, margin-bottom 0.4s ease;
-    overflow: hidden;
-    width: 95%;
-}
-
-.premium-slot.active {
-    grid-template-rows: 1fr;
-    margin-bottom: 15px;
-}
-
 .premium-features li {
     margin-bottom: 3px;
     display: flex;
@@ -884,21 +869,6 @@ body {
 .premium-features li i {
     color: var(--detalhe);
     font-size: 0.7rem;
-}
-
-
-.floating-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--detalhe);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
-    animation: slideInRight 0.5s ease-out forwards;
 }
 
 /* LOGO ESTRUTURAL CSS */
@@ -1012,12 +982,6 @@ body {
     .card-opcao p { font-size: 0.65rem; }
     .premium-features { font-size: 0.6rem; }
 }
-
-@keyframes slideInRight {
-    from { transform: translateX(30px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
 /* Ajuste específico para o Modal (Fundo Branco) */
 
 .modal-logo-wrapper {

@@ -1,62 +1,50 @@
 <div class="view-content animate-in">
     <div class="view-header">
-        <h2>EQUIPAMENTOS FOTOVOLTAICOS</h2>
+        <h2>Engenharia de Materiais</h2>
+        <p>Componentes de alta performance selecionados para máxima eficiência.</p>
     </div>
 
-    <div class="grid-dados">
-        <div class="campo-info equipamento-card">
-            <div class="campo-header">
-                <i class="fas fa-solar-panel" style="color: var(--detalhe); font-size: 0.8rem;"></i>
-                <label>Geração de Energia</label>
-                <button class="btn-video" onclick="window.app.playVideo('./assets/painel.mp4')">
-                    <i class="fas fa-play-circle"></i>
-                </button>
-            </div>
-            <span class="product-description" data-field="modulo_modelo"></span>
-            <div class="product-details-grid">
-                <div class="detail-item">
-                    <span class="detail-label"><i class="fas fa-shield-alt"></i> Garantia Fabricação</span>
-                    <span class="detail-value">15 Anos</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label"><i class="fas fa-chart-line"></i> Garantia Performance</span>
-                    <span class="detail-value">30 Anos</span>
-                </div>
-                
-            </div>
+    <!-- Card de Módulos -->
+    <div class="campo-info equipamento-card">
+        <div class="campo-header">
+            <i class="fas fa-solar-panel" style="color: var(--detalhe);"></i>
+            <label>Gerador Fotovoltaico (Módulos)</label>
         </div>
-
-        <div class="campo-info equipamento-card">
-            <div class="campo-header">
-                <i class="fas fa-microchip" style="color: var(--detalhe); font-size: 0.8rem;"></i>
-                <label>Conversão e Controle</label>
-                <button class="btn-video" onclick="window.app.playVideo('./assets/inversor.mp4')">
-                    <i class="fas fa-play-circle"></i>
-                </button>
+        <span class="product-description" data-field="modulo_modelo">---</span>
+        
+        <div class="product-details-grid">
+            <div class="detail-item">
+                <div class="detail-label"><i class="fas fa-industry"></i> Marca</div>
+                <div class="detail-value" data-field="modulo_marca">---</div>
             </div>
-            <span class="product-description" data-field="inversor_modelo"></span>
-            <div class="product-details-grid">
-                <div class="detail-item">
-                    <span class="detail-label"><i class="fas fa-shield-alt"></i> Garantia</span>
-                    <span class="detail-value">10 Anos</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label"><i class="fas fa-mobile-alt"></i> Gestão</span>
-                    <span class="detail-value">Wi-Fi App</span>
-                </div>
-            </div>
-            <div class="container-hibrido">
-                <div class="hibrido-item">
-                    <i class="fas fa-microchip"></i> <span>Tecnologia Híbrida</span>
-                </div>
-                <div class="hibrido-item">
-                    <i class="fas fa-battery-three-quarters"></i> <span>Conexão para Bateria Solar</span>
-                </div>
+            <div class="detail-item">
+                <div class="detail-label"><i class="fas fa-shield-alt"></i> Garantia</div>
+                <div class="detail-value" data-field="modulo_garantia">---</div>
             </div>
         </div>
     </div>
-    
-    <div class="view-footer-msg" style="margin-top: 25px;">
-        <i class="fas fa-shield-alt"></i> Todos os equipamentos selecionados são homologados pelo INMETRO e possuem assistência técnica nacional ativa, garantindo a tranquilidade do seu investimento.
+
+    <!-- Card de Inversor -->
+    <div class="campo-info equipamento-card">
+        <div class="campo-header">
+            <i class="fas fa-microchip" style="color: var(--detalhe);"></i>
+            <label>Unidade de Processamento (Inversor)</label>
+        </div>
+        <span class="product-description" data-field="inversor_modelo">---</span>
+
+        <div class="product-details-grid">
+            <div class="detail-item">
+                <div class="detail-label"><i class="fas fa-industry"></i> Marca</div>
+                <div class="detail-value" data-field="inversor_marca">---</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label"><i class="fas fa-wifi"></i> Gestão</div>
+                <div class="detail-value" data-field="inversor_monitorizacao">---</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="view-footer-msg">
+        * Equipamentos com certificação Tier 1 e suporte técnico especializado.
     </div>
 </div>

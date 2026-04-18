@@ -1,46 +1,48 @@
 <div class="view-content animate-in">
     <div class="view-header">
-        <h2>SISTEMA FOTOVOLTAICO</h2>
+        <h2>Memorial Descritivo</h2>
+        <p>Visão geral do sistema e identificação do titular.</p>
     </div>
 
+    <!-- Estrutura de Dossiê para Identidade -->
     <div class="apresentacao-dossie">
         <div class="dossie-bloco">
-            <label>Proprietário do Projeto</label>
-            <div class="valor" data-field="cliente_nome"></div>
-            <div class="sub-valor"><span data-field="cidade"></span> / <span data-field="uf"></span></div>
+            <label><i class="fas fa-user-tie"></i> Titular do Projeto</label>
+            <span class="valor" data-field="cliente_nome">---</span>
+        </div>
+        <div class="dossie-bloco">
+            <label><i class="fas fa-fingerprint"></i> Identificação Técnica</label>
+            <span class="valor" style="font-family: monospace; font-size: 1rem;" data-field="id">---</span>
         </div>
     </div>
 
     <div class="grid-dados">
         <div class="campo-info">
             <div class="campo-header">
-                <i class="fas fa-chart-area" style="color: var(--detalhe); font-size: 0.8rem;"></i>
-                <label>Performance Mensal Esperada</label>
+                <i class="fas fa-bolt" style="color: var(--detalhe);"></i>
+                <label>Capacidade Instalada</label>
             </div>
-            <span data-field="geracao_mensal"></span>
+            <span data-field="potencia_kwp">---</span>
         </div>
 
         <div class="campo-info">
             <div class="campo-header">
-                <i class="fas fa-receipt" style="color: var(--detalhe); font-size: 0.8rem;"></i>
-                <label>Valor Máximo de Fatura Atendida</label>
+                <i class="fas fa-chart-line" style="color: var(--detalhe);"></i>
+                <label>Geração Mensal Estimada</label>
             </div>
-            <span data-field="fatura_atendida"></span>
+            <span data-field="geracao_mensal">---</span>
+        </div>
+
+        <div class="campo-info">
+            <div class="campo-header">
+                <i id="icone-telhado" class="fas fa-house-chimney" style="color: var(--detalhe);"></i>
+                <label>Padrão de Fixação</label>
+            </div>
+            <span data-field="tipo_telhado">---</span>
         </div>
     </div>
 
-    <div class="info-expansao-texto">
-        <div class="campo-header">
-            <i class="fas fa-arrow-trend-up" style="color: var(--detalhe); font-size: 0.8rem;"></i>
-            <label>Capacidade de Expansão</label>
-        </div>
-        <div style="display: flex; flex-direction: column; padding-left: 28px; margin-top: 4px;">
-            <span data-field="geracao_expansao" style="font-weight: 700; font-size: 1.1rem; color: var(--texto);"></span>
-            <span data-field="qtd_modulos_expansao" style="font-size: 0.75rem; color: var(--detalhe); font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px;"></span>
-        </div>
-    </div>
-
-    <div class="view-footer-msg">
-        <i class="fas fa-info-circle"></i> Os valores de performance são baseados no histórico climático da região e simulações de irradiância local para o seu imóvel.
+    <div class="validade-nota" style="margin-top: 20px;">
+        <i class="fas fa-microchip"></i> <strong>Nota de Engenharia:</strong> Dimensionamento otimizado com base na irradiação solar local e normas NBR 5410 / 16274.
     </div>
 </div>

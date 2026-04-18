@@ -6,11 +6,11 @@
 
     <!-- Bloco de Destaque do Investimento -->
     <div class="investimento-box">
-        <label>Valor do Investimento <span class="tag-a-vista">À vista</span></label>
+        <label><i class="fas fa-wallet"></i> Valor do Investimento <span class="tag-a-vista">À vista</span></label>
         <div class="valor-principal">
             <span data-field="valor_total">---</span>
         </div>
-        <p class="nota-fiscal" style="letter-spacing: 1px; font-weight: 600; margin-top: 5px;">
+        <p class="nota-fiscal" style="letter-spacing: 1.5px; font-weight: 700; margin-top: 5px; color: var(--detalhe);">
             <i class="fas fa-award"></i> SOLUÇÃO DE ENGENHARIA INTEGRADA
         </p>
     </div>
@@ -21,7 +21,7 @@
                 <i class="fas fa-chart-line" style="color: var(--detalhe); font-size: 0.8rem;"></i>
                 <label>Retorno do Investimento</label>
             </div>
-            <span data-field="payback" style="font-size: 0.85rem; font-weight: 400;"></span>
+            <span data-field="payback" style="font-size: 1rem; font-weight: 500; display: block; line-height: 1.4;"></span>
         </div>
         
         <div class="campo-info">
@@ -31,10 +31,37 @@
             </div>
             <span data-field="economia_total" style="font-size: 1rem; font-weight: 700;"></span>
         </div>
-
-        
     </div>
 
+    <div class="view-header" style="margin-top: 25px;">
+        <h3>Cronograma Profissional de Pagamento</h3>
+    </div>
+
+    <div class="cronograma-list">
+        <div class="cronograma-step">
+            <div class="cronograma-info">
+                <span class="cronograma-label">Ato da Contratação</span>
+                <span class="cronograma-desc">Pagamento dos Equipamentos (Faturamento Direto)</span>
+            </div>
+            <div class="cronograma-valor-box" data-field="valorPgtoKit">---</div>
+        </div>
+
+        <div class="cronograma-step">
+            <div class="cronograma-info">
+                <span class="cronograma-label">Início da Mobilização</span>
+                <span class="cronograma-desc">Mão de obra e materiais de instalação</span>
+            </div>
+            <div class="cronograma-valor-box" data-field="valorPgtoInicio">---</div>
+        </div>
+
+        <div class="cronograma-step">
+            <div class="cronograma-info">
+                <span class="cronograma-label">Entrega Técnica</span>
+                <span class="cronograma-desc">Comissionamento e acesso à rede</span>
+            </div>
+            <div class="cronograma-valor-box" data-field="valorPgtoConclusao">---</div>
+        </div>
+    </div>
 
     <div class="notas-tecnicas-financeiras" style="font-size: 0.75rem; color: #64748b; line-height: 1.6;">
         <p>

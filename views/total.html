@@ -1,116 +1,42 @@
 <div class="view-content animate-in">
     <div class="view-header">
-        <h2>FORMAS DE PAGAMENTO</h2>
-        <p>Selecione a modalidade que melhor se adapta ao seu planejamento financeiro.</p>
+        <h2>Certificação e Encerramento</h2>
+        <p>Garantia de responsabilidade técnica e próximos passos.</p>
     </div>
 
-    <div class="opcoes-pagamento" style="display: flex; flex-direction: column; gap: 15px;">
-        <!-- À Vista -->
-        <div class="pagamento-card" style="text-align: left; padding: 20px; background: var(--bg-card); border: 1px solid var(--borda-suave); border-radius: 4px;">
-            <div style="font-weight: 800; font-size: 0.65rem; color: var(--detalhe); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-hand-holding-usd"></i> INVESTIMENTO À VISTA
-            </div>
-            <div style="margin: 10px 0;"><span style="font-size: 1.1rem; color: var(--primaria); font-weight: 700;" data-field="valor_total">---</span></div>
-            <div style="margin-top: 10px; border-top: 1px dashed var(--borda-suave); padding-top: 10px;">
-                <label style="font-size: 0.55rem; color: var(--detalhe); text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px;">Cronograma</label>
-                <div class="cronograma-list">
-                    <!-- Passo 1 -->
-                    <div class="cronograma-step">
-                        <div class="cronograma-info">
-                            <span class="cronograma-label">Engenharia</span>
-                            <span class="cronograma-desc">Projeto Equatorial</span>
-                            <span class="cronograma-prazo">Ato do fechamento</span>
-                        </div>
-                        <div class="cronograma-valor-box" data-field="valor_pgto_equatorial"></div>
-                    </div>
-                    <!-- Passo 2 -->
-                    <div class="cronograma-step">
-                        <div class="cronograma-info">
-                            <span class="cronograma-label">Distribuidor</span>
-                            <span class="cronograma-desc">Equipamentos Fotovoltaicos</span>
-                            <span class="cronograma-prazo">Após aprovação (D+15)</span>
-                        </div>
-                        <div class="cronograma-valor-box" data-field="valor_pgto_kit"></div>
-                    </div>
-                    <!-- Passo 3 -->
-                    <div class="cronograma-step">
-                        <div class="cronograma-info">
-                            <span class="cronograma-label">Execução Técnica</span>
-                            <span class="cronograma-desc">Início da Obra</span>
-                            <span class="cronograma-prazo">Na entrega dos Equip. (D+45)</span>
-                        </div>
-                        <div class="cronograma-valor-box" data-field="valor_pgto_inicio"></div>
-                    </div>
-                    <!-- Passo 4 -->
-                    <div class="cronograma-step">
-                        <div class="cronograma-info">
-                            <span class="cronograma-label">Finalização</span>
-                            <span class="cronograma-desc">Conclusão da Obra</span>
-                            <span class="cronograma-prazo">(D+59)</span>
-                        </div>
-                        <div class="cronograma-valor-box" data-field="valor_pgto_conclusao"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cartão -->
-        <div class="pagamento-card" style="text-align: left; padding: 20px; background: var(--bg-card); border: 1px solid var(--borda-suave); border-radius: 4px;">
-            <div style="font-weight: 800; font-size: 0.65rem; color: var(--detalhe); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-credit-card"></i> CARTÃO DE CRÉDITO
-            </div>
-            <div style="margin-top: 8px; display: flex; flex-direction: column;">
-                <span style="font-size: 1.1rem; color: var(--primaria); font-weight: 700;">Em até 12 vezes</span>
-                <span style="font-size: 0.6rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-top: 2px;">* com incidência de juros</span>
-            </div>
-        </div>
-
-        <!-- Financiamento -->
-        <div class="pagamento-card" style="text-align: left; padding: 20px; background: var(--bg-card); border: 1px solid var(--borda-suave); border-radius: 4px;">
-            <div style="font-weight: 800; font-size: 0.65rem; color: var(--detalhe); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-landmark"></i> CRÉDITO SOLAR / BANCÁRIO
-            </div>
-            <div style="margin-top: 12px; display: flex; gap: 20px;">
-                <div>
-                    <span style="display: block; font-size: 0.55rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Prazo Máximo</span>
-                    <span style="font-size: 1.1rem; color: var(--primaria); font-weight: 700;">96 Meses</span>
-                </div>
-                <div style="border-left: 1px solid var(--borda-suave); padding-left: 20px;">
-                    <span style="display: block; font-size: 0.55rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Carência</span>
-                    <span style="font-size: 1.1rem; color: var(--primaria); font-weight: 700;">120 Dias</span>
-                </div>
-            </div>
-            <div style="margin-top: 8px; font-size: 0.6rem; color: #94a3b8; font-weight: 600; text-transform: uppercase;">* Sujeito à análise de crédito bancário</div>
-        </div>
-    </div>
-
-    <div class="validade-nota">
-        <i class="fas fa-info-circle" style="color: var(--detalhe); margin-right: 5px;"></i>
-        Este orçamento é válido <strong>até <span data-field="data_validade"></span></strong>. As condições apresentadas podem variar conforme oscilações tributárias, custos de importação e disponibilidade de estoque.
-    </div>
-
-    <!-- Seção de Certificação Técnica Superior -->
     <div class="certification-section">
         <div class="certification-card">
-            
-            
+            <div class="cert-badge">AUTENTICADO</div>
             <div class="cert-body">
                 <div class="cert-seal">
-                    <i class="fas fa-award"></i>
-                    <svg viewBox="0 0 100 100"><path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0 " /></svg>
+                    <i class="fas fa-stamp"></i>
+                    <svg viewBox="0 0 100 100">
+                        <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent"/>
+                        <text><textPath xlink:href="#circlePath">• ENGENHARIA CONSULTIVA • ALTA PERFORMANCE •</textPath></text>
+                    </svg>
                 </div>
-                
                 <div class="cert-info">
-                    <span class="cert-label">Responsável Técnico</span>
-                    <h3 class="cert-main-title">Engenheiro Eletricista</h3>
-                    <div class="cert-crea">REGISTRO PROFISSIONAL • CREA-AL 021480154-3</div>
+                    <span class="cert-label">Engenheiro Responsável</span>
+                    <h3 class="cert-main-title">Jean Marcel</h3>
+                    <span class="cert-crea">CREA-AL: 02148596-1</span>
                 </div>
             </div>
 
-            <a href="https://wa.me/5582999469016" target="_blank" class="btn-contract-ultra">
-                <span>EFETIVAR CONTRATAÇÃO</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
+            <div class="assinatura-final">
+                <div class="signature-header">
+                    <i class="fas fa-file-signature"></i> DOCUMENTO TÉCNICO
+                </div>
+                <div class="assinatura-nome">Jean Marcel</div>
+                <div class="assinatura-crea">Engenharia e Gestão Solar</div>
+            </div>
         </div>
+    </div>
+
+    <a href="https://wa.me/5582999469016" class="btn-whatsapp">
+        <i class="fab fa-whatsapp"></i> Iniciar Implantação do Projeto
+    </a>
+
+    <div class="view-footer-msg" style="text-align: center; margin-top: 15px;">
+        * Proposta sujeita a análise técnica local para validação estrutural.
     </div>
 </div>

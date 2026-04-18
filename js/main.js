@@ -386,23 +386,7 @@ function atualizarDinamicos(info) {
  * Gerencia o balão flutuante informativo
  */
 function atualizarInterfaceSelecao() {
-    const slot = document.getElementById('premium-badge-slot');
-    if (!slot) return;
-
-    if (app.propostaAtiva === 'premium') {
-        slot.classList.add('active');
-        slot.innerHTML = `
-        <div class="badge-wrapper">
-            <div class="floating-badge">
-                <i class="fas fa-crown"></i> Concepção Premium
-            </div>
-        </div>`;
-    } else {
-        slot.classList.remove('active');
-        setTimeout(() => { if (!slot.classList.contains('active')) slot.innerHTML = ''; }, 400);
-    }
-
-    // 2. Estado dos cards (se estiver na view de instalação)
+    // Estado dos cards (se estiver na view de instalação)
     const optStd = document.getElementById('opt-standard');
     const optPre = document.getElementById('opt-premium');
     if (optStd && optPre) {
