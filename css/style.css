@@ -491,7 +491,22 @@ body {
 .view-content {
     display: flex;
     flex-direction: column;
-    gap: 12px; 
+    gap: 12px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.view-content.exiting {
+    opacity: 0;
+    transform: translateY(-15px);
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+    animation: slideUpFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .campo-info {
@@ -606,10 +621,12 @@ body {
 }
 
 .view-footer-msg {
-    font-size: 1.25rem;
+    font-size: 0.75rem;
     color: #64748b;
-    line-height: 1.5;
-    font-style: italic;
+    line-height: 1.4;
+    margin-top: 15px;
+    font-weight: 400;
+    padding: 0 5px;
 }
 
 /* Cantos técnicos estilo Blueprint */
