@@ -194,7 +194,7 @@ body {
 
 .dossie-bloco .valor {
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--primaria);
     line-height: 1.2;
 }
