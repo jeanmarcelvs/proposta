@@ -24,14 +24,14 @@
 
 /* Tema Premium: Identidade de Alto Valor */
 .theme-premium {
-    --primaria: #1A202C; /* Azul escuro para contraste */
-    --secundaria: #2D3748; /* Azul escuro mais claro */
-    --detalhe: #C5A059;  /* Dourado Nobre */
-    --texto: #2D3748;    /* Texto escuro para fundo claro */
-    --cinza-fundo: #F9F7F2; /* Fundo creme/pérola */
+    --primaria: #0F172A; /* Midnight Slate - Mais profundo e moderno */
+    --secundaria: #1E293B; /* Slate 800 */
+    --detalhe: #947852;  /* Champagne Bronze - Menos "amarelo", mais "metálico" */
+    --texto: #334155;    /* Slate 700 - Leitura mais confortável */
+    --cinza-fundo: #F8FAFC; /* Slate 50 - Limpo, tecnológico e profissional */
     --bg-card: #FFFFFF;
-    --borda-suave: rgba(197, 160, 89, 0.2); /* Borda dourada sutil */
-    --blueprint-dot: rgba(197, 160, 89, 0.15); /* Pontos dourados sutis */
+    --borda-suave: rgba(148, 120, 82, 0.12); /* Borda bronze extremamente sutil */
+    --blueprint-dot: rgba(15, 23, 42, 0.04); /* Pontos quase imperceptíveis */
 }
 
 body {
@@ -164,8 +164,8 @@ body {
     background: var(--detalhe);
     color: #fff;
     border-color: var(--detalhe);
-    box-shadow: 3px 3px 0px rgba(197, 160, 89, 0.3);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(148, 120, 82, 0.25); /* Sombra suave em vez de rígida */
+    text-shadow: none;
 }
 
 /* Estrutura de Dossiê para a Capa da Proposta */
@@ -615,7 +615,7 @@ body {
 .investimento-box::before {
     content: '';
     position: absolute;
-    top: 0; left: 50%; width: 60px; height: 3px; /* Linha de destaque no topo */
+    top: 0; left: 50%; width: 100px; height: 3px; /* Linha mais elegante */
     background: var(--detalhe);
     transform: translateX(-50%);
 }
