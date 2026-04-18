@@ -70,7 +70,7 @@
     <div id="modal-video" class="video-overlay" style="display:none;">
         <div class="video-content-box">
             <button class="btn-close-video" onclick="window.app.fecharVideo()">&times;</button>
-            <video id="video-player" controls playsinline></video>
+            <video id="video-player" muted playsinline loop disablePictureInPicture controlsList="nodownload" oncontextmenu="return false;"></video>
         </div>
     </div>
 
