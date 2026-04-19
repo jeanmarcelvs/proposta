@@ -3,25 +3,6 @@
         <h2>Equipamentos</h2>
     </div>
 
-    <!-- Card de Módulos -->
-    <div class="campo-info equipamento-card">
-        <div class="campo-header">
-            <i class="fas fa-solar-panel" style="color: var(--detalhe);"></i>
-            <label>Painel Solar</label>
-            <button class="btn-video-mini" onclick="window.app.playVideo('assets/painel.mp4')" title="Ver Detalhes">
-                <i class="fas fa-play-circle"></i>
-            </button>
-        </div>
-        <span class="product-description" data-field="modulo_modelo">---</span>
-        
-        <div class="product-details-grid">
-            <div class="detail-item">
-                <div class="detail-label"><i class="fas fa-shield-alt"></i> Garantia</div>
-                <div class="detail-value">30 anos</div>
-            </div>
-        </div>
-    </div>
-
     <!-- Card de Inversor -->
     <div class="campo-info equipamento-card">
         <div class="campo-header">
@@ -41,6 +22,37 @@
             <div class="detail-item">
                 <div class="detail-label"><i class="fas fa-gear"></i> Tecnologia</div>
                 <div class="detail-value">Híbrido</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de Módulos (Painel Solar) -->
+    <div class="campo-info equipamento-card">
+        <div class="campo-header">
+            <i class="fas fa-solar-panel" style="color: var(--detalhe);"></i>
+            <label>Painel Solar</label>
+            <button class="btn-video-mini" onclick="window.app.playVideo('assets/painel.mp4')" title="Ver Detalhes">
+                <i class="fas fa-play-circle"></i>
+            </button>
+        </div>
+        <span class="product-description" data-field="modulo_modelo">---</span>
+        
+        <div class="product-details-grid">
+            <div class="detail-item">
+                <div class="detail-label"><i class="fas fa-shield-alt"></i> Garantia</div>
+                <div class="detail-value">30 anos</div>
+            </div>
+            <!-- Detalhe da Estrutura com separação leve -->
+            <div class="detail-item" style="width: 100%; border-top: 1px dashed var(--borda-suave); margin-top: 8px; padding-top: 8px;">
+                <div class="detail-label">
+                    <i class="fas fa-screwdriver-wrench"></i> Estrutura de Fixação
+                    <button class="btn-video-mini" onclick="window.app.playVideo('assets/estruturas.mp4')" title="Vídeo Técnico">
+                        <i class="fas fa-play-circle"></i>
+                    </button>
+                </div>
+                <div class="detail-value">
+                    Em Alumínio Anodizado e elementos em Aço Inox (Alta durabilidade).
+                </div>
             </div>
         </div>
     </div>

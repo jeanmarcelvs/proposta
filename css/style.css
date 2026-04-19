@@ -1,5 +1,5 @@
 /* Definições de Variáveis e Reset */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 * {
     box-sizing: border-box;
@@ -9,7 +9,7 @@
     --cinza-fundo: #FDFDFD;
     --borda-suave: rgba(0, 0, 0, 0.06);
     --transicao: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    --font-header: 'Plus Jakarta Sans', sans-serif;
+    --font-header: 'Inter', sans-serif;
     --sombra-luxo: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
     --shape-technic: 4px 24px 4px 24px; 
 }
@@ -106,7 +106,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: var(--cinza-fundo);
     background: var(--bg-texture) fixed;
     color: var(--texto);
@@ -327,7 +327,7 @@ body::after {
     justify-content: center;
     padding: 5px 0;
     max-width: fit-content;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 .logo-container .nome {
@@ -639,25 +639,35 @@ body::after {
 
 /* Botão de Vídeo Minimalista */
 .btn-video-mini {
-    color: var(--detalhe);
-    font-size: 1.4rem;
-    cursor: pointer;
-    padding: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--detalhe);
+    color: white !important;
+    border: 2px solid #fff;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: var(--transicao);
     margin-left: auto; 
-    opacity: 0.8;
+    font-size: 1rem;
 }
 
 .btn-video-mini:hover {
-    transform: scale(1.15);
-    opacity: 1;
+    transform: scale(1.1) rotate(-5deg);
+    filter: brightness(1.1);
+}
+
+.btn-video-mini i {
+    color: white !important;
+    font-size: 1.3rem !important;
+    width: auto !important;
 }
 
 .assinatura-nome {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-style: italic;
     font-size: 1.8rem;
     color: var(--primaria);
@@ -875,7 +885,7 @@ body::after {
     display: none; /* Inicia oculto para não aparecer antes da validação */
     opacity: 0;
     justify-content: center;
-    align-items: flex-start; /* Garante que o modal comece do topo se for muito alto */
+    align-items: center; /* Centralização vertical total */
     padding: 40px 20px; /* Respiro superior e inferior para evitar que o modal encoste nas bordas */
     overflow-y: auto; /* Permite rolar a tela inteira caso o conteúdo cresça */
     transition: opacity 0.8s ease;
@@ -892,18 +902,13 @@ body::after {
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
-.modal-conteudo h2 {
-    font-size: 1.1rem;
-    margin: 10px 0 15px 0;
-}
+
 
 .logo-modal { max-width: 120px; margin-bottom: 20px; }
 
 .texto-termo {
     text-align: justify;
     text-justify: inter-word;
-    hyphens: auto;
-    -webkit-hyphens: auto;
     font-size: 0.9rem;
     line-height: 1.5;
     color: #475569;
@@ -911,17 +916,32 @@ body::after {
 }
 
 .termo-destaque-alerta {
-    background: rgba(181, 147, 91, 0.1);
+    background: #FFFFFF;
+    border: 1px solid var(--borda-suave);
     border-left: 4px solid var(--detalhe);
-    padding: 10px 15px;
+    padding: 16px 20px;
     border-radius: 4px;
     color: var(--primaria);
-    font-weight: 700;
-    margin-bottom: 15px !important;
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    margin-bottom: 20px !important;
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: left; /* Garante leitura técnica fluida */
 }
 
 .termo-destaque-alerta i {
     color: var(--detalhe);
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.texto-destaque-preto {
+    color: #000000;
 }
 
 .ponto-discreto {
@@ -1495,8 +1515,8 @@ body::after {
 
 .modal-logo-wrapper {
     background: var(--primaria); 
-    margin: -30px -30px 15px -30px; 
-    padding: 10px 30px;
+    margin: -30px -30px 20px -30px; 
+    padding: 40px 30px 30px 30px; /* Aumentado o recuo superior para melhor equilíbrio visual */
     border-radius: 12px 12px 0 0;
     display: flex;
     justify-content: center;
@@ -1589,6 +1609,7 @@ body::after {
     display: flex;
     align-items: center;
     gap: 5px;
+    width: 100%;
 }
 
 .detail-label i { 
