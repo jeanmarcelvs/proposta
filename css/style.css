@@ -24,11 +24,11 @@ body.loading-active {
 #loading-overlay {
     position: fixed;
     top: 80px; /* Altura do header-fixo */
-    bottom: 70px; /* Altura do footer-fixo */
+    bottom: 0; 
     left: 0;
     right: 0;
     background: #0F172A; 
-    z-index: 900; /* Abaixo do header/footer (1000) e modal (2000) */
+    z-index: 1100; /* Acima do rodapé (1000) para bloquear interações nos botões de navegação */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1086,7 +1086,7 @@ body::after {
 }
 
 .premium-detail-item span {
-    font-size: 0.8rem; /* Reduzido para densidade técnica */
+    font-size: 0.85rem; 
     color: #334155;
     flex: 1;
 }
@@ -1155,7 +1155,7 @@ body::after {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 4px;
-    font-size: 0.55rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -1457,7 +1457,7 @@ body::after {
     .card-opcao { padding: 10px; }
     .card-opcao h4 { font-size: 0.8rem; }
     .valor-card { font-size: 1rem; }
-    .card-opcao p { font-size: 0.65rem; }
+        .card-opcao p, .premium-detail-item span { font-size: 0.65rem; }
     .premium-features { font-size: 0.6rem; }
 }
 
