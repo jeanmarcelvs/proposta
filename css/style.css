@@ -1139,7 +1139,7 @@ body::after {
 
 .premium-detail-item span {
     font-size: 0.85rem; 
-    color: #334155;
+    color: #000000;
     flex: 1;
 }
 
@@ -1351,7 +1351,7 @@ body::after {
 .card-opcao p { 
     font-size: 0.85rem; 
     line-height: 1.4; 
-    color: #64748b; 
+    color: #000000; 
     margin: 5px 0 8px 0; 
 }
 
@@ -1509,7 +1509,7 @@ body::after {
     .card-opcao { padding: 10px; }
     .card-opcao h4 { font-size: 0.8rem; }
     .valor-card { font-size: 1rem; }
-        .card-opcao p, .premium-detail-item span { font-size: 0.65rem; }
+        .card-opcao p, .premium-detail-item span { font-size: 0.8rem; }
     .premium-features { font-size: 0.6rem; }
 }
 
@@ -1752,7 +1752,7 @@ body::after {
 .pilar-desc { 
     font-size: 0.85rem !important; 
     line-height: 1.4 !important; 
-    color: var(--secundaria) !important;
+    color: #000000 !important;
     margin: 0 !important;
 }
 .pilar-item strong { color: var(--primaria); font-weight: 700; }
