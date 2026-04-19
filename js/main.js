@@ -110,6 +110,14 @@ window.app = {
         app.carrossel.index = (app.carrossel.index + direcao + app.carrossel.fotos.length) % app.carrossel.fotos.length;
         atualizarImagemCarrossel();
         iniciarAutoCarrossel();
+    },
+    abrirInfoPremium: () => {
+        const modal = document.getElementById('modal-info-premium');
+        if (modal) modal.style.display = 'flex';
+    },
+    fecharInfoPremium: () => {
+        const modal = document.getElementById('modal-info-premium');
+        if (modal) modal.style.display = 'none';
     }
 };
 
@@ -139,10 +147,9 @@ async function init() {
     console.log("🚀 Iniciando aplicação para ID:", app.idProposta);
     if (!app.idProposta) return;
 
+    // Trava a interface imediatamente
+    document.body.classList.add('loading-active');
     mostrarLoading(true);
-
-    // Define o tema inicial como standard sem marcar seleção
-    document.body.className = 'theme-standard';
 
     try {
         // 1. Validação de Hardware/Fingerprint (Cloudflare Worker)
@@ -159,26 +166,34 @@ async function init() {
         if (resposta && resposta.sucesso) {
             // Garante a captura dos dados independentemente da estrutura de retorno da API
             app.dados = resposta.dadosProposta || resposta.dados || (resposta.id ? resposta : null); 
-            
-            // Tenta localizar a data de validade em diferentes nomes de campos comuns
             const validade = app.dados.dataValidade || app.dados.data_validade || app.dados.validade;
-
-            console.log(`📦 Proposta: ${app.idProposta} | Validade: ${validade}`);
-
-            // 3. Validação de Data de Expiração
             if (!isPropostaValida(validade)) {
                 exibirStatusProposta('expirada');
                 return;
             }
         } else {
-            console.error("Proposta não encontrada ou erro na resposta:", resposta);
             mostrarLoading(false);
             return;
         }
 
+        // Aplica o tema padrão silenciosamente atrás do splash
+        document.body.className = 'theme-standard';
         configurarControles();
         configurarAceite();
-        mostrarLoading(false);
+
+        // Só revela o modal de aceite após TODAS as validações
+        const modalAceite = document.getElementById('modal-aceite');
+        if (modalAceite) {
+            modalAceite.style.display = 'flex';
+            requestAnimationFrame(() => {
+                modalAceite.style.opacity = '1';
+                // Libera o splash para mostrar o aceite pronto
+                setTimeout(() => {
+                    mostrarLoading(false);
+                    document.body.classList.remove('loading-active');
+                }, 600);
+            });
+        }
         
     } catch (error) {
         console.error("💥 Erro fatal na inicialização:", error);
@@ -501,12 +516,14 @@ function configurarAceite() {
     });
 
     btnAcessar.addEventListener('click', () => {
-        modal.style.transition = 'opacity 0.5s ease';
-        modal.style.opacity = '0';
+        // Ativa o splash antes de fechar o modal para esconder a troca de view
+        mostrarLoading(true);
+        document.body.classList.add('loading-active');
+        
         setTimeout(() => {
             modal.style.display = 'none';
-            carregarView(); 
-        }, 500);
+            carregarView();
+        }, 400);
     });
 }
 
@@ -544,6 +561,9 @@ function navegar(direcao) {
 }
 
 async function carregarView() {
+    mostrarLoading(true);
+    document.body.classList.add('loading-active');
+
     const container = document.getElementById('view-container');
     const nomeView = app.etapas[app.etapaAtual];
     
@@ -552,6 +572,10 @@ async function carregarView() {
         if (!response.ok) throw new Error(`Erro ao carregar HTML: ${nomeView}`);
         const html = await response.text();
         container.innerHTML = html;
+
+        // Injeta os dados do banco no HTML recém-carregado enquanto o splash ainda está visível
+        preencherDadosView();
+        atualizarInterfaceSelecao();
 
         document.getElementById('etapa-atual').innerText = app.etapaAtual + 1;
         
@@ -572,8 +596,13 @@ async function carregarView() {
             btnAvancar.style.cursor = "pointer";
         }
 
-        preencherDadosView();
-        atualizarInterfaceSelecao(); // Garante que os cards e o badge reflitam o estado atual
+        // Pequeno delay para o browser processar o reflow dos dados preenchidos
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+            mostrarLoading(false);
+            document.body.classList.remove('loading-active');
+        }, 600);
+
     } catch (e) {
         console.error("Erro ao carregar view:", e);
         container.innerHTML = `<p style="text-align:center; padding:20px;">Erro ao carregar etapa: ${nomeView}</p>`;

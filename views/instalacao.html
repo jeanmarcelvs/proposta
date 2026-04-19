@@ -31,7 +31,10 @@
 
     <div class="selecao-instalacao-container">
         <div class="card-opcao disabled" id="opt-basic">
-            <div class="check-indicator"></div>
+                <div class="card-header-actions">
+                    <div></div>
+                    <div class="check-indicator"></div>
+                </div>
             <h4 style="margin-bottom: 5px;">Projeto Basic</h4>
             <div class="status-alerta-destaque">
                 <i class="fas fa-exclamation-triangle"></i> Descontinuado (por padrão de qualidade)
@@ -42,32 +45,94 @@
         </div>
 
         <div class="card-opcao" id="opt-standard" onclick="window.app.mudarPlano('standard')">
-            <div class="check-indicator"><i class="fas fa-check"></i></div>
+            <div class="card-header-actions">
+                <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('standard')">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <div class="check-indicator"><i class="fas fa-check"></i></div>
+            </div>
             <h4>Projeto Standard</h4>
             <div class="valor-card" data-field="valor_standard">---</div>
             <p>
                 Execução técnica com critérios diferenciados em relação às práticas comuns de mercado.
             </p>
-            <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('standard')">
-                <i class="fas fa-camera"></i>
-            </button>
         </div>
         
         <div class="card-opcao" id="opt-premium" onclick="window.app.mudarPlano('premium')">
-            <div class="check-indicator"><i class="fas fa-check"></i></div>
+            <div class="card-header-actions">
+                <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('premium')">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <div class="check-indicator"><i class="fas fa-check"></i></div>
+            </div>
             <h4>Projeto Premium</h4>
             <div class="selo-texto-card premium"><i class="fas fa-crown"></i> ALTO PADRÃO</div>
             <div class="valor-card" data-field="valor_premium">---</div>
             
-            <div class="descricao-premium" style="font-size: 0.82rem; line-height: 1.4; color: #334155; padding-right: 45px;">
-                <div style="margin-bottom: 6px;"><i class="fas fa-microchip" style="width: 15px; color: var(--detalhe);"></i> <strong>Rigor Industrial:</strong> Engenharia robusta com margens de segurança ampliadas.</div>
-                <div style="margin-bottom: 6px;"><i class="fas fa-shield-halved" style="width: 15px; color: var(--detalhe);"></i> <strong>Redundância Técnica:</strong> Múltiplas camadas de proteção para maior confiabilidade.</div>
-                <div style="margin-bottom: 6px;"><i class="fas fa-bolt" style="width: 15px; color: var(--detalhe);"></i> <strong>Conexões de Alta Performance:</strong> Materiais que evitam perdas e aquecimento.</div>
-                <div style="margin-bottom: 6px;"><i class="fas fa-clock-rotate-left" style="width: 15px; color: var(--detalhe);"></i> <strong>Continuidade e Eficiência:</strong> Montagem técnica para longevidade e menos paradas.</div>
-                <div style="margin-bottom: 6px;"><i class="fas fa-scale-balanced" style="width: 15px; color: var(--detalhe);"></i> <strong>Conformidade Total:</strong> Rigor normativo para segurança jurídica e proteção real.</div>
+            <div class="descricao-premium" onclick="event.stopPropagation()">
+                <div class="premium-detail-item">
+                    <i class="fas fa-microchip"></i>
+                    <span><strong>Rigor Industrial:</strong> Engenharia robusta com margens de segurança ampliadas.</span>
+                </div>
+                <div class="premium-detail-item">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>
+                        <strong>Redundância Técnica:</strong> Múltiplas camadas de proteção.
+                        <button class="btn-info-premium" onclick="window.app.abrirInfoPremium()"><i class="fas fa-plus-circle"></i> POR QUE?</button>
+                    </span>
+                </div>
+                <div class="premium-detail-item">
+                    <i class="fas fa-bolt"></i>
+                    <span><strong>Conexões de Alta Performance:</strong> Materiais que evitam perdas e aquecimento.</span>
+                </div>
+                <div class="premium-detail-item">
+                    <i class="fas fa-clock-rotate-left"></i>
+                    <span><strong>Continuidade e Eficiência:</strong> Montagem técnica para longevidade e menos paradas.</span>
+                </div>
+                <div class="premium-detail-item">
+                    <i class="fas fa-scale-balanced"></i>
+                    <span><strong>Conformidade Total:</strong> Rigor normativo para segurança jurídica e proteção real.</span>
+                </div>
             </div>
-            <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('premium')">
-                <i class="fas fa-camera"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalhamento Técnico Premium -->
+<div id="modal-info-premium" class="modal-info-overlay" onclick="window.app.fecharInfoPremium()">
+    <div class="modal-info-card" onclick="event.stopPropagation()">
+        <div class="modal-info-header">
+            <i class="fas fa-shield-check"></i>
+            <h3>O Valor da Redundância</h3>
+            <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 5px;">Padrão de Engenharia Rigor Industrial</p>
+        </div>
+        <div class="modal-info-body">
+            <div class="explainer-item">
+                <i class="fas fa-parachute-box"></i>
+                <div class="explainer-content">
+                    <h4>A Analogia do Paraquedas</h4>
+                    <p>É como ter um reserva. Se o dispositivo principal falhar por defeito de fábrica ou surto extremo, o segundo atua imediatamente, impedindo que uma falha simples queime todo o seu sistema.</p>
+                </div>
+            </div>
+            
+            <div class="explainer-item">
+                <i class="fas fa-route"></i>
+                <div class="explainer-content">
+                    <h4>Independência de Falhas</h4>
+                    <p>Não confiamos a segurança a apenas um componente. Criamos caminhos independentes: o sistema protege a casa, e a casa protege o sistema, isolando problemas da rede elétrica.</p>
+                </div>
+            </div>
+
+            <div class="explainer-item" style="border-top: 1px solid #f1f5f9; padding-top: 20px;">
+                <i class="fas fa-drafting-compass"></i>
+                <div class="explainer-content">
+                    <h4>Diferencial de Engenharia</h4>
+                    <p>Enquanto o mercado instala o mínimo obrigatório, o padrão Premium prevê redundância em pontos críticos, garantindo que sua geração não pare diante de instabilidades da rede.</p>
+                </div>
+            </div>
+
+            <button class="btn-entendido-modal" onclick="window.app.fecharInfoPremium()" style="margin-top: 10px;">
+                Entendido
             </button>
         </div>
     </div>
