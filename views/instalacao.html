@@ -8,17 +8,17 @@
         <div class="pilares-sistema">
             <div class="pilar-item">
                 <i class="fas fa-solar-panel"></i>
-                <p><strong>Geração:</strong> Painéis e inversor geram e processam a energia solar.</p>
+                <p><strong>Painéis e inversor:</strong> Responsáveis por gerar e processar a energia solar.</p>
             </div>
             <div class="pilar-item">
                 <i class="fas fa-network-wired"></i>
-                <p><strong>Integração:</strong> Infraestrutura elétrica que interliga o sistema à rede, completando o sistema.</p>
+                <p><strong>Infraestrutura elétrica:</strong> Responsável por interligar esses equipamentos e a rede elétrica, completando o sistema.</p>
             </div>
             <div class="pilar-item">
                 <i class="fas fa-lightbulb"></i>
                 <div style="font-size: 0.85rem; line-height: 1.4; color: var(--secundaria);">
                     <strong style="color: var(--detalhe); font-weight: 800; font-size: 0.85rem; display: block; margin-bottom: 2px;">Padrão de Projeto</strong>
-                    Determina o nível de segurança e a robustez da instalação, visando preservar o patrimônio e reduzir falhas, manutenções e custos futuros.
+                    Determina o nível de integridade física, robustez, durabilidade, confiabilidade e segurança da solução implantada.
                 </div>
             </div>
         </div>
@@ -43,31 +43,32 @@
 
         <div class="card-opcao" id="opt-standard" onclick="window.app.mudarPlano('standard')">
             <div class="check-indicator"><i class="fas fa-check"></i></div>
-            <div class="card-header-flex">
-                <h4>Projeto Standard</h4>
-                <button class="btn-video" style="margin-left: 0;" onclick="event.stopPropagation(); window.app.abrirCarrossel('standard')">
-                    <i class="fas fa-camera"></i>
-                </button>
-            </div>
+            <h4>Projeto Standard</h4>
             <div class="valor-card" data-field="valor_standard">---</div>
             <p>
                 Execução técnica com critérios diferenciados em relação às práticas comuns de mercado.
             </p>
+            <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('standard')">
+                <i class="fas fa-camera"></i>
+            </button>
         </div>
         
         <div class="card-opcao" id="opt-premium" onclick="window.app.mudarPlano('premium')">
             <div class="check-indicator"><i class="fas fa-check"></i></div>
-            <div class="card-header-flex">
-                <h4>Projeto Premium</h4>
-                <button class="btn-video" style="margin-left: 0;" onclick="event.stopPropagation(); window.app.abrirCarrossel('premium')">
-                    <i class="fas fa-camera"></i>
-                </button>
-            </div>
+            <h4>Projeto Premium</h4>
             <div class="selo-texto-card premium"><i class="fas fa-crown"></i> ALTO PADRÃO</div>
             <div class="valor-card" data-field="valor_premium">---</div>
-            <p>
-                <strong>Rigor Industrial</strong>. Concepção robusta baseada em infraestrutura de alta resistência, com margens de segurança ampliadas para minimizar manutenções e garantir a máxima proteção do sistema ao longo das décadas.
-            </p>
+            
+            <div class="descricao-premium" style="font-size: 0.82rem; line-height: 1.4; color: #334155; padding-right: 45px;">
+                <div style="margin-bottom: 6px;"><i class="fas fa-microchip" style="width: 15px; color: var(--detalhe);"></i> <strong>Rigor Industrial:</strong> Engenharia robusta com margens de segurança ampliadas.</div>
+                <div style="margin-bottom: 6px;"><i class="fas fa-shield-halved" style="width: 15px; color: var(--detalhe);"></i> <strong>Redundância Técnica:</strong> Múltiplas camadas de proteção para maior confiabilidade.</div>
+                <div style="margin-bottom: 6px;"><i class="fas fa-bolt" style="width: 15px; color: var(--detalhe);"></i> <strong>Conexões de Alta Performance:</strong> Materiais que evitam perdas e aquecimento.</div>
+                <div style="margin-bottom: 6px;"><i class="fas fa-clock-rotate-left" style="width: 15px; color: var(--detalhe);"></i> <strong>Continuidade e Eficiência:</strong> Montagem técnica para longevidade e menos paradas.</div>
+                <div style="margin-bottom: 6px;"><i class="fas fa-scale-balanced" style="width: 15px; color: var(--detalhe);"></i> <strong>Conformidade Total:</strong> Rigor normativo para segurança jurídica e proteção real.</div>
+            </div>
+            <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('premium')">
+                <i class="fas fa-camera"></i>
+            </button>
         </div>
     </div>
 </div>

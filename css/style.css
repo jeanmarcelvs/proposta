@@ -947,6 +947,43 @@ body::after {
     box-shadow: 0 15px 30px rgba(0,0,0,0.08);
 }
 
+.btn-video {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 42px;
+    height: 42px;
+    background: var(--detalhe);
+    color: white !important;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: var(--transicao);
+    z-index: 5;
+}
+
+.btn-video:hover {
+    transform: scale(1.1) rotate(-5deg);
+    filter: brightness(1.1);
+}
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.descricao-premium {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--borda-suave);
+}
+
 #opt-standard {
     --primaria: #203A43;
     --detalhe: #34495E;
@@ -1332,29 +1369,6 @@ body::after {
     color: var(--detalhe);
 }
 
-.btn-video {
-    background: transparent;
-    border: 1px solid var(--detalhe);
-    color: var(--detalhe);
-    border-radius: 6px;
-    padding: 4px 10px;
-    background: rgba(var(--detalhe), 0.05);
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: var(--transicao);
-    text-transform: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.btn-video i {
-    font-size: 1.1rem; 
-}
-
 .btn-video:hover {
     background: var(--detalhe);
     color: white;
@@ -1460,44 +1474,53 @@ body::after {
 /* Botão WhatsApp Flutuante */
 .btn-whatsapp-float {
     position: fixed;
-    bottom: 160px; /* Elevado para não obstruir as linhas de texto da view */
+    bottom: 110px; /* Ajustado para melhor ergonomia visual */
     right: 20px;
     display: flex;
-    flex-direction: column; /* Stacking vertical para economizar largura */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    background-color: #25D366;
+    gap: 4px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     color: #fff !important;
-    width: 58px; /* Largura reduzida */
-    height: 58px;
+    width: 82px;
+    height: 82px;
     border-radius: 50%;
     text-decoration: none;
-    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 0 6px var(--detalhe);
     z-index: 9999; /* Valor alto para garantir que flutue sobre qualquer elemento */
     transition: var(--transicao);
-    animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards, pulseGreen 2s infinite;
     pointer-events: auto;
     text-align: center;
     line-height: 1;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-whatsapp-float i {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
 }
 
 .btn-whatsapp-float span {
-    font-size: 0.5rem;
-    font-weight: 800;
+    font-size: 0.65rem;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.2px;
-    line-height: 1.1;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .btn-whatsapp-float:hover {
-    transform: scale(1.05);
+    transform: scale(1.1) rotate(5deg);
     background-color: #20ba5a;
-    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
+    box-shadow: 0 15px 30px rgba(37, 211, 102, 0.5), 0 0 0 4px #fff, 0 0 0 6px var(--detalhe);
+}
+
+@keyframes pulseGreen {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7), 0 0 0 4px #fff, 0 0 0 6px var(--detalhe); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0), 0 0 0 4px #fff, 0 0 0 6px var(--detalhe); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0), 0 0 0 4px #fff, 0 0 0 6px var(--detalhe); }
 }
 
 @keyframes slideInRight {
