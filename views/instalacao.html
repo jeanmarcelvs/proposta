@@ -1,11 +1,27 @@
 <div class="view-content animate-in">
     <div class="view-header">
         <h2>Concepção da Infraestrutura Elétrica</h2>
-        <div class="nota-tecnica-header">
-            <p><strong>Enquanto módulos e inversores processam a energia, a infraestrutura elétrica garante sua integração e transmissão segura à rede. A concepção do projeto define a confiabilidade do sistema e sua resiliência contra falhas prematuras.</p>
+        
+        <div class="pilares-sistema">
+            <div class="pilar-item">
+                <i class="fas fa-solar-panel"></i>
+                <p><strong>Geração:</strong> Painéis e inversor geram e processam a energia solar.</p>
+            </div>
+            <div class="pilar-item">
+                <i class="fas fa-network-wired"></i>
+                <p><strong>Integração:</strong> Infraestrutura elétrica que interliga o sistema à rede, completando o sistema.</p>
+            </div>
+            <div class="pilar-item">
+                <i class="fas fa-lightbulb"></i>
+                <div style="font-size: 0.85rem; line-height: 1.4; color: var(--secundaria);">
+                    <strong style="color: var(--detalhe); font-weight: 800; font-size: 0.85rem; display: block; margin-bottom: 2px;">Padrão de Projeto</strong>
+                    Determina o nível de segurança e a robustez da instalação, visando preservar o patrimônio e reduzir falhas, manutenções e custos futuros.
+                </div>
+            </div>
         </div>
-        <p style="margin-bottom: 15px; font-size: 1rem; color: var(--primaria); font-weight: 700;">
-            Selecione o padrão de projeto para sua instalação:
+
+        <p style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primaria); font-weight: 400; text-transform: none; letter-spacing: normal;">
+            Selecione abaixo o <span style="color: var(--detalhe); font-weight: 800;">Padrão de Projeto</span> que deseja para o seu sistema:
         </p>
     </div>
 
@@ -13,9 +29,11 @@
         <div class="card-opcao disabled" id="opt-basic">
             <div class="check-indicator"></div>
             <h4>Projeto Basic</h4>
-            <div class="valor-card"><i class="fas fa-triangle-exclamation icon-descontinuado"></i> Descontinuado (por padrão de qualidade)</div>
+            <div class="status-alerta-destaque">
+                <i class="fas fa-exclamation-triangle"></i> Descontinuado (por padrão de qualidade)
+            </div>
             <p>
-                Infraestrutura com <strong>materiais mais frágeis</strong> e <strong>durabilidade duvidosa</strong>.
+                Padrão de mercado que não atende aos requisitos de estabilidade estrutural e elétrica exigidos pela nossa engenharia.
             </p>
         </div>
 
@@ -41,7 +59,7 @@
                     <i class="fas fa-camera"></i>
                 </button>
             </div>
-            <div class="selo-texto-card premium"><i class="fas fa-star"></i> PADRÃO INDUSTRIAL</div>
+            <div class="selo-texto-card premium"><i class="fas fa-crown"></i> ALTO PADRÃO</div>
             <div class="valor-card" data-field="valor_premium">---</div>
             <p>
                 <strong>Rigor Industrial</strong>. Concepção robusta baseada em infraestrutura de alta resistência, com margens de segurança ampliadas para minimizar manutenções e garantir a máxima proteção do sistema ao longo das décadas.

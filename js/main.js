@@ -232,8 +232,9 @@ function preencherDadosView() {
             if (chaveOriginal.includes('paineis') || chaveOriginal.includes('modulo')) {
                 const item = dadosConsolidados.modulo || app.dados.modulo;
                 if (item) {
+                    const qtdNormalizada = parseInt(item.qtd || 0, 10); // Remove zeros à esquerda (06 -> 6)
                     if (chaveOriginal.includes('marca')) valor = item.marca || "Tier 1";
-                    if (chaveOriginal.includes('modelo')) valor = `<span class="product-qty">${item.qtd}x</span> Módulos de ${item.watts}W`;
+                    if (chaveOriginal.includes('modelo')) valor = `<span class="qty-badge">${qtdNormalizada}</span> Módulos de ${item.watts}W`;
                     if (chaveOriginal.includes('tecnologia')) valor = "N-Type Monocristalino";
                     if (chaveOriginal.includes('garantia')) valor = item.garantia || "25 anos";
                 }
@@ -242,8 +243,9 @@ function preencherDadosView() {
             if (chaveOriginal.includes('inversor') || chaveOriginal.includes('monitorizacao')) {
                 const item = dadosConsolidados.inversores?.[0] || app.dados.inversores?.[0];
                 if (item) {
+                    const qtdNormalizada = parseInt(item.qtd || 1, 10); // Remove zeros à esquerda
                     if (chaveOriginal.includes('marca')) valor = item.modelo?.split('-')[0] || "Huawei";
-                    if (chaveOriginal.includes('modelo')) valor = `<span class="product-qty">01x</span> Huawei - ${item.nominal}W`;
+                    if (chaveOriginal.includes('modelo')) valor = `<span class="qty-badge">${qtdNormalizada}</span> Huawei - ${item.nominal}W`;
                     if (chaveOriginal.includes('garantia')) valor = "10 anos";
                     if (chaveOriginal.includes('monitorizacao')) valor = item.monitoramento || item.monitorizacao || "Wi-Fi Integrado";
                 }
@@ -315,10 +317,11 @@ function preencherDadosView() {
             } 
             // Tratamento para Arrays (Módulos e Inversores)
             else if (Array.isArray(valor)) {
-                campo.innerText = valor.map(item => {
+                campo.innerHTML = valor.map(item => {
                     const nome = item.modelo || item.descricao || item.nome || '';
-                    const qtd = item.quantidade || item.qtd || '';
-                    return qtd ? `${qtd}x ${nome}` : nome;
+                    const qtdRaw = item.quantidade || item.qtd || '';
+                    const qtdNormalizada = qtdRaw ? parseInt(qtdRaw, 10) : null;
+                    return qtdNormalizada ? `<span class="qty-badge">${qtdNormalizada}</span> ${nome}` : nome;
                 }).filter(t => t !== '').join(' + ');
             } else if (chaveOriginal === 'cliente_nome' && !valor) {
                 // Fallback para cliente caso não venha no JSON
