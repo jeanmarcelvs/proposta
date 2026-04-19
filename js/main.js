@@ -21,6 +21,8 @@ const app = {
     }
 };
 
+let loadingTimer = null;
+
 // Expõe para o escopo global para o onclick do HTML
 window.app = {
     mudarPlano: (tipo) => alternarProposta(tipo),
@@ -147,8 +149,6 @@ async function init() {
     console.log("🚀 Iniciando aplicação para ID:", app.idProposta);
     if (!app.idProposta) return;
 
-    // Trava a interface imediatamente
-    document.body.classList.add('loading-active');
     mostrarLoading(true);
 
     try {
@@ -188,10 +188,7 @@ async function init() {
             requestAnimationFrame(() => {
                 modalAceite.style.opacity = '1';
                 // Libera o splash para mostrar o aceite pronto
-                setTimeout(() => {
-                    mostrarLoading(false);
-                    document.body.classList.remove('loading-active');
-                }, 600);
+                mostrarLoading(false);
             });
         }
         
@@ -207,7 +204,6 @@ async function init() {
 async function exibirStatusProposta(motivo) {
     const container = document.getElementById('view-container');
     const modalAceite = document.getElementById('modal-aceite');
-    
     try {
         const response = await fetch(`./views/status_proposta.html`);
         const html = await response.text();
@@ -516,10 +512,7 @@ function configurarAceite() {
     });
 
     btnAcessar.addEventListener('click', () => {
-        // Ativa o splash antes de fechar o modal para esconder a troca de view
-        mostrarLoading(true);
-        document.body.classList.add('loading-active');
-        
+        modal.style.opacity = '0';
         setTimeout(() => {
             modal.style.display = 'none';
             carregarView();
@@ -561,19 +554,24 @@ function navegar(direcao) {
 }
 
 async function carregarView() {
-    mostrarLoading(true);
-    document.body.classList.add('loading-active');
-
     const container = document.getElementById('view-container');
     const nomeView = app.etapas[app.etapaAtual];
     
+    // 1. Oculta a view atual imediatamente para evitar percepção de 'troca'
+    container.style.opacity = '0';
+
+    // 2. Agenda o Splash apenas se a carga demorar mais de 0.7 segundos
+    loadingTimer = setTimeout(() => {
+        mostrarLoading(true);
+    }, 700);
+
     try {
         const response = await fetch(`./views/${nomeView}.html`);
         if (!response.ok) throw new Error(`Erro ao carregar HTML: ${nomeView}`);
         const html = await response.text();
-        container.innerHTML = html;
 
-        // Injeta os dados do banco no HTML recém-carregado enquanto o splash ainda está visível
+        // Injeta o conteúdo e os dados
+        container.innerHTML = html;
         preencherDadosView();
         atualizarInterfaceSelecao();
 
@@ -596,16 +594,21 @@ async function carregarView() {
             btnAvancar.style.cursor = "pointer";
         }
 
-        // Pequeno delay para o browser processar o reflow dos dados preenchidos
+        // 3. Cancela o timer e revela a nova view
+        clearTimeout(loadingTimer);
+        
         setTimeout(() => {
             window.scrollTo(0, 0);
-            mostrarLoading(false);
-            document.body.classList.remove('loading-active');
-        }, 600);
+            container.style.opacity = '1';
+            mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
+        }, 50);
 
     } catch (e) {
         console.error("Erro ao carregar view:", e);
         container.innerHTML = `<p style="text-align:center; padding:20px;">Erro ao carregar etapa: ${nomeView}</p>`;
+        clearTimeout(loadingTimer);
+        container.style.opacity = '1';
+        mostrarLoading(false);
     }
 }
 
