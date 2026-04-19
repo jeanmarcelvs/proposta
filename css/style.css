@@ -550,17 +550,16 @@ body::after {
 
 .cronograma-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .cronograma-label { font-size: 0.85rem; font-weight: 800; color: var(--detalhe); text-transform: none; letter-spacing: 0.5px; }
-.cronograma-desc { font-size: 0.85rem; font-weight: 600; color: var(--primaria); opacity: 0.9; }
+.cronograma-desc { font-size: 0.85rem; font-weight: 600; color: #000000; opacity: 1; }
 
 .cronograma-valor-box { 
-    font-size: 1.05rem; 
+    font-size: 0.85rem; 
     font-weight: 800; 
-    color: var(--primaria); 
+    color: #000000; 
     text-align: right;
     margin-left: 15px;
-    background: rgba(15, 23, 42, 0.03);
-    padding: 6px 12px;
-    border-radius: 4px;
+    background: transparent;
+    padding: 0;
 }
 
 /* Timeline Corporativa */
