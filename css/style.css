@@ -867,16 +867,34 @@ body::after {
 }
 
 .card-opcao {
-    background: white;
-    border: 1px solid var(--borda-suave);
+    background: #FFFFFF !important; /* Branco total para destaque de seleção */
+    border: 1.5px solid #cbd5e1; 
     border-radius: var(--shape-technic); 
     padding: 12px;
     cursor: pointer !important;
-    transition: var(--transicao);
+    transition: all 0.25s ease;
     position: relative;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.card-opcao:not(.disabled):active {
+    transform: scale(0.97); /* Feedback tátil de clique */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Textos 100% pretos para cards ativos */
+.card-opcao:not(.disabled) h4,
+.card-opcao:not(.disabled) p,
+.card-opcao:not(.disabled) .valor-card {
+    color: #000000 !important;
+    opacity: 1 !important;
+}
+
+.card-opcao:not(.disabled):hover {
+    border-color: var(--detalhe);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
 .card-opcao.disabled {
@@ -942,27 +960,27 @@ body::after {
 
 .check-indicator {
     position: absolute;
-    top: -10px;
-    left: -10px;
-    width: 26px;
-    height: 26px;
-    background: var(--detalhe);
-    color: white;
-    border-radius: 50%;
+    top: 12px;
+    right: 12px; /* Posicionado no canto como um checkbox de sistema */
+    width: 22px;
+    height: 22px;
+    background: #FFF;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px; /* Checkbox quadrado técnico */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    opacity: 0;
-    transform: scale(0);
-    transition: var(--transicao);
-    z-index: 20;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-size: 0.7rem;
+    color: transparent;
+    transition: all 0.2s ease;
+    z-index: 10;
 }
 
 .card-opcao.ativa .check-indicator {
-    opacity: 1;
-    transform: scale(1);
+    background: var(--detalhe);
+    border-color: var(--detalhe);
+    color: #FFF;
+    transform: scale(1.05);
 }
 
 .card-opcao h4 { 
@@ -1394,6 +1412,35 @@ body::after {
     .pilares-sistema { grid-template-columns: 1fr; gap: 12px; }
 }
 
+/* Guia de Seleção Intuitiva */
+.selection-guide {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 35px 0 20px 0;
+    color: var(--primaria);
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--detalhe);
+}
+
+.selection-guide h2 {
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+    border-left: none !important;
+    padding-left: 0 !important;
+}
+
+.selection-guide .hint-icon {
+    color: var(--detalhe);
+    font-size: 2.8rem; /* Tamanho dobrado */
+    animation: arrowBounce 1.4s infinite; /* 30% mais rápida (2s * 0.7) */
+}
+
+@keyframes arrowBounce {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(8px); opacity: 0.7; }
+}
+
 /* Design do Separador de Título Financeiro */
 .header-separador {
     background: rgba(15, 23, 42, 0.02);
@@ -1416,20 +1463,35 @@ body::after {
     bottom: 160px; /* Elevado para não obstruir as linhas de texto da view */
     right: 20px;
     display: flex;
+    flex-direction: column; /* Stacking vertical para economizar largura */
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 2px;
     background-color: #25D366;
     color: #fff !important;
-    padding: 14px 24px;
-    border-radius: 50px;
-    font-weight: 800;
-    font-size: 0.95rem;
+    width: 58px; /* Largura reduzida */
+    height: 58px;
+    border-radius: 50%;
     text-decoration: none;
     box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
     z-index: 9999; /* Valor alto para garantir que flutue sobre qualquer elemento */
     transition: var(--transicao);
     animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     pointer-events: auto;
+    text-align: center;
+    line-height: 1;
+}
+
+.btn-whatsapp-float i {
+    font-size: 1.4rem;
+}
+
+.btn-whatsapp-float span {
+    font-size: 0.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    line-height: 1.1;
 }
 
 .btn-whatsapp-float:hover {
@@ -1506,4 +1568,31 @@ body::after {
     }
     #foto-display { border-radius: 0; }
     .carrossel-container { padding: 0; }
+}
+
+/* Estilização do Título com Logo Animada */
+.header-main-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 6px solid var(--detalhe);
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+
+.header-main-title h2 {
+    border-left: none !important;
+    padding-left: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.animated-logo-header {
+    font-size: 1.4rem;
+    color: var(--detalhe);
+    animation: logoSoftPulse 3s infinite ease-in-out;
+}
+
+@keyframes logoSoftPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px var(--detalhe)); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 5px var(--detalhe)); }
 }

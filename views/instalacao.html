@@ -1,6 +1,9 @@
 <div class="view-content animate-in">
     <div class="view-header">
-        <h2>Concepção da Infraestrutura Elétrica</h2>
+        <h2 style="margin-bottom: 25px; border-left: none !important; padding-left: 0 !important; color: var(--primaria); display: flex; align-items: center;">
+            <i class="fas fa-exclamation-circle" style="color: var(--detalhe); margin-right: 15px; font-size: 2.8rem;"></i>
+            <span><strong>Antes de escolher</strong>, entenda:</span>
+        </h2>
         
         <div class="pilares-sistema">
             <div class="pilar-item">
@@ -20,15 +23,16 @@
             </div>
         </div>
 
-        <p style="margin-bottom: 15px; font-size: 0.95rem; color: var(--primaria); font-weight: 400; text-transform: none; letter-spacing: normal;">
-            Selecione abaixo o <span style="color: var(--detalhe); font-weight: 800;">Padrão de Projeto</span> que deseja para o seu sistema:
-        </p>
+        <div class="selection-guide">
+            <i class="fas fa-angles-down hint-icon"></i>
+            <h2>Escolha o projeto desejado</h2>
+        </div>
     </div>
 
     <div class="selecao-instalacao-container">
         <div class="card-opcao disabled" id="opt-basic">
             <div class="check-indicator"></div>
-            <h4>Projeto Basic</h4>
+            <h4 style="margin-bottom: 5px;">Projeto Basic</h4>
             <div class="status-alerta-destaque">
                 <i class="fas fa-exclamation-triangle"></i> Descontinuado (por padrão de qualidade)
             </div>
@@ -39,9 +43,9 @@
 
         <div class="card-opcao" id="opt-standard" onclick="window.app.mudarPlano('standard')">
             <div class="check-indicator"><i class="fas fa-check"></i></div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-header-flex">
                 <h4>Projeto Standard</h4>
-                <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('standard')">
+                <button class="btn-video" style="margin-left: 0;" onclick="event.stopPropagation(); window.app.abrirCarrossel('standard')">
                     <i class="fas fa-camera"></i>
                 </button>
             </div>
@@ -53,9 +57,9 @@
         
         <div class="card-opcao" id="opt-premium" onclick="window.app.mudarPlano('premium')">
             <div class="check-indicator"><i class="fas fa-check"></i></div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <div class="card-header-flex">
                 <h4>Projeto Premium</h4>
-                <button class="btn-video" onclick="event.stopPropagation(); window.app.abrirCarrossel('premium')">
+                <button class="btn-video" style="margin-left: 0;" onclick="event.stopPropagation(); window.app.abrirCarrossel('premium')">
                     <i class="fas fa-camera"></i>
                 </button>
             </div>

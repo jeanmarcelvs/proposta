@@ -595,7 +595,7 @@ function gerenciarBotaoWhatsapp(view) {
             btn.href = 'https://wa.me/5582999469016';
             btn.target = '_blank';
             btn.rel = 'noopener noreferrer';
-            btn.innerHTML = '<i class="fab fa-whatsapp"></i><span>Aprovar<br>projeto</span>';
+            btn.innerHTML = '<i class="fab fa-whatsapp"></i><span>Aprovar<br>Projeto</span>';
             document.body.appendChild(btn);
         }
         btn.style.display = 'flex';
