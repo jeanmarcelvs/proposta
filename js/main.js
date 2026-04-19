@@ -6,6 +6,7 @@ const app = {
     idProposta: new URLSearchParams(window.location.search).get('id'),
     primeiroNome: new URLSearchParams(window.location.search).get('n'),
     propostaAtiva: 'standard', 
+    planoSelecionado: false, // Controla se o usuário já escolheu um padrão de projeto
     etapaAtual: 0,
     dados: null,
     etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro']
@@ -54,6 +55,9 @@ async function init() {
     if (!app.idProposta) return;
 
     mostrarLoading(true);
+
+    // Define o tema inicial como standard sem marcar seleção
+    document.body.className = 'theme-standard';
 
     try {
         // 1. Validação de Hardware/Fingerprint (Cloudflare Worker)
@@ -394,8 +398,8 @@ function atualizarInterfaceSelecao() {
     const optStd = document.getElementById('opt-standard');
     const optPre = document.getElementById('opt-premium');
     if (optStd && optPre) {
-        optStd.classList.toggle('ativa', app.propostaAtiva === 'standard');
-        optPre.classList.toggle('ativa', app.propostaAtiva === 'premium');
+        optStd.classList.toggle('ativa', app.planoSelecionado && app.propostaAtiva === 'standard');
+        optPre.classList.toggle('ativa', app.planoSelecionado && app.propostaAtiva === 'premium');
     }
 }
 
@@ -428,12 +432,21 @@ function configurarControles() {
 
 function alternarProposta(tipo) {
     app.propostaAtiva = tipo;
+    app.planoSelecionado = true; // Marca que o usuário realizou uma escolha
     document.body.className = `theme-${tipo}`;
     atualizarInterfaceSelecao();
     
     // Re-preenche a view atual com os novos dados do JSON (Premium vs Standard)
     preencherDadosView();
     atualizarDinamicos(app.dados.versoes[tipo].dados);
+
+    // Se estiver na view de instalação, libera o botão avançar imediatamente
+    const btnAvancar = document.getElementById('btn-avancar');
+    if (app.etapas[app.etapaAtual] === 'instalacao' && btnAvancar) {
+        btnAvancar.disabled = false;
+        btnAvancar.style.opacity = "1";
+        btnAvancar.style.cursor = "pointer";
+    }
 }
 
 function navegar(direcao) {
@@ -456,8 +469,21 @@ async function carregarView() {
         container.innerHTML = html;
 
         document.getElementById('etapa-atual').innerText = app.etapaAtual + 1;
+        
+        const btnAvancar = document.getElementById('btn-avancar');
         document.getElementById('btn-voltar').style.visibility = app.etapaAtual === 0 ? 'hidden' : 'visible';
-        document.getElementById('btn-avancar').style.visibility = app.etapaAtual === (app.etapas.length - 1) ? 'hidden' : 'visible';
+        btnAvancar.style.visibility = app.etapaAtual === (app.etapas.length - 1) ? 'hidden' : 'visible';
+
+        // Lógica de bloqueio do botão Avançar na View de Instalação
+        if (nomeView === 'instalacao') {
+            btnAvancar.disabled = !app.planoSelecionado;
+            btnAvancar.style.opacity = app.planoSelecionado ? "1" : "0.5";
+            btnAvancar.style.cursor = app.planoSelecionado ? "pointer" : "not-allowed";
+        } else {
+            btnAvancar.disabled = false;
+            btnAvancar.style.opacity = "1";
+            btnAvancar.style.cursor = "pointer";
+        }
 
         preencherDadosView();
         atualizarInterfaceSelecao(); // Garante que os cards e o badge reflitam o estado atual

@@ -545,6 +545,7 @@ body::after {
     align-items: center;
     gap: 5px;
     margin-top: 5px;
+    white-space: nowrap;
 }
 
 .badge-dia-d {
@@ -558,6 +559,7 @@ body::after {
     margin-right: 10px;
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
@@ -1173,7 +1175,9 @@ body::after {
 }
 
 .product-description {
-    display: block !important;
+    display: flex !important;
+    align-items: center;
+    flex-wrap: wrap;
     width: 100% !important;
     font-weight: 700 !important; 
     color: var(--primaria) !important;
@@ -1183,20 +1187,26 @@ body::after {
 }
 
 .qty-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     background: var(--primaria);
     color: #FFF !important;
-    padding: 3px 8px;
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    height: 21px !important;
+    padding: 0 !important;
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 800;
-    margin-right: 10px;
-    line-height: 1;
-    min-width: 24px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    vertical-align: middle;
+    margin-right: 8px; /* Ajuste equilibrado para não ficar muito longe nem muito colado */
+    line-height: 0 !important; /* Anula o espaço extra de respiro da fonte para centralização vertical pura */
+    text-indent: 0 !important; /* Garante que não haja recuo à esquerda */
+    letter-spacing: 0 !important; /* Evita que o espaçamento entre letras empurre o texto para a esquerda */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    text-align: center;
 }
 
 .product-details-grid {
