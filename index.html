@@ -75,10 +75,18 @@
     </div>
 
     <!-- Modal de Foto Global -->
-    <div id="modal-foto" class="video-overlay" style="display:none;" onclick="window.app.fecharFoto()">
-        <div class="video-content-box" onclick="event.stopPropagation()">
-            <button class="btn-close-video" onclick="window.app.fecharFoto()">&times;</button>
-            <img id="foto-display" src="" alt="Padrão de Instalação" style="width: 100%; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+    <div id="modal-foto" class="video-overlay" style="display:none;" onclick="window.app.fecharCarrossel()">
+        <div class="carrossel-container" onclick="event.stopPropagation()">
+            <button class="nav-carrossel nav-prev" onclick="window.app.mudarSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <button class="btn-close-video" onclick="window.app.fecharCarrossel()" style="top: -40px; right: 0;">&times;</button>
+            <img id="foto-display" src="" alt="Dossiê de Instalação">
+            
+            <button class="nav-carrossel nav-next" onclick="window.app.mudarSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </div>
 

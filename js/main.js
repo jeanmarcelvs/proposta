@@ -9,7 +9,16 @@ const app = {
     planoSelecionado: false, // Controla se o usuário já escolheu um padrão de projeto
     etapaAtual: 0,
     dados: null,
-    etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro']
+    etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro'],
+    carrossel: {
+        index: 0,
+        fotos: [],
+        intervalo: null,
+        cache: {
+            standard: null,
+            premium: null
+        }
+    }
 };
 
 // Expõe para o escopo global para o onclick do HTML
@@ -33,19 +42,95 @@ window.app = {
             video.src = "";
         }
     },
-    abrirFoto: (url) => {
+    abrirCarrossel: async (tipo) => {
+        // Se as fotos já foram mapeadas nesta sessão, usa o cache para evitar novos 404 no console
+        if (app.carrossel.cache[tipo]) {
+            app.carrossel.fotos = app.carrossel.cache[tipo];
+            app.carrossel.index = 0;
+            const modal = document.getElementById('modal-foto');
+            if (modal) {
+                modal.style.display = 'flex';
+                atualizarImagemCarrossel();
+                iniciarAutoCarrossel();
+            }
+            return;
+        }
+
+        mostrarLoading(true);
+        const fotosEncontradas = [];
+        
+        // Função auxiliar para verificar se o arquivo existe no servidor
+        const verificarArquivo = async (url) => {
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                // Verifica se o arquivo existe e se não é uma página HTML (erro comum em servidores que redirecionam 404)
+                return response.ok && !response.headers.get('content-type')?.includes('text/html');
+            } catch { return false; }
+        };
+
+        // 1. Busca fotos específicas do tipo (standard ou premium) sequencialmente (1, 2, 3...)
+        let i = 1;
+        while (i < 10 && await verificarArquivo(`assets/inst_${tipo}_${i}.webp`)) {
+            fotosEncontradas.push(`assets/inst_${tipo}_${i}.webp`);
+            i++;
+        }
+
+        // 2. Busca fotos neutras sequencialmente (1, 2, 3...) para adicionar ao final
+        let j = 1;
+        while (j < 10 && await verificarArquivo(`assets/inst_neutro_${j}.webp`)) {
+            fotosEncontradas.push(`assets/inst_neutro_${j}.webp`);
+            j++;
+        }
+
+        // Salva no cache da sessão
+        app.carrossel.cache[tipo] = fotosEncontradas;
+        app.carrossel.fotos = fotosEncontradas;
+        app.carrossel.index = 0;
+
         const modal = document.getElementById('modal-foto');
-        const img = document.getElementById('foto-display');
-        if (modal && img) {
-            img.src = url;
+        if (modal && fotosEncontradas.length > 0) {
+            mostrarLoading(false);
             modal.style.display = 'flex';
+            atualizarImagemCarrossel();
+            iniciarAutoCarrossel();
+        } else {
+            mostrarLoading(false);
+            console.warn("Nenhuma imagem encontrada para o padrão selecionado.");
         }
     },
-    fecharFoto: () => {
+    fecharCarrossel: () => {
         const modal = document.getElementById('modal-foto');
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.style.display = 'none';
+            clearInterval(app.carrossel.intervalo);
+        }
+    },
+    mudarSlide: (direcao) => {
+        clearInterval(app.carrossel.intervalo);
+        app.carrossel.index = (app.carrossel.index + direcao + app.carrossel.fotos.length) % app.carrossel.fotos.length;
+        atualizarImagemCarrossel();
+        iniciarAutoCarrossel();
     }
 };
+
+function atualizarImagemCarrossel() {
+    const img = document.getElementById('foto-display');
+    if (img && app.carrossel.fotos.length > 0) {
+        img.style.opacity = '0';
+        setTimeout(() => {
+            img.src = app.carrossel.fotos[app.carrossel.index];
+            img.onload = () => { img.style.opacity = '1'; };
+        }, 250);
+    }
+}
+
+function iniciarAutoCarrossel() {
+    clearInterval(app.carrossel.intervalo);
+    app.carrossel.intervalo = setInterval(() => {
+        app.carrossel.index = (app.carrossel.index + 1) % app.carrossel.fotos.length;
+        atualizarImagemCarrossel();
+    }, 5000);
+}
 
 /**
  * Inicialização do Sistema
@@ -474,6 +559,8 @@ async function carregarView() {
         document.getElementById('btn-voltar').style.visibility = app.etapaAtual === 0 ? 'hidden' : 'visible';
         btnAvancar.style.visibility = app.etapaAtual === (app.etapas.length - 1) ? 'hidden' : 'visible';
 
+        gerenciarBotaoWhatsapp(nomeView);
+
         // Lógica de bloqueio do botão Avançar na View de Instalação
         if (nomeView === 'instalacao') {
             btnAvancar.disabled = !app.planoSelecionado;
@@ -490,6 +577,30 @@ async function carregarView() {
     } catch (e) {
         console.error("Erro ao carregar view:", e);
         container.innerHTML = `<p style="text-align:center; padding:20px;">Erro ao carregar etapa: ${nomeView}</p>`;
+    }
+}
+
+/**
+ * Gerencia a exibição do botão flutuante do WhatsApp
+ * Garante que ele fique fora do contexto de transform das views
+ */
+function gerenciarBotaoWhatsapp(view) {
+    let btn = document.getElementById('btn-whatsapp-global');
+    
+    if (view === 'financeiro') {
+        if (!btn) {
+            btn = document.createElement('a');
+            btn.id = 'btn-whatsapp-global';
+            btn.className = 'btn-whatsapp-float';
+            btn.href = 'https://wa.me/5582999469016';
+            btn.target = '_blank';
+            btn.rel = 'noopener noreferrer';
+            btn.innerHTML = '<i class="fab fa-whatsapp"></i><span>Aprovar<br>projeto</span>';
+            document.body.appendChild(btn);
+        }
+        btn.style.display = 'flex';
+    } else {
+        if (btn) btn.style.display = 'none';
     }
 }
 
