@@ -525,21 +525,37 @@ body::after {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.view-content.exiting {
-    opacity: 0;
-    transform: translateY(-15px);
+/* Animações de Transição de Página Horizontal (Efeito de Página Movimentando) */
+@keyframes slideInRight {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes slideUpFade {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes slideInLeft {
+    from { transform: translateX(-100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100px); opacity: 0; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100px); opacity: 0; }
+}
+
+.view-content.slide-in-right { animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.view-content.slide-in-left { animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.view-content.slide-out-left { animation: slideOutLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.view-content.slide-out-right { animation: slideOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Fallback para carregamento inicial */
 .animate-in {
-    animation: slideUpFade 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .campo-info {

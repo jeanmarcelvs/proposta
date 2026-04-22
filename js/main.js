@@ -620,17 +620,26 @@ function navegar(direcao) {
     if (novaEtapa >= 0 && novaEtapa < app.etapas.length) {
         app.isNavigating = true;
         app.etapaAtual = novaEtapa;
-        carregarView();
+        carregarView(direcao);
         window.scrollTo(0, 0);
     }
 }
 
-async function carregarView() {
+async function carregarView(direcao = 1) {
     const container = document.getElementById('view-container');
+    const oldContent = container.querySelector('.view-content');
     const nomeView = app.etapas[app.etapaAtual];
     
-    // 1. Oculta a view atual imediatamente para evitar percepção de 'troca'
-    container.style.opacity = '0';
+    // 1. Inicia animação de saída horizontal no conteúdo atual
+    if (oldContent) {
+        oldContent.classList.remove('animate-in', 'slide-in-left', 'slide-in-right');
+        oldContent.classList.add(direcao === 1 ? 'slide-out-left' : 'slide-out-right');
+        
+        // Pequena pausa para a animação de saída ser percebida antes de trocar o HTML
+        await new Promise(r => setTimeout(r, 200));
+    } else {
+        container.style.opacity = '0';
+    }
 
     // 2. Agenda o Splash apenas se a carga demorar mais de 0.7 segundos
     loadingTimer = setTimeout(() => {
@@ -642,8 +651,14 @@ async function carregarView() {
         if (!response.ok) throw new Error(`Erro ao carregar HTML: ${nomeView}`);
         const html = await response.text();
 
-        // Injeta o conteúdo e os dados
+        // 3. Injeta o novo conteúdo e define a animação de entrada baseada na direção
         container.innerHTML = html;
+        const newContent = container.querySelector('.view-content');
+        if (newContent) {
+            newContent.classList.remove('animate-in'); // Remove a classe estática para não conflitar
+            newContent.classList.add(direcao === 1 ? 'slide-in-right' : 'slide-in-left');
+        }
+
         preencherDadosView();
         atualizarInterfaceSelecao();
 
@@ -671,10 +686,10 @@ async function carregarView() {
         
         setTimeout(() => {
             window.scrollTo(0, 0);
-            container.style.opacity = '1';
+            if (!newContent) container.style.opacity = '1';
             mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
             app.isNavigating = false;
-        }, 50);
+        }, 300); // Aguarda a conclusão visual da animação de entrada
 
     } catch (e) {
         console.error("Erro ao carregar view:", e);
