@@ -247,6 +247,10 @@ body::after {
 }
 
 .header-localizacao {
+    display: flex;
+    flex-direction: column; /* Empilha o label e o span */
+    align-items: flex-end;   /* Alinha ambos à direita */
+    text-align: right;
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--secundaria);
@@ -255,7 +259,7 @@ body::after {
 .header-localizacao span {
     color: var(--primaria);
     font-weight: 800;
-    margin-left: 5px;
+    margin-left: 0;
 }
 
 
@@ -679,12 +683,11 @@ body::after {
     display: none; /* Inicia oculto para não aparecer antes da validação */
     opacity: 0;
     justify-content: center;
-    align-items: center; /* Centralização vertical total */
-    padding: 40px 20px; /* Respiro superior e inferior para evitar que o modal encoste nas bordas */
+    align-items: center;
+    padding: 20px; /* Ajustado para melhor aproveitamento em telas pequenas */
     overflow-y: auto; /* Permite rolar a tela inteira caso o conteúdo cresça */
     transition: opacity 0.8s ease;
     backdrop-filter: blur(10px);
-    align-items: flex-start; /* Permite scroll fluido em telas muito pequenas */
 }
 
 .modal-conteudo {
@@ -1279,7 +1282,8 @@ body::after {
 }
 
 @media (max-width: 650px) {
-    .pilares-sistema {
+    .pilares-sistema,
+    .selecao-instalacao-container {
         grid-template-columns: 1fr;
         gap: 20px;
     }
