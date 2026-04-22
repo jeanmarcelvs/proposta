@@ -109,17 +109,18 @@ body.loading-active {
     --bg-texture: radial-gradient(circle at 20% 20%, #FFFFFF 0%, #BDC7D4 100%); /* Azul Aço Metálico (Deixa o fundo mais denso e Select) */
 }
 
+html,
 body {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    height: 100%;
     width: 100%;
     font-family: 'Inter', sans-serif;
     background: var(--bg-texture) fixed;
     color: var(--texto);
     font-size: 1rem;
-    overflow-x: hidden;
-    transition: var(--transicao);
+    overflow-x: hidden; /* Previne o escape da logo para a direita */
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Overlay de Enquadramento Técnico (Substitui a grade) */
@@ -151,7 +152,9 @@ body::after {
 /* Cabeçalho Fixo */
 .header-fixo {
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 0; 
+    left: 0;
+    width: 100vw !important; /* Força a largura da viewport, ignorando o scroll interno */
     height: 80px;
     background: var(--primaria);
     display: flex;
@@ -160,14 +163,17 @@ body::after {
     padding: 0 20px;
     z-index: 1000;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transform: translateZ(0); /* Força aceleração de hardware */
+    transform: translateZ(0);
     -webkit-backface-visibility: hidden;
+    contain: layout size; /* Isola o cabeçalho do restante do documento */
 }
 
 /* Rodapé Fixo */
 .footer-fixo {
     position: fixed;
-    bottom: 0; left: 0; right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100vw !important;
     min-height: 90px;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(15px);
@@ -180,8 +186,9 @@ body::after {
     border-top: 1px solid rgba(15, 23, 42, 0.08);
     z-index: 1000;
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.04);
-    transform: translateZ(0); /* Força aceleração de hardware */
+    transform: translateZ(0);
     -webkit-backface-visibility: hidden;
+    contain: layout size;
 }
 
 .theme-premium .footer-fixo {
@@ -636,6 +643,8 @@ body::after {
     flex-direction: column;
     gap: 10px;
     opacity: 0; /* Começa invisível para as animações de slide assumirem sem "flash" */
+    will-change: transform, opacity; /* Prepara a GPU para a movimentação */
+    backface-visibility: hidden;
 }
 
 /* Animações de Transição de Página Horizontal (Efeito de Página Movimentando) */
@@ -1433,11 +1442,7 @@ body::after {
     gap: 8px;
     margin-top: 2px;
     opacity: 0.8;
-    animation: shimmerText 3s infinite linear;
-    background: linear-gradient(90deg, var(--detalhe) 0%, #fff 50%, var(--detalhe) 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    display: block;
 }
 
 .guide-icon-box {

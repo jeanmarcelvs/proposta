@@ -702,12 +702,16 @@ async function carregarView(direcao = 1) {
         clearTimeout(loadingTimer);
         
         setTimeout(() => {
-            container.style.opacity = '1'; // Garante que o container fique visível após a carga
+            // 1. Move para o topo ANTES de tornar visível
             window.scrollTo(0, 0);
             
-            // Hack de Reflow: Força o navegador a recalcular o layout dos elementos fixos
-            void document.body.offsetHeight;
+            // 2. Torna visível e executa animação de slide
+            container.style.opacity = '1'; // Garante que o container fique visível após a carga
             
+            // 3. Super Reflow Hack: Altera uma propriedade mínima para forçar o redesenho dos elementos fixos
+            document.documentElement.style.paddingRight = '0.01px';
+            setTimeout(() => { document.documentElement.style.paddingRight = '0px'; }, 50);
+
             mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
             app.isNavigating = false;
         }, 300); // Aguarda a conclusão visual da animação de entrada
