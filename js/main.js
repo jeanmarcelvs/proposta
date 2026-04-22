@@ -7,6 +7,7 @@ const app = {
     primeiroNome: new URLSearchParams(window.location.search).get('n'),
     propostaAtiva: 'standard', 
     planoSelecionado: false, // Controla se o usuário já escolheu um padrão de projeto
+    isNavigating: false, // Impede disparos múltiplos durante a transição
     etapaAtual: 0,
     dados: null,
     etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro'],
@@ -20,6 +21,10 @@ const app = {
         }
     }
 };
+
+// Variáveis para controle de gestos (Swipe)
+let touchStartX = 0;
+let touchStartY = 0;
 
 let loadingTimer = null;
 
@@ -184,6 +189,20 @@ async function init() {
         // Só revela o modal de aceite após TODAS as validações
         const modalAceite = document.getElementById('modal-aceite');
         if (modalAceite) {
+            // Tenta obter o primeiro nome dos dados da proposta se não estiver na URL
+            let nomeParaExibir = app.primeiroNome;
+            
+            if (!nomeParaExibir && app.dados && app.dados.clienteNome) {
+                nomeParaExibir = app.dados.clienteNome.split(' ')[0];
+            } else if (!nomeParaExibir) {
+                nomeParaExibir = "Visitante"; // Fallback de cortesia
+            }
+
+            const saudacao = document.getElementById('saudacao-cliente');
+            if (saudacao) {
+                saudacao.innerText = `Olá, ${nomeParaExibir}!`;
+            }
+
             modalAceite.style.display = 'flex';
             requestAnimationFrame(() => {
                 modalAceite.style.opacity = '1';
@@ -376,7 +395,15 @@ function preencherDadosView() {
 
             // Formatação de Moeda
             if (!isNaN(valorNumerico) && ehCampoFinanceiro && typeof valor !== 'string') {
-                campo.innerText = valorNumerico.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const options = { style: 'currency', currency: 'BRL' };
+                
+                // Remove centavos para estimativas de faturas (evita falsa precisão)
+                if (chaveTratada.toLowerCase().includes('fatura')) {
+                    options.minimumFractionDigits = 0;
+                    options.maximumFractionDigits = 0;
+                }
+                
+                campo.innerText = valorNumerico.toLocaleString('pt-BR', options);
             } else if (chaveTratada === 'potenciaKwp' || chaveOriginal === 'potencia_kwp') {
                 campo.innerText = `${Number(valor).toFixed(2)} kWp`;
             } else if (chaveTratada === 'paybackSimples' || chaveOriginal === 'payback') {
@@ -515,6 +542,7 @@ function configurarAceite() {
         modal.style.opacity = '0';
         setTimeout(() => {
             modal.style.display = 'none';
+            configurarGestos(); // Ativa os gestos apenas após o aceite do termo
             carregarView();
         }, 400);
     });
@@ -523,6 +551,42 @@ function configurarAceite() {
 function configurarControles() {
     document.getElementById('btn-avancar').addEventListener('click', () => navegar(1));
     document.getElementById('btn-voltar').addEventListener('click', () => navegar(-1));
+}
+
+/**
+ * Configura detecção de gestos para smartphones
+ */
+function configurarGestos() {
+    const container = document.getElementById('view-container');
+    if (!container) return;
+
+    container.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    container.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+
+        // Sensibilidade do arrasto e validação de direção (Horizontal > Vertical)
+        const threshold = 70;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
+            // Verifica se não há modais abertos que capturem o foco
+            const algumModalAberto = ['modal-video', 'modal-foto', 'modal-info-premium', 'modal-aceite'].some(id => {
+                const el = document.getElementById(id);
+                return el && el.style.display === 'flex';
+            });
+
+            if (!algumModalAberto) {
+                if (dx < 0) navegar(1);  // Swipe para Esquerda -> Avançar
+                if (dx > 0) navegar(-1); // Swipe para Direita -> Voltar
+            }
+        }
+    }, { passive: true });
 }
 
 function alternarProposta(tipo) {
@@ -545,8 +609,16 @@ function alternarProposta(tipo) {
 }
 
 function navegar(direcao) {
+    if (app.isNavigating) return;
+
+    // Segurança: Bloqueio de avanço na etapa de instalação sem plano selecionado
+    if (direcao === 1 && app.etapas[app.etapaAtual] === 'instalacao' && !app.planoSelecionado) {
+        return;
+    }
+
     const novaEtapa = app.etapaAtual + direcao;
     if (novaEtapa >= 0 && novaEtapa < app.etapas.length) {
+        app.isNavigating = true;
         app.etapaAtual = novaEtapa;
         carregarView();
         window.scrollTo(0, 0);
@@ -601,6 +673,7 @@ async function carregarView() {
             window.scrollTo(0, 0);
             container.style.opacity = '1';
             mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
+            app.isNavigating = false;
         }, 50);
 
     } catch (e) {

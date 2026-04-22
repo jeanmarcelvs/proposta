@@ -23,7 +23,7 @@
 
     <div id="modal-aceite" class="overlay-aceite">
         <div class="modal-conteudo">
-            <div class="modal-logo-wrapper">
+            <div class="modal-header-premium">
                 <div class="logo-container">
                     <span class="nome">Jean Marcel</span>
                     <div class="divider"></div>
@@ -31,20 +31,39 @@
                 </div>
             </div>
 
-            <div class="texto-termo">
-                <p class="termo-destaque-alerta"><i class="fas fa-circle-exclamation"></i> Esta não é uma simples oferta de kit solar (velha prática, limitada, que não prioriza a engenharia de durabilidade e segurança).</p>
-                <p><span class="ponto-discreto"></span> Trata-se de um modelo de trabalho onde atuo como seu <span class="texto-destaque-preto">consultor e responsável técnico</span>.</p>
-                <p><span class="ponto-discreto"></span> Gerenciando a integração entre as suas necessidades, conforme a realidade da sua propriedade, com as <span class="texto-destaque-preto">melhores tecnologias e práticas da engenharia elétrica</span>.</p>
-                <p><span class="ponto-discreto"></span> O objetivo é garantir uma Solução que entregue <span class="texto-destaque-preto">performance real, durabilidade e segurança</span>.</p>
+            <div class="modal-body-scroll">
+                <h2 id="saudacao-cliente" class="saudacao-modal"></h2>
+                <div class="texto-termo">
+                    <div class="termo-item destaque-alerta">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        <p><span class="alerta-cor"><strong>Esta não é uma simples oferta de "kit solar".</strong></span> 
+                        É uma <strong>Consultoria e Responsabilidade Técnica</strong> focada na viabilidade do seu investimento.</p>
+                    </div>
+
+                    <div class="termo-item">
+                        <i class="fas fa-pen-ruler"></i>
+                        <p><strong>Concepção Estratégica:</strong> Projetos personalizados para o melhor equilíbrio entre investimento e retorno financeiro.</p>
+                    </div>
+
+                    <div class="termo-item">
+                        <i class="fas fa-check-double"></i>
+                        <p><strong>Gestão de Confiabilidade:</strong> Seleção criteriosa de tecnologias e marcas para garantir a estabilidade e a vida útil esperada da geração.</p>
+                    </div>
+
+                    <div class="termo-item">
+                        <i class="fas fa-shield-halved"></i>
+                        <p><strong>Segurança em 1º lugar:</strong> Rigor técnico garantindo o comprometimento com as normas técnicas e de segurança (proteção ao patrimônio e à família).</p>
+                    </div>
+                </div>
+
+                <label class="checkbox-container">
+                    <input type="checkbox" id="check-aceite">
+                    <span class="checkmark"></span>
+                    Li e compreendo o modelo de trabalho.
+                </label>
+
+                <button id="btn-acessar" class="btn-acesso-bloqueado" disabled>Acessar Proposta</button>
             </div>
-
-            <label class="checkbox-container">
-                <input type="checkbox" id="check-aceite">
-                <span class="checkmark"></span>
-                Li e compreendo o modelo de trabalho.
-            </label>
-
-            <button id="btn-acessar" class="btn-acesso-bloqueado" disabled>Acessar Proposta</button>
         </div>
     </div>
 
@@ -53,11 +72,6 @@
             <span class="nome">Jean Marcel</span>
             <div class="divider"></div>
             <span class="subtitulo">Engenheiro Eletricista</span>
-        </div>
-
-        <div class="seletor-proposta">
-            <button id="btn-standard" class="btn-toggle active">Standard</button>
-            <button id="btn-premium" class="btn-toggle">Premium</button>
         </div>
     </header>
 

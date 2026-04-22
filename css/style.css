@@ -6,7 +6,7 @@
 }
 
 :root {
-    --cinza-fundo: #FDFDFD;
+    --cinza-fundo: #F9FAFB; /* Cinza claríssimo (Stone 50) para neutralidade total */
     --borda-suave: rgba(0, 0, 0, 0.06);
     --transicao: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     --font-header: 'Inter', sans-serif;
@@ -82,24 +82,25 @@ body.loading-active {
 
 /* Tema Standard: Identidade Técnica e Limpa */
 .theme-standard {
-    --primaria: #0F172A; 
-    --secundaria: #475569; 
-    --detalhe: #1E293B;  /* Escurecido para melhor leitura */
+    --primaria: #000000;
+    --secundaria: #737373; /* Cinza Stone médio */
+    --detalhe: #262626;  /* Grafite neutro */
     --texto: #1E293B;    
     --bg-card: #FFFFFF;
-    --bg-texture: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #F1F5F9 100%);
+    --bg-texture: #F9FAFB; /* Fundo sólido e limpo, sem tons azulados */
 }
 
 /* Tema Premium: Identidade de Alto Valor */
 .theme-premium {
-    --primaria: #0F172A; 
-    --secundaria: #334155; 
-    --detalhe: #B5935B;  
-    --texto: #0F172A;    
-    --cinza-fundo: #F9F7F2; /* Tom champagne muito sutil */
+    --primaria: #1B263B; /* Matte Deep Blue (O azul "misterioso") */
+    --secundaria: #415A77; /* Azul Metálico Fosco */
+    --detalhe: #415A77;  
+    --detalhe-rgb: 65, 90, 119;
+    --texto: #1B263B;    
+    --cinza-fundo: #F8FAFC; /* Branco Gelo Corporativo */
     --bg-card: #FFFFFF;
-    --borda-suave: rgba(181, 147, 91, 0.15);
-    --bg-texture: radial-gradient(circle at 20% 20%, #FFFFFF 0%, #F4F1EA 100%);
+    --borda-suave: rgba(0, 0, 0, 0.12);
+    --bg-texture: radial-gradient(circle at 20% 20%, #FFFFFF 0%, #BDC7D4 100%); /* Azul Aço Metálico (Deixa o fundo mais denso e Select) */
 }
 
 body {
@@ -107,7 +108,6 @@ body {
     padding: 0;
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
-    background-color: var(--cinza-fundo);
     background: var(--bg-texture) fixed;
     color: var(--texto);
     font-size: 1rem;
@@ -155,28 +155,6 @@ body::after {
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Seletor removido do topo para ficar dentro da view */
-.seletor-proposta {
-    display: none;
-}
-
-.btn-toggle {
-    background: transparent;
-    color: #fff;
-    border: 1px dashed rgba(255,255,255,0.4);
-    padding: 8px 25px;
-    cursor: pointer;
-    font-weight: 600;
-    text-transform: uppercase;
-    transition: var(--transicao);
-}
-
-.btn-toggle.active {
-    background: rgba(255,255,255,0.15);
-    border-style: solid;
-    border-color: var(--detalhe);
-}
-
 /* Rodapé Fixo */
 .footer-fixo {
     position: fixed;
@@ -215,6 +193,7 @@ body::after {
     margin: 0 auto;
     font-size: 1rem;
     transition: opacity 0.3s ease-in-out;
+    touch-action: pan-y; /* Permite scroll vertical nativo e reserva o horizontal para gestos */
 }
 
 #view-container h2 { 
@@ -227,35 +206,6 @@ body::after {
     padding-left: 15px;
     padding-bottom: 0;
     color: var(--primaria); 
-}
-
-.view-header p {
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: var(--texto);
-    margin: -5px 0 0 0;
-    padding-left: 18px;
-    text-transform: none; /* Descrição tradicional */
-    opacity: 0.9;
-}
-
-/* Nota Técnica de Importância */
-.nota-tecnica-header {
-    background: rgba(241, 245, 249, 0.5);
-    border: 1px solid var(--borda-suave);
-    border-left: 4px solid var(--detalhe);
-    padding: 12px 18px;
-    margin: 10px 0 20px 0;
-    border-radius: 4px;
-}
-
-.nota-tecnica-header p {
-    font-size: 0.95rem !important; /* Fonte menor para densidade técnica */
-    line-height: 1.5;
-    color: var(--secundaria);
-    margin: 0;
-    padding-left: 0 !important;
-    font-weight: 500;
 }
 
 /* Badges para Scannability Técnica */
@@ -282,52 +232,40 @@ body::after {
     text-shadow: none;
 }
 
-/* Estrutura de Dossiê para a Capa da Proposta */
-.apresentacao-dossie {
+/* Cabeçalho de View com Localização Alinhada */
+.view-header-split {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 5px 0 20px 18px;
-    position: relative;
-    margin-bottom: 0px;
+    justify-content: space-between;
+    align-items: flex-end; /* Alinha o texto pela base para harmonia visual */
+    margin-bottom: 25px;   /* Espaçamento em relação à Geração Mensal */
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.dossie-bloco {
-    display: flex;
-    flex-direction: column;
+.view-header-split h2 {
+    margin-bottom: 0 !important;
 }
 
-.dossie-bloco label {
-    font-size: 0.8rem;
-    text-transform: none;
-    letter-spacing: 0.05em;
-    color: var(--secundaria); 
-    font-weight: 600;
-    margin-bottom: 0px;
+.header-localizacao {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--secundaria);
 }
 
-.dossie-bloco .valor {
-    font-size: 1.15rem;
+.header-localizacao span {
+    color: var(--primaria);
     font-weight: 800;
-    color: var(--primaria); 
-    line-height: 1.2;
+    margin-left: 5px;
 }
 
-.dossie-bloco .sub-valor {
-    font-size: 1.15rem;
-    opacity: 0.7;
-    margin-top: 2px;
-}
 
-/* Estilo da Logo Compacta */
 .logo-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 5px 0;
-    max-width: fit-content;
-    font-family: 'Inter', sans-serif;
+    flex-direction: column; /* Para empilhar nome e subtítulo */
+    align-items: center; /* Para centralizar o bloco de texto */
+    gap: 2px; /* Espaçamento entre nome e subtítulo */
+    padding: 10px;
+    text-align: center; /* Fallback para navegadores antigos */
 }
 
 .logo-container .nome {
@@ -345,6 +283,19 @@ body::after {
     height: 1px;
     margin: 4px 0;
     background: linear-gradient(90deg, transparent 0%, var(--detalhe) 50%, transparent 100%);
+    transition: var(--transicao);
+}
+
+.theme-premium .logo-container .divider {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        #cbd5e1 10%, /* Diamond Silver base */
+        #ffffff 50%, /* Shine */
+        #cbd5e1 90%, 
+        transparent 100%
+    );
+    height: 1.5px;
+    opacity: 1;
 }
 
 .logo-container .subtitulo {
@@ -354,66 +305,11 @@ body::after {
     text-transform: uppercase;
     letter-spacing: 0.35em;
     margin: 0;
-    line-height: 1;
-    margin-right: -0.35em;
+    line-height: 1.2; /* Ajuste para melhor legibilidade */
+    margin-right: -0.35em; /* Mantido para ajuste visual */
+    white-space: nowrap; /* Impede quebra de linha */
 }
 
-.assinatura-final {
-    margin-top: 50px;
-    padding: 35px 25px;
-    background: transparent;
-    border: 1px solid var(--borda-suave);
-    border-top: 3px solid var(--detalhe);
-    border-radius: var(--shape-technic); 
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-}
-
-.signature-header {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--cinza-fundo);
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--detalhe);
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-transform: none;
-    letter-spacing: 2px;
-    white-space: nowrap;
-}
-
-.signature-seal {
-    width: 60px;
-    height: 60px;
-    border: 1px solid var(--detalhe);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    color: var(--detalhe);
-    font-size: 1.5rem;
-    background: rgba(var(--detalhe-rgb), 0.05);
-}
-
-.technical-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--primaria);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-}
 /* Certificação Técnica Ultra-Sofisticada */
 .certification-section {
     margin-top: 30px;
@@ -499,53 +395,6 @@ body::after {
     color: #64748b;
     margin-top: 5px;
     letter-spacing: 1px;
-}
-
-.btn-contract-ultra {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--primaria);
-    color: #fff !important;
-    text-decoration: none;
-    padding: 20px 30px;
-    border-radius: 12px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 20px rgba(var(--primaria-rgb), 0.2);
-}
-
-.btn-contract-ultra:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(var(--primaria-rgb), 0.3);
-    background: var(--detalhe);
-}
-
-/* Cronograma Profissional de Pagamento */
-.cronograma-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.cronograma-step {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 18px;
-    background: #FFF;
-    border: 1px solid var(--borda-suave);
-    border-radius: var(--shape-technic); 
-    transition: var(--transicao);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-}
-
-.cronograma-step:hover {
-    border-color: var(--detalhe);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 
 .cronograma-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
@@ -665,24 +514,6 @@ body::after {
     width: auto !important;
 }
 
-.assinatura-nome {
-    font-family: 'Inter', sans-serif;
-    font-style: italic;
-    font-size: 1.8rem;
-    color: var(--primaria);
-    line-height: 1;
-    margin-bottom: 5px;
-}
-
-.assinatura-crea {
-    font-size: 0.9rem;
-    color: var(--detalhe);
-    letter-spacing: 1px;
-    text-transform: none;
-    font-weight: 700;
-    opacity: 0.8;
-}
-
 #view-container h3 { font-size: 1rem; margin-top: 25px; letter-spacing: 0.05em; color: var(--detalhe); font-weight: 800; }
 
 /* Utilitários para exibição densa de dados */
@@ -780,42 +611,6 @@ body::after {
     display: block;
 }
 
-.container-hibrido {
-    margin-top: 12px;
-    padding: 10px;
-    background: rgba(var(--detalhe-rgb), 0.04);
-    border-left: 3px solid var(--detalhe);
-    border-radius: 0 4px 4px 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.hibrido-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--detalhe);
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: none;
-    letter-spacing: 1px;
-}
-
-.hibrido-item span {
-    font-size: 0.9rem !important;
-    font-weight: 700 !important;
-    display: inline !important; 
-    width: auto !important;
-}
-
-.hibrido-item i {
-    font-size: 0.8rem;
-    width: 16px;
-    text-align: center;
-}
-
 .view-footer-msg {
     font-size: 0.8rem;
     color: #64748b;
@@ -889,76 +684,98 @@ body::after {
     overflow-y: auto; /* Permite rolar a tela inteira caso o conteúdo cresça */
     transition: opacity 0.8s ease;
     backdrop-filter: blur(10px);
+    align-items: flex-start; /* Permite scroll fluido em telas muito pequenas */
 }
 
 .modal-conteudo {
     background: white;
-    padding: 30px;
     border-radius: 12px;
     max-width: 400px;
     width: 90%;
+    margin: auto; /* Centralização inteligente */
     text-align: center;
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh; /* Garante que o modal caiba em qualquer smartphone */
+    overflow: hidden;
 }
 
+.modal-header-premium {
+    background: #0F172A; /* Azul Marinho Corporativo */
+    padding: 25px 20px; /* Reduzido para isolar a logo com elegância */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0; /* Não deixa o header achatar em telas pequenas */
+}
 
+.saudacao-modal {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 10px;
+    margin-bottom: 25px; /* Aumentado para dar mais destaque à saudação */
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-align: left;
+}
 
-.logo-modal { max-width: 120px; margin-bottom: 20px; }
+.modal-body-scroll {
+    padding: 20px 25px;
+    overflow-y: auto;
+    flex-grow: 1;
+    -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+}
 
 .texto-termo {
     text-align: justify;
-    text-justify: inter-word;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #475569;
-    margin-bottom: 20px;
-}
-
-.termo-destaque-alerta {
-    background: #FFFFFF;
-    border: 1px solid var(--borda-suave);
-    border-left: 4px solid var(--detalhe);
-    padding: 16px 20px;
-    border-radius: 4px;
-    color: var(--primaria);
-    font-weight: 600;
-    font-size: 0.92rem;
-    line-height: 1.4;
-    margin-bottom: 20px !important;
-    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.04);
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    text-align: left; /* Garante leitura técnica fluida */
-}
-
-.termo-destaque-alerta i {
-    color: var(--detalhe);
-    font-size: 1.1rem;
-    margin-top: 2px;
-    flex-shrink: 0;
-}
-
-.texto-destaque-preto {
+    text-justify: inter-word; /* Distribui o espaço entre palavras, não entre letras */
+    hyphens: auto; /* Essencial para evitar espaços largos em containers estreitos */
+    text-align-last: left; /* Garante que a última linha de cada bloco não seja esticada */
+    font-size: 0.85rem; /* Compactação documental */
+    line-height: 1.4; /* Redução do entrelinhas para ganhar espaço vertical */
     color: #000000;
+    letter-spacing: -0.01em; /* Fonte mais "magra" horizontalmente */
 }
 
-.ponto-discreto {
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    background-color: var(--detalhe);
-    border-radius: 50%;
-    margin-right: 12px;
-    vertical-align: middle;
-    opacity: 0.5;
+.termo-item {
+    display: flex;
+    align-items: flex-start; /* Alinhamento garantido no topo esquerdo */
+    gap: 10px; /* Ícones mais próximos do texto */
+    margin-bottom: 1.2rem; /* Simula exatamente a altura de uma linha de texto vazia (font-size * line-height) */
+}
+.termo-item p {
+    margin: 0; /* Remove margens padrão do parágrafo, essencial para alinhamento com o flex */
+}
+
+.termo-item i {
+    font-size: 0.85rem; /* Ícones agora são discretos, do tamanho da fonte */
+    /* margin-top: 2px; removido: align-items: flex-start e margin:0 no p são suficientes */
+    flex-shrink: 0;
+    width: 16px; /* Ocupa menos espaço lateral */
+    text-align: center;
+    color: var(--detalhe);
+    opacity: 0.7; /* Mais discreto para não "gritar" no documento */
+}
+
+.alerta-cor {
+    color: #C45A30;
+    font-weight: 600;
+}
+
+.termo-item.destaque-alerta i {
+    color: #C45A30;
+    opacity: 1; /* Alerta mantém visibilidade total */
+    font-size: 0.9rem; /* Levemente maior apenas para o alerta */
 }
 
 .checkbox-container {
     display: block;
-    margin-bottom: 25px;
+    margin-bottom: 15px; /* Reduzido para aproximar o botão */
     font-size: 0.9rem;
     cursor: pointer;
+    color: #000000;
 }
 
 .btn-acesso-bloqueado {
@@ -974,9 +791,10 @@ body::after {
 }
 
 .btn-acesso-bloqueado.ativo {
-    background: var(--primaria);
+    background: #0F172A; /* Cor de autoridade Select */
     color: white;
     cursor: pointer;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
 }
 
 .selecao-instalacao-container {
@@ -1025,11 +843,7 @@ body::after {
     filter: grayscale(0.4); 
 }
 
-.premium-tag.alert {
-    background: #e11d48; 
-    top: 0;
-    right: 0;
-}
+
 
 .card-opcao.disabled .valor-card {
     color: #64748b;
@@ -1042,12 +856,14 @@ body::after {
 .status-alerta-destaque {
     color: #e11d48 !important; /* Vermelho Alerta */
     opacity: 1 !important;     /* Remove o efeito de desativado apenas deste texto */
-    font-weight: 800;
+    font-weight: 400;
     font-size: 0.85rem !important;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.status-alerta-destaque i {
+    margin-right: 6px;
 }
 
 .icon-descontinuado {
@@ -1089,8 +905,8 @@ body::after {
     cursor: pointer;
     transition: var(--transicao);
     margin-left: 6px;
-    border: 1.5px solid var(--detalhe);
-    box-shadow: 0 0 0 0 rgba(181, 147, 91, 0.4);
+    border: 1.5px solid var(--detalhe); /* Borda em Azul Petróleo */
+    box-shadow: 0 0 0 0 rgba(var(--detalhe-rgb), 0.4); /* Sombra em Azul Petróleo */
     vertical-align: middle;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1105,9 +921,9 @@ body::after {
 }
 
 @keyframes pulseInfo {
-    0% { box-shadow: 0 0 0 0 rgba(181, 147, 91, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(181, 147, 91, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(181, 147, 91, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(var(--detalhe-rgb), 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(var(--detalhe-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--detalhe-rgb), 0); }
 }
 
 /* Alinhamento de Detalhes Premium */
@@ -1173,7 +989,7 @@ body::after {
 }
 
 .modal-info-header {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    background: #0F172A; /* Azul Marinho Corporativo - Padrão SELECT */
     padding: 12px 20px;
     color: white;
     text-align: center;
@@ -1184,9 +1000,9 @@ body::after {
 
 .modal-info-header i {
     font-size: 1.4rem;
-    color: #B5935B; /* Dourado fixo para contraste técnico e branding */
+    color: #cbd5e1; /* Prata Diamante */
     margin-bottom: 4px;
-    filter: drop-shadow(0 0 10px rgba(181, 147, 91, 0.3));
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
 }
 
 .modal-info-header h3 {
@@ -1195,8 +1011,8 @@ body::after {
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 1.5px !important;
-    line-height: 1.1 !important;
-    color: #B5935B !important; /* Dourado técnico para contraste absoluto */
+    line-height: 1.1 !important; 
+    color: #FFFFFF !important; /* Branco Puro para contraste Select */
 }
 
 .modal-info-header p {
@@ -1298,21 +1114,33 @@ body::after {
     width: 100%;
 }
 
-.descricao-premium {
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px dashed var(--borda-suave);
-}
-
 #opt-standard {
-    --primaria: #203A43;
-    --detalhe: #34495E;
+    --primaria: #212529; /* Cinza neutro escuro para o título COMERCIAL PRIME */
+    --detalhe: #525252; /* Cinza neutro puro para detalhes e acentos */
 }
 
 #opt-standard.ativa {
     border: 1px solid #34495E;
     background: rgba(32, 58, 67, 0.05);
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* Estilização Disruptiva do Card SELECT */
+#opt-premium.ativa {
+    background: #ffffff !important;
+    border: 2px solid var(--detalhe) !important; /* Borda Azul Fosco Select */
+    box-shadow: 
+        0 0 20px rgba(var(--detalhe-rgb), 0.15), /* Brilho suave Select */
+        0 20px 40px rgba(27, 38, 59, 0.12) !important;
+    transform: translateY(-5px) scale(1.02);
+}
+
+#opt-premium.ativa::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+    pointer-events: none;
 }
 
 .check-indicator {
@@ -1340,11 +1168,27 @@ body::after {
 
 .card-opcao h4 { 
     margin: 0; 
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     color: var(--primaria); 
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    line-height: 1.2;
+}
+
+.prefixo-titulo {
+    color: #94a3b8; /* Silver Diamante */
+    font-weight: 600; 
+    margin-right: 4px;
+    letter-spacing: 2.5px; 
+    text-shadow: 0.5px 0.5px 0px #fff;
+}
+
+.card-opcao h4 i {
+    font-size: 0.9em;
+    margin-left: 5px;
+    vertical-align: middle;
+    opacity: 0.8;
 }
 
 .card-opcao p { 
@@ -1362,131 +1206,83 @@ body::after {
     letter-spacing: -0.2px;
 }
 
-.premium-tag {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--detalhe);
-    color: white;
-    font-size: 0.7rem;
-    padding: 4px 12px;
-    border-radius: 50px;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    z-index: 10;
-    white-space: nowrap;
+/* Componente de Pilares do Sistema - Concepção Técnica */
+.pilares-sistema {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin: 20px 0 30px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--borda-suave);
+    border-radius: var(--shape-technic);
+    backdrop-filter: blur(5px);
 }
 
-.premium-tag.industrial {
-    top: 24px; 
-    background: var(--primaria);
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.premium-features {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0 0 0;
-    font-size: 0.75rem;
-    color: #64748b;
-    text-align: left;
-}
-
-.premium-features li {
-    margin-bottom: 3px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.premium-features li i {
-    color: var(--detalhe);
-    font-size: 0.7rem;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 10px;
-}
-
-.logo-simbolo {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--detalhe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-simbolo::before {
-    content: '';
-    position: absolute;
-    width: 80%;
-    height: 80%;
-    border: 1px dashed var(--detalhe);
-    opacity: 0.5;
-}
-
-.logo-texto {
+.pilar-item {
     display: flex;
     flex-direction: column;
-    text-align: left;
+    gap: 8px;
 }
 
-.logo-texto .nome {
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: 2px;
-    line-height: 1;
-    color: var(--texto-logo, #FFF);
-}
-
-.logo-texto .subtitulo {
-    font-size: 1.1rem;
-    letter-spacing: 0.1em;
-    font-weight: 400;
-    color: var(--detalhe);
-    margin-top: 4px;
-}
-
-.header-logo .logo-simbolo {
-    width: 30px;
-    height: 30px;
-}
-
-.header-logo .nome {
-    font-size: 1rem;
-}
-
-.btn-whatsapp {
-    display: inline-flex;
+.pilar-header {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background-color: #25D366;
-    color: #fff !important;
-    padding: 16px 28px;
-    border-radius: 10px;
-    font-weight: 700;
-    text-decoration: none;
-    margin-top: 35px; 
-    width: 100%;
-    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.2);
-    transition: var(--transicao);
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
+    gap: 10px;
+    color: var(--primaria);
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.btn-whatsapp:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.35);
-    background-color: #20ba5a;
+.pilar-header i {
+    color: var(--detalhe);
+    font-size: 1rem;
+}
+
+.pilar-desc {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #475569;
+    margin: 0;
+}
+
+/* Guia de Seleção Intuitiva */
+.selection-guide {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 40px 0 25px 0;
+    color: var(--primaria);
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--detalhe);
+}
+
+.selection-guide h2 {
+    font-size: 1.2rem !important;
+    margin: 0 !important;
+    border-left: none !important;
+    padding-left: 0 !important;
+    font-weight: 800;
+}
+
+.selection-guide .hint-icon {
+    color: var(--detalhe);
+    font-size: 2.2rem;
+    animation: arrowBounce 1.5s infinite ease-in-out;
+}
+
+@keyframes arrowBounce {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(6px); opacity: 0.6; }
+}
+
+@media (max-width: 650px) {
+    .pilares-sistema {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
 .validade-nota {
@@ -1499,52 +1295,16 @@ body::after {
     color: #475569;
 }
 
-@media (max-width: 400px) {
-    .header-logo {
-        display: flex; 
-        transform: scale(0.85); 
-    }
-    .selecao-instalacao-container { grid-template-columns: 1fr; }
-    .card-opcao { padding: 10px; }
-    .card-opcao h4 { font-size: 0.8rem; }
-    .valor-card { font-size: 1rem; }
-        .card-opcao p, .premium-detail-item span { font-size: 0.8rem; }
-    .premium-features { font-size: 0.6rem; }
-}
-
-.modal-logo-wrapper {
-    background: var(--primaria); 
-    margin: -30px -30px 20px -30px; 
-    padding: 40px 30px 30px 30px; /* Aumentado o recuo superior para melhor equilíbrio visual */
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    justify-content: center;
-}
-
-.modal-logo-wrapper .logo-container .nome { 
-    color: #FFF; 
-    font-size: 1rem; 
-}
-
-.modal-logo-wrapper .logo-container .subtitulo { 
-    font-size: 0.55rem; 
-}
-
+/* Consolidação de Estilos Globais de Logo */
 .header-fixo .logo-container .subtitulo,
-.modal-logo-wrapper .logo-container .subtitulo {
+.modal-header-premium .logo-container .subtitulo {
     color: #FFF;
     opacity: 0.9;
 }
 
 .header-fixo .logo-container .divider,
-.modal-logo-wrapper .logo-container .divider {
+.modal-header-premium .logo-container .divider {
     background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
-}
-
-.theme-premium .header-fixo .logo-container .subtitulo,
-.theme-premium .modal-logo-wrapper .logo-container .subtitulo {
-    color: var(--detalhe); 
-    opacity: 1; 
 }
 
 .product-description {
@@ -1712,83 +1472,6 @@ body::after {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Componente de Pilares do Sistema - Concepção Técnica */
-.pilares-sistema {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-    margin: 20px 0;
-    padding: 18px;
-    border: 1px solid var(--borda-suave);
-    border-radius: var(--shape-technic);
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(5px);
-}
-
-.pilar-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: left;
-}
-
-.pilar-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--primaria);
-    font-weight: 800;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.pilar-header i { 
-    color: var(--detalhe); 
-    font-size: 1.1rem;
-}
-
-.pilar-desc { 
-    font-size: 0.85rem !important; 
-    line-height: 1.4 !important; 
-    color: #000000 !important;
-    margin: 0 !important;
-}
-.pilar-item strong { color: var(--primaria); font-weight: 700; }
-
-@media (max-width: 600px) {
-    .pilares-sistema { grid-template-columns: 1fr; gap: 12px; }
-}
-
-/* Guia de Seleção Intuitiva */
-.selection-guide {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 35px 0 20px 0;
-    color: var(--primaria);
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--detalhe);
-}
-
-.selection-guide h2 {
-    font-size: 1.25rem !important;
-    margin: 0 !important;
-    border-left: none !important;
-    padding-left: 0 !important;
-}
-
-.selection-guide .hint-icon {
-    color: var(--detalhe);
-    font-size: 2.8rem; /* Tamanho dobrado */
-    animation: arrowBounce 1.4s infinite; /* 30% mais rápida (2s * 0.7) */
-}
-
-@keyframes arrowBounce {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(8px); opacity: 0.7; }
-}
-
 /* Design do Separador de Título Financeiro */
 .header-separador {
     background: rgba(15, 23, 42, 0.02);
@@ -1925,31 +1608,4 @@ body::after {
     }
     #foto-display { border-radius: 0; }
     .carrossel-container { padding: 0; }
-}
-
-/* Estilização do Título com Logo Animada */
-.header-main-title {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border-left: 6px solid var(--detalhe);
-    padding-left: 15px;
-    margin-bottom: 15px;
-}
-
-.header-main-title h2 {
-    border-left: none !important;
-    padding-left: 0 !important;
-    margin-bottom: 0 !important;
-}
-
-.animated-logo-header {
-    font-size: 1.4rem;
-    color: var(--detalhe);
-    animation: logoSoftPulse 3s infinite ease-in-out;
-}
-
-@keyframes logoSoftPulse {
-    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px var(--detalhe)); }
-    50% { transform: scale(1.1); filter: drop-shadow(0 0 5px var(--detalhe)); }
 }

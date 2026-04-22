@@ -5,25 +5,38 @@ import { validarDispositivoService } from './api.js';
  */
 function extrairFingerprint() {
     const ua = navigator.userAgent;
+    const screenRes = `${window.screen.width}x${window.screen.height}`;
+    const pixelRatio = window.devicePixelRatio || 1;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const language = navigator.language;
     let deviceId = localStorage.getItem('cap_device_id');
     
     if (!deviceId) {
-        deviceId = crypto.randomUUID?.() || Math.random().toString(36).substring(2);
+        // Gera um ID único persistente caso não exista
+        const randomPart = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36);
+        deviceId = 'dev_' + randomPart;
         localStorage.setItem('cap_device_id', deviceId);
     }
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-    const os = ua.includes("Win") ? "Windows" : ua.includes("Mac") ? "MacOS" : ua.includes("Android") ? "Android" : (/iPhone|iPad|iPod/.test(ua)) ? "iOS" : "Linux";
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const os = /Android/i.test(ua) ? "Android" : 
+               /iPhone|iPad|iPod/i.test(ua) ? "iOS" : 
+               ua.includes("Win") ? "Windows" : 
+               ua.includes("Mac") ? "MacOS" : "Linux";
     
     let browser = "Chrome";
     if (ua.includes("Firefox")) browser = "Firefox";
     else if (ua.includes("Edg")) browser = "Edge";
+    else if (ua.includes("OPR") || ua.includes("Opera")) browser = "Opera";
+    else if (ua.includes("SamsungBrowser")) browser = "Samsung Internet";
     else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
 
     return {
         os,
         tipoDispositivo: isMobile ? "Mobile" : "Desktop",
-        navegador: `${browser}::${deviceId}`,
+        navegador: browser,
+        deviceId: deviceId,
+        fingerprintCompleto: `${os}|${browser}|${screenRes}|${pixelRatio}|${timezone}|${language}`,
         navegadorLimpo: browser
     };
 }
@@ -66,11 +79,26 @@ export function isPropostaValida(dataValidade) {
  */
 export async function verificarAutorizacaoHardware(propostaId) {
     const info = extrairFingerprint();
+    
+    // Opcional: Tenta obter o IP público via cliente apenas como metadado, 
+    // mas não bloqueia se falhar ou se for um IP de proxy do Safari.
+    let ipPublico = 'IP_RESTRITO';
+    try {
+        const ipRes = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(2000) });
+        const ipData = await ipRes.json();
+        ipPublico = ipData.ip;
+    } catch (e) {
+        console.warn("Aviso: IP mascarado pelo navegador (Safari/Private Relay). Usando Fingerprint de Hardware.");
+    }
+
     const payload = {
         propostaId: propostaId,
-        dispositivoNome: `${info.tipoDispositivo} via ${info.navegadorLimpo}`,
+        deviceId: info.deviceId, // Chave primária de autorização
+        dispositivoNome: `${info.tipoDispositivo} (${info.os})`,
+        fingerprint: info.fingerprintCompleto,
         os: info.os,
-        navegador: info.navegador,
+        ipInformado: ipPublico,
+        navegador: info.navegadorLimpo,
         tipoDispositivo: info.tipoDispositivo
     };
 
