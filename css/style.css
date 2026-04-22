@@ -113,6 +113,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    width: 100%;
     font-family: 'Inter', sans-serif;
     background: var(--bg-texture) fixed;
     color: var(--texto);
@@ -150,7 +151,7 @@ body::after {
 /* Cabeçalho Fixo */
 .header-fixo {
     position: fixed;
-    top: 0; width: 100%;
+    top: 0; left: 0; right: 0;
     height: 80px;
     background: var(--primaria);
     display: flex;
@@ -159,12 +160,14 @@ body::after {
     padding: 0 20px;
     z-index: 1000;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transform: translateZ(0); /* Força aceleração de hardware */
+    -webkit-backface-visibility: hidden;
 }
 
 /* Rodapé Fixo */
 .footer-fixo {
     position: fixed;
-    bottom: 0; width: 100%;
+    bottom: 0; left: 0; right: 0;
     min-height: 90px;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(15px);
@@ -177,6 +180,8 @@ body::after {
     border-top: 1px solid rgba(15, 23, 42, 0.08);
     z-index: 1000;
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.04);
+    transform: translateZ(0); /* Força aceleração de hardware */
+    -webkit-backface-visibility: hidden;
 }
 
 .theme-premium .footer-fixo {
@@ -1485,6 +1490,11 @@ body::after {
 
 /* Ajustes específicos para telas de smartphone (modal de aceite) */
 @media (max-width: 480px) {
+    body {
+        background-attachment: scroll; /* Melhora drasticamente a fluidez no mobile */
+        overflow-x: hidden; /* Impede que a logo "escape" para a direita durante animações */
+    }
+
     .overlay-aceite {
         padding: 10px; /* Reduz o padding geral do overlay para dar mais espaço ao modal */
     }

@@ -631,7 +631,6 @@ function navegar(direcao) {
         app.isNavigating = true;
         app.etapaAtual = novaEtapa;
         carregarView(direcao);
-        window.scrollTo(0, 0);
     }
 }
 
@@ -703,8 +702,12 @@ async function carregarView(direcao = 1) {
         clearTimeout(loadingTimer);
         
         setTimeout(() => {
-            window.scrollTo(0, 0);
             container.style.opacity = '1'; // Garante que o container fique visível após a carga
+            window.scrollTo(0, 0);
+            
+            // Hack de Reflow: Força o navegador a recalcular o layout dos elementos fixos
+            void document.body.offsetHeight;
+            
             mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
             app.isNavigating = false;
         }, 300); // Aguarda a conclusão visual da animação de entrada
