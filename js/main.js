@@ -294,6 +294,7 @@ function preencherDadosView() {
         valorPremium: app.dados.versoes.premium?.resumoFinanceiro?.valorTotal,
         ...versaoAtiva.dados,
         ...versaoAtiva.resumoFinanceiro,
+        economiaMediaAnual: analise.economiaMediaAnual,
         paybackSimples: analise.paybackSimples,
         economiaTotal: analise.economiaTotal,
         tir: analise.tir,
@@ -327,7 +328,7 @@ function preencherDadosView() {
             'geracao_mensal': 'geracaoMensal',
             'geracao_expansao': 'geracaoExpansao',
             'qtd_modulos_expansao': 'qtdModulosExpansao',
-            'economia_anual': 'economiaAno1',
+            'economia_ano_1': 'economiaAno1',
             'inflacao_energetica': 'inflacaoEnergetica',
             'economia_total': 'economiaTotal',
             'fatura_atendida': 'faturaSemSolarAno1',
@@ -405,8 +406,8 @@ function preencherDadosView() {
             if (!isNaN(valorNumerico) && ehCampoFinanceiro && typeof valor !== 'string') {
                 const options = { style: 'currency', currency: 'BRL' };
                 
-                // Remove centavos para estimativas de faturas (evita falsa precisão)
-                if (chaveTratada.toLowerCase().includes('fatura')) {
+                // Remove centavos para estimativas de faturas e economia (foco no benefício real)
+                if (chaveTratada.toLowerCase().includes('fatura') || chaveTratada.toLowerCase().includes('economia')) {
                     options.minimumFractionDigits = 0;
                     options.maximumFractionDigits = 0;
                 }
@@ -607,12 +608,13 @@ function alternarProposta(tipo) {
     preencherDadosView();
     atualizarDinamicos(app.dados.versoes[tipo].dados);
 
-    // Se estiver na view de instalação, libera o botão avançar imediatamente
+    // Se estiver na view de instalação, libera o botão avançar e ativa animação potente
     const btnAvancar = document.getElementById('btn-avancar');
     if (app.etapas[app.etapaAtual] === 'instalacao' && btnAvancar) {
         btnAvancar.disabled = false;
         btnAvancar.style.opacity = "1";
         btnAvancar.style.cursor = "pointer";
+        btnAvancar.classList.add('animate-selling');
     }
 }
 
@@ -683,17 +685,19 @@ async function carregarView(direcao = 1) {
             btnAvancar.disabled = !app.planoSelecionado;
             btnAvancar.style.opacity = app.planoSelecionado ? "1" : "0.5";
             btnAvancar.style.cursor = app.planoSelecionado ? "pointer" : "not-allowed";
-            
-            // Estratégia de Selling: Muda o texto do botão para gerar curiosidade sobre o financeiro
+            btnAvancar.classList.add('btn-analisar');
             btnAvancar.innerHTML = `Analisar Investimento <i class="fas fa-calculator"></i>`;
+            
+            if (app.planoSelecionado) btnAvancar.classList.add('animate-selling');
         } else {
             btnAvancar.disabled = false;
             btnAvancar.style.opacity = "1";
             btnAvancar.style.cursor = "pointer";
-            
-            // Retorna ao padrão nas outras telas
-            btnAvancar.innerHTML = `Próximo <i class="fas fa-chevron-right"></i>`;
+            btnAvancar.classList.remove('btn-analisar', 'animate-selling');
+            btnAvancar.innerHTML = `<i class="fas fa-arrow-right"></i>`;
         }
+
+        document.getElementById('btn-voltar').innerHTML = `<i class="fas fa-arrow-left"></i>`;
 
         // 3. Cancela o timer e revela a nova view
         clearTimeout(loadingTimer);
