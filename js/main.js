@@ -683,10 +683,16 @@ async function carregarView(direcao = 1) {
             btnAvancar.disabled = !app.planoSelecionado;
             btnAvancar.style.opacity = app.planoSelecionado ? "1" : "0.5";
             btnAvancar.style.cursor = app.planoSelecionado ? "pointer" : "not-allowed";
+            
+            // Estratégia de Selling: Muda o texto do botão para gerar curiosidade sobre o financeiro
+            btnAvancar.innerHTML = `Analisar Investimento <i class="fas fa-calculator"></i>`;
         } else {
             btnAvancar.disabled = false;
             btnAvancar.style.opacity = "1";
             btnAvancar.style.cursor = "pointer";
+            
+            // Retorna ao padrão nas outras telas
+            btnAvancar.innerHTML = `Próximo <i class="fas fa-chevron-right"></i>`;
         }
 
         // 3. Cancela o timer e revela a nova view

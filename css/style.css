@@ -159,29 +159,79 @@ body::after {
 .footer-fixo {
     position: fixed;
     bottom: 0; width: 100%;
-    height: auto;
-    min-height: 70px;
-    background: #FFF;
+    min-height: 80px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 25px calc(10px + env(safe-area-inset-bottom));
+    padding: 10px 30px calc(10px + env(safe-area-inset-bottom));
     box-sizing: border-box;
-    border-top: 1px solid var(--borda-suave);
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
     z-index: 1000;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.theme-premium .footer-fixo {
+    background: rgba(15, 23, 42, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .btn-nav {
-    background: var(--primaria);
+    background: var(--detalhe);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: var(--transicao);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-nav:hover:not(:disabled) {
+    background: var(--primaria);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.indicador-etapa {
+    background: rgba(15, 23, 42, 0.05);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--primaria);
+    border: 1px solid var(--borda-suave);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 1px;
+}
+
+.theme-premium .indicador-etapa {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFF;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+#etapa-atual {
+    color: var(--detalhe);
+    font-size: 1rem;
 }
 
 /* Espaçamento para o conteúdo não ficar escondido */
@@ -803,7 +853,10 @@ body::after {
 
 .btn-acesso-bloqueado {
     width: 100%;
-    padding: 15px;
+    padding: 20px 15px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     border: none;
     border-radius: 6px;
     background: #cbd5e1;
@@ -1229,6 +1282,17 @@ body::after {
     letter-spacing: -0.2px;
 }
 
+/* Teaser de Parcelamento e ROI para Venda Consultiva */
+.valor-parcelado-teaser {
+    font-size: 0.85rem;
+    color: var(--detalhe);
+    font-weight: 600;
+    margin-top: -5px;
+    margin-bottom: 10px;
+    display: block;
+    opacity: 0.9;
+}
+
 /* Componente de Pilares do Sistema - Concepção Técnica */
 .pilares-sistema {
     display: grid;
@@ -1275,30 +1339,69 @@ body::after {
 .selection-guide {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin: 40px 0 25px 0;
+    gap: 20px;
+    margin: 45px 0 30px 0;
     color: var(--primaria);
-    padding-bottom: 12px;
-    border-bottom: 2px solid var(--detalhe);
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--borda-suave);
+    position: relative;
 }
 
 .selection-guide h2 {
-    font-size: 1.2rem !important;
+    font-size: 1.15rem !important;
     margin: 0 !important;
     border-left: none !important;
     padding-left: 0 !important;
     font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.guide-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.unlock-hint {
+    font-size: 0.7rem;
+    color: var(--detalhe);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: glowText 2s infinite ease-in-out;
+}
+
+.guide-icon-box {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 1px solid var(--borda-suave);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--sombra-luxo);
+    flex-shrink: 0;
 }
 
 .selection-guide .hint-icon {
     color: var(--detalhe);
-    font-size: 2.2rem;
-    animation: arrowBounce 1.5s infinite ease-in-out;
+    font-size: 1.2rem;
+    animation: fingerTap 1.5s infinite ease-in-out;
 }
 
-@keyframes arrowBounce {
-    0%, 100% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(6px); opacity: 0.6; }
+@keyframes fingerTap {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+@keyframes glowText {
+    0%, 100% { opacity: 0.6; text-shadow: 0 0 0px var(--detalhe); }
+    50% { opacity: 1; text-shadow: 0 0 8px rgba(var(--detalhe-rgb), 0.3); }
 }
 
 @media (max-width: 650px) {
@@ -1363,7 +1466,25 @@ body::after {
     }
 
     .btn-acesso-bloqueado {
-        padding: 10px; /* Reduz o padding do botão de acesso */
+        padding: 18px 15px; /* Mantém o botão robusto e fácil de clicar no mobile */
+        font-size: 1rem;
+    }
+
+    /* Correção de Overflow no Rodapé Mobile */
+    .footer-fixo {
+        padding: 10px 15px calc(10px + env(safe-area-inset-bottom));
+        min-height: 70px;
+    }
+
+    .btn-nav {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        gap: 5px;
+    }
+
+    .indicador-etapa {
+        padding: 6px 12px;
+        font-size: 0.7rem;
     }
 
     /* Ajustes de Grid e Cards para Telas Estreitas */
@@ -1609,7 +1730,7 @@ body::after {
 /* Botão WhatsApp Flutuante */
 .btn-whatsapp-float {
     position: fixed;
-    bottom: calc(90px + env(safe-area-inset-bottom));
+    bottom: calc(172px + env(safe-area-inset-bottom));
     right: 20px;
     display: flex;
     flex-direction: column;
