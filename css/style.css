@@ -684,8 +684,10 @@ body::after {
     opacity: 0;
     justify-content: center;
     align-items: center;
-    padding: 20px; /* Ajustado para melhor aproveitamento em telas pequenas */
-    overflow-y: auto; /* Permite rolar a tela inteira caso o conteúdo cresça */
+    padding: 20px;
+    height: 100%;
+    height: 100dvh; /* Altura dinâmica que respeita a barra do navegador */
+    overflow: hidden; /* Bloqueia o scroll externo que oculta a barra de busca */
     transition: opacity 0.8s ease;
     backdrop-filter: blur(10px);
 }
@@ -717,7 +719,6 @@ body::after {
     font-size: 1.4rem;
     font-weight: 700;
     color: #000000;
-    margin-bottom: 10px;
     margin-bottom: 25px; /* Aumentado para dar mais destaque à saudação */
     letter-spacing: -0.02em;
     line-height: 1.1;
@@ -1286,6 +1287,62 @@ body::after {
     .selecao-instalacao-container {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+}
+
+/* Ajustes específicos para telas de smartphone (modal de aceite) */
+@media (max-width: 480px) {
+    .overlay-aceite {
+        padding: 10px; /* Reduz o padding geral do overlay para dar mais espaço ao modal */
+    }
+
+    .modal-conteudo {
+        max-height: 90dvh; /* Garante que o modal caiba sem forçar o scroll do navegador */
+        width: 95%; /* Garante que o modal use a largura máxima disponível */
+    }
+
+    .modal-header-premium {
+        padding: 15px 15px; /* Reduz o padding vertical e horizontal do cabeçalho do modal */
+    }
+
+    .modal-header-premium .logo-container {
+        padding: 5px; /* Reduz o padding interno da logo para economizar espaço */
+    }
+
+    .modal-header-premium .logo-container .nome {
+        font-size: 1.2rem; /* Reduz o tamanho da fonte do nome na logo */
+    }
+
+    .modal-header-premium .logo-container .subtitulo {
+        font-size: 0.6rem; /* Reduz o tamanho da fonte do subtítulo na logo */
+    }
+
+    .saudacao-modal {
+        margin-bottom: 15px; /* Reduz o espaçamento abaixo da saudação */
+        font-size: 1.2rem; /* Levemente menor para caber melhor */
+    }
+
+    .modal-body-scroll {
+        padding: 15px 15px; /* Reduz o padding vertical e horizontal do corpo do modal */
+    }
+
+    .texto-termo {
+        font-size: 0.8rem; /* Reduz o tamanho da fonte do texto do termo */
+        line-height: 1.35; /* Traz as linhas mais próximas para economizar espaço */
+    }
+
+    .termo-item {
+        margin-bottom: 0.8rem; /* Reduz o espaçamento entre os itens do termo */
+        gap: 8px; /* Reduz o gap entre o ícone e o texto */
+    }
+
+    .checkbox-container {
+        margin-bottom: 10px; /* Reduz o espaçamento abaixo do checkbox */
+        font-size: 0.85rem; /* Reduz o tamanho da fonte do texto do checkbox */
+    }
+
+    .btn-acesso-bloqueado {
+        padding: 10px; /* Reduz o padding do botão de acesso */
     }
 }
 
