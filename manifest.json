@@ -1,0 +1,9 @@
+{
+  "name": "Proposta de Engenharia Solar - Jean Marcel",
+  "short_name": "Proposta Solar",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "description": "Consultoria e Responsabilidade Técnica em Energia Solar"
+}

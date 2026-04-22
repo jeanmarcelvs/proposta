@@ -224,7 +224,11 @@ async function exibirStatusProposta(motivo) {
     const container = document.getElementById('view-container');
     const modalAceite = document.getElementById('modal-aceite');
     try {
+        // Ajustado para o nome real do arquivo no diretório: status_proposta.html
         const response = await fetch(`./views/status_proposta.html`);
+        if (!response.ok) {
+            throw new Error(`Não foi possível carregar a view de status: ${response.status}`);
+        }
         const html = await response.text();
         container.innerHTML = html;
 
@@ -244,8 +248,12 @@ async function exibirStatusProposta(motivo) {
         
         // Oculta elementos que não devem aparecer em estados de erro
         if (modalAceite) modalAceite.style.display = 'none';
-        document.querySelector('.footer-fixo').style.display = 'none';
-        document.querySelector('.seletor-proposta').style.display = 'none';
+        
+        const footer = document.querySelector('.footer-fixo');
+        if (footer) footer.style.display = 'none';
+
+        const seletor = document.querySelector('.seletor-proposta');
+        if (seletor) seletor.style.display = 'none';
 
         mostrarLoading(false);
     } catch (e) {
@@ -686,7 +694,7 @@ async function carregarView(direcao = 1) {
         
         setTimeout(() => {
             window.scrollTo(0, 0);
-            if (!newContent) container.style.opacity = '1';
+            container.style.opacity = '1'; // Garante que o container fique visível após a carga
             mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
             app.isNavigating = false;
         }, 300); // Aguarda a conclusão visual da animação de entrada
