@@ -309,7 +309,7 @@ body::after {
     max-width: 800px;
     margin: 0 auto;
     font-size: 1rem;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
     touch-action: pan-y; /* Permite scroll vertical nativo e reserva o horizontal para gestos */
 }
 
@@ -649,23 +649,23 @@ body::after {
 
 /* Animações de Transição de Página Horizontal (Efeito de Página Movimentando) */
 @keyframes slideInRight {
-    from { transform: translateX(100px); opacity: 0; }
+    from { transform: translateX(80px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes slideInLeft {
-    from { transform: translateX(-100px); opacity: 0; }
+    from { transform: translateX(-80px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes slideOutLeft {
     from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(-100px); opacity: 0; }
+    to { transform: translateX(-80px); opacity: 0; }
 }
 
 @keyframes slideOutRight {
     from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(80px); opacity: 0; }
 }
 
 .view-content.slide-in-right { animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

@@ -628,7 +628,6 @@ function navegar(direcao) {
 
     const novaEtapa = app.etapaAtual + direcao;
     if (novaEtapa >= 0 && novaEtapa < app.etapas.length) {
-        app.isNavigating = true;
         app.etapaAtual = novaEtapa;
         carregarView(direcao);
     }
@@ -639,16 +638,20 @@ async function carregarView(direcao = 1) {
     const oldContent = container.querySelector('.view-content');
     const nomeView = app.etapas[app.etapaAtual];
     
+    if (app.isNavigating) return;
+    app.isNavigating = true;
+
     // 1. Inicia animação de saída horizontal no conteúdo atual
     if (oldContent) {
         oldContent.classList.remove('animate-in', 'slide-in-left', 'slide-in-right');
         oldContent.classList.add(direcao === 1 ? 'slide-out-left' : 'slide-out-right');
-        
-        // Pequena pausa para a animação de saída ser percebida antes de trocar o HTML
-        await new Promise(r => setTimeout(r, 200));
-    } else {
-        container.style.opacity = '0';
     }
+    
+    // Esconde o container principal para preparar a troca de conteúdo e reset de scroll
+    container.style.opacity = '0';
+    
+    // Aguarda a animação de saída e fade out (aproximadamente 300ms)
+    await new Promise(r => setTimeout(r, 300));
 
     // 2. Agenda o Splash apenas se a carga demorar mais de 0.7 segundos
     loadingTimer = setTimeout(() => {
@@ -660,12 +663,15 @@ async function carregarView(direcao = 1) {
         if (!response.ok) throw new Error(`Erro ao carregar HTML: ${nomeView}`);
         const html = await response.text();
 
-        // 3. Injeta o novo conteúdo e define a animação de entrada baseada na direção
+        // 3. Reset Crítico de Scroll (Enquanto o container está invisível)
+        window.scrollTo(0, 0);
+
+        // 4. Injeta o novo conteúdo
         container.innerHTML = html;
         const newContent = container.querySelector('.view-content');
+        
         if (newContent) {
             newContent.classList.remove('animate-in'); // Remove a classe estática para não conflitar
-            newContent.classList.add(direcao === 1 ? 'slide-in-right' : 'slide-in-left');
         }
 
         preencherDadosView();
@@ -701,20 +707,23 @@ async function carregarView(direcao = 1) {
         // 3. Cancela o timer e revela a nova view
         clearTimeout(loadingTimer);
         
-        setTimeout(() => {
-            // 1. Move para o topo ANTES de tornar visível
-            window.scrollTo(0, 0);
-            
-            // 2. Torna visível e executa animação de slide
-            container.style.opacity = '1'; // Garante que o container fique visível após a carga
-            
-            // 3. Super Reflow Hack: Altera uma propriedade mínima para forçar o redesenho dos elementos fixos
-            document.documentElement.style.paddingRight = '0.01px';
-            setTimeout(() => { document.documentElement.style.paddingRight = '0px'; }, 50);
+        // Pequeno respiro para o processamento do DOM e scroll antes de revelar
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                container.style.opacity = '1';
+                
+                if (newContent) {
+                    newContent.classList.add(direcao === 1 ? 'slide-in-right' : 'slide-in-left');
+                }
 
-            mostrarLoading(false); // Esconde o splash se ele tiver chegado a aparecer
-            app.isNavigating = false;
-        }, 300); // Aguarda a conclusão visual da animação de entrada
+                // Super Reflow Hack: Força redesenho dos elementos fixos (Header/Footer)
+                document.documentElement.style.paddingRight = '0.01px';
+                setTimeout(() => { document.documentElement.style.paddingRight = '0px'; }, 50);
+
+                mostrarLoading(false);
+                app.isNavigating = false;
+            }, 50);
+        });
 
     } catch (e) {
         console.error("Erro ao carregar view:", e);
