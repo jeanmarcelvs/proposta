@@ -650,10 +650,15 @@ async function carregarView(direcao = 1) {
     // Esconde o container principal para preparar a troca de conteúdo e reset de scroll
     container.style.opacity = '0';
     
-    // Aguarda a animação de saída e fade out (aproximadamente 300ms)
-    await new Promise(r => setTimeout(r, 300));
+    // Aguarda o container ficar invisível
+    await new Promise(r => setTimeout(r, 250));
 
-    // 2. Agenda o Splash apenas se a carga demorar mais de 0.7 segundos
+    // 2. Reset de Scroll Imediato (com a tela invisível)
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // 3. Agenda o Splash apenas se a carga demorar mais de 0.7 segundos
     loadingTimer = setTimeout(() => {
         mostrarLoading(true);
     }, 700);
@@ -663,10 +668,8 @@ async function carregarView(direcao = 1) {
         if (!response.ok) throw new Error(`Erro ao carregar HTML: ${nomeView}`);
         const html = await response.text();
 
-        // 3. Reset Crítico de Scroll (Enquanto o container está invisível)
+        // 4. Injeta o novo conteúdo e garante novo reset pós-injeção
         window.scrollTo(0, 0);
-
-        // 4. Injeta o novo conteúdo
         container.innerHTML = html;
         const newContent = container.querySelector('.view-content');
         
@@ -708,25 +711,29 @@ async function carregarView(direcao = 1) {
 
         document.getElementById('btn-voltar').innerHTML = `<i class="fas fa-arrow-left"></i>`;
 
-        // 3. Cancela o timer e revela a nova view
+        // 5. Cancela o timer e revela a nova view de forma sincronizada
         clearTimeout(loadingTimer);
         
-        // Pequeno respiro para o processamento do DOM e scroll antes de revelar
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                container.style.opacity = '1';
-                
-                if (newContent) {
-                    newContent.classList.add(direcao === 1 ? 'slide-in-right' : 'slide-in-left');
-                }
+        // O uso de múltiplos frames garante que o scroll e o novo DOM estejam estabilizados
+        requestAnimationFrame(() => { 
+            window.scrollTo(0, 0); // Terceiro reset de segurança (imperceptível)
+            
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    container.style.opacity = '1';
+                    
+                    if (newContent) {
+                        newContent.classList.add(direcao === 1 ? 'slide-in-right' : 'slide-in-left');
+                    }
 
-                // Super Reflow Hack: Força redesenho dos elementos fixos (Header/Footer)
-                document.documentElement.style.paddingRight = '0.01px';
-                setTimeout(() => { document.documentElement.style.paddingRight = '0px'; }, 50);
+                    // Força redesenho para evitar artefatos de scroll em elementos fixos
+                    document.documentElement.style.paddingRight = '0.01px';
+                    setTimeout(() => { document.documentElement.style.paddingRight = '0px'; }, 50);
 
-                mostrarLoading(false);
-                app.isNavigating = false;
-            }, 50);
+                    mostrarLoading(false);
+                    app.isNavigating = false;
+                }, 40);
+            });
         });
 
     } catch (e) {

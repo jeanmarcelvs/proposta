@@ -309,7 +309,8 @@ body::after {
     max-width: 800px;
     margin: 0 auto;
     font-size: 1rem;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.25s ease-in-out;
+    will-change: opacity;
     touch-action: pan-y; /* Permite scroll vertical nativo e reserva o horizontal para gestos */
 }
 
