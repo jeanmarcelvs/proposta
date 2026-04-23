@@ -1325,11 +1325,16 @@ h2[data-field="titulo_plano_header"] {
 }
 
 .prefixo-titulo {
-    color: #94a3b8; /* Silver Diamante */
+    color: #64748b; /* Cinza Slate 500 - mais escuro para contraste */
     font-weight: 600; 
-    margin-right: 4px;
+    margin-right: 2px; /* Reduzido para aproximar do sufixo */
     letter-spacing: 2.5px; 
-    text-shadow: 0.5px 0.5px 0px #fff;
+}
+
+.sufixo-titulo {
+    font-weight: 900; /* Espessura mais grossa */
+    letter-spacing: -0.5px; /* Fontes mais juntas */
+    text-transform: uppercase;
 }
 
 .card-opcao h4 i {
