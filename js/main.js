@@ -698,8 +698,7 @@ async function carregarView(direcao = 1) {
             btnAvancar.style.opacity = app.planoSelecionado ? "1" : "0.5";
             btnAvancar.style.cursor = app.planoSelecionado ? "pointer" : "not-allowed";
             btnAvancar.classList.add('btn-analisar');
-            btnAvancar.innerHTML = `Analisar Investimento <i class="fas fa-calculator"></i>`;
-            
+            btnAvancar.innerHTML = `
             if (app.planoSelecionado) btnAvancar.classList.add('animate-selling');
         } else {
             btnAvancar.disabled = false;
