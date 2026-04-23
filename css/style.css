@@ -270,6 +270,8 @@ body::after {
     align-items: center;
     justify-content: center;
     letter-spacing: 1px;
+    flex-grow: 1;
+    min-width: 80px;
 }
 
 .indicador-etapa label {
@@ -301,13 +303,18 @@ body::after {
     opacity: 0.4;
 }
 
-.theme-premium .indicador-etapa {
-    color: #FFF;
-}
-
-#etapa-atual {
-    color: var(--detalhe);
-    font-size: 1rem;
+/* Cores do Indicador de Etapa para Máxima Legibilidade em Temas Escuros */
+.theme-premium .footer-fixo .indicador-etapa label,
+.theme-premium .footer-fixo .indicador-etapa .etapa-box,
+.theme-premium .footer-fixo .indicador-etapa #etapa-atual,
+.theme-premium .footer-fixo .indicador-etapa small,
+.theme-standard .footer-fixo .indicador-etapa label,
+.theme-standard .footer-fixo .indicador-etapa .etapa-box,
+.theme-standard .footer-fixo .indicador-etapa #etapa-atual,
+.theme-standard .footer-fixo .indicador-etapa small {
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Espaçamento para o conteúdo não ficar escondido */
