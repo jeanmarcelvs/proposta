@@ -318,6 +318,15 @@ function preencherDadosView() {
     campos.forEach(campo => {
         const chaveOriginal = campo.getAttribute('data-field');
         
+        // Lógica Dinâmica: Reconhece a escolha do card e injeta o título formatado
+        if (chaveOriginal === 'titulo_plano_ativo' || chaveOriginal === 'titulo_plano_header') {
+            const htmlPlano = app.propostaAtiva === 'premium' 
+                ? '<span class="prefixo-titulo">SELECT</span> ALTO PADRÃO'
+                : '<span class="prefixo-titulo">COMERCIAL</span> PRIME';
+            campo.innerHTML = htmlPlano;
+            return; // Finaliza o processamento deste campo específico
+        }
+
         // Identifica campos que devem receber destaque visual (Badge)
         const camposDestaque = ['garantia', 'tecnologia', 'monitorizacao', 'monitoramento', 'protecao'];
         const deveTerBadge = camposDestaque.some(d => chaveOriginal.toLowerCase().includes(d));
@@ -478,12 +487,6 @@ function preencherDadosView() {
                 const data = new Date(valor);
                 // Formata a data para DD/MM/AAAA
                 campo.innerText = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            } else if (chaveOriginal === 'titulo_plano_ativo' || chaveOriginal === 'titulo_plano_header') {
-                // Injeta o título com o design idêntico ao card de instalação
-                const htmlPlano = app.propostaAtiva === 'premium' 
-                    ? '<span class="prefixo-titulo">SELECT</span> ALTO PADRÃO'
-                    : '<span class="prefixo-titulo">COMERCIAL</span> PRIME';
-                campo.innerHTML = htmlPlano;
             }
             else {
                 campo.innerText = valor;
@@ -620,8 +623,6 @@ function alternarProposta(tipo) {
         btnAvancar.disabled = false;
         btnAvancar.style.opacity = "1";
         btnAvancar.style.cursor = "pointer";
-        btnAvancar.classList.add('btn-analisar', 'animate-selling');
-        btnAvancar.innerHTML = `Ver Análise <i class="fas fa-calculator"></i>`;
 
         // Navegação automática para a próxima tela (Financeiro)
         setTimeout(() => {
@@ -707,22 +708,12 @@ async function carregarView(direcao = 1) {
 
         gerenciarBotaoWhatsapp(nomeView);
 
-        // Lógica de bloqueio do botão Avançar na View de Instalação
-        if (nomeView === 'instalacao') {
-            btnAvancar.disabled = !app.planoSelecionado;
-            btnAvancar.style.opacity = app.planoSelecionado ? "1" : "0.5";
-            btnAvancar.style.cursor = app.planoSelecionado ? "pointer" : "not-allowed";
-            btnAvancar.classList.add('btn-analisar');
-            btnAvancar.innerHTML = `Ver Análise <i class="fas fa-calculator"></i>`;
-
-            if (app.planoSelecionado) btnAvancar.classList.add('animate-selling');
-        } else {
-            btnAvancar.disabled = false;
-            btnAvancar.style.opacity = "1";
-            btnAvancar.style.cursor = "pointer";
-            btnAvancar.classList.remove('btn-analisar', 'animate-selling');
-            btnAvancar.innerHTML = `<i class="fas fa-arrow-right"></i>`;
-        }
+        // Lógica de navegação simplificada: Seta padrão sempre que houver próxima página
+        btnAvancar.disabled = (nomeView === 'instalacao' && !app.planoSelecionado);
+        btnAvancar.style.opacity = btnAvancar.disabled ? "0.5" : "1";
+        btnAvancar.style.cursor = btnAvancar.disabled ? "not-allowed" : "pointer";
+        btnAvancar.classList.remove('btn-analisar', 'animate-selling');
+        btnAvancar.innerHTML = `<i class="fas fa-arrow-right"></i>`;
 
         document.getElementById('btn-voltar').innerHTML = `<i class="fas fa-arrow-left"></i>`;
 
