@@ -614,7 +614,16 @@ function alternarProposta(tipo) {
         btnAvancar.disabled = false;
         btnAvancar.style.opacity = "1";
         btnAvancar.style.cursor = "pointer";
-        btnAvancar.classList.add('animate-selling');
+        btnAvancar.classList.add('btn-analisar', 'animate-selling');
+        btnAvancar.innerHTML = `Ver Análise <i class="fas fa-calculator"></i>`;
+
+        // Navegação automática para a próxima tela (Financeiro)
+        setTimeout(() => {
+            // Só navega automaticamente se o usuário ainda estiver na view de instalação
+            if (app.etapas[app.etapaAtual] === 'instalacao' && !app.isNavigating) {
+                navegar(1);
+            }
+        }, 650); // Delay estratégico para o usuário ver o check de seleção antes da transição
     }
 }
 
