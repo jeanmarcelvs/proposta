@@ -1328,7 +1328,7 @@ body::after {
     transform: scale(1.05);
 }
 
-.card-opcao h4 { 
+.card-opcao h4, .plano-titulo-display { 
     margin: 0; 
     font-size: 0.9rem;
     color: var(--primaria); 
@@ -1336,6 +1336,10 @@ body::after {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     line-height: 1.2;
+}
+
+.plano-titulo-display {
+    margin-top: 10px;
 }
 
 .prefixo-titulo {
