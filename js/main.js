@@ -478,7 +478,7 @@ function preencherDadosView() {
                 const data = new Date(valor);
                 // Formata a data para DD/MM/AAAA
                 campo.innerText = data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            } else if (chaveOriginal === 'titulo_plano_ativo') {
+            } else if (chaveOriginal === 'titulo_plano_ativo' || chaveOriginal === 'titulo_plano_header') {
                 // Injeta o título com o design idêntico ao card de instalação
                 const htmlPlano = app.propostaAtiva === 'premium' 
                     ? '<span class="prefixo-titulo">SELECT</span> ALTO PADRÃO'

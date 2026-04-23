@@ -343,6 +343,12 @@ body::after {
     color: var(--primaria); 
 }
 
+/* Estilo específico para o título dinâmico da View Financeiro */
+h2[data-field="titulo_plano_header"] {
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+}
+
 /* Badges para Scannability Técnica */
 .badge-tecnico {
     display: inline-flex;
