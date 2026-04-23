@@ -178,7 +178,7 @@ body::after {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    display: flex;
+    display: none; /* Oculto inicialmente para não vazar sob o modal de aceite no mobile */
     justify-content: space-between;
     align-items: center;
     padding: 10px 40px calc(10px + env(safe-area-inset-bottom));

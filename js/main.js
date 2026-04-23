@@ -677,6 +677,10 @@ async function carregarView(direcao = 1) {
         preencherDadosView();
         atualizarInterfaceSelecao();
 
+        // Revela o rodapé apenas quando começar a apresentação das views (pós-aceite)
+        const footer = document.querySelector('.footer-fixo');
+        if (footer) footer.style.display = 'flex';
+
         document.getElementById('etapa-atual').innerText = app.etapaAtual + 1;
         
         const btnAvancar = document.getElementById('btn-avancar');
