@@ -90,6 +90,7 @@ body.loading-active {
     --primaria: #000000;
     --secundaria: #737373; /* Cinza Stone médio */
     --detalhe: #262626;  /* Grafite neutro */
+    --detalhe-rgb: 38, 38, 38; /* Necessário para o sublinhado tracejado no tema standard */
     --texto: #1E293B;    
     --bg-card: #FFFFFF;
     --bg-texture: #F9FAFB; /* Fundo sólido e limpo, sem tons azulados */
@@ -1495,14 +1496,15 @@ h2[data-field="titulo_plano_header"] {
     }
 }
 
-/* Termos de Valor: Discreto e Elegante */
+/* Termos de Valor: Sublinhado Técnico Permanente */
 .termo-valor {
-    color: var(--detalhe);
-    font-weight: 700;
-    border-bottom: 1px dashed rgba(var(--detalhe-rgb), 0.5);
-    padding-bottom: 1px;
+    color: var(--detalhe) !important;
+    font-weight: 800 !important;
+    border-bottom: 1.5px dashed rgba(var(--detalhe-rgb), 0.6) !important;
+    padding-bottom: 2px;
     white-space: nowrap;
     transition: var(--transicao);
+    display: inline-block;
 }
 
 .pilar-desc strong {
