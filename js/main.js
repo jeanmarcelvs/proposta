@@ -324,7 +324,7 @@ function preencherDadosView() {
         // Lógica Dinâmica: Reconhece a escolha do card e injeta o título formatado
         if (chaveOriginal === 'titulo_plano_ativo' || chaveOriginal === 'titulo_plano_header') {
             const htmlPlano = app.propostaAtiva === 'premium' 
-                ? '<span class="prefixo-titulo">SELECT</span><span class="sufixo-titulo">ALTO PADRÃO</span>'
+                ? '<span class="prefixo-titulo brand-select">SELECT</span><span class="sufixo-titulo">ALTO PADRÃO</span>'
                 : '<span class="prefixo-titulo">COMERCIAL</span><span class="sufixo-titulo">PRIME</span>';
             campo.innerHTML = htmlPlano;
             return; // Finaliza o processamento deste campo específico

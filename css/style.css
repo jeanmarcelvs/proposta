@@ -1278,14 +1278,6 @@ h2[data-field="titulo_plano_header"] {
     transform: translateY(-5px) scale(1.02);
 }
 
-#opt-premium.ativa::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
-    pointer-events: none;
-}
-
 .check-indicator {
     position: relative;
     width: 22px;
@@ -1328,6 +1320,63 @@ h2[data-field="titulo_plano_header"] {
     font-weight: 600; 
     margin-right: 2px; /* Reduzido para aproximar do sufixo */
     letter-spacing: 2.5px; 
+}
+
+/* Identidade Corporate SELECT - Limpa e Profissional */
+.brand-select {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900 !important;
+    font-style: italic;
+    letter-spacing: -0.02em !important;
+    color: #64748b !important; /* Mesma cor do prefixo-titulo (Comercial) */
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+    padding: 0;
+    z-index: 1;
+}
+
+/* Remove o efeito de aura anterior */
+.brand-select::before { display: none; }
+
+/* Customização Exclusiva do Card SELECT */
+#opt-premium {
+    overflow: hidden;
+    position: relative;
+}
+
+/* Marca d'água técnica de fundo para o Card SELECT */
+#opt-premium::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 140px;
+    height: 140px;
+    background-image: 
+        radial-gradient(circle at 50% 50%, transparent 60%, rgba(71, 85, 105, 0.05) 62%, transparent 63%),
+        linear-gradient(to right, transparent 48%, rgba(71, 85, 105, 0.05) 49%, rgba(71, 85, 105, 0.05) 51%, transparent 52%),
+        linear-gradient(to bottom, transparent 48%, rgba(71, 85, 105, 0.05) 49%, rgba(71, 85, 105, 0.05) 51%, transparent 52%);
+    background-size: 100% 100%;
+    border-radius: 50%;
+    transform: rotate(-15deg);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Layout de Impacto para o Select (Título e Valor lado a lado) */
+.card-select-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.card-select-header-flex .valor-card {
+    margin: 0;
+    font-size: 1.4rem;
+    text-align: right;
 }
 
 .sufixo-titulo {
@@ -1406,50 +1455,41 @@ h2[data-field="titulo_plano_header"] {
     font-size: 1rem;
 }
 
-/* Fluxo de Dependência Estilo Infográfico */
-.pilares-sistema {
-    position: relative;
-    overflow: visible;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 30px 20px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: var(--shape-technic);
-    border: 1px solid var(--borda-suave);
-}
-
 @media (min-width: 651px) {
-    /* A "Espinha Dorsal" do Infográfico */
+    /* Linha tracejada técnica que atravessa os pilares */
     .pilares-sistema::before {
         content: '';
         position: absolute;
         top: 50%;
-        left: 10%;
-        right: 10%;
+        left: 5%;
+        right: 5%;
         height: 2px;
-        background: repeating-linear-gradient(90deg, var(--detalhe), var(--detalhe) 4px, transparent 4px, transparent 8px);
-        opacity: 0.3;
+        background: repeating-linear-gradient(90deg, var(--detalhe), var(--detalhe) 6px, transparent 6px, transparent 12px);
+        opacity: 0.2;
         z-index: 0;
+        pointer-events: none;
     }
 
     .pilar-item {
-        background: var(--bg-card); /* Garante que o card "corte" a linha */
+        background: var(--bg-card); 
         padding: 15px;
         border-radius: 8px;
         z-index: 1;
         box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         border: 1px solid var(--borda-suave);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 
-    /* Efeito de Fluxo: 1º e 3º por baixo, 2º por cima (Under-Over-Under) */
+    /* Efeito de Fluxo: 1º e 3º por baixo, 2º (Padrão de Projeto) por cima */
     .pilar-item:nth-child(1), 
     .pilar-item:nth-child(3) {
-        transform: translateY(10px);
+        transform: translateY(15px);
     }
 
     .pilar-item:nth-child(2) {
-        transform: translateY(-10px);
+        transform: translateY(-15px);
         border-color: var(--detalhe);
         box-shadow: 0 8px 24px rgba(0,0,0,0.05);
     }
