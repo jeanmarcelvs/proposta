@@ -23,7 +23,6 @@
 /* Lock de Scroll durante carregamento */
 body.loading-active {
     overflow: hidden !important;
-    height: 100vh !important;
 }
 
 /* Smart Splash Screen */
