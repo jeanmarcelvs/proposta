@@ -1397,11 +1397,77 @@ h2[data-field="titulo_plano_header"] {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    z-index: 2;
 }
 
 .pilar-header i {
     color: var(--detalhe);
     font-size: 1rem;
+}
+
+/* Fluxo de Dependência Estilo Infográfico */
+.pilares-sistema {
+    position: relative;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 30px 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: var(--shape-technic);
+    border: 1px solid var(--borda-suave);
+}
+
+@media (min-width: 651px) {
+    /* A "Espinha Dorsal" do Infográfico */
+    .pilares-sistema::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: repeating-linear-gradient(90deg, var(--detalhe), var(--detalhe) 4px, transparent 4px, transparent 8px);
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .pilar-item {
+        background: var(--bg-card); /* Garante que o card "corte" a linha */
+        padding: 15px;
+        border-radius: 8px;
+        z-index: 1;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        border: 1px solid var(--borda-suave);
+    }
+
+    /* Efeito de Fluxo: 1º e 3º por baixo, 2º por cima (Under-Over-Under) */
+    .pilar-item:nth-child(1), 
+    .pilar-item:nth-child(3) {
+        transform: translateY(10px);
+    }
+
+    .pilar-item:nth-child(2) {
+        transform: translateY(-10px);
+        border-color: var(--detalhe);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    }
+}
+
+/* Termos de Valor: Discreto e Elegante */
+.termo-valor {
+    color: var(--detalhe);
+    font-weight: 700;
+    border-bottom: 1px dashed rgba(var(--detalhe-rgb), 0.5);
+    padding-bottom: 1px;
+    white-space: nowrap;
+    transition: var(--transicao);
+}
+
+.pilar-desc strong {
+    color: var(--primaria);
+    font-weight: 800;
 }
 
 .pilar-desc {

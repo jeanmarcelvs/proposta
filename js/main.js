@@ -10,7 +10,6 @@ const app = {
     isNavigating: false, // Impede disparos múltiplos durante a transição
     etapaAtual: 0,
     dados: null,
-    scrollPosInstalacao: 0, // Memoriza a posição do scroll para retorno
     etapas: ['dados_gerais', 'equipamentos', 'instalacao', 'financeiro'],
     carrossel: {
         index: 0,
@@ -630,17 +629,12 @@ function alternarProposta(tipo) {
             if (app.etapas[app.etapaAtual] === 'instalacao' && !app.isNavigating) {
                 navegar(1);
             }
-        }, 650); // Delay estratégico para o usuário ver o check de seleção antes da transição
+        }, 300); // Reduzido para tornar a transição mais ágil e responsiva
     }
 }
 
 function navegar(direcao) {
     if (app.isNavigating) return;
-
-    // Se estiver avançando e saindo da instalação, salva a posição atual do scroll
-    if (direcao === 1 && app.etapas[app.etapaAtual] === 'instalacao') {
-        app.scrollPosInstalacao = window.scrollY || document.documentElement.scrollTop;
-    }
 
     // Segurança: Bloqueio de avanço na etapa de instalação sem plano selecionado
     if (direcao === 1 && app.etapas[app.etapaAtual] === 'instalacao' && !app.planoSelecionado) {
@@ -658,11 +652,7 @@ async function carregarView(direcao = 1) {
     const container = document.getElementById('view-container');
     const oldContent = container.querySelector('.view-content');
     const nomeView = app.etapas[app.etapaAtual];
-    
-    // Define o scroll alvo: restauramos a posição apenas ao voltar para a view de instalação.
-    // Para todos os outros casos (avançar ou voltar para outras etapas), o alvo é 0 (topo).
-    const scrollAlvo = (direcao === -1 && nomeView === 'instalacao') ? (app.scrollPosInstalacao || 0) : 0;
-    
+
     if (app.isNavigating) return;
     app.isNavigating = true;
 
@@ -675,12 +665,10 @@ async function carregarView(direcao = 1) {
     // Esconde o container principal para preparar a troca de conteúdo e reset de scroll
     container.style.opacity = '0';
     
-    // RESET PARA O TOPO: Executa imediatamente se o scrollAlvo for 0 (todas as views exceto retorno à instalação)
-    if (scrollAlvo === 0) { // Esta condição garante o reset para o topo em todas as outras navegações
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-    }
+    // RESET PARA O TOPO: Executa imediatamente em todas as transições
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     await new Promise(r => setTimeout(r, 250));
 
@@ -731,14 +719,7 @@ async function carregarView(direcao = 1) {
         // 5. Cancela o timer e revela a nova view de forma sincronizada
         clearTimeout(loadingTimer);
         
-        // O uso de múltiplos frames garante que o scroll e o novo DOM estejam estabilizados
         requestAnimationFrame(() => { 
-            // Aplica o scroll APENAS AQUI, após o conteúdo estar visível e animado
-            // Isso garante que o navegador tenha tempo para renderizar o novo DOM e calcular sua altura correta.
-            window.scrollTo(0, scrollAlvo);
-            document.documentElement.scrollTop = scrollAlvo;
-            document.body.scrollTop = scrollAlvo;
-            
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     container.style.opacity = '1';
