@@ -1319,7 +1319,7 @@ h2[data-field="titulo_plano_header"] {
 .prefixo-titulo {
     color: #64748b; /* Cinza Slate 500 - mais escuro para contraste */
     font-weight: 600; 
-    margin-right: 2px; /* Reduzido para aproximar do sufixo */
+    margin-right: 8px; /* Aumentado para separar adequadamente do sufixo */
     letter-spacing: 2.5px; 
 }
 
@@ -1457,22 +1457,70 @@ h2[data-field="titulo_plano_header"] {
 }
 
 @media (min-width: 651px) {
-    /* Linha tracejada técnica que atravessa os pilares */
-    .pilares-sistema::before {
+    /* Conector Esquerdo: Equipamentos -> Padrão de Projeto */
+    .pilar-item:nth-child(1)::after {
         content: '';
         position: absolute;
-        top: 50%;
-        left: 5%;
-        right: 5%;
-        height: 2px;
-        background: repeating-linear-gradient(90deg, var(--detalhe), var(--detalhe) 6px, transparent 6px, transparent 12px);
-        opacity: 0.2;
+        top: 20%;
+        right: -30px;
+        width: 40px;
+        height: 60px;
+        border: 2px dashed var(--detalhe);
+        border-width: 2px 2px 0 0;
+        border-radius: 0 15px 0 0;
+        opacity: 0.3;
         z-index: 0;
         pointer-events: none;
+        transform: rotate(10deg);
+    }
+
+    /* Seta do Conector Esquerdo */
+    .pilar-item:nth-child(1)::before {
+        content: '\f105'; 
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 10px;
+        right: -35px;
+        color: var(--detalhe);
+        opacity: 0.4;
+        font-size: 1rem;
+        transform: rotate(-45deg);
+    }
+
+    /* Conector Direito: Padrão de Projeto -> Infraestrutura */
+    .pilar-item:nth-child(2)::after {
+        content: '';
+        position: absolute;
+        bottom: 10%;
+        right: -30px;
+        width: 40px;
+        height: 60px;
+        border: 2px dashed var(--detalhe);
+        border-width: 0 2px 2px 0;
+        border-radius: 0 0 15px 0;
+        opacity: 0.3;
+        z-index: 0;
+        pointer-events: none;
+        transform: rotate(-10deg);
+    }
+
+    /* Seta do Conector Direito */
+    .pilar-item:nth-child(2)::before {
+        content: '\f105';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        bottom: 5px;
+        right: -35px;
+        color: var(--detalhe);
+        opacity: 0.4;
+        font-size: 1rem;
+        transform: rotate(45deg);
     }
 
     .pilar-item {
-        background: var(--bg-card); 
+        background: var(--bg-card);
         padding: 15px;
         border-radius: 8px;
         z-index: 1;
@@ -1499,12 +1547,13 @@ h2[data-field="titulo_plano_header"] {
 /* Termos de Valor: Sublinhado Técnico Permanente */
 .termo-valor {
     color: var(--detalhe) !important;
-    font-weight: 800 !important;
-    border-bottom: 1.5px dashed rgba(var(--detalhe-rgb), 0.6) !important;
-    padding-bottom: 2px;
+    font-weight: 600 !important; /* Peso reduzido para remover o aspecto de negrito pesado */
+    border-bottom: 1px dashed rgba(var(--detalhe-rgb), 0.8) !important; /* Linha mais fina e nítida */
+    padding-bottom: 0 !important; /* Aproxima a linha da base da palavra */
     white-space: nowrap;
     transition: var(--transicao);
     display: inline-block;
+    line-height: 1.2;
 }
 
 .pilar-desc strong {
