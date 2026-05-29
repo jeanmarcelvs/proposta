@@ -169,7 +169,7 @@ async function init() {
         }
 
         // 2. Busca de Dados da Proposta
-        const resposta = await buscarPropostaService(app.idProposta, app.primeiroNome);
+        const resposta = await buscarPropostaService(app.idProposta, app.primeiroNome, seguranca.deviceId);
         
         if (resposta && resposta.sucesso) {
             // Garante a captura dos dados independentemente da estrutura de retorno da API

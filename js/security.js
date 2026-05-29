@@ -111,7 +111,7 @@ export async function verificarAutorizacaoHardware(propostaId) {
             if (resultado.status === 'dono') {
                 localStorage.setItem(`dono_${propostaId}`, 'true');
             }
-            return { autorizado: true };
+            return { autorizado: true, deviceId: info.deviceId };
         }
         
         if (resultado.status === 'pendente') {
