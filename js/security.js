@@ -93,9 +93,9 @@ export async function verificarAutorizacaoHardware(propostaId) {
 
     const payload = {
         propostaId: propostaId,
-        deviceId: info.deviceId, // Chave primária de autorização
+        deviceId: info.deviceId, 
         dispositivoNome: `${info.tipoDispositivo} (${info.os})`,
-        fingerprint: info.fingerprintCompleto,
+        fingerprint: info.fingerprintCompleto, // Opcional para log
         os: info.os,
         ipInformado: ipPublico,
         navegador: info.navegadorLimpo,
