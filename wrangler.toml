@@ -1,0 +1,13 @@
+name = "gdis-api-service"
+main = "index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = [ "nodejs_compat" ]
+
+# Configuração para o Scrapper (Puppeteer)
+browser = { binding = "MYBROWSER" }
+
+# Configuração para o Banco de Dados D1
+[[d1_databases]]
+binding = "DB"
+database_name = "solardb"
+database_id = "68c14044-0e2a-4300-8ee5-bd731eb9b86b"
